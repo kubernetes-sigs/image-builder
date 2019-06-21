@@ -190,7 +190,7 @@ func main() {
 		}
 
 		validateHostKey := func(hostname string, remote net.Addr, key ssh.PublicKey) error {
-			glog.Infof("accepting host key %s for %s", key, hostname)
+			glog.Infof("accepting host key of type %s for %s", key.Type(), hostname)
 			return nil
 		}
 
@@ -216,7 +216,7 @@ func main() {
 				}
 				key, err := ssh.ParsePrivateKey(keyBytes)
 				if err != nil {
-					glog.Exitf("error parsing SSH private key: %v", err)
+					glog.Exitf("error parsing SSH private key %q: %v", config.SSHPrivateKey, err)
 				}
 
 				sshConfig.Auth = append(sshConfig.Auth, ssh.PublicKeys(key))
