@@ -1,0 +1,10 @@
+.vscode
+.DS_Store
+dist/
+*.tar.gz*
+*.img
+*.qcow2
+*.log
+*.vmdk
+*.out
+image-builder
