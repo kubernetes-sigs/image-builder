@@ -1,0 +1,136 @@
+# Copyright 2019 The Kubernetes Authors.
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+
+# http://www.apache.org/licenses/LICENSE-2.0
+
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+---
+- import_tasks: debian.yml
+  when: ansible_os_family == "Debian"
+
+- import_tasks: redhat.yml
+  when: ansible_os_family == "RedHat"
+
+- name: Truncate machine id
+  file:
+    state: "{{ item.state }}"
+    path: "{{ item.path }}"
+    owner: root
+    group: root
+    mode: "{{ item.mode }}"
+  loop:
+  - { path: /etc/machine-id, state: absent, mode: "{{ machine_id_mode }}" }
+  - { path: /etc/machine-id, state: touch,  mode: "{{ machine_id_mode }}" }
+
+- name: Truncate hostname file
+  file:
+    state: "{{ item.state }}"
+    path: "{{ item.path }}"
+    owner: root
+    group: root
+    mode: "{{ item.mode }}"
+  loop:
+  - { path: /etc/hostname, state: absent, mode: "0644" }
+  - { path: /etc/hostname, state: touch,  mode: "0644" }
+
+- name: Set hostname
+  hostname:
+    name: localhost.local
+
+- name: Reset hosts file
+  copy:
+    src: files/etc/hosts
+    dest: /etc/hosts
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Truncate audit logs
+  file:
+    state: "{{ item.state }}"
+    path: "{{ item.path }}"
+    owner: root
+    group: utmp
+    mode: "{{ item.mode }}"
+  loop:
+  - { path: /var/log/wtmp,    state: absent, mode: "0664" }
+  - { path: /var/log/lastlog, state: absent, mode: "{{ last_log_mode }}" }
+  - { path: /var/log/wtmp,    state: touch,  mode: "0664" }
+  - { path: /var/log/lastlog, state: touch,  mode: "{{ last_log_mode }}" }
+
+- name: Remove cloud-init lib dir and logs
+  file:
+    state: absent
+    path: "{{ item }}"
+  loop:
+  - /var/lib/cloud
+  - /var/log/cloud-init.log
+  - /var/log/cloud-init-output.log
+  - /var/run/cloud-init
+
+# A shallow search in /tmp and /var/tmp is used to declare which files or
+# directories will be removed as part of resetting temp space. The reason
+# a state absent->directory task isn't used is because Ansible's own data
+# directory on the remote host(s) is /tmp/.ansible. Thus, by removing /tmp,
+# Ansible can no longer access the remote host.
+- name: Find temp files
+  find:
+    depth: 1
+    file_type: any
+    paths:
+    - /tmp
+    - /var/tmp
+    pattern: '*'
+  register: temp_files
+
+- name: Reset temp space
+  file:
+    state: absent
+    path: "{{ item.path }}"
+  loop: "{{ temp_files.files }}"
+
+- name: Find SSH host keys
+  find:
+    path: /etc/ssh
+    pattern: 'ssh_host_*'
+  register: ssh_host_keys
+
+- name: Remove SSH host keys
+  file:
+    state: absent
+    path: "{{ item.path }}"
+  loop: "{{ ssh_host_keys.files }}"
+
+- name: Remove SSH authorized users
+  file:
+    state: absent
+    path: "{{ item.path }}"
+  loop:
+  - { path: /root/.ssh/authorized_keys }
+  - { path: "/home/{{ ansible_env.SUDO_USER }}/.ssh/authorized_keys" }
+
+- name: Remove and recreate /var/log
+  file:
+    state: "{{ item.state }}"
+    path: "{{ item.path }}"
+    owner: root
+    group: root
+    mode: 0755
+  loop:
+  - { path: /var/log, state: absent }
+  - { path: /var/log, state: directory }
+
+- name: Truncate shell history
+  file:
+    state: absent
+    path: "{{ item.path }}"
+  loop:
+  - { path: /root/.bash_history }
+  - { path: "/home/{{ ansible_env.SUDO_USER }}/.bash_history" }

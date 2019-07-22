@@ -1,0 +1,131 @@
+# Copyright 2019 The Kubernetes Authors.
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+
+# http://www.apache.org/licenses/LICENSE-2.0
+
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+---
+- name: Symlink cri-tools
+  file:
+    src:   "/usr/local/bin/{{ item }}"
+    dest:  "/usr/bin/{{ item }}"
+    state: link
+  loop:
+  - ctr
+  - crictl
+  - critest
+
+- name: Create CNI directory
+  file:
+    state: directory
+    path: /opt/cni/bin
+    mode: 0755
+    owner: root
+    group: root
+
+- name: Download CNI tarball
+  get_url:
+    url: "{{ kubernetes_cni_source }}"
+    checksum: "sha1:{{ kubernetes_cni_source }}.sha1"
+    dest: /tmp/cni.tar.gz
+    mode: 0755
+    owner: root
+    group: root
+
+- name: Install CNI
+  unarchive:
+    remote_src: yes
+    dest: /opt/cni/bin
+    src: /tmp/cni.tar.gz
+
+- name: Remove CNI tarball
+  file:
+    state: absent
+    path: /tmp/cni.tar.gz
+
+- name: Download Kubernetes binaries
+  get_url:
+    url: "{{ kubernetes_source }}/bin/linux/amd64/{{ item }}"
+    # TODO(akutz) Write a script to separately download the checksum
+    #             and verify the associated file using the correct
+    #             checksum file format
+    #checksum: "sha1:{{ kubernetes_source }}/bin/linux/amd64/{{ item }}.sha1"
+    dest: "/usr/bin/{{ item }}"
+    mode: 0755
+    owner: root
+    group: root
+  loop: "{{ kubernetes_bins }}"
+
+- name: Download Kubernetes images
+  get_url:
+    url: "{{ kubernetes_source }}/bin/linux/amd64/{{ item }}"
+    # TODO(akutz) Write a script to separately download the checksum
+    #             and verify the associated file using the correct
+    #             checksum file format
+    #checksum: "sha1:{{ kubernetes_source }}/bin/linux/amd64/{{ item }}.sha1"
+    dest: "/tmp/{{ item }}"
+  loop: "{{ kubernetes_imgs }}"
+
+- name: Load Kubernetes images
+  shell: 'CONTAINERD_NAMESPACE="k8s.io" ctr images import /tmp/{{ item }}'
+  loop: "{{ kubernetes_imgs }}"
+
+- name: Remove Kubernetes images
+  file:
+    state: absent
+    path: "/tmp/{{ item }}"
+  loop: "{{ kubernetes_imgs }}"
+
+- name: Create Kubernetes manifests directory
+  file:
+    state: directory
+    path: /etc/kubernetes/manifests
+    mode: 0755
+    owner: root
+    group: root
+
+- name: Create kubelet sysconfig file
+  copy:
+    src: files/etc/sysconfig/kubelet
+    dest: /etc/sysconfig/kubelet
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Create kubelet drop-in directory
+  file:
+    state: directory
+    path: /usr/lib/systemd/system/kubelet.service.d
+    mode: 0755
+    owner: root
+    group: root
+
+- name: Create kubelet kubeadm drop-in file
+  copy:
+    src: files/usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf
+    dest: /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Create kubelet systemd file
+  copy:
+    src: files/usr/lib/systemd/system/kubelet.service
+    dest: /usr/lib/systemd/system/kubelet.service
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Install kubelet service
+  systemd:
+    name: kubelet
+    daemon_reload: yes
+    enabled: True
+    state: started

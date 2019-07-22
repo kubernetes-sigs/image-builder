@@ -1,0 +1,12 @@
+package:
+  cloud-init:
+    installed: true
+    versions:
+      - "{{ .Vars.cloud_init_version }}"
+service:
+  containerd:
+    enabled: true
+    running: true
+command:
+  crictl ps:
+    exit-status: 0
