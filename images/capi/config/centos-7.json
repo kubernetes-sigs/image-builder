@@ -1,0 +1,15 @@
+{
+  "build_name": "centos-7",
+  "distro_name": "centos",
+  "os_display_name": "CentOS 7",
+  "guest_os_type": "centos-64",
+  "iso_url": "https://mirrors.edge.kernel.org/centos/7.6.1810/isos/x86_64/CentOS-7-x86_64-Minimal-1810.iso",
+  "iso_checksum": "38d5d51d9d100fd73df031ffd6bd8b1297ce24660dc8c13a3b8b4534a4bd291c",
+  "iso_checksum_type": "sha256",
+  "ssh_username": "centos",
+  "ssh_password": "centos",
+  "boot_command_prefix": "<tab> text ks=",
+  "boot_command_suffix": "/7/ks.cfg<enter><wait>",
+  "goss_vars_file": "goss/redhat-vars.yaml",
+  "shutdown_command": "sys-unconfig"
+}
