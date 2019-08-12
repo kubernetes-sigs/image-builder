@@ -12,20 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-kubernetes_semver: "latest"
-kubernetes_source: "pkg"
-kubernetes_version: "latest"
-kubernetes_cni_version: "latest"
-
-kubernetes_rpm_repo: "https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64"
-kubernetes_rpm_gpg_key: "https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg"
-kubernetes_rpm_gpg_check: True
-
-# Currently Kubernetes does not publish a repo specifically for Bionic, instead hardcode xenial here for now
-# https://github.com/kubernetes/release/issues/557
-#kubernetes_deb_repo: "http://apt.kubernetes.io/ kubernetes-' ~ (ansible_distribution_release | lower)"
-kubernetes_deb_repo: "http://apt.kubernetes.io/ kubernetes-xenial"
-kubernetes_deb_gpg_key: "https://packages.cloud.google.com/apt/doc/apt-key.gpg"
+kubernetes_goarch: "amd64"
 
 kubernetes_bins:
 - kubeadm
@@ -37,7 +24,3 @@ kubernetes_imgs:
 - kube-controller-manager.tar
 - kube-scheduler.tar
 - kube-proxy.tar
-
-# TODO(akutz) Refactor this the same way Kubernetes versions are now handled.
-#             For now this is only used when kubernetes_source != "pkg".
-kubernetes_cni_source: "https://storage.googleapis.com/capv-images/extra/cni-plugins-amd64-v0.7.5.tgz"

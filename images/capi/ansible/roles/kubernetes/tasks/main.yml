@@ -19,7 +19,7 @@
   when: kubernetes_source == "pkg" and ansible_os_family == "RedHat"
 
 - import_tasks: url.yml
-  when: kubernetes_source != "pkg"
+  when: kubernetes_source != "pkg" and kubernetes_cni_source != "pkg"
 
 - name: Ensure that the kubelet is running
   service:
