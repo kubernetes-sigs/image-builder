@@ -1,0 +1,5 @@
+{
+    "kubernetes_cni_semver": "v0.7.5",
+    "kubernetes_cni_version": "0.7.5-00",
+    "kubernetes_cni_source": "pkg"
+}

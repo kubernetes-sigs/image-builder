@@ -22,7 +22,7 @@ all: build
 BUILD_NAMES ?= centos-7 ubuntu-1804
 
 # The version of Kubernetes to install.
-KUBE_JSON ?= config/kubernetes.json
+KUBE_JSON ?= config/kubernetes.json config/cni.json
 
 # The flags to give to Packer.
 PACKER_VAR_FILES := $(KUBE_JSON)
