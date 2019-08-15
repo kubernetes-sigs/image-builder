@@ -67,7 +67,7 @@
       ],
       "extra_arguments": [
         "--extra-vars",
-        "kubernetes_rpm_repo={{user `kubernetes_rpm_repo`}} kubernetes_rpm_gpg_key={{user `kubernetes_rpm_gpg_key`}} kubernetes_rpm_gpg_check={{user `kubernetes_rpm_gpg_check`}} kubernetes_deb_gpg_key={{user `kubernetes_deb_gpg_key`}} kubernetes_cni_version={{user `kubernetes_cni_version`}} kubernetes_cni_semver={{user `kubernetes_cni_semver`}} kubernetes_cni_source={{user `kubernetes_cni_source`}} kubernetes_semver={{user `kubernetes_semver`}} kubernetes_source={{user `kubernetes_source`}} kubernetes_version={{user `kubernetes_version`}}"
+        "kubernetes_rpm_repo={{user `kubernetes_rpm_repo`}} kubernetes_rpm_gpg_key={{user `kubernetes_rpm_gpg_key`}} kubernetes_rpm_gpg_check={{user `kubernetes_rpm_gpg_check`}} kubernetes_deb_repo={{user `kubernetes_deb_repo`}} kubernetes_deb_gpg_key={{user `kubernetes_deb_gpg_key`}} kubernetes_cni_version={{user `kubernetes_cni_version`}} kubernetes_cni_semver={{user `kubernetes_cni_semver`}} kubernetes_cni_source={{user `kubernetes_cni_source`}} kubernetes_semver={{user `kubernetes_semver`}} kubernetes_source={{user `kubernetes_source`}} kubernetes_version={{user `kubernetes_version`}}"
       ]
     }
   ],
