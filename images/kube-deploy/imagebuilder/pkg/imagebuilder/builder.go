@@ -7,7 +7,7 @@ import (
 	"os"
 	"path"
 
-	"k8s.io/kube-deploy/imagebuilder/pkg/imagebuilder/executor"
+	"sigs.k8s.io/image-builder/images/kube-deploy/imagebuilder/pkg/imagebuilder/executor"
 )
 
 type Builder struct {

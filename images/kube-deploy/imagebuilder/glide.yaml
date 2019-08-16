@@ -1,4 +1,4 @@
-package: k8s.io/kube-deploy/imagebuilder
+package: sigs.k8s.io/image-builder/images/kube-deploy/imagebuilder
 import:
 - package: github.com/aws/aws-sdk-go
   subpackages:

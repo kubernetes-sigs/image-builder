@@ -36,10 +36,10 @@ import (
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/net/context"
 	"golang.org/x/oauth2/google"
-	"google.golang.org/api/compute/v1"
-	"google.golang.org/api/storage/v1"
-	"k8s.io/kube-deploy/imagebuilder/pkg/imagebuilder"
-	"k8s.io/kube-deploy/imagebuilder/pkg/imagebuilder/executor"
+	compute "google.golang.org/api/compute/v1"
+	storage "google.golang.org/api/storage/v1"
+	"sigs.k8s.io/image-builder/images/kube-deploy/imagebuilder/pkg/imagebuilder"
+	"sigs.k8s.io/image-builder/images/kube-deploy/imagebuilder/pkg/imagebuilder/executor"
 )
 
 var flagConfig = flag.String("config", "", "Config file to load")
