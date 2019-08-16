@@ -35,7 +35,7 @@
       "disk_type_id": 0,
       "disk_adapter_type": "scsi",
       "boot_wait": "{{user `boot_wait`}}",
-      "http_directory": "./linux/{{user `distro_name`}}/http/",
+      "http_directory": "./packer/ova/linux/{{user `distro_name`}}/http/",
       "guest_os_type": "{{user `guest_os_type`}}",
       "headless": "{{user `headless`}}",
       "iso_url": "{{user `iso_url`}}",
@@ -60,7 +60,7 @@
   "provisioners": [
     {
       "type": "ansible",
-      "playbook_file": "../ansible/playbook.yml",
+      "playbook_file": "./ansible/playbook.yml",
       "ansible_env_vars": [
         "ANSIBLE_SSH_ARGS='{{user `existing_ansible_ssh_args`}} -o IdentitiesOnly=yes'",
         "ANSIBLE_REMOTE_TEMP='/tmp/.ansible/'"
@@ -93,11 +93,11 @@
     },
     {
       "type": "shell-local",
-      "command": "../hack/image-build-ova.py ./output/{{build_name}}+kube-{{user `kubernetes_semver`}}"
+      "command": "./hack/image-build-ova.py ./output/{{build_name}}+kube-{{user `kubernetes_semver`}}"
     },
     {
       "type": "shell-local",
-      "command": "../hack/image-post-create-config.sh ./output/{{build_name}}+kube-{{user `kubernetes_semver`}}"
+      "command": "./hack/image-post-create-config.sh ./output/{{build_name}}+kube-{{user `kubernetes_semver`}}"
     }
   ]
 }
