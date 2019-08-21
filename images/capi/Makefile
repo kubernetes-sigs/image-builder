@@ -19,26 +19,29 @@ all: build
 
 # A list of the supported distribution/version combinations. Each member
 # of BUILD_NAMES must have a corresponding file "config/BUILD_NAME.json".
-BUILD_NAMES ?= centos-7 ubuntu-1804
+BUILD_NAMES ?= ova-centos-7 ova-ubuntu-1804 ami-base-images-us-east-1
 
 # The version of Kubernetes to install.
-KUBE_JSON ?= config/kubernetes.json config/cni.json
+KUBE_JSON ?= packer/config/kubernetes.json packer/config/cni.json
 
 # The flags to give to Packer.
 PACKER_VAR_FILES := $(KUBE_JSON)
 OLD_PACKER_FLAGS := $(PACKER_FLAGS)
-PACKER_FLAGS := -var="capv_version=$(shell git describe --dirty)"
-PACKER_FLAGS += $(foreach f,$(abspath $(PACKER_VAR_FILES)),-var-file="$(f)" )
+PACKER_FLAGS := $(foreach f,$(abspath $(PACKER_VAR_FILES)),-var-file="$(f)" )
 PACKER_FLAGS += $(OLD_PACKER_FLAGS)
 
 BUILD_TARGETS := $(addprefix build-,$(BUILD_NAMES))
 $(BUILD_TARGETS):
-	cd packer && packer build $(PACKER_FLAGS) -var-file="$(abspath config/$(subst build-,,$@).json)" packer.json
+ifeq ($(strip $(findstring build-ami,$@)),)
+	packer build $(PACKER_FLAGS) -var-file="$(abspath packer/ova/$(subst build-,,$@).json)" packer/ova/packer.json
+else
+	packer build $(PACKER_FLAGS) -var-file="$(abspath packer/ami/$(subst build-,,$@).json)" packer/ami/packer.json
+endif
 .PHONY: $(BUILD_TARGETS)
 
 CLEAN_TARGETS := $(addprefix clean-,$(BUILD_NAMES))
 $(CLEAN_TARGETS):
-	rm -fr packer/output/$(subst clean-,,$@)*
+	rm -fr output/$(subst clean-,,$@)*
 .PHONY: $(CLEAN_TARGETS)
 
 build: $(BUILD_TARGETS)
