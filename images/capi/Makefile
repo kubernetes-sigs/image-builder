@@ -32,11 +32,11 @@ PACKER_FLAGS += $(OLD_PACKER_FLAGS)
 
 BUILD_TARGETS := $(addprefix build-,$(BUILD_NAMES))
 $(BUILD_TARGETS):
-ifeq ($(strip $(findstring build-ami,$@)),)
-	packer build $(PACKER_FLAGS) -var-file="$(abspath packer/ova/$(subst build-,,$@).json)" packer/ova/packer.json
-else
-	packer build $(PACKER_FLAGS) -var-file="$(abspath packer/ami/$(subst build-,,$@).json)" packer/ami/packer.json
-endif
+	if [[ $@ = build-ova* ]] ; then \
+           packer build $(PACKER_FLAGS) -var-file="$(abspath packer/ova/$(subst build-,,$@).json)" packer/ova/packer.json; \
+        else \
+           packer build $(PACKER_FLAGS) -var-file="$(abspath packer/ami/$(subst build-,,$@).json)" packer/ami/packer.json; \
+        fi
 .PHONY: $(BUILD_TARGETS)
 
 CLEAN_TARGETS := $(addprefix clean-,$(BUILD_NAMES))
