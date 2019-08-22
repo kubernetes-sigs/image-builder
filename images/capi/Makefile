@@ -18,8 +18,9 @@
 all: build
 
 # A list of the supported distribution/version combinations. Each member
-# of BUILD_NAMES must have a corresponding file "config/BUILD_NAME.json".
-BUILD_NAMES ?= ova-centos-7 ova-ubuntu-1804 ami-default
+# of *_BUILD_NAMES must have a corresponding file "config/*_BUILD_NAME.json".
+OVA_BUILD_NAMES ?= ova-centos-7 ova-ubuntu-1804
+AMI_BUILD_NAMES ?= ami-default
 
 # The version of Kubernetes to install.
 KUBE_JSON ?= packer/config/kubernetes.json packer/config/cni.json packer/config/containerd.json
@@ -30,20 +31,21 @@ OLD_PACKER_FLAGS := $(PACKER_FLAGS)
 PACKER_FLAGS := $(foreach f,$(abspath $(PACKER_VAR_FILES)),-var-file="$(f)" )
 PACKER_FLAGS += $(OLD_PACKER_FLAGS)
 
-BUILD_TARGETS := $(addprefix build-,$(BUILD_NAMES))
-$(BUILD_TARGETS):
-	if [[ $@ = build-ova* ]] ; then \
-           packer build $(PACKER_FLAGS) -var-file="$(abspath packer/ova/$(subst build-,,$@).json)" packer/ova/packer.json; \
-        else \
-           packer build $(PACKER_FLAGS) -var-file="$(abspath packer/ami/$(subst build-,,$@).json)" packer/ami/packer.json; \
-        fi
-.PHONY: $(BUILD_TARGETS)
+OVA_BUILD_TARGETS := $(addprefix build-,$(OVA_BUILD_NAMES))
+AMI_BUILD_TARGETS := $(addprefix build-,$(AMI_BUILD_NAMES))
+$(OVA_BUILD_TARGETS):
+	packer build $(PACKER_FLAGS) -var-file="$(abspath packer/ova/$(subst build-,,$@).json)" packer/ova/packer.json
+.PHONY: $(OVA_BUILD_TARGETS)
 
-CLEAN_TARGETS := $(addprefix clean-,$(BUILD_NAMES))
+$(AMI_BUILD_TARGETS):
+	packer build $(PACKER_FLAGS) -var-file="$(abspath packer/ami/$(subst build-,,$@).json)" packer/ami/packer.json
+.PHONY: $(AMI_BUILD_TARGETS)
+
+CLEAN_TARGETS := $(addprefix clean-,$(OVA_BUILD_NAMES)) $(addprefix clean-,$(AMI_BUILD_NAMES))
 $(CLEAN_TARGETS):
 	rm -fr output/$(subst clean-,,$@)*
 .PHONY: $(CLEAN_TARGETS)
 
-build: $(BUILD_TARGETS)
+build: $(OVA_BUILD_TARGETS) $(AMI_BUILD_TARGETS)
 clean: $(CLEAN_TARGETS)
 .PHONY: build clean

@@ -32,8 +32,8 @@
 
 - name: Download CNI tarball
   get_url:
-    url: "{{ kubernetes_cni_source }}/{{ kubernetes_cni_semver }}/cni-plugins-{{ kubernetes_goarch }}-{{ kubernetes_cni_semver }}.tgz"
-    checksum: "sha1:{{ kubernetes_cni_source }}/{{ kubernetes_cni_semver }}/cni-plugins-{{ kubernetes_goarch }}-{{ kubernetes_cni_semver }}.tgz.sha1"
+    url: "{{ kubernetes_cni_http_source }}/{{ kubernetes_cni_semver }}/cni-plugins-{{ kubernetes_goarch }}-{{ kubernetes_cni_semver }}.tgz"
+    checksum: "sha1:{{ kubernetes_cni_http_source }}/{{ kubernetes_cni_semver }}/cni-plugins-{{ kubernetes_goarch }}-{{ kubernetes_cni_semver }}.tgz.sha1"
     dest: /tmp/cni.tar.gz
     mode: 0755
     owner: root
@@ -52,11 +52,11 @@
 
 - name: Download Kubernetes binaries
   get_url:
-    url: "{{ kubernetes_source }}/bin/linux/{{ kubernetes_goarch }}/{{ item }}"
+    url: "{{ kubernetes_http_source }}/{{ kubernetes_semver }}/bin/linux/{{ kubernetes_goarch }}/{{ item }}"
     # TODO(akutz) Write a script to separately download the checksum
     #             and verify the associated file using the correct
     #             checksum file format
-    #checksum: "sha1:{{ kubernetes_source }}/bin/linux/amd64/{{ item }}.sha1"
+    #checksum: "sha1:{{ kubernetes_http_source }}/bin/linux/amd64/{{ item }}.sha1"
     dest: "/usr/bin/{{ item }}"
     mode: 0755
     owner: root
@@ -65,11 +65,11 @@
 
 - name: Download Kubernetes images
   get_url:
-    url: "{{ kubernetes_source }}/bin/linux/{{ kubernetes_goarch }}/{{ item }}"
+    url: "{{ kubernetes_http_source }}/{{ kubernetes_semver }}/bin/linux/{{ kubernetes_goarch }}/{{ item }}"
     # TODO(akutz) Write a script to separately download the checksum
     #             and verify the associated file using the correct
     #             checksum file format
-    #checksum: "sha1:{{ kubernetes_source }}/bin/linux/amd64/{{ item }}.sha1"
+    #checksum: "sha1:{{ kubernetes_http_source }}/bin/linux/amd64/{{ item }}.sha1"
     dest: "/tmp/{{ item }}"
   loop: "{{ kubernetes_imgs }}"
 

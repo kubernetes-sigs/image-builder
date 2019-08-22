@@ -70,16 +70,13 @@ def main():
         'BUILD_NAME': build['name'],
         'ARTIFACT_ID': build['artifact_id'],
         'BUILD_TIMESTAMP': build_data['build_timestamp'],
-        'CAPI_VERSION': build_data['capi_version'],
-        'CAPV_VERSION': build_data['capv_version'],
-        'CNI_VERSION': build_data['cni_version'],
+        'CNI_VERSION': build_data['kubernetes_cni_semver'],
         'OS_NAME': build_data['os_name'],
         'ISO_CHECKSUM': build_data['iso_checksum'],
         'ISO_CHECKSUM_TYPE': build_data['iso_checksum_type'],
         'ISO_URL': build_data['iso_url'],
         'KUBERNETES_SEMVER': build_data['kubernetes_semver'],
-        'KUBERNETES_SOURCE': build_data['kubernetes_source'],
-        'KUBERNETES_VERSION': build_data['kubernetes_version'],
+        'KUBERNETES_SOURCE_TYPE': build_data['kubernetes_source_type'],
         'POPULATED_DISK_SIZE': vmdk['size'],
         'STREAM_DISK_SIZE': vmdk['stream_size'],
     })
@@ -538,22 +535,19 @@ EVALUATION LICENSE.  If You are licensing the Software for evaluation purposes, 
       <Info>Information about the installed software</Info>
       <Product>${OS_NAME} and Kubernetes ${KUBERNETES_SEMVER}</Product>
       <Vendor>VMware Inc.</Vendor>
-      <Version>${CAPV_VERSION}+kube-${KUBERNETES_SEMVER}</Version>
-      <FullVersion>${CAPV_VERSION}+kube-${KUBERNETES_SEMVER}</FullVersion>
+      <Version>kube-${KUBERNETES_SEMVER}</Version>
+      <FullVersion>kube-${KUBERNETES_SEMVER}</FullVersion>
       <ProductUrl>https://github.com/kubernetes-sigs/cluster-api-provider-vsphere</ProductUrl>
       <VendorUrl>https://vmware.com</VendorUrl>
       <Category>Cluster API Provider (CAPI)</Category>
       <Property ovf:userConfigurable="false" ovf:value="${BUILD_TIMESTAMP}" ovf:type="string" ovf:key="BUILD_TIMESTAMP"></Property>
       <Property ovf:userConfigurable="false" ovf:value="${BUILD_DATE}" ovf:type="string" ovf:key="BUILD_DATE"></Property>
-      <Property ovf:userConfigurable="false" ovf:value="${CAPI_VERSION}" ovf:type="string" ovf:key="CAPI_VERSION"></Property>
-      <Property ovf:userConfigurable="false" ovf:value="${CAPV_VERSION}" ovf:type="string" ovf:key="CAPV_VERSION"></Property>
       <Property ovf:userConfigurable="false" ovf:value="${CNI_VERSION}" ovf:type="string" ovf:key="CNI_VERSION"></Property>
       <Property ovf:userConfigurable="false" ovf:value="${ISO_URL}" ovf:type="string" ovf:key="ISO_URL"></Property>
       <Property ovf:userConfigurable="false" ovf:value="${ISO_CHECKSUM}" ovf:type="string" ovf:key="ISO_CHECKSUM"></Property>
       <Property ovf:userConfigurable="false" ovf:value="${ISO_CHECKSUM_TYPE}" ovf:type="string" ovf:key="ISO_CHECKSUM_TYPE"></Property>
       <Property ovf:userConfigurable="false" ovf:value="${KUBERNETES_SEMVER}" ovf:type="string" ovf:key="KUBERNETES_SEMVER"></Property>
-      <Property ovf:userConfigurable="false" ovf:value="${KUBERNETES_SOURCE}" ovf:type="string" ovf:key="KUBERNETES_SOURCE"></Property>
-      <Property ovf:userConfigurable="false" ovf:value="${KUBERNETES_VERSION}" ovf:type="string" ovf:key="KUBERNETES_VERSION"></Property>
+      <Property ovf:userConfigurable="false" ovf:value="${KUBERNETES_SOURCE_TYPE}" ovf:type="string" ovf:key="KUBERNETES_SOURCE_TYPE"></Property>
     </ProductSection>
   </VirtualSystem>
 </Envelope>

@@ -24,7 +24,7 @@ KUBE_CI_SRC = "https://storage.googleapis.com/kubernetes-release-dev"
 KUBE_RELEASE_SRC = "https://storage.googleapis.com/kubernetes-release"
 
 KUBE_RESOLVED_SEM = "kubernetes_semver"
-KUBE_RESOLVED_SRC = "kubernetes_source"
+KUBE_RESOLVED_SRC = "kubernetes_http_source"
 KUBE_RESOLVED_VER = "kubernetes_version"
 
 # KubeVersionResolver is used for resolving Kubernetes version strings to the

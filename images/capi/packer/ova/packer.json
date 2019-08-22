@@ -2,23 +2,26 @@
   "variables": {
     "boot_wait": "10s",
     "build_timestamp": "{{timestamp}}",
-    "capi_version": "v1alpha1",
-    "capv_version": "",
     "existing_ansible_ssh_args": "{{env `ANSIBLE_SSH_ARGS`}}",
     "headless": "true",
     "containerd_version": null,
     "containerd_sha256": null,
-    "kubernetes_cni_version": null,
+    "kubernetes_cni_rpm_version": null,
+    "kubernetes_cni_deb_version": null,
     "kubernetes_cni_semver": null,
-    "kubernetes_cni_source": null,
+    "kubernetes_cni_source_type": null,
+    "kubernetes_cni_http_source": null,
     "kubernetes_semver": null,
-    "kubernetes_source": null,
-    "kubernetes_version": null,
+    "kubernetes_source_type": null,
+    "kubernetes_http_source": null,
+    "kubernetes_rpm_version": null,
+    "kubernetes_deb_version": null,
     "kubernetes_rpm_repo": null,
     "kubernetes_rpm_gpg_key": null,
     "kubernetes_deb_repo": null,
     "kubernetes_deb_gpg_key": null,
     "kubernetes_rpm_gpg_check": null,
+    "kubernetes_container_registry": null,
     "vnc_bind_address": "127.0.0.1",
     "vnc_port_min": "5900",
     "vnc_port_max": "6000"
@@ -69,7 +72,7 @@
       ],
       "extra_arguments": [
         "--extra-vars",
-        "containerd_version={{user `containerd_version`}} containerd_sha256={{user `containerd_sha256`}} kubernetes_rpm_repo={{user `kubernetes_rpm_repo`}} kubernetes_rpm_gpg_key={{user `kubernetes_rpm_gpg_key`}} kubernetes_rpm_gpg_check={{user `kubernetes_rpm_gpg_check`}} kubernetes_deb_repo={{user `kubernetes_deb_repo`}} kubernetes_deb_gpg_key={{user `kubernetes_deb_gpg_key`}} kubernetes_cni_version={{user `kubernetes_cni_version`}} kubernetes_cni_semver={{user `kubernetes_cni_semver`}} kubernetes_cni_source={{user `kubernetes_cni_source`}} kubernetes_semver={{user `kubernetes_semver`}} kubernetes_source={{user `kubernetes_source`}} kubernetes_version={{user `kubernetes_version`}}"
+        "containerd_version={{user `containerd_version`}} containerd_sha256={{user `containerd_sha256`}} kubernetes_cni_http_source={{user `kubernetes_cni_http_source`}} kubernetes_http_source={{user `kubernetes_http_source`}} kubernetes_container_registry={{user `kubernetes_container_registry`}} kubernetes_rpm_repo={{user `kubernetes_rpm_repo`}} kubernetes_rpm_gpg_key={{user `kubernetes_rpm_gpg_key`}} kubernetes_rpm_gpg_check={{user `kubernetes_rpm_gpg_check`}} kubernetes_deb_repo={{user `kubernetes_deb_repo`}} kubernetes_deb_gpg_key={{user `kubernetes_deb_gpg_key`}} kubernetes_cni_deb_version={{user `kubernetes_cni_deb_version`}} kubernetes_cni_rpm_version={{user `kubernetes_cni_rpm_version`}} kubernetes_cni_semver={{user `kubernetes_cni_semver`}} kubernetes_cni_source_type={{user `kubernetes_cni_source_type`}} kubernetes_semver={{user `kubernetes_semver`}} kubernetes_source_type={{user `kubernetes_source_type`}} kubernetes_deb_version={{user `kubernetes_deb_version`}} kubernetes_rpm_version={{user `kubernetes_rpm_version`}}"
       ]
     }
   ],
@@ -81,12 +84,9 @@
       "custom_data": {
         "build_timestamp": "{{user `build_timestamp`}}",
         "build_date": "{{isotime}}",
-        "capv_version": "{{user `capv_version`}}",
-        "capi_version": "{{user `capi_version`}}",
-        "cni_version": "{{user `kubernetes_cni_version`}}",
+        "kubernetes_cni_semver": "{{user `kubernetes_cni_semver`}}",
         "kubernetes_semver": "{{user `kubernetes_semver`}}",
-        "kubernetes_source": "{{user `kubernetes_source`}}",
-        "kubernetes_version": "{{user `kubernetes_version`}}",
+        "kubernetes_source_type": "{{user `kubernetes_source_type`}}",
         "iso_checksum": "{{user `iso_checksum`}}",
         "iso_checksum_type": "{{user `iso_checksum_type`}}",
         "iso_url": "{{user `iso_url`}}",
