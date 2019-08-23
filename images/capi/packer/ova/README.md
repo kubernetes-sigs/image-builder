@@ -43,6 +43,7 @@ The `config` directory includes several JSON files that define the configuration
 |------|-------------|
 | `../config/kubernetes.json` | The version of Kubernetes to install |
 | `../config/cni.json` | The version of Kubernetes CNI to install |
+| `../config/containerd.json` | The version of containerd to install |
 | `../config/centos-7.json` | The settings for the CentOS 7 image |
 | `../config/ubuntu-1804.json` | The settings for the Ubuntu 1804 image |
 
