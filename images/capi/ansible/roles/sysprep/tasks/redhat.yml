@@ -20,6 +20,7 @@
 - name: Remove yum package caches
   yum:
     autoremove: yes
+    lock_timeout: 60
 
 - name: Remove yum package lists
   command: /usr/bin/yum -y clean all
