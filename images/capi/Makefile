@@ -22,7 +22,7 @@ all: build
 BUILD_NAMES ?= ova-centos-7 ova-ubuntu-1804 ami-base-images-us-east-1
 
 # The version of Kubernetes to install.
-KUBE_JSON ?= packer/config/kubernetes.json packer/config/cni.json
+KUBE_JSON ?= packer/config/kubernetes.json packer/config/cni.json packer/config/containerd.json
 
 # The flags to give to Packer.
 PACKER_VAR_FILES := $(KUBE_JSON)
