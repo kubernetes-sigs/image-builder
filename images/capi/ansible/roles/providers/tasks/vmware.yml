@@ -43,23 +43,6 @@
     packages: "cloud-init cloud-utils python3-netifaces"
   when: ansible_os_family == "VMware Photon OS"
 
-- name: Download cloud-init datasource for VMware Guestinfo
-  get_url:
-    url:  '{{ guestinfo_datasource_script }}'
-    dest: /tmp/cloud-init-vmware.sh
-    mode: 0700
-
-- name: Execute cloud-init-vmware.sh
-  shell: bash -o errexit -o pipefail /tmp/cloud-init-vmware.sh
-  environment:
-    REPO_SLUG: '{{ guestinfo_datasource_slug }}'
-    GIT_REF:   '{{ guestinfo_datasource_ref }}'
-
-- name: Remove cloud-init-vmware.sh
-  file:
-    path:  /tmp/cloud-init-vmware.sh
-    state: absent
-
 - name: Remove cloud-init /etc/cloud/cloud.cfg.d/99-disable-networking-config.cfg
   file:
     path: /etc/cloud/cloud.cfg.d/99-disable-networking-config.cfg
@@ -86,3 +69,39 @@
     owner: root
     group: root
     mode: 0644
+
+- name: configure cloud-init (for meta-data svc)
+  copy:
+    src: files/debian/cloud.cfg
+    dest: /etc/cloud/cloud.cfg
+    owner: root
+    group: root
+    mode: 0644
+
+- name: configure datasource
+  copy:
+    dest: /etc/cloud/cloud.cfg.d/99_ds.cfg
+    content: |-
+      datasource_list: [ OpenStack ]
+    owner: root
+    group: root
+    mode: 0644
+
+# Debug ds-identify & generator via log files in /run/cloud-init
+# Execute generator: /lib/systemd/system-generators/cloud-init-generator
+# Execute ds-identify: /usr/lib/cloud-init/ds-identify
+- name: configure datasource
+  copy:
+    dest: /etc/cloud/ds-identify.cfg
+    content: |-
+      datasource: OpenStack
+      policy: enabled,found=all,maybe=none,notfound=disabled
+    owner: root
+    group: root
+    mode: 0644
+
+# Bug see: https://bugs.launchpad.net/cloud-init/+bug/1815990
+- name: Patch Openstack Datasource
+  patch:
+    src: files/debian/DataSourceOpenStack.patch
+    dest: /usr/lib/python3/dist-packages/cloudinit/sources/DataSourceOpenStack.py

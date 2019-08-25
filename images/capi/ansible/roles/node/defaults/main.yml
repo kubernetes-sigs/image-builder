@@ -42,6 +42,8 @@ common_debs:
 - libnetfilter-log1
 - linux-cloud-tools-virtual
 - linux-tools-virtual
+- openssh-client
+- openssh-server
 - open-vm-tools
 - python3-distutils
 - python3-netifaces
