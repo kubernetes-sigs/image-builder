@@ -25,7 +25,7 @@
       "qemu_binary": "{{user `qemu_binary`}}",
       "shutdown_command": "echo '{{user `ssh_password`}}' | sudo -S -E sh -c 'usermod -L {{user `ssh_username`}} && {{user `shutdown_command`}}'",
       "ssh_password": "{{user `ssh_password`}}",
-      "ssh_timeout": "2h",
+      "ssh_timeout": "{{user `ssh_timeout`}}",
       "ssh_username": "{{user `ssh_username`}}",
       "type": "qemu",
       "vm_name": "{{user `build_name`}}-kube-{{user `kubernetes_semver`}}"
@@ -92,7 +92,8 @@
         "kubernetes_deb_version": "{{ user `kubernetes_deb_version` }}",
         "kubernetes_rpm_version": "{{ split (user `kubernetes_rpm_version`) \"-\" 0  }}",
         "kubernetes_source_type": "{{user `kubernetes_source_type`}}",
-        "kubernetes_version": "{{user `kubernetes_semver` | replace \"v\" \"\" 1}}"
+        "kubernetes_version": "{{user `kubernetes_semver` | replace \"v\" \"\" 1}}",
+        "install_kubernetes": "{{user `install_kubernetes`}}"
       },
       "version": "{{user `goss_version`}}"
     }
@@ -141,6 +142,7 @@
     "python_path": "",
     "qemu_binary": "qemu-system-x86_64",
     "ssh_password": "builder",
+    "ssh_timeout": "2h",
     "ssh_username": "builder"
   }
 }

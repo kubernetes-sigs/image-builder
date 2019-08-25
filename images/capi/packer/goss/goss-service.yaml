@@ -7,7 +7,7 @@ service:
     enabled: false
     running: false
   kubelet:
-    enabled: true
+    enabled: {{ .Vars.install_kubernetes }}
     running: false
   conntrackd:
     enabled: false

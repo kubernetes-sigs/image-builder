@@ -24,6 +24,7 @@
         name: containerd
     - include_role:
         name: kubernetes
+      when: install_kubernetes | bool
     - include_role:
         name: load_additional_components
       when: load_additional_components | bool
