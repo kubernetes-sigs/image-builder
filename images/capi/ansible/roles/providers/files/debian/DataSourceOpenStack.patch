@@ -1,0 +1,11 @@
+125,127c125,130
+<         oracle_considered = 'Oracle' in self.sys_cfg.get('datasource_list')
+<         if not detect_openstack(accept_oracle=not oracle_considered):
+<             return False
+---
+>         # TODO(sbueringer) Removed because it doesn't work
+>         # Because OpenStack is not detected, the OpenStack datasource
+>         # returns false instead of the metadata from the metadata service
+>         #oracle_considered = 'Oracle' in self.sys_cfg.get('datasource_list')
+>         #if not detect_openstack(accept_oracle=not oracle_considered):
+>         #  return False

@@ -54,6 +54,8 @@ common_debs:
 - libnetfilter-acct1
 - libnetfilter-cttimeout1
 - libnetfilter-log1
+- openssh-client
+- openssh-server
 - python3-distutils
 - python3-netifaces
 - python3-pip

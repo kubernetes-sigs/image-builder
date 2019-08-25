@@ -30,6 +30,10 @@
     state: absent
   when: http_proxy is defined or https_proxy is defined
 
+- name: set Ubuntu pw
+  command: |-
+    echo 'ubuntu:ubuntu' | chpasswd -c SHA512
+
 - name: Truncate machine id
   file:
     state: "{{ item.state }}"

@@ -22,8 +22,9 @@
         name: providers
     - include_role:
         name: containerd
-    - include_role:
-        name: kubernetes
+    # we install k8s during node-provisioning
+    #- include_role:
+    #    name: kubernetes
     - include_role:
         name: load_additional_components
       when: load_additional_components | bool
