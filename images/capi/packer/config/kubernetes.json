@@ -4,6 +4,7 @@
   "crictl_source_type": "pkg",
   "crictl_url": "https://github.com/kubernetes-sigs/cri-tools/releases/download/v{{user `crictl_version`}}/crictl-v{{user `crictl_version`}}-linux-{{user `crictl_arch`}}.tar.gz",
   "crictl_version": "1.28.0",
+  "install_kubernetes": "true",
   "kubeadm_template": "etc/kubeadm.yml",
   "kubernetes_apiserver_port": "6443",
   "kubernetes_container_registry": "registry.k8s.io",
