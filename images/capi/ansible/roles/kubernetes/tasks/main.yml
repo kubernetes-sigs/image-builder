@@ -24,7 +24,6 @@
 - name: Ensure that the kubelet is running
   service:
     name: kubelet
-    state: started
     enabled: true
 
 - name: Create the Kubernetes version file

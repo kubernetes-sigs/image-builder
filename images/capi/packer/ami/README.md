@@ -133,7 +133,7 @@ Note: If making the images public (the default), you must use one of the [Public
 To build the Ubuntu, CentOS, and Amazon Linux 2 AMIs:
 
 ```sh
-packer build -var-file base-images-us-east-1.json packer.json
+packer build -var-file ami-default.json packer.json
 ```
 
 The output of this command is a list of created AMIs. To format them you can
@@ -143,7 +143,6 @@ copy the output and pipe it through this to get a desired table:
 echo 'us-fake-1: ami-123
 us-fake-2: ami-234' | column -t | sed 's/^/| /g' | sed 's/: //g' | sed 's/ami/| ami/g' | sed 's/$/ |/g'
 ```
-
 
 By default images are copied to all available AWS regions. The list of all
 available regions can be obtained running:

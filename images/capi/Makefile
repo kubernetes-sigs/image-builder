@@ -19,7 +19,7 @@ all: build
 
 # A list of the supported distribution/version combinations. Each member
 # of BUILD_NAMES must have a corresponding file "config/BUILD_NAME.json".
-BUILD_NAMES ?= ova-centos-7 ova-ubuntu-1804 ami-base-images-us-east-1
+BUILD_NAMES ?= ova-centos-7 ova-ubuntu-1804 ami-default
 
 # The version of Kubernetes to install.
 KUBE_JSON ?= packer/config/kubernetes.json packer/config/cni.json packer/config/containerd.json

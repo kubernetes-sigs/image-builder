@@ -1,6 +1,6 @@
 {
-  "kubernetes_semver": "v1.13.6",
-  "kubernetes_version": "1.13.6-00",
+  "kubernetes_semver": "v1.15.3",
+  "kubernetes_version": "1.15.3-00",
   "kubernetes_source": "pkg",
   "kubernetes_rpm_repo": "https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64",
   "kubernetes_rpm_gpg_key": "\"https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg\"",
