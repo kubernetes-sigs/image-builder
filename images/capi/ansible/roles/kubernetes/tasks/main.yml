@@ -38,3 +38,8 @@
 
 - name: Kubeadm pull images
   shell: 'kubeadm config images pull --config /etc/kubeadm.yml'
+
+- name: delete kubeadm config
+  file:
+    path: /etc/kubeadm.yml
+    state: absent
