@@ -13,13 +13,13 @@
 # limitations under the License.
 ---
 - import_tasks: debian.yml
-  when: kubernetes_source == "pkg" and ansible_os_family == "Debian"
+  when: kubernetes_source_type == "pkg" and ansible_os_family == "Debian"
 
 - import_tasks: redhat.yml
-  when: kubernetes_source == "pkg" and ansible_os_family == "RedHat"
+  when: kubernetes_source_type == "pkg" and ansible_os_family == "RedHat"
 
 - import_tasks: url.yml
-  when: kubernetes_source != "pkg" and kubernetes_cni_source != "pkg"
+  when: kubernetes_source_type != "pkg" and kubernetes_cni_source_type != "pkg"
 
 - name: Ensure that the kubelet is running
   service:
@@ -31,5 +31,15 @@
     dest: /etc/kubernetes-version
     src: etc/kubernetes-version
 
+- name: Create kubeadm config file
+  template:
+    dest: /etc/kubeadm.yml
+    src: etc/kubeadm.yml
+
 - name: Kubeadm pull images
-  shell: 'kubeadm config images pull --cri-socket="/var/run/containerd/containerd.sock" --kubernetes-version="{{ kubernetes_semver }}"'
+  shell: 'kubeadm config images pull --config /etc/kubeadm.yml'
+
+- name: delete kubeadm config
+  file:
+    path: /etc/kubeadm.yml
+    state: absent

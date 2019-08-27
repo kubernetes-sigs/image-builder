@@ -28,7 +28,7 @@
     name: "{{ packages }}"
   vars:
     packages:
-      - "kubelet={{ kubernetes_version | kube_platform_version('debian') }}"
-      - "kubeadm={{ kubernetes_version | kube_platform_version('debian') }}"
-      - "kubectl={{ kubernetes_version | kube_platform_version('debian') }}"
-      - "kubernetes-cni={{kubernetes_cni_version | kube_platform_version('debian') }}"
+      - "kubelet={{ kubernetes_deb_version }}"
+      - "kubeadm={{ kubernetes_deb_version }}"
+      - "kubectl={{ kubernetes_deb_version }}"
+      - "kubernetes-cni={{kubernetes_cni_deb_version }}"

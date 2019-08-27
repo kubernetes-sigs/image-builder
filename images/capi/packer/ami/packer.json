@@ -7,17 +7,22 @@
     "encrypted": "false",
     "containerd_version": null,
     "containerd_sha256": null,
-    "kubernetes_cni_version": null,
+    "kubernetes_cni_rpm_version": null,
+    "kubernetes_cni_deb_version": null,
     "kubernetes_cni_semver": null,
-    "kubernetes_cni_source": null,
+    "kubernetes_cni_source_type": null,
+    "kubernetes_cni_http_source": null,
     "kubernetes_semver": null,
-    "kubernetes_source": null,
-    "kubernetes_version": null,
+    "kubernetes_source_type": null,
+    "kubernetes_http_source": null,
+    "kubernetes_rpm_version": null,
+    "kubernetes_deb_version": null,
     "kubernetes_rpm_repo": null,
     "kubernetes_rpm_gpg_key": null,
     "kubernetes_deb_repo": null,
     "kubernetes_deb_gpg_key": null,
     "kubernetes_rpm_gpg_check": null,
+    "kubernetes_container_registry": null,
     "existing_ansible_ssh_args": "{{env `ANSIBLE_SSH_ARGS`}}",
     "ami_groups": "all",
     "ami_users": "",
@@ -40,7 +45,7 @@
         "owners": ["099720109477"],
         "most_recent": true
       },
-      "ami_name": "capa-ami-ubuntu-18.04-{{user `kubernetes_version`}}-{{user `build_timestamp`}}",
+      "ami_name": "capa-ami-ubuntu-18.04-{{user `kubernetes_semver`}}-{{user `build_timestamp`}}",
       "ami_groups": "{{user `ami_groups`}}",
       "ami_users": "{{user `ami_users`}}",
       "snapshot_groups": "{{user `snapshot_groups`}}",
@@ -58,8 +63,8 @@
         "distribution": "Ubuntu",
         "distribution_release": "bionic",
         "distribution_version": "18.04",
-        "kubernetes_version": "{{user `kubernetes_version`}}",
-        "kubernetes_cni_version": "{{user `kubernetes_cni_version`}}"
+        "kubernetes_version": "{{user `kubernetes_semver`}}",
+        "kubernetes_cni_version": "{{user `kubernetes_cni_semver`}}"
       }
     },
     {
@@ -77,7 +82,7 @@
         "owners": ["410186602215"],
         "most_recent": true
       },
-      "ami_name": "capa-ami-centos-7-{{user `kubernetes_version`}}-{{user `build_timestamp`}}",
+      "ami_name": "capa-ami-centos-7-{{user `kubernetes_semver`}}-{{user `build_timestamp`}}",
       "ami_groups": "{{user `ami_groups`}}",
       "ami_users": "{{user `ami_users`}}",
       "snapshot_groups": "{{user `snapshot_groups`}}",
@@ -96,8 +101,8 @@
         "distribution": "CentOS",
         "distribution_release": "Core",
         "distribution_version": "7",
-        "kubernetes_version": "{{user `kubernetes_version`}}",
-        "kubernetes_cni_version": "{{user `kubernetes_cni_version`}}"
+        "kubernetes_version": "{{user `kubernetes_semver`}}",
+        "kubernetes_cni_version": "{{user `kubernetes_cni_semver`}}"
       }
     },
     {
@@ -115,7 +120,7 @@
         "owners": ["amazon"],
         "most_recent": true
       },
-      "ami_name": "capa-ami-amazon-2-{{user `kubernetes_version`}}-{{user `build_timestamp`}}",
+      "ami_name": "capa-ami-amazon-2-{{user `kubernetes_semver`}}-{{user `build_timestamp`}}",
       "ami_groups": "{{user `ami_groups`}}",
       "ami_users": "{{user `ami_users`}}",
       "snapshot_groups": "{{user `snapshot_groups`}}",
@@ -133,8 +138,8 @@
         "distribution": "Amazon Linux",
         "distribution_release": "Amazon Linux 2",
         "distribution_version": "2",
-        "kubernetes_version": "{{user `kubernetes_version`}}",
-        "kubernetes_cni_version": "{{user `kubernetes_cni_version`}}"
+        "kubernetes_version": "{{user `kubernetes_semver`}}",
+        "kubernetes_cni_version": "{{user `kubernetes_cni_semver`}}"
       }
     }
   ],
@@ -157,7 +162,7 @@
       ],
       "extra_arguments": [
         "--extra-vars",
-        "containerd_version={{user `containerd_version`}} containerd_sha256={{user `containerd_sha256`}} kubernetes_rpm_repo={{user `kubernetes_rpm_repo`}} kubernetes_rpm_gpg_key={{user `kubernetes_rpm_gpg_key`}} kubernetes_rpm_gpg_check={{user `kubernetes_rpm_gpg_check`}} kubernetes_deb_repo={{user `kubernetes_deb_repo`}} kubernetes_deb_gpg_key={{user `kubernetes_deb_gpg_key`}} kubernetes_cni_version={{user `kubernetes_cni_version`}} kubernetes_cni_semver={{user `kubernetes_cni_semver`}} kubernetes_cni_source={{user `kubernetes_cni_source`}} kubernetes_semver={{user `kubernetes_semver`}} kubernetes_source={{user `kubernetes_source`}} kubernetes_version={{user `kubernetes_version`}}"
+        "containerd_version={{user `containerd_version`}} containerd_sha256={{user `containerd_sha256`}} kubernetes_cni_http_source={{user `kubernetes_cni_http_source`}} kubernetes_http_source={{user `kubernetes_http_source`}} kubernetes_container_registry={{user `kubernetes_container_registry`}} kubernetes_rpm_repo={{user `kubernetes_rpm_repo`}} kubernetes_rpm_gpg_key={{user `kubernetes_rpm_gpg_key`}} kubernetes_rpm_gpg_check={{user `kubernetes_rpm_gpg_check`}} kubernetes_deb_repo={{user `kubernetes_deb_repo`}} kubernetes_deb_gpg_key={{user `kubernetes_deb_gpg_key`}} kubernetes_cni_deb_version={{user `kubernetes_cni_deb_version`}} kubernetes_cni_rpm_version={{user `kubernetes_cni_rpm_version`}} kubernetes_cni_semver={{user `kubernetes_cni_semver`}} kubernetes_cni_source_type={{user `kubernetes_cni_source_type`}} kubernetes_semver={{user `kubernetes_semver`}} kubernetes_source_type={{user `kubernetes_source_type`}} kubernetes_deb_version={{user `kubernetes_deb_version`}} kubernetes_rpm_version={{user `kubernetes_rpm_version`}}"
       ]
     },
     {

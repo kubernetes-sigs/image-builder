@@ -22,7 +22,14 @@ The `packer/config` directory includes several JSON files that define the config
 | `packer/config/kubernetes.json` | The version of Kubernetes to install |
 | `packer/config/cni.json` | The version of Kubernetes CNI to install |
 | `packer/config/containerd.json` | The version of containerd to install |
-  
+
+## Kubernetes versions
+| Tested Kubernetes Versions |
+|---------|
+| `1.13.x` |
+| `1.14.x` |
+| `1.15.x` |
+
 ## Output
 
 The OVA images are built and located in `output/BUILD_NAME+kube-KUBERNETES_VERSION`
