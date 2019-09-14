@@ -1,4 +1,4 @@
-module k8s.io/kube-deploy/imagebuilder
+module sigs.k8s.io/image-builder/images/kube-deploy/imagebuilder
 
 go 1.12
 

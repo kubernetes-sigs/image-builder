@@ -11,7 +11,6 @@ github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b/go.mod h1:SBH7ygxi8pfU
 github.com/golang/protobuf v0.0.0-20160629211053-3852dcfda249/go.mod h1:6lQm79b+lXiMfvg/cZm0SGofjICqVBUtrP5yJMmIC1U=
 github.com/jmespath/go-jmespath v0.0.0-20160202185014-0b12d6b521d8 h1:12VvqtR6Aowv3l/EQUlocDHW2Cp4G9WJVH7uyH8QFJE=
 github.com/jmespath/go-jmespath v0.0.0-20160202185014-0b12d6b521d8/go.mod h1:Nht3zPeWKUH0NzdCt2Blrr5ys8VGpn0CEB0cQHVjt7k=
-golang.org/x/crypto v0.0.0-20160704103416-0c565bf13221/go.mod h1:6SG95UA2DQfeDnfUPMdvaQW0Q7yPrPDi9nlGo2tz2b4=
 golang.org/x/crypto v0.0.0-20190222235706-ffb98f73852f h1:qWFY9ZxP3tfI37wYIs/MnIAqK0vlXp1xnYEa5HxFSSY=
 golang.org/x/crypto v0.0.0-20190222235706-ffb98f73852f/go.mod h1:6SG95UA2DQfeDnfUPMdvaQW0Q7yPrPDi9nlGo2tz2b4=
 golang.org/x/net v0.0.0-20160630220910-b400c2eff1ba h1:uDRLy7XWpErbelDDzBrVF4l3MkgIwXtu5nl44tiWpE0=

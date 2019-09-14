@@ -62,14 +62,14 @@ aws ec2 authorize-security-group-ingress  --group-id ${SG_ID} --protocol tcp --p
 Then:
 
 ```
-go get k8s.io/kube-deploy/imagebuilder
+go get sigs.k8s.io/image-builder/images/kube-deploy/imagebuilder
 ```
 
 Build code: `make`
 
 Run the image builder:
 ```
-cd ${GOPATH}/src/k8s.io/kube-deploy/imagebuilder`
+cd ${GOPATH}/src/sigs.k8s.io/image-builder/images/kube-deploy/imagebuilder`
 make
 ${GOPATH}/bin/imagebuilder --config aws.yaml --v=8
 ```
@@ -88,12 +88,12 @@ retrieve the image.
 Then:
 
 ```
-go get k8s.io/kube-deploy/imagebuilder
+go get sigs.k8s.io/image-builder/images/kube-deploy/imagebuilder
 ```
 
 Run the image builder:
 ```
-cd ${GOPATH}/src/k8s.io/kube-deploy/imagebuilder`
+cd ${GOPATH}/src/sigs.k8s.io/image-builder/images/kube-deploy/imagebuilder`
 make
 ${GOPATH}/bin/imagebuilder --config gce.yaml --v=8 --publish=false
 ```
