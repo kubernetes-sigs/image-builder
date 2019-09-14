@@ -21,6 +21,7 @@ import (
 	"time"
 
 	"golang.org/x/crypto/ssh"
+	compute "google.golang.org/api/compute/v1"
 	"google.golang.org/api/googleapi"
 	"k8s.io/klog"
 	"sigs.k8s.io/image-builder/images/kube-deploy/imagebuilder/pkg/imagebuilder/executor"
