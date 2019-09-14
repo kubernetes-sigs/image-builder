@@ -20,10 +20,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/golang/glog"
 	"golang.org/x/crypto/ssh"
-	"google.golang.org/api/compute/v1"
 	"google.golang.org/api/googleapi"
+	"k8s.io/klog"
 	"sigs.k8s.io/image-builder/images/kube-deploy/imagebuilder/pkg/imagebuilder/executor"
 )
 
@@ -40,7 +39,7 @@ type GCEInstance struct {
 
 // Shutdown terminates the running instance
 func (i *GCEInstance) Shutdown() error {
-	glog.Infof("Terminating instance %q", i.name)
+	klog.Infof("Terminating instance %q", i.name)
 	return i.cloud.deleteInstance(i.name)
 }
 
@@ -55,7 +54,7 @@ func (i *GCEInstance) DialSSH(config *ssh.ClientConfig) (executor.Executor, erro
 		// TODO: Timeout, check error code
 		sshClient, err := ssh.Dial("tcp", publicIP+":22", config)
 		if err != nil {
-			glog.Warningf("error connecting to SSH on server %q: %v", publicIP, err)
+			klog.Warningf("error connecting to SSH on server %q: %v", publicIP, err)
 			time.Sleep(5 * time.Second)
 			continue
 			//	return nil, fmt.Errorf("error connecting to SSH on server %q", publicIP)
@@ -77,12 +76,12 @@ func (i *GCEInstance) WaitPublicIP() (string, error) {
 		for _, ni := range instance.NetworkInterfaces {
 			for _, ac := range ni.AccessConfigs {
 				if ac.NatIP != "" {
-					glog.Infof("Instance public IP is %q", ac.NatIP)
+					klog.Infof("Instance public IP is %q", ac.NatIP)
 					return ac.NatIP, nil
 				}
 			}
 		}
-		glog.V(2).Infof("Sleeping before requerying instance for public IP: %q", i.name)
+		klog.V(2).Infof("Sleeping before requerying instance for public IP: %q", i.name)
 		time.Sleep(5 * time.Second)
 	}
 }
@@ -118,7 +117,7 @@ func IsGCENotFound(err error) bool {
 }
 
 func (c *GCECloud) describeInstance(name string) (*compute.Instance, error) {
-	glog.V(2).Infof("GCE Instances List Name=%q", name)
+	klog.V(2).Infof("GCE Instances List Name=%q", name)
 	instances, err := c.computeClient.Instances.List(c.config.Project, c.config.Zone).Filter("name eq " + name).Do()
 	if err != nil {
 		return nil, fmt.Errorf("error making GCE Instances List call: %v", err)
@@ -135,7 +134,7 @@ func (c *GCECloud) describeInstance(name string) (*compute.Instance, error) {
 
 // deleteInstance terminates the specified instance
 func (c *GCECloud) deleteInstance(name string) error {
-	glog.V(2).Infof("GCE Delete Instances name=%q", name)
+	klog.V(2).Infof("GCE Delete Instances name=%q", name)
 	_, err := c.computeClient.Instances.Delete(c.config.Project, c.config.Zone, name).Do()
 	if err != nil {
 		return fmt.Errorf("error terminating instance %q: %v", name, err)
@@ -153,7 +152,7 @@ func (c *GCECloud) GetInstance() (Instance, error) {
 	}
 
 	if instance != nil {
-		glog.Infof("Found existing instance: %q", instance.Name)
+		klog.Infof("Found existing instance: %q", instance.Name)
 		return &GCEInstance{
 			cloud:    c,
 			instance: instance,
@@ -170,7 +169,7 @@ func (c *GCECloud) CreateInstance() (Instance, error) {
 	zone := c.config.Zone
 
 	machineType := "zones/" + zone + "/machineTypes/" + c.config.MachineType
-	glog.Infof("creating instance with machinetype %s", machineType)
+	klog.Infof("creating instance with machinetype %s", machineType)
 
 	var disks []*compute.AttachedDisk
 	disks = append(disks, &compute.AttachedDisk{
@@ -262,7 +261,7 @@ func findGCEImage(computeClient *compute.Service, project string, imageName stri
 		return nil, fmt.Errorf("error listing images: %v", err)
 	}
 
-	glog.V(2).Infof("GCE Images List Filter:Name=%q", imageName)
+	klog.V(2).Infof("GCE Images List Filter:Name=%q", imageName)
 
 	if len(images.Items) == 0 {
 		return nil, nil

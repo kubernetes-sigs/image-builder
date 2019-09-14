@@ -6,7 +6,7 @@ import (
 	"os"
 	"os/exec"
 
-	"github.com/golang/glog"
+	"k8s.io/klog"
 )
 
 type LocalhostExecutor struct {
@@ -32,7 +32,7 @@ func (s *LocalhostExecutor) Put(dest string, length int, content io.Reader, mode
 		if f != nil {
 			err := f.Close()
 			if err != nil {
-				glog.Warningf("error closing file %q: %v", dest, err)
+				klog.Warningf("error closing file %q: %v", dest, err)
 			}
 		}
 	}()

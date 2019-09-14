@@ -31,8 +31,8 @@ import (
 	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ec2"
-	"github.com/golang/glog"
 	"golang.org/x/crypto/ssh"
+	"k8s.io/klog"
 	"sigs.k8s.io/image-builder/images/kube-deploy/imagebuilder/pkg/imagebuilder/executor"
 )
 
@@ -49,7 +49,7 @@ var _ Instance = &AWSInstance{}
 
 // Shutdown terminates the running instance
 func (i *AWSInstance) Shutdown() error {
-	glog.Infof("Terminating instance %q", i.instanceID)
+	klog.Infof("Terminating instance %q", i.instanceID)
 	return i.cloud.TerminateInstance(i.instanceID)
 }
 
@@ -64,7 +64,7 @@ func (i *AWSInstance) DialSSH(config *ssh.ClientConfig) (executor.Executor, erro
 		// TODO: Timeout, check error code
 		sshClient, err := ssh.Dial("tcp", publicIP+":22", config)
 		if err != nil {
-			glog.Warningf("error connecting to SSH on server %q: %v", publicIP, err)
+			klog.Warningf("error connecting to SSH on server %q: %v", publicIP, err)
 			time.Sleep(5 * time.Second)
 			continue
 			//	return nil, fmt.Errorf("error connecting to SSH on server %q", publicIP)
@@ -84,10 +84,10 @@ func (i *AWSInstance) WaitPublicIP() (string, error) {
 		}
 		publicIP := aws.StringValue(instance.PublicIpAddress)
 		if publicIP != "" {
-			glog.Infof("Instance public IP is %q", publicIP)
+			klog.Infof("Instance public IP is %q", publicIP)
 			return publicIP, nil
 		}
-		glog.V(2).Infof("Sleeping before requerying instance for public IP: %q", i.instanceID)
+		klog.V(2).Infof("Sleeping before requerying instance for public IP: %q", i.instanceID)
 		time.Sleep(5 * time.Second)
 	}
 }
@@ -98,7 +98,7 @@ type LocalhostInstance struct {
 
 // Shutdown terminates the running instance
 func (i *LocalhostInstance) Shutdown() error {
-	glog.Infof("Skipping termination of localhost")
+	klog.Infof("Skipping termination of localhost")
 	return nil
 }
 
@@ -162,7 +162,7 @@ func (a *AWSCloud) describeInstance(instanceID string) (*ec2.Instance, error) {
 	request := &ec2.DescribeInstancesInput{}
 	request.InstanceIds = []*string{&instanceID}
 
-	glog.V(2).Infof("AWS DescribeInstances InstanceId=%q", instanceID)
+	klog.V(2).Infof("AWS DescribeInstances InstanceId=%q", instanceID)
 	response, err := a.ec2.DescribeInstances(request)
 	if err != nil {
 		return nil, fmt.Errorf("error making AWS DescribeInstances call: %v", err)
@@ -183,14 +183,14 @@ func (a *AWSCloud) describeInstance(instanceID string) (*ec2.Instance, error) {
 // TerminateInstance terminates the specified instance
 func (a *AWSCloud) TerminateInstance(instanceID string) error {
 	if a.useLocalhost {
-		glog.Infof("Skipping termination as locahost")
+		klog.Infof("Skipping termination as locahost")
 		return nil
 	}
 
 	request := &ec2.TerminateInstancesInput{}
 	request.InstanceIds = []*string{&instanceID}
 
-	glog.V(2).Infof("AWS TerminateInstances instanceID=%q", instanceID)
+	klog.V(2).Infof("AWS TerminateInstances instanceID=%q", instanceID)
 	_, err := a.ec2.TerminateInstances(request)
 	return err
 }
@@ -209,7 +209,7 @@ func (a *AWSCloud) GetInstance() (Instance, error) {
 		},
 	}
 
-	glog.V(2).Infof("AWS DescribeInstances Filter:tag-key=%s", tagRoleKey)
+	klog.V(2).Infof("AWS DescribeInstances Filter:tag-key=%s", tagRoleKey)
 	response, err := a.ec2.DescribeInstances(request)
 	if err != nil {
 		return nil, fmt.Errorf("error making AWS DescribeInstances call: %v", err)
@@ -223,23 +223,23 @@ func (a *AWSCloud) GetInstance() (Instance, error) {
 			}
 
 			if instance.State == nil {
-				glog.Warningf("Ignoring instance with nil state: %q", instanceID)
+				klog.Warningf("Ignoring instance with nil state: %q", instanceID)
 			}
 
 			state := aws.StringValue(instance.State.Name)
 			switch state {
 			case ec2.InstanceStateNameShuttingDown, ec2.InstanceStateNameTerminated, ec2.InstanceStateNameStopping, ec2.InstanceStateNameStopped:
-				glog.Infof("Ignoring instance %q in state %q", instanceID, state)
+				klog.Infof("Ignoring instance %q in state %q", instanceID, state)
 				continue
 
 			case ec2.InstanceStateNamePending, ec2.InstanceStateNameRunning:
-				glog.V(2).Infof("Instance %q is in state %q", instanceID, state)
+				klog.V(2).Infof("Instance %q is in state %q", instanceID, state)
 
 			default:
-				glog.Warningf("Found instance %q in unknown state %q", instanceID, state)
+				klog.Warningf("Found instance %q in unknown state %q", instanceID, state)
 			}
 
-			glog.Infof("Found existing instance: %q", instanceID)
+			klog.Infof("Found existing instance: %q", instanceID)
 			return &AWSInstance{
 				cloud:      a,
 				instance:   instance,
@@ -261,7 +261,7 @@ func (c *AWSCloud) findSubnet() (*ec2.Subnet, error) {
 		},
 	}
 
-	glog.V(2).Infof("AWS DescribeSubnets Filter:tag-key=%s", tagRoleKey)
+	klog.V(2).Infof("AWS DescribeSubnets Filter:tag-key=%s", tagRoleKey)
 	response, err := c.ec2.DescribeSubnets(request)
 	if err != nil {
 		return nil, fmt.Errorf("error making AWS DescribeSubnets call: %v", err)
@@ -288,7 +288,7 @@ func (c *AWSCloud) findSecurityGroup(vpcID string) (*ec2.SecurityGroup, error) {
 		},
 	}
 
-	glog.V(2).Infof("AWS DescribeSecurityGroups Filter:tag-key=%s", tagRoleKey)
+	klog.V(2).Infof("AWS DescribeSecurityGroups Filter:tag-key=%s", tagRoleKey)
 	response, err := c.ec2.DescribeSecurityGroups(request)
 	if err != nil {
 		return nil, fmt.Errorf("error making AWS DescribeSecurityGroups call: %v", err)
@@ -306,7 +306,7 @@ func (c *AWSCloud) describeSubnet(subnetID string) (*ec2.Subnet, error) {
 	request := &ec2.DescribeSubnetsInput{}
 	request.SubnetIds = []*string{&subnetID}
 
-	glog.V(2).Infof("AWS DescribeSubnetsInput ID:%q", subnetID)
+	klog.V(2).Infof("AWS DescribeSubnetsInput ID:%q", subnetID)
 	response, err := c.ec2.DescribeSubnets(request)
 	if err != nil {
 		return nil, fmt.Errorf("error making AWS DescribeSubnets call: %v", err)
@@ -325,7 +325,7 @@ func (a *AWSCloud) TagResource(resourceId string, tags ...*ec2.Tag) error {
 	request.Resources = aws.StringSlice([]string{resourceId})
 	request.Tags = tags
 
-	glog.V(2).Infof("AWS CreateTags Resource=%q", resourceId)
+	klog.V(2).Infof("AWS CreateTags Resource=%q", resourceId)
 	_, err := a.ec2.CreateTags(request)
 	if err != nil {
 		return fmt.Errorf("error making AWS CreateTag call: %v", err)
@@ -383,7 +383,7 @@ func (c *AWSCloud) ensureSSHKey() (string, error) {
 		return *key.KeyName, nil
 	}
 
-	glog.V(2).Infof("Creating AWS KeyPair with Name:%q", name)
+	klog.V(2).Infof("Creating AWS KeyPair with Name:%q", name)
 
 	request := &ec2.ImportKeyPairInput{}
 	request.KeyName = &name
@@ -475,7 +475,7 @@ func (c *AWSCloud) CreateInstance() (Instance, error) {
 	request.MaxCount = aws.Int64(1)
 	request.MinCount = aws.Int64(1)
 
-	glog.V(2).Infof("AWS RunInstances InstanceType=%q ImageId=%q KeyName=%q", c.config.InstanceType, c.config.ImageID, sshKeyName)
+	klog.V(2).Infof("AWS RunInstances InstanceType=%q ImageId=%q KeyName=%q", c.config.InstanceType, c.config.ImageID, sshKeyName)
 	response, err := c.ec2.RunInstances(request)
 	if err != nil {
 		return nil, fmt.Errorf("error making AWS RunInstances call: %v", err)
@@ -490,10 +490,10 @@ func (c *AWSCloud) CreateInstance() (Instance, error) {
 			Key: aws.String(tagRoleKey), Value: aws.String("'"),
 		})
 		if err != nil {
-			glog.Warningf("Tagging instance %q failed; will terminate to prevent leaking", instanceID)
+			klog.Warningf("Tagging instance %q failed; will terminate to prevent leaking", instanceID)
 			e2 := c.TerminateInstance(instanceID)
 			if e2 != nil {
-				glog.Warningf("error terminating instance %q, will leak instance", instanceID)
+				klog.Warningf("error terminating instance %q, will leak instance", instanceID)
 			}
 			return nil, err
 		}
@@ -551,7 +551,7 @@ func findAWSImage(client *ec2.EC2, imageName string) (*ec2.Image, error) {
 	}
 	request.Owners = aws.StringSlice([]string{"self"})
 
-	glog.V(2).Infof("AWS DescribeImages Filter:Name=%q, Owner=self", imageName)
+	klog.V(2).Infof("AWS DescribeImages Filter:Name=%q, Owner=self", imageName)
 	response, err := client.DescribeImages(request)
 	if err != nil {
 		return nil, fmt.Errorf("error making AWS DescribeImages call: %v", err)
@@ -606,7 +606,7 @@ func (i *AWSImage) AddTags(tags map[string]string) error {
 		})
 	}
 
-	glog.V(2).Infof("AWS CreateTags on image %v", i.imageID)
+	klog.V(2).Infof("AWS CreateTags on image %v", i.imageID)
 	_, err := i.ec2.CreateTags(request)
 	if err != nil {
 		return fmt.Errorf("error tagging image %q: %v", i.imageID, err)
@@ -623,7 +623,7 @@ func (i *AWSImage) waitStatusAvailable() error {
 		request := &ec2.DescribeImagesInput{}
 		request.ImageIds = aws.StringSlice([]string{imageID})
 
-		glog.V(2).Infof("AWS DescribeImages ImageId=%q", imageID)
+		klog.V(2).Infof("AWS DescribeImages ImageId=%q", imageID)
 		response, err := i.ec2.DescribeImages(request)
 		if err != nil {
 			return fmt.Errorf("error making AWS DescribeImages call: %v", err)
@@ -640,11 +640,11 @@ func (i *AWSImage) waitStatusAvailable() error {
 		image := response.Images[0]
 
 		state := aws.StringValue(image.State)
-		glog.V(2).Infof("image state %q", state)
+		klog.V(2).Infof("image state %q", state)
 		if state == "available" {
 			return nil
 		}
-		glog.Infof("Image %q not yet available (%s); waiting", imageID, state)
+		klog.Infof("Image %q not yet available (%s); waiting", imageID, state)
 		time.Sleep(10 * time.Second)
 	}
 }
@@ -655,7 +655,7 @@ func waitSnapshotCompleted(client *ec2.EC2, snapshotID string) error {
 		request := &ec2.DescribeSnapshotsInput{}
 		request.SnapshotIds = aws.StringSlice([]string{snapshotID})
 
-		glog.V(2).Infof("AWS DescribeSnapshots SnapshotId=%q", snapshotID)
+		klog.V(2).Infof("AWS DescribeSnapshots SnapshotId=%q", snapshotID)
 		response, err := client.DescribeSnapshots(request)
 		if err != nil {
 			return fmt.Errorf("error making AWS DescribeSnapshots call: %v", err)
@@ -672,11 +672,11 @@ func waitSnapshotCompleted(client *ec2.EC2, snapshotID string) error {
 		snapshot := response.Snapshots[0]
 
 		state := aws.StringValue(snapshot.State)
-		glog.V(2).Infof("snapshot state %q", state)
+		klog.V(2).Infof("snapshot state %q", state)
 		if state == "completed" {
 			return nil
 		}
-		glog.Infof("Snapshot %q not yet completed (%s); waiting", snapshotID, state)
+		klog.Infof("Snapshot %q not yet completed (%s); waiting", snapshotID, state)
 		time.Sleep(10 * time.Second)
 	}
 }
@@ -695,7 +695,7 @@ func (i *AWSImage) image() (*ec2.Image, error) {
 	request := &ec2.DescribeImagesInput{}
 	request.ImageIds = aws.StringSlice([]string{i.imageID})
 
-	glog.V(2).Infof("AWS DescribeImages id=%q", i.imageID)
+	klog.V(2).Infof("AWS DescribeImages id=%q", i.imageID)
 	response, err := i.ec2.DescribeImages(request)
 	if err != nil {
 		return nil, fmt.Errorf("error making AWS DescribeImages call: %v", err)
@@ -724,20 +724,20 @@ func (i *AWSImage) imageSnapshotId() (string, error) {
 		return "", fmt.Errorf("image not set")
 	}
 	if image.BlockDeviceMappings == nil {
-		glog.Warningf("image did not have BlockDeviceMappings: %v", image)
+		klog.Warningf("image did not have BlockDeviceMappings: %v", image)
 		return "", nil
 	}
 	if len(image.BlockDeviceMappings) == 0 {
-		glog.Warningf("image did not have BlockDeviceMappings: %v", image)
+		klog.Warningf("image did not have BlockDeviceMappings: %v", image)
 		return "", nil
 	}
 	if image.BlockDeviceMappings[0].Ebs == nil {
-		glog.Warningf("image had nil BlockDeviceMappings[0].Ebs: %v", image)
+		klog.Warningf("image had nil BlockDeviceMappings[0].Ebs: %v", image)
 		return "", nil
 	}
 	snapshotID := aws.StringValue(image.BlockDeviceMappings[0].Ebs.SnapshotId)
 	if snapshotID == "" {
-		glog.Warningf("image did not have snapshot: %v", image)
+		klog.Warningf("image did not have snapshot: %v", image)
 	}
 	return snapshotID, nil
 }
@@ -762,7 +762,7 @@ func (i *AWSImage) ensurePublic() error {
 		},
 	}
 
-	glog.V(2).Infof("AWS ModifyImageAttribute Image=%q, LaunchPermission All", image)
+	klog.V(2).Infof("AWS ModifyImageAttribute Image=%q, LaunchPermission All", image)
 	_, err = i.ec2.ModifyImageAttribute(request)
 	if err != nil {
 		return fmt.Errorf("error making image public (%q in region %q): %v", i.imageID, i.region, err)
@@ -785,7 +785,7 @@ func (i *AWSImage) ensurePublic() error {
 		SnapshotId:    aws.String(snapshotID),
 	}
 
-	glog.V(2).Infof("AWS ModifySnapshotAttribute Snapshot=%q, CreateVolumePermission All", snapshotID)
+	klog.V(2).Infof("AWS ModifySnapshotAttribute Snapshot=%q, CreateVolumePermission All", snapshotID)
 	_, err = i.ec2.ModifySnapshotAttribute(request2)
 	if err != nil {
 		return fmt.Errorf("error making snapshot public (%q in region %q): %v", snapshotID, i.region, err)
@@ -798,7 +798,7 @@ func (i *AWSImage) ensurePublic() error {
 func (i *AWSImage) ReplicateImage(makePublic bool) (map[string]Image, error) {
 	var results sync.Map
 
-	glog.V(2).Infof("AWS DescribeRegions")
+	klog.V(2).Infof("AWS DescribeRegions")
 	request := &ec2.DescribeRegionsInput{}
 	response, err := i.ec2.DescribeRegions(request)
 	if err != nil {
@@ -904,7 +904,7 @@ func (i *AWSImage) copyImageToRegion(regionName string) (string, error) {
 				SourceRegion:      aws.String(i.region),
 				DestinationRegion: aws.String(regionName),
 			}
-			glog.V(2).Infof("AWS CopySnapshot SnapshotId=%q, Region=%q", sourceSnapshotID, regionName)
+			klog.V(2).Infof("AWS CopySnapshot SnapshotId=%q, Region=%q", sourceSnapshotID, regionName)
 			response, err := targetEC2.CopySnapshot(request)
 			if err != nil {
 				return "", fmt.Errorf("error copying snapshot to region %q: %v", regionName, err)
@@ -945,7 +945,7 @@ func (i *AWSImage) copyImageToRegion(regionName string) (string, error) {
 				return "", fmt.Errorf("unable to remap block device mappings for image %q", aws.StringValue(image.ImageId))
 			}
 
-			glog.V(2).Infof("AWS RegisterImage SnapshotId=%q, Region=%q", snapshotId, regionName)
+			klog.V(2).Infof("AWS RegisterImage SnapshotId=%q, Region=%q", snapshotId, regionName)
 			response, err := targetEC2.RegisterImage(request)
 			if err != nil {
 				return "", fmt.Errorf("error copying image to region %q: %v", regionName, err)

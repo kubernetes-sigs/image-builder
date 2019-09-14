@@ -8,7 +8,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/golang/glog"
+	"k8s.io/klog"
 )
 
 type Executor interface {
@@ -26,7 +26,7 @@ type runFunction func(cmd []string) ([]byte, error)
 func runCommand(cmd *CommandExecution, x Executor, runner runFunction) error {
 	// Warn if the caller is doing something dumb
 	if cmd.Sudo && cmd.Command[0] == "sudo" {
-		glog.Warningf("sudo used with command that includes sudo (%q)", cmd.Command)
+		klog.Warningf("sudo used with command that includes sudo (%q)", cmd.Command)
 	}
 
 	var script bytes.Buffer
@@ -73,15 +73,15 @@ func runCommand(cmd *CommandExecution, x Executor, runner runFunction) error {
 	}
 
 	// We "lie" about the command we're running when we're using a script
-	glog.Infof("Executing command: %q", cmd.Command)
+	klog.Infof("Executing command: %q", cmd.Command)
 	output, err := runner(cmdToRun)
 	if err != nil {
-		glog.Infof("Error from SSH command %q: %v", cmd.Command, err)
-		glog.Infof("Output was: %s", output)
+		klog.Infof("Error from SSH command %q: %v", cmd.Command, err)
+		klog.Infof("Output was: %s", output)
 		return fmt.Errorf("error executing SSH command %q: %v", cmd.Command, err)
 	}
 
-	glog.V(2).Infof("Output was: %s", output)
+	klog.V(2).Infof("Output was: %s", output)
 	return nil
 }
 

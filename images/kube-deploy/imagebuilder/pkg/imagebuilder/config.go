@@ -3,7 +3,7 @@ package imagebuilder
 import (
 	"strings"
 
-	"github.com/golang/glog"
+	"k8s.io/klog"
 )
 
 type Config struct {
@@ -67,7 +67,7 @@ func (c *AWSConfig) InitDefaults(region string) {
 	c.Region = region
 	switch c.Region {
 	case "cn-north-1":
-		glog.Infof("Detected cn-north-1 region")
+		klog.Infof("Detected cn-north-1 region")
 		// A slightly older image, but the newest one we have
 		c.ImageID = "ami-da69a1b7"
 
@@ -104,7 +104,7 @@ func (c *AWSConfig) InitDefaults(region string) {
 		c.ImageID = "ami-0a1fbca0e5b419fd1"
 
 	default:
-		glog.Warningf("Building in unknown region %q - will require specifying an image, may not work correctly")
+		klog.Warningf("Building in unknown region %q - will require specifying an image, may not work correctly")
 	}
 
 	// Not all regions support m3.medium
