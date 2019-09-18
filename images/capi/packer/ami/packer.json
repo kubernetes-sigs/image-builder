@@ -28,7 +28,9 @@
     "ami_users": "",
     "snapshot_groups": "all",
     "snapshot_users": "",
-    "ami_regions": "ap-south-1,eu-west-3,eu-west-2,eu-west-1,ap-northeast-2,ap-northeast-1,sa-east-1,ca-central-1,ap-southeast-1,ap-southeast-2,eu-central-1,us-east-1,us-east-2,us-west-1,us-west-2"
+    "ami_regions": "ap-south-1,eu-west-3,eu-west-2,eu-west-1,ap-northeast-2,ap-northeast-1,sa-east-1,ca-central-1,ap-southeast-1,ap-southeast-2,eu-central-1,us-east-1,us-east-2,us-west-1,us-west-2",
+    "vpc_id": "",
+    "subnet_id": ""
   },
   "builders": [{
       "name": "ubuntu-1804",
@@ -56,6 +58,8 @@
       "region": "{{ user `aws_region` }}",
       "secret_key": "{{user `aws_secret_key`}}",
       "ssh_username": "ubuntu",
+      "vpc_id": "{{ user `vpc_id` }}",
+      "subnet_id": "{{ user `subnet_id` }}",
       "tags": {
         "build_timestamp": "{{user `build_timestamp`}}",
         "source_ami": "{{user `ubuntu_18_04_ami`}}",
@@ -94,6 +98,8 @@
       "region": "{{ user `aws_region` }}",
       "secret_key": "{{user `aws_secret_key`}}",
       "ssh_username": "centos",
+      "vpc_id": "{{ user `vpc_id` }}",
+      "subnet_id": "{{ user `subnet_id` }}",
       "tags": {
         "build_timestamp": "{{user `build_timestamp`}}",
         "source_ami": "{{user `centos_7_ami`}}",
@@ -131,6 +137,8 @@
       "region": "{{ user `aws_region` }}",
       "secret_key": "{{user `aws_secret_key`}}",
       "ssh_username": "ec2-user",
+      "vpc_id": "{{ user `vpc_id` }}",
+      "subnet_id": "{{ user `subnet_id` }}",
       "tags": {
         "build_timestamp": "{{user `build_timestamp`}}",
         "source_ami": "{{user `amazon_2_ami`}}",
