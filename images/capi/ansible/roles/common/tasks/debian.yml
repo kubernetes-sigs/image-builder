@@ -16,6 +16,13 @@
   apt_repository:
     repo: "{{ common_deb_cloud_init_ppr_repo }}"
 
+- name: Install extra repos
+  copy:
+    src: "{{ item }}"
+    dest: "/etc/apt/sources.list.d/{{ item | basename }}"
+  loop: "{{ extra_repos.split(',') }}"
+  when: extra_repos != ""
+
 - name: update apt cache
   apt:
     force_apt_get: True
