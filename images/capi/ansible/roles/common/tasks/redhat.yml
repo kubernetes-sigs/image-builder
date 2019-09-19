@@ -30,6 +30,19 @@
     line: 'priority=1'
   when: ansible_distribution == "Amazon"
 
+- name: Find existing repo files
+  find:
+    depth: 1
+    paths: /etc/yum.repos.d
+    patterns: '*.repo'
+  register: repo_files
+  when: disable_public_repos|bool
+
+- name: Disable repos
+  command: "mv {{ item.path }} {{ item.path }}.disabled"
+  loop: "{{ repo_files.files }}"
+  when: disable_public_repos|bool
+
 - name: Install extra repos
   copy:
     src: "{{ item }}"
