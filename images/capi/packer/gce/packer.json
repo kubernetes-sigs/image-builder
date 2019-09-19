@@ -8,6 +8,7 @@
     "zone": null,
     "containerd_version": null,
     "containerd_sha256": null,
+    "containerd_url": "https://storage.googleapis.com/cri-containerd-release/cri-containerd-{{user `containerd_version`}}.linux-amd64.tar.gz",
     "kubernetes_cni_rpm_version": null,
     "kubernetes_cni_deb_version": null,
     "kubernetes_cni_semver": null,
@@ -68,7 +69,7 @@
       ],
       "extra_arguments": [
         "--extra-vars",
-        "containerd_version={{user `containerd_version`}} containerd_sha256={{user `containerd_sha256`}} kubernetes_cni_http_source={{user `kubernetes_cni_http_source`}} kubernetes_http_source={{user `kubernetes_http_source`}} kubernetes_container_registry={{user `kubernetes_container_registry`}} kubernetes_rpm_repo={{user `kubernetes_rpm_repo`}} kubernetes_rpm_gpg_key={{user `kubernetes_rpm_gpg_key`}} kubernetes_rpm_gpg_check={{user `kubernetes_rpm_gpg_check`}} kubernetes_deb_repo={{user `kubernetes_deb_repo`}} kubernetes_deb_gpg_key={{user `kubernetes_deb_gpg_key`}} kubernetes_cni_deb_version={{user `kubernetes_cni_deb_version`}} kubernetes_cni_rpm_version={{user `kubernetes_cni_rpm_version`}} kubernetes_cni_semver={{user `kubernetes_cni_semver`}} kubernetes_cni_source_type={{user `kubernetes_cni_source_type`}} kubernetes_semver={{user `kubernetes_semver`}} kubernetes_source_type={{user `kubernetes_source_type`}} kubernetes_deb_version={{user `kubernetes_deb_version`}} kubernetes_rpm_version={{user `kubernetes_rpm_version`}}"
+        "containerd_url={{user `containerd_url`}} containerd_sha256={{user `containerd_sha256`}} kubernetes_cni_http_source={{user `kubernetes_cni_http_source`}} kubernetes_http_source={{user `kubernetes_http_source`}} kubernetes_container_registry={{user `kubernetes_container_registry`}} kubernetes_rpm_repo={{user `kubernetes_rpm_repo`}} kubernetes_rpm_gpg_key={{user `kubernetes_rpm_gpg_key`}} kubernetes_rpm_gpg_check={{user `kubernetes_rpm_gpg_check`}} kubernetes_deb_repo={{user `kubernetes_deb_repo`}} kubernetes_deb_gpg_key={{user `kubernetes_deb_gpg_key`}} kubernetes_cni_deb_version={{user `kubernetes_cni_deb_version`}} kubernetes_cni_rpm_version={{user `kubernetes_cni_rpm_version`}} kubernetes_cni_semver={{user `kubernetes_cni_semver`}} kubernetes_cni_source_type={{user `kubernetes_cni_source_type`}} kubernetes_semver={{user `kubernetes_semver`}} kubernetes_source_type={{user `kubernetes_source_type`}} kubernetes_deb_version={{user `kubernetes_deb_version`}} kubernetes_rpm_version={{user `kubernetes_rpm_version`}}"
       ]
     }
   ]
