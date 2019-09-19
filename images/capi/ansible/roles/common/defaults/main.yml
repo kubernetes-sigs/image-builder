@@ -13,14 +13,18 @@
 # limitations under the License.
 ---
 common_rpms:
-- yum-utils
-- python2-pip
-- python-requests
+- ca-certificates
+- conntrack-tools
+- curl
 - ebtables
-- socat
-- ntp
-- jq
 - nfs-utils
+- ntp
+- open-vm-tools
+- python2-pip
+- python-netifaces
+- python-requests
+- socat
+- yum-utils
 common_extra_rpms: []
 common_debs:
 - openssh-client
