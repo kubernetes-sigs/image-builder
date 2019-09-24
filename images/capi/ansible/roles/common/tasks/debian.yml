@@ -16,6 +16,21 @@
   apt_repository:
     repo: "{{ common_deb_cloud_init_ppr_repo }}"
 
+- name: Find existing repo files
+  find:
+    depth: 1
+    paths:
+      - /etc/apt
+      - /etc/apt/sources.list.d
+    patterns: '*.list'
+  register: repo_files
+  when: disable_public_repos|bool
+
+- name: Disable repos
+  command: "mv {{ item.path }} {{ item.path }}.disabled"
+  loop: "{{ repo_files.files }}"
+  when: disable_public_repos|bool
+
 - name: Install extra repos
   copy:
     src: "{{ item }}"

@@ -24,6 +24,19 @@
   loop: "{{ extra_repos.split() }}"
   when: remove_extra_repos and extra_repos != ""
 
+- name: Find disabled repo files
+  find:
+    depth: 1
+    paths: /etc/yum.repos.d
+    patterns: '*.repo.disabled'
+  register: repo_files
+  when: disable_public_repos|default(false)|bool and reenable_public_repos|default(true)|bool
+
+- name: Enable repos
+  command: "mv {{ item.path }} {{ item.path | regex_replace('.disabled') }}"
+  loop: "{{ repo_files.files }}"
+  when: disable_public_repos|default(false)|bool and reenable_public_repos|default(true)|bool
+
 - name: Remove yum package caches
   yum:
     autoremove: yes
