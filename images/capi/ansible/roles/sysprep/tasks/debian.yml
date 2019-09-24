@@ -17,6 +17,14 @@
     last_log_mode:   "0664"
     machine_id_mode: "0644"
 
+- name: Remove extra repos
+  file:
+    path: "/etc/apt/sources.list.d/{{ item | basename }}"
+    state: absent
+  loop: "{{ extra_repos.split() }}"
+  when: remove_extra_repos and extra_repos != ""
+
+
 - name: Stop auditing
   service:
     name: rsyslog

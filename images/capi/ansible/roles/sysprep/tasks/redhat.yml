@@ -17,6 +17,13 @@
     last_log_mode:   "0644"
     machine_id_mode: "0444"
 
+- name: Remove extra repos
+  file:
+    path: "/etc/yum.repos.d/{{ item | basename }}"
+    state: absent
+  loop: "{{ extra_repos.split() }}"
+  when: remove_extra_repos and extra_repos != ""
+
 - name: Remove yum package caches
   yum:
     autoremove: yes

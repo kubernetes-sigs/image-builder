@@ -30,6 +30,13 @@
     line: 'priority=1'
   when: ansible_distribution == "Amazon"
 
+- name: Install extra repos
+  copy:
+    src: "{{ item }}"
+    dest: "/etc/yum.repos.d/{{ item | basename }}"
+  loop: "{{ extra_repos.split(',') }}"
+  when: extra_repos != ""
+
 - name: perform a yum update
   yum:
     name: '*'
