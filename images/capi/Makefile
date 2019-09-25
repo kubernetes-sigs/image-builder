@@ -22,6 +22,7 @@ all: build
 OVA_BUILD_NAMES ?= ova-centos-7 ova-ubuntu-1804
 AMI_BUILD_NAMES ?= ami-default
 GCE_BUILD_NAMES ?= gce-default
+OVA_BUILD_NAMES_ESX ?= esx-ova-centos-7 esx-ova-ubuntu-1804
 
 # The version of Kubernetes to install.
 KUBE_JSON ?= packer/config/kubernetes.json packer/config/cni.json packer/config/containerd.json
@@ -35,6 +36,8 @@ PACKER_FLAGS += $(OLD_PACKER_FLAGS)
 OVA_BUILD_TARGETS := $(addprefix build-,$(OVA_BUILD_NAMES))
 AMI_BUILD_TARGETS := $(addprefix build-,$(AMI_BUILD_NAMES))
 GCE_BUILD_TARGETS := $(addprefix build-,$(GCE_BUILD_NAMES))
+OVA_BUILD_TARGETS_ESX := $(addprefix build-,$(OVA_BUILD_NAMES_ESX))
+
 $(OVA_BUILD_TARGETS):
 	packer build $(PACKER_FLAGS) -var-file="$(abspath packer/ova/$(subst build-,,$@).json)" packer/ova/packer.json
 .PHONY: $(OVA_BUILD_TARGETS)
@@ -46,6 +49,10 @@ $(AMI_BUILD_TARGETS):
 $(GCE_BUILD_TARGETS):
 	packer build $(PACKER_FLAGS) -var-file="$(abspath packer/gce/$(subst build-,,$@).json)" packer/gce/packer.json
 .PHONY: $(GCE_BUILD_TARGETS)
+
+$(OVA_BUILD_TARGETS_ESX):
+	packer build $(PACKER_FLAGS) -var-file="$(abspath packer/ova/$(subst build-esx-,,$@).json)" -var-file="packer/ova/esx.json" -except=shell-local packer/ova/packer.json
+.PHONY: $(OVA_BUILD_TARGETS_ESX)
 
 CLEAN_TARGETS := $(addprefix clean-,$(OVA_BUILD_NAMES)) $(addprefix clean-,$(AMI_BUILD_NAMES)) $(addprefix clean-,$(GCE_BUILD_NAMES))
 $(CLEAN_TARGETS):
