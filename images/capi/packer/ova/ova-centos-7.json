@@ -10,6 +10,5 @@
   "ssh_password": "centos",
   "boot_command_prefix": "<tab> text ks=",
   "boot_command_suffix": "/7/ks.cfg<enter><wait>",
-  "goss_vars_file": "goss/redhat-vars.yaml",
   "shutdown_command": "sys-unconfig"
 }
