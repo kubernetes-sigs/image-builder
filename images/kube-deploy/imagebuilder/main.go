@@ -32,12 +32,12 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/ghodss/yaml"
-	"github.com/golang/glog"
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/net/context"
 	"golang.org/x/oauth2/google"
 	compute "google.golang.org/api/compute/v1"
 	storage "google.golang.org/api/storage/v1"
+	"k8s.io/klog"
 	"sigs.k8s.io/image-builder/images/kube-deploy/imagebuilder/pkg/imagebuilder"
 	"sigs.k8s.io/image-builder/images/kube-deploy/imagebuilder/pkg/imagebuilder/executor"
 )
@@ -78,13 +78,15 @@ func loadConfig(dest interface{}, src string) error {
 }
 
 func main() {
+	klog.InitFlags(nil)
+
 	rand.Seed(time.Now().UTC().UnixNano())
 
 	flag.Set("alsologtostderr", "true")
 	flag.Parse()
 
 	if *flagConfig == "" {
-		glog.Exitf("--config must be specified")
+		klog.Exitf("--config must be specified")
 	}
 
 	var templateContext interface{}
@@ -93,11 +95,11 @@ func main() {
 	config.InitDefaults()
 	err := loadConfig(config, *flagConfig)
 	if err != nil {
-		glog.Exitf("Error loading config: %v", err)
+		klog.Exitf("Error loading config: %v", err)
 	}
 
 	for key, value := range splitAdditionalTags() {
-		glog.Infof("Injecting additional tag: %q = %q", key, value)
+		klog.Infof("Injecting additional tag: %q = %q", key, value)
 		config.Tags[key] = value
 	}
 
@@ -106,7 +108,7 @@ func main() {
 	case "aws":
 		awsConfig, awsCloud, err := initAWS(*flagLocalhost)
 		if err != nil {
-			glog.Exitf("%v", err)
+			klog.Exitf("%v", err)
 		}
 		awsConfig.Tags = config.Tags
 		templateContext = awsConfig
@@ -114,25 +116,25 @@ func main() {
 
 	case "gce":
 		if *flagPublish {
-			glog.Exitf("Publishing images is not supported on gce (pass --publish=false)")
+			klog.Exitf("Publishing images is not supported on gce (pass --publish=false)")
 		}
 
 		gceConfig, gceCloud, err := initGCE()
 		if err != nil {
-			glog.Exitf("%v", err)
+			klog.Exitf("%v", err)
 		}
 		gceConfig.Tags = config.Tags
 		templateContext = gceConfig
 		cloud = gceCloud
 
 	case "":
-		glog.Exitf("Cloud not set")
+		klog.Exitf("Cloud not set")
 	default:
-		glog.Exitf("Unknown cloud: %q", config.Cloud)
+		klog.Exitf("Unknown cloud: %q", config.Cloud)
 	}
 
 	if *flagBuild && config.TemplatePath == "" {
-		glog.Fatalf("TemplatePath must be provided")
+		klog.Fatalf("TemplatePath must be provided")
 	}
 
 	var bvzTemplate *imagebuilder.BootstrapVzTemplate
@@ -142,55 +144,55 @@ func main() {
 
 		templateRaw, err := imagebuilder.ReadFile(templateResolved)
 		if err != nil {
-			glog.Fatalf("error reading template: %v", err)
+			klog.Fatalf("error reading template: %v", err)
 		}
 
 		templateString, err := imagebuilder.ExpandTemplate(templateResolved, string(templateRaw), templateContext)
 		if err != nil {
-			glog.Fatalf("error executing template: %v", err)
+			klog.Fatalf("error executing template: %v", err)
 		}
 
 		bvzTemplate, err = imagebuilder.NewBootstrapVzTemplate(templateString)
 		if err != nil {
-			glog.Fatalf("error parsing template: %v", err)
+			klog.Fatalf("error parsing template: %v", err)
 		}
 
 		imageName, err = bvzTemplate.BuildImageName()
 		if err != nil {
-			glog.Fatalf("error inferring image name: %v", err)
+			klog.Fatalf("error inferring image name: %v", err)
 		}
 
-		glog.Infof("Parsed template %q; will build image with name %s", config.TemplatePath, imageName)
+		klog.Infof("Parsed template %q; will build image with name %s", config.TemplatePath, imageName)
 	}
 
 	instance, err := cloud.GetInstance()
 	if err != nil {
-		glog.Fatalf("error getting instance: %v", err)
+		klog.Fatalf("error getting instance: %v", err)
 	}
 
 	if instance == nil && *flagUp {
 		instance, err = cloud.CreateInstance()
 		if err != nil {
-			glog.Fatalf("error creating instance: %v", err)
+			klog.Fatalf("error creating instance: %v", err)
 		}
 	}
 
 	image, err := cloud.FindImage(imageName)
 	if err != nil {
-		glog.Fatalf("error finding image %q: %v", imageName, err)
+		klog.Fatalf("error finding image %q: %v", imageName, err)
 	}
 
 	if image != nil {
-		glog.Infof("found existing image %q", image)
+		klog.Infof("found existing image %q", image)
 	}
 
 	if *flagBuild && image == nil {
 		if instance == nil {
-			glog.Fatalf("Instance was not found (specify --up?)")
+			klog.Fatalf("Instance was not found (specify --up?)")
 		}
 
 		validateHostKey := func(hostname string, remote net.Addr, key ssh.PublicKey) error {
-			glog.Infof("accepting host key of type %s for %s", key.Type(), hostname)
+			klog.Infof("accepting host key of type %s for %s", key.Type(), hostname)
 			return nil
 		}
 
@@ -201,22 +203,22 @@ func main() {
 
 		if !*flagLocalhost {
 			if config.SSHPrivateKey == "" {
-				glog.Fatalf("SSHPublicKey is required")
+				klog.Fatalf("SSHPublicKey is required")
 				// We used to allow the SSH agent, but probably more trouble than it is worth?
 				//sshAgent, err := net.Dial("unix", os.Getenv("SSH_AUTH_SOCK"))
 				//if err != nil {
-				//	glog.Fatalf("error connecting to SSH agent: %v", err)
+				//	klog.Fatalf("error connecting to SSH agent: %v", err)
 				//}
 				//
 				//sshConfig.Auth = append(sshConfig.Auth, ssh.PublicKeysCallback(agent.NewClient(sshAgent).Signers))
 			} else {
 				keyBytes, err := imagebuilder.ReadFile(config.SSHPrivateKey)
 				if err != nil {
-					glog.Exitf("error loading SSH private key: %v", err)
+					klog.Exitf("error loading SSH private key: %v", err)
 				}
 				key, err := ssh.ParsePrivateKey(keyBytes)
 				if err != nil {
-					glog.Exitf("error parsing SSH private key %q: %v", config.SSHPrivateKey, err)
+					klog.Exitf("error parsing SSH private key %q: %v", config.SSHPrivateKey, err)
 				}
 
 				sshConfig.Auth = append(sshConfig.Auth, ssh.PublicKeys(key))
@@ -224,7 +226,7 @@ func main() {
 		}
 		x, err := instance.DialSSH(sshConfig)
 		if err != nil {
-			glog.Fatalf("error SSHing to instance: %v", err)
+			klog.Fatalf("error SSHing to instance: %v", err)
 		}
 		defer x.Close()
 
@@ -233,37 +235,37 @@ func main() {
 		builder := imagebuilder.NewBuilder(config, sshHelper)
 		err = builder.RunSetupCommands()
 		if err != nil {
-			glog.Fatalf("error setting up instance: %v", err)
+			klog.Fatalf("error setting up instance: %v", err)
 		}
 
 		extraEnv, err := cloud.GetExtraEnv()
 		if err != nil {
-			glog.Fatalf("error building environment: %v", err)
+			klog.Fatalf("error building environment: %v", err)
 		}
 
 		logdir := *flagLogdir
 
 		err = builder.BuildImage(bvzTemplate.Bytes(), extraEnv, logdir)
 		if err != nil {
-			glog.Fatalf("error building image: %v", err)
+			klog.Fatalf("error building image: %v", err)
 		}
 
 		image, err = cloud.FindImage(imageName)
 		if err != nil {
-			glog.Fatalf("error finding image %q: %v", imageName, err)
+			klog.Fatalf("error finding image %q: %v", imageName, err)
 		}
 
 		if image == nil {
-			glog.Fatalf("image not found after build: %q", imageName)
+			klog.Fatalf("image not found after build: %q", imageName)
 		}
 	}
 
 	if *flagTag {
 		if image == nil {
-			glog.Fatalf("image not found: %q", imageName)
+			klog.Fatalf("image not found: %q", imageName)
 		}
 
-		glog.Infof("Tagging image %q", image)
+		klog.Infof("Tagging image %q", image)
 
 		tags := make(map[string]string)
 		for k, v := range config.Tags {
@@ -277,51 +279,51 @@ func main() {
 
 		err = image.AddTags(tags)
 		if err != nil {
-			glog.Fatalf("error tagging image %q: %v", imageName, err)
+			klog.Fatalf("error tagging image %q: %v", imageName, err)
 		}
 
-		glog.Infof("Tagged image %q", image)
+		klog.Infof("Tagged image %q", image)
 	}
 
 	if *flagPublish {
 		if image == nil {
-			glog.Fatalf("image not found: %q", imageName)
+			klog.Fatalf("image not found: %q", imageName)
 		}
 
-		glog.Infof("Making image public: %v", image)
+		klog.Infof("Making image public: %v", image)
 
 		err = image.EnsurePublic()
 		if err != nil {
-			glog.Fatalf("error making image public %q: %v", imageName, err)
+			klog.Fatalf("error making image public %q: %v", imageName, err)
 		}
 
-		glog.Infof("Made image public: %v", image)
+		klog.Infof("Made image public: %v", image)
 	}
 
 	if *flagReplicate {
 		if image == nil {
-			glog.Fatalf("image not found: %q", imageName)
+			klog.Fatalf("image not found: %q", imageName)
 		}
 
-		glog.Infof("Copying image to all regions: %v", image)
+		klog.Infof("Copying image to all regions: %v", image)
 
 		images, err := image.ReplicateImage(*flagPublish)
 		if err != nil {
-			glog.Fatalf("error replicating image %q: %v", imageName, err)
+			klog.Fatalf("error replicating image %q: %v", imageName, err)
 		}
 
 		for region, imageID := range images {
-			glog.Infof("Image in region %q: %q", region, imageID)
+			klog.Infof("Image in region %q: %q", region, imageID)
 		}
 	}
 
 	if *flagDown {
 		if instance == nil {
-			glog.Infof("Instance not found / already shutdown")
+			klog.Infof("Instance not found / already shutdown")
 		} else {
 			err := instance.Shutdown()
 			if err != nil {
-				glog.Fatalf("error terminating instance: %v", err)
+				klog.Fatalf("error terminating instance: %v", err)
 			}
 		}
 	}
@@ -334,7 +336,7 @@ func splitAdditionalTags() map[string]string {
 			trimmed := strings.TrimSpace(tagpair)
 			kv := strings.Split(trimmed, "=")
 			if len(kv) != 2 {
-				glog.Fatalf("addtags value malformed, should be key=value: %q", tagpair)
+				klog.Fatalf("addtags value malformed, should be key=value: %q", tagpair)
 			}
 			tags[kv[0]] = kv[1]
 		}
@@ -351,11 +353,11 @@ func initAWS(useLocalhost bool) (*imagebuilder.AWSConfig, *imagebuilder.AWSCloud
 	awsConfig.InitDefaults(region)
 	err := loadConfig(awsConfig, *flagConfig)
 	if err != nil {
-		glog.Exitf("Error loading AWS config: %v", err)
+		klog.Exitf("Error loading AWS config: %v", err)
 	}
 
 	if awsConfig.Region == "" {
-		glog.Exitf("Region must be set")
+		klog.Exitf("Region must be set")
 	}
 
 	ec2Client := ec2.New(session.New(), &aws.Config{Region: &awsConfig.Region})
@@ -421,7 +423,7 @@ func initGCE() (*imagebuilder.GCEConfig, *imagebuilder.GCECloud, error) {
 	if err != nil {
 		return nil, nil, fmt.Errorf("GCSDestination %q is not a well-formed URL: %v", config.GCSDestination, err)
 	}
-	glog.Infof("Checking for bucket %q", u.Host)
+	klog.Infof("Checking for bucket %q", u.Host)
 	_, err = storageService.Buckets.Get(u.Host).Do()
 	if err != nil {
 		if imagebuilder.IsGCENotFound(err) {

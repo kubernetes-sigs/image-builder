@@ -7,8 +7,8 @@ import (
 	"path/filepath"
 	"strconv"
 
-	"github.com/golang/glog"
 	"golang.org/x/crypto/ssh"
+	"k8s.io/klog"
 )
 
 type SSHExecutor struct {
@@ -27,7 +27,7 @@ func (e *SSHExecutor) Close() error {
 
 // SCPMkdir executes a mkdir against the SSH target, using SCP
 func (s *SSHExecutor) Mkdir(dest string, mode os.FileMode) error {
-	glog.Infof("Doing SSH SCP mkdir: %q", dest)
+	klog.Infof("Doing SSH SCP mkdir: %q", dest)
 	session, err := s.sshClient.NewSession()
 	if err != nil {
 		return fmt.Errorf("error establishing SSH session: %v", err)
@@ -49,11 +49,11 @@ func (s *SSHExecutor) Mkdir(dest string, mode os.FileMode) error {
 	}()
 	output, err := session.CombinedOutput("/usr/bin/scp -tr " + scpBase)
 	if err != nil {
-		glog.Warningf("Error output from SCP: %s", output)
+		klog.Warningf("Error output from SCP: %s", output)
 		return fmt.Errorf("error doing SCP mkdir: %v", err)
 	}
 	if stdinErr != nil {
-		glog.Warningf("Error output from SCP: %s", output)
+		klog.Warningf("Error output from SCP: %s", output)
 		return fmt.Errorf("error doing SCP mkdir (writing to stdin): %v", stdinErr)
 	}
 
@@ -66,7 +66,7 @@ func toOctal(mode os.FileMode) string {
 
 // SCPPut copies a file to the SSH target, using SCP
 func (s *SSHExecutor) Put(dest string, length int, content io.Reader, mode os.FileMode) error {
-	glog.Infof("Doing SSH SCP upload: %q", dest)
+	klog.Infof("Doing SSH SCP upload: %q", dest)
 	session, err := s.sshClient.NewSession()
 	if err != nil {
 		return fmt.Errorf("error establishing SSH session: %v", err)
@@ -96,11 +96,11 @@ func (s *SSHExecutor) Put(dest string, length int, content io.Reader, mode os.Fi
 	}()
 	output, err := session.CombinedOutput("/usr/bin/scp -tr " + scpBase)
 	if err != nil {
-		glog.Warningf("Error output from SCP: %s", output)
+		klog.Warningf("Error output from SCP: %s", output)
 		return fmt.Errorf("error doing SCP put: %v", err)
 	}
 	if stdinErr != nil {
-		glog.Warningf("Error output from SCP: %s", output)
+		klog.Warningf("Error output from SCP: %s", output)
 		return fmt.Errorf("error doing SCP put (writing to stdin): %v", stdinErr)
 	}
 

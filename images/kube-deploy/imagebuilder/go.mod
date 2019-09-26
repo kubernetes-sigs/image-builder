@@ -17,4 +17,5 @@ require (
 	google.golang.org/appengine v0.0.0-20160621060416-267c27e74922
 	google.golang.org/cloud v0.0.0-20160701095312-ebfe3819c9ab
 	gopkg.in/yaml.v2 v2.0.0-20160301204022-a83829b6f129
+	k8s.io/klog v0.4.0
 )
