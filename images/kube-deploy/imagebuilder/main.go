@@ -82,7 +82,6 @@ func main() {
 
 	rand.Seed(time.Now().UTC().UnixNano())
 
-	flag.Set("alsologtostderr", "true")
 	flag.Parse()
 
 	if *flagConfig == "" {
