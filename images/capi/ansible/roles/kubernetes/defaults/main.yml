@@ -24,3 +24,6 @@ kubernetes_imgs:
 - kube-controller-manager.tar
 - kube-scheduler.tar
 - kube-proxy.tar
+- pause.tar
+- coredns.tar
+- etcd.tar
