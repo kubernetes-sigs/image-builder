@@ -13,7 +13,7 @@
 # limitations under the License.
 ---
 - include_tasks: aws.yml
-  when: packer_builder_type == 'amazon'
+  when: packer_builder_type.startswith('amazon') 
 
 - include_tasks: vmware.yml
-  when: packer_builder_type == 'vmware'
+  when: packer_builder_type.startswith('vmware') 
