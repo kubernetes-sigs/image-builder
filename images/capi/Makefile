@@ -54,9 +54,9 @@ $(OVA_BUILD_TARGETS_ESX):
 	packer build $(PACKER_FLAGS) -var-file="$(abspath packer/ova/$(subst build-esx-,,$@).json)" -var-file="packer/ova/esx.json" -except=shell-local packer/ova/packer.json
 .PHONY: $(OVA_BUILD_TARGETS_ESX)
 
-CLEAN_TARGETS := $(addprefix clean-,$(OVA_BUILD_NAMES)) $(addprefix clean-,$(AMI_BUILD_NAMES)) $(addprefix clean-,$(GCE_BUILD_NAMES))
+CLEAN_TARGETS := $(addprefix clean-,$(OVA_BUILD_NAMES))
 $(CLEAN_TARGETS):
-	rm -fr output/$(subst clean-,,$@)*
+	rm -fr output/$(subst clean-ova-,,$@)*
 .PHONY: $(CLEAN_TARGETS)
 
 build: $(OVA_BUILD_TARGETS) $(AMI_BUILD_TARGETS) $(GCE_BUILD_TARGETS)
