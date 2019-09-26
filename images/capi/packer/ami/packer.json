@@ -52,7 +52,7 @@
         "owners": ["099720109477"],
         "most_recent": true
       },
-      "ami_name": "capa-ami-ubuntu-18.04-{{user `kubernetes_semver`}}-{{user `build_timestamp`}}",
+      "ami_name": "capa-ami-ubuntu-18.04-{{user `kubernetes_deb_version`}}-{{user `build_timestamp`}}",
       "ami_groups": "{{user `ami_groups`}}",
       "ami_users": "{{user `ami_users`}}",
       "snapshot_groups": "{{user `snapshot_groups`}}",
@@ -91,7 +91,7 @@
         "owners": ["410186602215"],
         "most_recent": true
       },
-      "ami_name": "capa-ami-centos-7-{{user `kubernetes_semver`}}-{{user `build_timestamp`}}",
+      "ami_name": "capa-ami-centos-7-{{user `kubernetes_deb_version`}}-{{user `build_timestamp`}}",
       "ami_groups": "{{user `ami_groups`}}",
       "ami_users": "{{user `ami_users`}}",
       "snapshot_groups": "{{user `snapshot_groups`}}",
@@ -131,7 +131,7 @@
         "owners": ["amazon"],
         "most_recent": true
       },
-      "ami_name": "capa-ami-amazon-2-{{user `kubernetes_semver`}}-{{user `build_timestamp`}}",
+      "ami_name": "capa-ami-amazon-2-{{user `kubernetes_deb_version`}}-{{user `build_timestamp`}}",
       "ami_groups": "{{user `ami_groups`}}",
       "ami_users": "{{user `ami_users`}}",
       "snapshot_groups": "{{user `snapshot_groups`}}",
