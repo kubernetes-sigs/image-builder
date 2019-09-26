@@ -10,6 +10,5 @@
   "ssh_password": "ubuntu",
   "boot_command_prefix": "<esc><wait><esc><wait><enter><wait>/install/vmlinuz auto console-setup/ask_detect=false console-setup/layoutcode=us console-setup/modelcode=pc105 debconf/frontend=noninteractive debian-installer=en_US fb=false initrd=/install/initrd.gz kbd-chooser/method=us keyboard-configuration/layout=USA keyboard-configuration/variant=USA locale=en_US netcfg/get_domain=local netcfg/get_hostname=localhost grub-installer/bootdev=/dev/sda preseed/url=",
   "boot_command_suffix": "/18.04/preseed.cfg -- <wait><enter><wait>",
-  "goss_vars_file": "goss/ubuntu-vars.yaml",
   "shutdown_command": "shutdown -P now"
 }

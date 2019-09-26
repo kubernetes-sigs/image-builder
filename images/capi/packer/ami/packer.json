@@ -180,25 +180,9 @@
     },
     {
       "type": "goss",
-      "vars_file": "packer/goss/redhat-vars.yaml",
       "use_sudo": true,
       "tests": [
         "packer/goss/goss.yaml"
-      ],
-      "only": [
-        "amazon-2",
-        "centos-7"
-      ]
-    },
-    {
-      "type": "goss",
-      "vars_file": "packer/goss/ubuntu-vars.yaml",
-      "use_sudo": true,
-      "tests": [
-        "packer/goss/goss.yaml"
-      ],
-      "only": [
-        "ubuntu-1804"
       ]
     }
   ]
