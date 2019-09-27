@@ -36,6 +36,7 @@
     "remote_username": "",
     "remote_password": "",
     "skip_compaction": "false",
+    "vmx_version": "13",
     "vnc_bind_address": "127.0.0.1",
     "vnc_disable_password": "false",
     "vnc_port_min": "5900",
@@ -48,6 +49,7 @@
       "vmdk_name": "{{build_name}}",
       "output_directory": "./output/{{build_name}}-kube-{{user `kubernetes_semver`}}",
       "type": "vmware-iso",
+      "version": "{{user `vmx_version`}}",
       "cpus": 1,
       "cores": 1,
       "memory": 2048,
@@ -121,7 +123,7 @@
     },
     {
       "type": "shell-local",
-      "command": "./hack/image-build-ova.py ./output/{{build_name}}-kube-{{user `kubernetes_semver`}}"
+      "command": "./hack/image-build-ova.py --vmx {{user `vmx_version`}} ./output/{{build_name}}-kube-{{user `kubernetes_semver`}}"
     },
     {
       "type": "shell-local",

@@ -32,6 +32,10 @@ import tarfile
 def main():
     parser = argparse.ArgumentParser(
         description="Builds an OVA using the artifacts from a Packer build")
+    parser.add_argument('--vmx',
+                        dest='vmx_version',
+                        default='13',
+                        help='The virtual hardware version')
     parser.add_argument(dest='build_dir',
                         nargs='?',
                         metavar='BUILD_DIR',
@@ -80,6 +84,7 @@ def main():
         'KUBERNETES_SOURCE_TYPE': build_data['kubernetes_source_type'],
         'POPULATED_DISK_SIZE': vmdk['size'],
         'STREAM_DISK_SIZE': vmdk['stream_size'],
+        'VMX_VERSION': args.vmx_version,
     })
 
     # Create the OVA manifest.
@@ -190,7 +195,7 @@ _OVF_TEMPLATE = '''<?xml version='1.0' encoding='UTF-8'?>
       <System>
         <vssd:ElementName>Virtual Hardware Family</vssd:ElementName>
         <vssd:InstanceID>0</vssd:InstanceID>
-        <vssd:VirtualSystemType>vmx-11</vssd:VirtualSystemType>
+        <vssd:VirtualSystemType>vmx-${VMX_VERSION}</vssd:VirtualSystemType>
       </System>
       <Item>
         <rasd:AllocationUnits>hertz * 10^6</rasd:AllocationUnits>
