@@ -31,15 +31,5 @@
     dest: /etc/kubernetes-version
     src: etc/kubernetes-version
 
-- name: Create kubeadm config file
-  template:
-    dest: /etc/kubeadm.yml
-    src: etc/kubeadm.yml
-
-- name: Kubeadm pull images
-  shell: 'kubeadm config images pull --config /etc/kubeadm.yml'
-
-- name: delete kubeadm config
-  file:
-    path: /etc/kubeadm.yml
-    state: absent
+- import_tasks: kubeadmpull.yml
+  when: kubernetes_source_type == "pkg"
