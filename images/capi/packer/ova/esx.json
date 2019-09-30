@@ -8,5 +8,8 @@
     "remote_password": "",
     "skip_compaction": "true",
     "vnc_bind_address": "",
-    "vnc_disable_password": "true"
+    "vnc_disable_password": "true",
+    "vmx_data": {
+        "ethernet0.networkname": "VM Network"
+    }
 }

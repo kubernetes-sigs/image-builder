@@ -83,7 +83,7 @@
       "vnc_disable_password": "{{user `vnc_disable_password`}}",
       "format": "{{user `format`}}",
       "vmx_data": {
-        "ethernet0.networkName": "VM Network"
+        "ethernet0.networkname": "{{user `ethernet0.networkname`}}"
       }
     }
   ],
