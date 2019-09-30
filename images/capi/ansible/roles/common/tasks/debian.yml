@@ -63,3 +63,15 @@
     name: "{{ common_pinned_debs }}"
     state: present
     force: yes
+
+- name: Stop and disable rpcbind.service
+  service:
+    name: rpcbind
+    state: stopped
+    enabled: no
+
+- name: Stop and disable rpcbind.socket
+  service:
+    name: rpcbind.socket
+    state: stopped
+    enabled: no
