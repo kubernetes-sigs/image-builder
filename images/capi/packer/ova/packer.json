@@ -28,6 +28,7 @@
     "kubernetes_deb_gpg_key": null,
     "kubernetes_rpm_gpg_check": null,
     "kubernetes_container_registry": null,
+    "network": "",
     "reenable_public_repos": "true",
     "remove_extra_repos": "false",
     "remote_type": "",
@@ -85,7 +86,7 @@
       "vnc_disable_password": "{{user `vnc_disable_password`}}",
       "format": "{{user `format`}}",
       "vmx_data": {
-        "ethernet0.networkName": "VM Network"
+        "ethernet0.networkName": "{{user `network`}}"	
       }
     }
   ],
