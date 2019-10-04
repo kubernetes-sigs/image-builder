@@ -29,6 +29,7 @@
     "kubernetes_rpm_gpg_check": null,
     "kubernetes_container_registry": null,
     "network": "",
+    "output_dir": "./output/{{user `build_name`}}-kube-{{user `kubernetes_semver`}}",
     "reenable_public_repos": "true",
     "remove_extra_repos": "false",
     "remote_type": "",
@@ -48,7 +49,7 @@
       "name": "{{user `build_name`}}",
       "vm_name": "{{build_name}}-kube-{{user `kubernetes_semver`}}",
       "vmdk_name": "{{build_name}}",
-      "output_directory": "./output/{{build_name}}-kube-{{user `kubernetes_semver`}}",
+      "output_directory": "{{user `output_dir`}}",
       "type": "vmware-iso",
       "version": "{{user `vmx_version`}}",
       "cpus": 1,
@@ -86,7 +87,7 @@
       "vnc_disable_password": "{{user `vnc_disable_password`}}",
       "format": "{{user `format`}}",
       "vmx_data": {
-        "ethernet0.networkName": "{{user `network`}}"	
+        "ethernet0.networkName": "{{user `network`}}"
       }
     }
   ],
@@ -107,7 +108,7 @@
   "post-processors": [
     {
       "type": "manifest",
-      "output": "./output/{{build_name}}-kube-{{user `kubernetes_semver`}}/packer-manifest.json",
+      "output": "{{user `output_dir`}}/packer-manifest.json",
       "strip_path": true,
       "custom_data": {
         "build_timestamp": "{{user `build_timestamp`}}",
@@ -124,11 +125,11 @@
     },
     {
       "type": "shell-local",
-      "command": "./hack/image-build-ova.py --vmx {{user `vmx_version`}} ./output/{{build_name}}-kube-{{user `kubernetes_semver`}}"
+      "command": "./hack/image-build-ova.py --vmx {{user `vmx_version`}} {{user `output_dir`}}"
     },
     {
       "type": "shell-local",
-      "command": "./hack/image-post-create-config.sh ./output/{{build_name}}-kube-{{user `kubernetes_semver`}}"
+      "command": "./hack/image-post-create-config.sh {{user `output_dir`}}"
     }
   ]
 }
