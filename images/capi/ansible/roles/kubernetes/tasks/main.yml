@@ -34,5 +34,13 @@
     dest: /etc/kubernetes-version
     src: etc/kubernetes-version
 
+# TODO: This section will be deprecated once https://github.com/containerd/cri/issues/1131 is fixed. It is used to support ECR with containerd.
+- name: Check if Kubernetes container registry is using Amazon ECR
+  set_fact:
+    ecr: "{{ kubernetes_container_registry is regex('^[0-9]{12}.dkr.ecr.[^.]+.amazonaws.com\/') }}"
+
 - import_tasks: kubeadmpull.yml
-  when: kubernetes_source_type == "pkg"
+  when: kubernetes_source_type == "pkg" and ecr != true
+
+- import_tasks: ecrpull.yml
+  when: kubernetes_source_type == "pkg" and ecr == true

@@ -16,7 +16,7 @@
   become: yes
   roles:
     - role: common
+    - role: providers
     - role: containerd
     - role: kubernetes
-    - role: providers
     - role: sysprep
