@@ -1,0 +1,7 @@
+{
+    "resource_group_name": "cluster-api-images",
+    "shared_image_gallery_name": "ClusterAPI",
+    "replication_regions": "southcentralus",
+    "image_name": "capi-ubuntu-1804"
+  }
+  

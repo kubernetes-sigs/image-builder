@@ -1,0 +1,111 @@
+{
+  "variables": {
+    "subscription_id": "",
+    "client_id": "",
+    "client_secret": "",
+    "azure_location": "",
+    "vm_size": "",
+    "build_timestamp": "{{timestamp}}",
+    "containerd_version": null,
+    "containerd_sha256": null,
+    "containerd_url": "https://storage.googleapis.com/cri-containerd-release/cri-containerd-{{user `containerd_version`}}.linux-amd64.tar.gz",
+    "kubernetes_cni_rpm_version": null,
+    "kubernetes_cni_deb_version": null,
+    "kubernetes_cni_semver": null,
+    "kubernetes_cni_source_type": null,
+    "kubernetes_cni_http_source": null,
+    "kubernetes_series": null,
+    "kubernetes_semver": null,
+    "kubernetes_source_type": null,
+    "kubernetes_http_source": null,
+    "kubernetes_rpm_version": null,
+    "kubernetes_deb_version": null,
+    "kubernetes_rpm_repo": null,
+    "kubernetes_rpm_gpg_key": null,
+    "kubernetes_deb_repo": null,
+    "kubernetes_deb_gpg_key": null,
+    "kubernetes_rpm_gpg_check": null,
+    "kubernetes_container_registry": null,
+    "existing_ansible_ssh_args": "{{env `ANSIBLE_SSH_ARGS`}}"
+  },
+  "builders": [
+    {
+      "name": "vhd-ubuntu-1804",
+      "type": "azure-arm",
+      "os_type": "Linux",
+      "image_publisher": "Canonical",
+      "image_offer": "UbuntuServer",
+      "image_sku": "18.04-LTS",
+      "subscription_id": "{{user `subscription_id`}}",
+      "client_id": "{{user `client_id`}}",
+      "client_secret": "{{user `client_secret`}}",
+      "vm_size": "{{user `vm_size`}}",
+      "resource_group_name": "{{user `resource_group_name`}}",
+      "capture_container_name": "{{user `capture_container_name`}}",
+      "capture_name_prefix": "capi-{{user `build_timestamp`}}",
+      "storage_account": "{{user `storage_account_name`}}",
+      "location": "{{user `azure_location`}}",
+      "ssh_username": "ubuntu",
+      "azure_tags": {
+        "build_timestamp": "{{user `build_timestamp`}}",
+        "distribution": "ubuntu",
+        "distribution_release": "bionic",
+        "distribution_version": "1804",
+        "kubernetes_version": "{{user `kubernetes_semver`}}"
+      }
+    },
+    {
+      "name": "sig-ubuntu-1804",
+      "type": "azure-arm",
+      "os_type": "Linux",
+      "image_publisher": "Canonical",
+      "image_offer": "UbuntuServer",
+      "image_sku": "18.04-LTS",
+      "subscription_id": "{{user `subscription_id`}}",
+      "client_id": "{{user `client_id`}}",
+      "client_secret": "{{user `client_secret`}}",
+      "vm_size": "{{user `vm_size`}}",
+      "managed_image_name": "capi-{{user `build_timestamp`}}",
+      "managed_image_resource_group_name": "{{user `resource_group_name`}}",
+      "shared_image_gallery_destination": {
+        "resource_group": "{{user `resource_group_name`}}",
+        "gallery_name": "{{user `shared_image_gallery_name`}}",
+        "image_name": "{{user `image_name`}}",
+        "image_version": "{{user `build_timestamp`}}",
+        "replication_regions": [
+          "{{user `replication_regions`}}"
+        ]
+      },
+      "location": "{{user `azure_location`}}",
+      "ssh_username": "ubuntu",
+      "azure_tags": {
+        "build_timestamp": "{{user `build_timestamp`}}",
+        "distribution": "ubuntu",
+        "distribution_release": "bionic",
+        "distribution_version": "1804",
+        "kubernetes_version": "{{user `kubernetes_semver`}}"
+      }
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "shell",
+      "inline": [
+        "while [ ! -f /var/lib/cloud/instance/boot-finished ]; do echo 'Waiting for cloud-init...'; sleep 1; done",
+        "sudo apt-get -qq update && sudo DEBIAN_FRONTEND=noninteractive apt-get -qqy install python python-pip"
+      ]
+    },
+    {
+      "type": "ansible",
+      "playbook_file": "./ansible/playbook.yml",
+      "ansible_env_vars": [
+        "ANSIBLE_SSH_ARGS='{{user `existing_ansible_ssh_args`}} -o IdentitiesOnly=yes'",
+        "ANSIBLE_REMOTE_TEMP='/tmp/.ansible/'"
+      ],
+      "extra_arguments": [
+        "--extra-vars",
+        "containerd_url={{user `containerd_url`}} containerd_sha256={{user `containerd_sha256`}} kubernetes_cni_http_source={{user `kubernetes_cni_http_source`}} kubernetes_http_source={{user `kubernetes_http_source`}} kubernetes_container_registry={{user `kubernetes_container_registry`}} kubernetes_rpm_repo={{user `kubernetes_rpm_repo`}} kubernetes_rpm_gpg_key={{user `kubernetes_rpm_gpg_key`}} kubernetes_rpm_gpg_check={{user `kubernetes_rpm_gpg_check`}} kubernetes_deb_repo={{user `kubernetes_deb_repo`}} kubernetes_deb_gpg_key={{user `kubernetes_deb_gpg_key`}} kubernetes_cni_deb_version={{user `kubernetes_cni_deb_version`}} kubernetes_cni_rpm_version={{user `kubernetes_cni_rpm_version`}} kubernetes_cni_semver={{user `kubernetes_cni_semver`}} kubernetes_cni_source_type={{user `kubernetes_cni_source_type`}} kubernetes_semver={{user `kubernetes_semver`}} kubernetes_source_type={{user `kubernetes_source_type`}} kubernetes_deb_version={{user `kubernetes_deb_version`}} kubernetes_rpm_version={{user `kubernetes_rpm_version`}}"
+      ]
+    }
+  ]
+}
