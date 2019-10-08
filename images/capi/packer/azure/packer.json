@@ -1,8 +1,8 @@
 {
   "variables": {
-    "subscription_id": "",
-    "client_id": "",
-    "client_secret": "",
+    "subscription_id": null,
+    "client_id": null,
+    "client_secret": null,
     "azure_location": "",
     "vm_size": "",
     "build_timestamp": "{{timestamp}}",
@@ -71,7 +71,7 @@
         "resource_group": "{{user `resource_group_name`}}",
         "gallery_name": "{{user `shared_image_gallery_name`}}",
         "image_name": "{{user `image_name`}}",
-        "image_version": "{{user `build_timestamp`}}",
+        "image_version": "0.3.{{user `build_timestamp`}}",
         "replication_regions": [
           "{{user `replication_regions`}}"
         ]
