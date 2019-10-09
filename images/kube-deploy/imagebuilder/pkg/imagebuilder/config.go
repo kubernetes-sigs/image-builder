@@ -71,37 +71,39 @@ func (c *AWSConfig) InitDefaults(region string) {
 		// A slightly older image, but the newest one we have
 		c.ImageID = "ami-da69a1b7"
 
-	// Debian 9.5 images from https://wiki.debian.org/Cloud/AmazonEC2Image/Stretch
+	// Debian 9.10 images from https://wiki.debian.org/Cloud/AmazonEC2Image/Stretch
 	case "ap-northeast-1":
-		c.ImageID = "ami-048813c43a892bf4a"
+		c.ImageID = "ami-0c6a2f2f2f4a70aea"
 	case "ap-northeast-2":
-		c.ImageID = "ami-0b61dc7b9ac9452c7"
+		c.ImageID = "ami-0cbc427c7cf153743"
 	case "ap-south-1":
-		c.ImageID = "ami-02f59cc6982469cd2"
+		c.ImageID = "ami-09cfadd383378b3c6"
 	case "ap-southeast-1":
-		c.ImageID = "ami-0a9a79bb079115e9b"
+		c.ImageID = "ami-0c7b4220e70a330dc"
 	case "ap-southeast-2":
-		c.ImageID = "ami-0abf02e9015527575"
+		c.ImageID = "ami-04f3947810b6f3510"
 	case "ca-central-1":
-		c.ImageID = "ami-0e825d093523065f9"
+		c.ImageID = "ami-053436ba7a956a4dc"
 	case "eu-central-1":
-		c.ImageID = "ami-0681ed9bb7a58a33d"
+		c.ImageID = "ami-08b86eba424e765ec"
+	case "eu-north-1":
+		c.ImageID = "ami-05b74a5b2e19a2a97"
 	case "eu-west-1":
-		c.ImageID = "ami-0483f1cc1c483803f"
+		c.ImageID = "ami-0211a849817dcceca"
 	case "eu-west-2":
-		c.ImageID = "ami-0d9ba70fd9e495233"
+		c.ImageID = "ami-0536206ce3bd2c36f"
 	case "eu-west-3":
-		c.ImageID = "ami-0b59b5cf392c3c2b3"
+		c.ImageID = "ami-045fa58af83eb0ff4"
 	case "sa-east-1":
-		c.ImageID = "ami-0bd8e4655e2beef08"
+		c.ImageID = "ami-056f0447a169d5f76"
 	case "us-east-1":
-		c.ImageID = "ami-03006931f694ea7eb"
+		c.ImageID = "ami-0ed2d2283aa1466df"
 	case "us-east-2":
-		c.ImageID = "ami-06dfb9abeb4a6afc6"
+		c.ImageID = "ami-07a0560634acb945f"
 	case "us-west-1":
-		c.ImageID = "ami-0f0674cb683fcc1f7"
+		c.ImageID = "ami-0ff3a5bef845ec04f"
 	case "us-west-2":
-		c.ImageID = "ami-0a1fbca0e5b419fd1"
+		c.ImageID = "ami-0fdf2e9fd534f1b2f"
 
 	default:
 		klog.Warningf("Building in unknown region %q - will require specifying an image, may not work correctly")
