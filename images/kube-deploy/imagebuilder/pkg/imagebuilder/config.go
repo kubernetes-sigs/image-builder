@@ -72,6 +72,8 @@ func (c *AWSConfig) InitDefaults(region string) {
 		c.ImageID = "ami-da69a1b7"
 
 	// Debian 9.10 images from https://wiki.debian.org/Cloud/AmazonEC2Image/Stretch
+	case "ap-east-1":
+		c.ImageID = "ami-090320e91a2dc03f6"
 	case "ap-northeast-1":
 		c.ImageID = "ami-0c6a2f2f2f4a70aea"
 	case "ap-northeast-2":
@@ -94,6 +96,8 @@ func (c *AWSConfig) InitDefaults(region string) {
 		c.ImageID = "ami-0536206ce3bd2c36f"
 	case "eu-west-3":
 		c.ImageID = "ami-045fa58af83eb0ff4"
+	case "me-south-1":
+		c.ImageID = "ami-07dff46e3d3fe9f50"
 	case "sa-east-1":
 		c.ImageID = "ami-056f0447a169d5f76"
 	case "us-east-1":
