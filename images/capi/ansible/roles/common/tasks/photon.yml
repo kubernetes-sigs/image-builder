@@ -1,4 +1,4 @@
-# Copyright 2018 The Kubernetes Authors.
+# Copyright 2019 The Kubernetes Authors.
 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,8 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- include_tasks: aws.yml
-  when: packer_builder_type.startswith('amazon') 
+- name: add home dir for photon user
+  file:
+    state: directory
+    path: /home/photon
+    mode: 0755
+    owner: photon
+    group: photon
 
-- include_tasks: vmware.yml
-  when: packer_builder_type | search('vmware')
+- name: add bash_profile
+  template:
+    dest: /home/photon/.bash_profile
+    src: photon_bash_profile
+    owner: photon
+    group: photon
+
+- name: install baseline dependencies
+  command: tdnf install {{ common_photon_rpms }} -y --refresh
