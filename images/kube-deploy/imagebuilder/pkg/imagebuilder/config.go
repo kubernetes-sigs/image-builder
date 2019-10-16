@@ -73,41 +73,41 @@ func (c *AWSConfig) InitDefaults(region string) {
 
 	// Debian 9.10 images from https://wiki.debian.org/Cloud/AmazonEC2Image/Stretch
 	case "ap-east-1":
-		c.ImageID = "ami-090320e91a2dc03f6"
+		c.ImageID = "ami-0a81e23ced9c32d26"
 	case "ap-northeast-1":
-		c.ImageID = "ami-0c6a2f2f2f4a70aea"
+		c.ImageID = "ami-0aad015f7b135e198"
 	case "ap-northeast-2":
-		c.ImageID = "ami-0cbc427c7cf153743"
+		c.ImageID = "ami-00a96e50f990be54c"
 	case "ap-south-1":
-		c.ImageID = "ami-09cfadd383378b3c6"
+		c.ImageID = "ami-0c7bd0941d9b93c88"
 	case "ap-southeast-1":
-		c.ImageID = "ami-0c7b4220e70a330dc"
+		c.ImageID = "ami-0cca8bafd3ad1ad08"
 	case "ap-southeast-2":
-		c.ImageID = "ami-04f3947810b6f3510"
+		c.ImageID = "ami-0c6d33437a8337f6e"
 	case "ca-central-1":
-		c.ImageID = "ami-053436ba7a956a4dc"
+		c.ImageID = "ami-001c474f9452c7d93"
 	case "eu-central-1":
-		c.ImageID = "ami-08b86eba424e765ec"
+		c.ImageID = "ami-04dd896c9036d974b"
 	case "eu-north-1":
-		c.ImageID = "ami-05b74a5b2e19a2a97"
+		c.ImageID = "ami-04cc93d303a4dd18c"
 	case "eu-west-1":
-		c.ImageID = "ami-0211a849817dcceca"
+		c.ImageID = "ami-08d95e3db80c57a5e"
 	case "eu-west-2":
-		c.ImageID = "ami-0536206ce3bd2c36f"
+		c.ImageID = "ami-04129aa76aebf3aa2"
 	case "eu-west-3":
-		c.ImageID = "ami-045fa58af83eb0ff4"
+		c.ImageID = "ami-024a4edbad921fd5c"
 	case "me-south-1":
-		c.ImageID = "ami-07dff46e3d3fe9f50"
+		c.ImageID = "ami-0e8670e0374463e7b"
 	case "sa-east-1":
-		c.ImageID = "ami-056f0447a169d5f76"
+		c.ImageID = "ami-082e93a75a7f2ba1d"
 	case "us-east-1":
-		c.ImageID = "ami-0ed2d2283aa1466df"
+		c.ImageID = "ami-02c3fa55e499f1fb3"
 	case "us-east-2":
-		c.ImageID = "ami-07a0560634acb945f"
+		c.ImageID = "ami-06858f33bbe384bbb"
 	case "us-west-1":
-		c.ImageID = "ami-0ff3a5bef845ec04f"
+		c.ImageID = "ami-0dd6bad099b8b3889"
 	case "us-west-2":
-		c.ImageID = "ami-0fdf2e9fd534f1b2f"
+		c.ImageID = "ami-0964442b6f325859a"
 
 	default:
 		klog.Warningf("Building in unknown region %q - will require specifying an image, may not work correctly")
