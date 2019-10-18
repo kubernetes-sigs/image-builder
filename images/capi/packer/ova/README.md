@@ -53,12 +53,12 @@ To see a list of which images may be built, use Make's tab completion:
 
 ```shell
 $ make build<tab><tab>
-build              build-centos-7     build-ubuntu-1804
+build              build-centos-7     build-photon-3     build-ubuntu-1804
 ```
 
 ### Building the Images
 
-To build the Ubuntu and CentOS images:
+To build the Ubuntu, CentOS and Photon images:
 
 ```shell
 make

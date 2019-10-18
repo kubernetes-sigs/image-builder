@@ -18,6 +18,9 @@
 - import_tasks: redhat.yml
   when: kubernetes_source_type == "pkg" and ansible_os_family == "RedHat"
 
+- import_tasks: photon.yml
+  when: kubernetes_source_type == "pkg" and ansible_os_family == "VMware Photon OS"
+
 - import_tasks: url.yml
   when: kubernetes_source_type != "pkg" and kubernetes_cni_source_type != "pkg"
 

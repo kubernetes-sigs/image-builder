@@ -1,4 +1,4 @@
-# Copyright 2018 The Kubernetes Authors.
+# Copyright 2019 The Kubernetes Authors.
 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,8 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- include_tasks: aws.yml
-  when: packer_builder_type.startswith('amazon') 
+- name: Add the kubernetes repo
+  template:
+    dest: /etc/yum.repos.d/kubernetes.repo
+    src: etc/yum.repos.d/kubernetes.repo
 
-- include_tasks: vmware.yml
-  when: packer_builder_type | search('vmware')
+- name: Install Kubernetes
+  command: tdnf install {{ packages }} --nogpgcheck -y
+  vars:
+    packages: "kubelet-{{ kubernetes_rpm_version }} kubeadm-{{ kubernetes_rpm_version }} kubectl-{{ kubernetes_rpm_version }} kubernetes-cni-{{kubernetes_cni_rpm_version }}"

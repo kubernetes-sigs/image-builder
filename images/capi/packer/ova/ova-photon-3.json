@@ -1,0 +1,14 @@
+{
+  "build_name": "photon-3",
+  "distro_name": "photon",
+  "os_display_name": "VMware Photon OS 64-bit",
+  "guest_os_type": "Linux",
+  "iso_url": "http://dl.bintray.com/vmware/photon/3.0/GA/iso/photon-3.0-26156e2.iso",
+  "iso_checksum": "1c38dd6d00e11d3cbf7768ce93fc3eb8913a9673",
+  "iso_checksum_type": "sha1",
+  "ssh_username": "photon",
+  "ssh_password": "photon",
+  "boot_command_prefix": "<esc><wait> vmlinuz initrd=initrd.img root/dev/ram0 loglevel=3 photon.media=cdrom ks=",
+  "boot_command_suffix": "/3/ks.json<enter><wait>",
+  "shutdown_command": "shutdown now"
+}

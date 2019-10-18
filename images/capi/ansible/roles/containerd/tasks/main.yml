@@ -18,6 +18,9 @@
 - import_tasks: redhat.yml
   when: ansible_os_family == "RedHat"
 
+- import_tasks: photon.yml
+  when: ansible_os_family == "VMware Photon OS"
+
 # TODO(vincepri): Use deb/rpm packages once available.
 # See https://github.com/containerd/containerd/issues/1508 for context.
 - name: download containerd

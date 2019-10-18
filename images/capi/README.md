@@ -11,6 +11,7 @@ Check the Makefile to see a list of images may be built
 |---------|
 | `make build-ova-centos-7` |
 | `make build-ova-ubuntu-1804` |
+| `make build-ova-photon-3` |
 | `make build-ami-default` |
 
 ## Configuration

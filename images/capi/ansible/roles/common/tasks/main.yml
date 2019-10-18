@@ -18,6 +18,9 @@
 - import_tasks: redhat.yml
   when: ansible_os_family == "RedHat"
 
+- import_tasks: photon.yml
+  when: ansible_os_family == "VMware Photon OS"
+
 - name: Ensure overlay module is present
   modprobe:
     name: overlay
@@ -42,6 +45,7 @@
     state: present
     sysctl_set: yes
     reload: yes
+    sysctl_file: "{{ sysctl_conf_file }}"
 
 - name: Ensure net.bridge.bridge-nf-call-iptables sysctl is present
   sysctl:
@@ -50,6 +54,7 @@
     state: present
     sysctl_set: yes
     reload: yes
+    sysctl_file: "{{ sysctl_conf_file }}"
 
 - name: Ensure net.bridge.bridge-nf-call-ip6tables sysctl is present
   sysctl:
@@ -58,3 +63,4 @@
     state: present
     sysctl_set: yes
     reload: yes
+    sysctl_file: "{{ sysctl_conf_file }}"

@@ -18,6 +18,9 @@
 - import_tasks: redhat.yml
   when: ansible_os_family == "RedHat"
 
+- import_tasks: photon.yml
+  when: ansible_os_family == "VMware Photon OS"
+
 - name: Truncate machine id
   file:
     state: "{{ item.state }}"
@@ -43,6 +46,7 @@
 - name: Set hostname
   hostname:
     name: localhost.local
+  when: ansible_os_family != "VMware Photon OS"
 
 - name: Reset hosts file
   copy:

@@ -1,0 +1,49 @@
+{
+    "hostname": "photonos.vm",
+    "password":
+        {
+            "crypted": false,
+            "text": "photon"
+        },
+    "disk": "/dev/sda",
+    "type": "minimal",
+    "additional_packages":[
+      "minimal",
+      "shadow",
+      "ca-certificates",
+      "conntrack-tools",
+      "curl",
+      "ebtables",
+      "gzip",
+      "jq",
+      "libnetfilter_conntrack",
+      "libnetfilter_cthelper",
+      "libnetfilter_cttimeout",
+      "libnetfilter_queue",
+      "nfs-utils",
+      "nginx",
+      "ntp",
+      "openssh-clients",
+      "openssh-server",
+      "python-netifaces",
+      "python-requests",
+      "python-pip",
+      "sed",
+      "socat",
+      "sudo",
+      "tar",
+      "unzip",
+      "vim"
+    ],
+    "postinstall": [
+                    "#!/bin/sh",
+                    "useradd -U --groups  wheel photon && echo 'photon:photon' | chpasswd",
+                    "systemctl disable nginx",
+                    "systemctl enable sshd",
+                    "echo 'photon ALL=(ALL) NOPASSWD: ALL' >/etc/sudoers.d/photon",
+                    "chmod 440 /etc/sudoers.d/photon",
+                    "tdnf clean all",
+                    "swapoff -a",
+                    "rm -f /swapfile"
+                   ]
+}

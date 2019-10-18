@@ -68,7 +68,7 @@ write_files:
     apiVersion: kubeadm.k8s.io/v1beta1
     kind: ClusterConfiguration
     clusterName: capi
-    kubernetesVersion: v1.13.6
+    kubernetesVersion: v1.15.3
     networking:
       dnsDomain: cluster.local
       podSubnet: 10.244.0.0/16
