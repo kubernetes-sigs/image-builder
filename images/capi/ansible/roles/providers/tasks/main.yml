@@ -17,3 +17,6 @@
 
 - include_tasks: vmware.yml
   when: packer_builder_type | search('vmware')
+
+- include_tasks: googlecompute.yml
+  when: packer_builder_type.startswith('googlecompute')
