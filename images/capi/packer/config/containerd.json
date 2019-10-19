@@ -1,4 +1,4 @@
 {
-    "containerd_version": "1.3.0",
-    "containerd_sha256": "47653ab55b58668ce93704e47b727b41f57d296e4048d6860daf55d6b7c2bf18"
+    "containerd_version": "1.2.10",
+    "containerd_sha256": "9125a6ae5a89dfe9403fea7d03a8d8ba9fa97b6863ee8698c4e6c258fb14f1fd"
 }
