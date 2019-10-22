@@ -71,37 +71,43 @@ func (c *AWSConfig) InitDefaults(region string) {
 		// A slightly older image, but the newest one we have
 		c.ImageID = "ami-da69a1b7"
 
-	// Debian 9.5 images from https://wiki.debian.org/Cloud/AmazonEC2Image/Stretch
+	// Debian 9.10 images from https://wiki.debian.org/Cloud/AmazonEC2Image/Stretch
+	case "ap-east-1":
+		c.ImageID = "ami-0a81e23ced9c32d26"
 	case "ap-northeast-1":
-		c.ImageID = "ami-048813c43a892bf4a"
+		c.ImageID = "ami-0aad015f7b135e198"
 	case "ap-northeast-2":
-		c.ImageID = "ami-0b61dc7b9ac9452c7"
+		c.ImageID = "ami-00a96e50f990be54c"
 	case "ap-south-1":
-		c.ImageID = "ami-02f59cc6982469cd2"
+		c.ImageID = "ami-0c7bd0941d9b93c88"
 	case "ap-southeast-1":
-		c.ImageID = "ami-0a9a79bb079115e9b"
+		c.ImageID = "ami-0cca8bafd3ad1ad08"
 	case "ap-southeast-2":
-		c.ImageID = "ami-0abf02e9015527575"
+		c.ImageID = "ami-0c6d33437a8337f6e"
 	case "ca-central-1":
-		c.ImageID = "ami-0e825d093523065f9"
+		c.ImageID = "ami-001c474f9452c7d93"
 	case "eu-central-1":
-		c.ImageID = "ami-0681ed9bb7a58a33d"
+		c.ImageID = "ami-04dd896c9036d974b"
+	case "eu-north-1":
+		c.ImageID = "ami-04cc93d303a4dd18c"
 	case "eu-west-1":
-		c.ImageID = "ami-0483f1cc1c483803f"
+		c.ImageID = "ami-08d95e3db80c57a5e"
 	case "eu-west-2":
-		c.ImageID = "ami-0d9ba70fd9e495233"
+		c.ImageID = "ami-04129aa76aebf3aa2"
 	case "eu-west-3":
-		c.ImageID = "ami-0b59b5cf392c3c2b3"
+		c.ImageID = "ami-024a4edbad921fd5c"
+	case "me-south-1":
+		c.ImageID = "ami-0e8670e0374463e7b"
 	case "sa-east-1":
-		c.ImageID = "ami-0bd8e4655e2beef08"
+		c.ImageID = "ami-082e93a75a7f2ba1d"
 	case "us-east-1":
-		c.ImageID = "ami-03006931f694ea7eb"
+		c.ImageID = "ami-02c3fa55e499f1fb3"
 	case "us-east-2":
-		c.ImageID = "ami-06dfb9abeb4a6afc6"
+		c.ImageID = "ami-06858f33bbe384bbb"
 	case "us-west-1":
-		c.ImageID = "ami-0f0674cb683fcc1f7"
+		c.ImageID = "ami-0dd6bad099b8b3889"
 	case "us-west-2":
-		c.ImageID = "ami-0a1fbca0e5b419fd1"
+		c.ImageID = "ami-0964442b6f325859a"
 
 	default:
 		klog.Warningf("Building in unknown region %q - will require specifying an image, may not work correctly")
