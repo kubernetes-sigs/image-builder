@@ -74,7 +74,7 @@
         "http://{{ .HTTPIP }}:{{ .HTTPPort }}",
         "{{user `boot_command_suffix`}}"
       ],
-      "shutdown_command": "echo '{{user `ssh_password`}}' | sudo -S -E {{user `shutdown_command`}}",
+      "shutdown_command": "echo '{{user `ssh_password`}}' | sudo -S -E sh -c 'usermod -L {{user `ssh_username`}} && {{user `shutdown_command`}}'",
       "skip_compaction": "{{user `skip_compaction`}}",
       "vnc_bind_address": "{{user `vnc_bind_address`}}",
       "vnc_port_min": "{{user `vnc_port_min`}}",
