@@ -3,7 +3,7 @@
     "subscription_id": null,
     "client_id": null,
     "client_secret": null,
-    "azure_location": "",
+    "azure_location": null,
     "vm_size": "",
     "build_timestamp": "{{timestamp}}",
     "containerd_version": null,
@@ -45,7 +45,7 @@
       "capture_name_prefix": "capi-{{user `build_timestamp`}}",
       "storage_account": "{{user `storage_account_name`}}",
       "location": "{{user `azure_location`}}",
-      "ssh_username": "ubuntu",
+      "ssh_username": "packer",
       "azure_tags": {
         "build_timestamp": "{{user `build_timestamp`}}",
         "distribution": "ubuntu",
@@ -77,7 +77,7 @@
         ]
       },
       "location": "{{user `azure_location`}}",
-      "ssh_username": "ubuntu",
+      "ssh_username": "packer",
       "azure_tags": {
         "build_timestamp": "{{user `build_timestamp`}}",
         "distribution": "ubuntu",
@@ -98,6 +98,7 @@
     {
       "type": "ansible",
       "playbook_file": "./ansible/playbook.yml",
+      "user": "packer",
       "ansible_env_vars": [
         "ANSIBLE_SSH_ARGS='{{user `existing_ansible_ssh_args`}} -o IdentitiesOnly=yes'",
         "ANSIBLE_REMOTE_TEMP='/tmp/.ansible/'"

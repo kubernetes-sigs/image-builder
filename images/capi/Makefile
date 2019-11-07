@@ -57,7 +57,7 @@ $(OVA_BUILD_TARGETS_ESX):
 .PHONY: $(OVA_BUILD_TARGETS_ESX)
 
 $(AZURE_BUILD_TARGETS):
-	packer build $(PACKER_FLAGS) -var-file="$(abspath packer/azure/azure-config.json)" -var-file="$(abspath packer/azure/$(subst build-,,$@).json)" -only="$(subst build-azure-,,$@)" packer/azure/packer.json
+	. $(abspath packer/azure/scripts/init-$(subst build-azure-,,$@).sh) && packer build $(PACKER_FLAGS) -var-file="$(abspath packer/azure/azure-config.json)" -var-file="$(abspath packer/azure/$(subst build-,,$@).json)" -only="$(subst build-azure-,,$@)" packer/azure/packer.json
 .PHONY: $(AZURE_BUILD_TARGETS)
 
 CLEAN_TARGETS := $(addprefix clean-,$(OVA_BUILD_NAMES))

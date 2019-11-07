@@ -1,5 +1,5 @@
 {
-  "azure_location": "southcentralus",
+  "azure_location": "{{env `AZURE_LOCATION`}}",
   "vm_size": "Standard_B2ms",
   "subscription_id": "{{env `AZURE_SUBSCRIPTION_ID`}}",
   "client_id": "{{env `AZURE_CLIENT_ID`}}",

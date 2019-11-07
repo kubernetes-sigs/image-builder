@@ -19,34 +19,8 @@ This directory contains tooling for building base images for use as nodes in Kub
 
 ### Building Managed Images in Shared Image Galleries
 
-- Create a resource group, shared image gallery and image definition in the desired correct subscription and location.
-
-For example:
-
-```sh
-az group create -n "cluster-api-images" -l southcentralus
-az sig create --resource-group cluster-api-images --gallery-name ClusterAPI
-az sig image-definition create \
-   --resource-group cluster-api-images \
-   --gallery-name ClusterAPI \
-   --gallery-image-definition capi-ubuntu-1804 \
-   --publisher capz \
-   --offer capz-demo \
-   --sku 18.04-LTS \
-   --os-type Linux
-```
-
-- From the images/capi directory, run `make build-azure-sig-ubuntu-1804`
+From the images/capi directory, run `make build-azure-sig-ubuntu-1804`
 
 ### Building VHDs
 
-- Create a resource group and storage account in the desired correct subscription and location.
-
-For example:
-
-```sh
-az group create -n "cluster-api-images" -l southcentralus
-az storage account create -n "clusterapiimages" -g "cluster-api-images"
-```
-
-- From the images/capi directory, run `make build-azure-vhd-ubuntu-1804`
+From the images/capi directory, run `make build-azure-vhd-ubuntu-1804`
