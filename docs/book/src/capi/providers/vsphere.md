@@ -1,4 +1,4 @@
-# Building Base Images
+# Building Images for vSphere
 
 This directory contains tooling for building base images for use as nodes in Kubernetes Clusters. [Packer](https://www.packer.io) is used for building these images. This tooling has been forked and extended from the [Wardroom](https://github.com/heptiolabs/wardroom) project.
 
@@ -19,9 +19,6 @@ The `vmware-iso` builder supports building against a remote VMware ESX server, b
 
 - [Packer](https://www.packer.io/intro/getting-started/install.html)
 - [Ansible](http://docs.ansible.com/ansible/latest/intro_installation.html) version >= 2.8.0
-- [goss](https://github.com/YaleUniversity/packer-provisioner-goss)
-
-The program `hack/image-tools.sh` can be used to download and install the goss plug-in.
 
 ## The `cloudinit` Directory
 
@@ -37,34 +34,17 @@ For more information about how the files in the `cloudinit` directory are used, 
 
 ### Configuration
 
-The `config` directory includes several JSON files that define the configuration for the images:
+In additon to the configuration found in `images/capi/packer/config`, the `ova` directory includes several JSON files that define the configuration for the images:
 
 | File | Description |
 |------|-------------|
-| `../config/kubernetes.json` | The version of Kubernetes to install |
-| `../config/cni.json` | The version of Kubernetes CNI to install |
-| `../config/containerd.json` | The version of containerd to install |
-| `../config/centos-7.json` | The settings for the CentOS 7 image |
-| `../config/ubuntu-1804.json` | The settings for the Ubuntu 1804 image |
+| `esx.json` | Additional settings needed when building on a remote ESXi host |
+| `ova-centos-7.json` | The settings for the CentOS 7 image |
+| `ova-photon-3.json` | The settings for the Photon 3 image |
+| `ova-ubuntu-1804.json` | The settings for the Ubuntu 1804 image |
 
-### Limiting Images to Build
 
-To see a list of which images may be built, use Make's tab completion:
-
-```shell
-$ make build<tab><tab>
-build              build-centos-7     build-photon-3     build-ubuntu-1804
-```
-
-### Building the Images
-
-To build the Ubuntu, CentOS and Photon images:
-
-```shell
-make
-```
-
-The images are built and located in `packer/output/BUILD_NAME+kube-KUBERNETES_VERSION`
+The images are built and located in `images/capi/output/BUILD_NAME+kube-KUBERNETES_VERSION`
 
 ## Uploading Images
 

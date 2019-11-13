@@ -1,4 +1,4 @@
-# Building Base Images
+# Building Images for Azure
 
 This directory contains tooling for building base images for use as nodes in Kubernetes Clusters. [Packer](https://www.packer.io) is used for building these images. This tooling has been forked and extended from the [Wardroom](https://github.com/heptiolabs/wardroom) project.
 
