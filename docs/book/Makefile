@@ -1,4 +1,4 @@
-# Copyright (c) 2019 The Kubernetes authors
+# Copyright 2019 The Kubernetes Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,25 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-SHELL := /usr/bin/env bash
-CWD := $(shell pwd)
-BIN := image-builder
-
-.PHONY: clean $(BIN)
-
-default: $(BIN)
-
-$(BIN):
-	GO111MODULE=on go build
-
-clean:
-	rm -f dist/
-
-.PHONY: build-book
-build-book:
-	hack/build-mdbook.sh
-
-.PHONY: serve-book
-serve-book: ## Build and serve the book with live-reloading enabled
-	$(MAKE) -C docs/book serve
+.PHONY: serve
+serve:
+	mdbook serve
