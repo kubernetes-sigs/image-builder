@@ -9,3 +9,5 @@ The Kubernetes Image Builder is a SIG Cluster Lifecycle sponsored project with t
 ## Summary
 
 ## Tutorials
+
+[Build and deploy machine image on vSphere or AWS](./tutorials/build-deploy.md).
