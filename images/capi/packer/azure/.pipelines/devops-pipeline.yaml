@@ -1,0 +1,63 @@
+# Required pipeline variables:
+# - BUILD_POOL - Azure DevOps build pool to use
+# - CONTAINER_IMAGE - Dev container image URL to use. Should have Azure CLI, Packer and Ansible.
+# - AZURE_TENANT_ID - tenant ID
+# - AZURE_CLIENT_ID - Service principal ID
+# - AZURE_CLIENT_SECRET - Service principal secret
+# - AZURE_SUBSCRIPTION_ID - Subscription ID used by the pipeline
+# - START_DATE - start date for the storage account SAS token
+# - EXPIRY_DATE - expiry date for the for the storage account SAS token
+# - KUBERNETES_VERSION - version of Kubernetes to build the image with, e.g. `1.16.2`
+
+trigger: none
+pr: none
+
+jobs:
+- job: build_vhd_linux
+  container: $[ variables['CONTAINER_IMAGE'] ]
+  timeoutInMinutes: 120
+  strategy:
+    maxParallel: 0
+  pool:
+    name: $(BUILD_POOL)
+  steps:
+  - script: |
+      KUBERNETES_RELEASE=$(echo ${KUBERNETES_VERSION} | cut -d "." -f -2)
+      sed -i "s/.*kubernetes_series.*/  \"kubernetes_series\": \"v${KUBERNETES_RELEASE}\",/g" kubernetes.json
+      sed -i "s/.*kubernetes_semver.*/  \"kubernetes_semver\": \"v${KUBERNETES_VERSION}\",/g" kubernetes.json
+      sed -i "s/.*kubernetes_rpm_version.*/  \"kubernetes_rpm_version\": \"${KUBERNETES_VERSION}-0\",/g" kubernetes.json
+      sed -i "s/.*kubernetes_deb_version.*/  \"kubernetes_deb_version\": \"${KUBERNETES_VERSION}-00\",/g" kubernetes.json
+      cat kubernetes.json
+    displayName: Write configuration files
+    workingDirectory: '$(system.defaultWorkingDirectory)/images/capi/packer/config'
+  - script: |
+      export AZURE_CLIENT_ID=$(AZURE_CLIENT_ID)
+      export AZURE_CLIENT_SECRET=$(AZURE_CLIENT_SECRET)
+      make build-azure-vhd-ubuntu-1804 | tee packer/azure/packer.out
+    displayName: Building VHD
+    workingDirectory: '$(system.defaultWorkingDirectory)/images/capi'
+  - script: |
+      RESOURCE_GROUP_NAME="$(cat packer.out | grep "resource group name:" | cut -d " " -f 4)"
+      STORAGE_ACCOUNT_NAME=$(cat packer.out | grep "storage name:" | cut -d " " -f 3)
+      OS_DISK_URI=$(cat packer.out | grep "OSDiskUri:" | cut -d " " -f 2)
+      printf "COPY ME ----> ${OS_DISK_URI}?" | tee vhd-url.out
+      az login --service-principal -u $(AZURE_CLIENT_ID) -p $(AZURE_CLIENT_SECRET) --tenant ${AZURE_TENANT_ID}
+      az account set -s ${AZURE_SUBSCRIPTION_ID}
+      ACCOUNT_KEY=$(az storage account keys list -g ${RESOURCE_GROUP_NAME} --subscription ${AZURE_SUBSCRIPTION_ID} --account-name ${STORAGE_ACCOUNT_NAME} --query '[0].value')
+      az storage container generate-sas --name system --permissions lr --account-name ${STORAGE_ACCOUNT_NAME} --account-key ${ACCOUNT_KEY} --start ${START_DATE} --expiry ${EXPIRY_DATE} | tr -d '\"' | tee -a vhd-url.out
+    displayName: Getting OS VHD URL
+    workingDirectory: '$(system.defaultWorkingDirectory)/images/capi/packer/azure'
+    condition: eq(variables.CLEANUP, 'False')
+  - script: |
+      RESOURCE_GROUP_NAME="$(cat packer.out | grep "resource group name:" | cut -d " " -f 4)"
+      STORAGE_ACCOUNT_NAME="$(cat packer.out | grep "storage name:" | cut -d " " -f 3)"
+      az login --service-principal -u $(AZURE_CLIENT_ID) -p $(AZURE_CLIENT_SECRET) --tenant ${AZURE_TENANT_ID}
+      az account set -s ${AZURE_SUBSCRIPTION_ID}
+      az storage account delete -n ${STORAGE_ACCOUNT_NAME} -g ${RESOURCE_GROUP_NAME} --yes
+    displayName: cleanup - delete storage account
+    workingDirectory: '$(system.defaultWorkingDirectory)/images/capi/packer/azure'
+    condition: eq(variables.CLEANUP, 'True')
+  - script: |
+      chown -R $USER:$USER .
+    displayName: cleanup - chown all files in work directory 
+    condition: always()
