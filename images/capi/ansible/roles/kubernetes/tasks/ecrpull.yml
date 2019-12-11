@@ -1,0 +1,27 @@
+# TODO: This task will be deprecated once https://github.com/containerd/cri/issues/1131 is fixed
+- name: Create kubeadm config file
+  template:
+    dest: /etc/kubeadm.yml
+    src: etc/kubeadm.yml
+
+- name: Get images list
+  shell: 'kubeadm config images list --config /etc/kubeadm.yml'
+  register: images_list
+
+- name: Log into ECR
+  command: >
+    aws ecr get-authorization-token
+    --registry-ids {{ kubernetes_container_registry.split('.')[0] }}
+    --region {{ kubernetes_container_registry.split('.')[3] }}
+    --output text
+    --query 'authorizationData[].authorizationToken'
+  register: credentials
+
+- name: Pull images
+  command: "crictl pull --creds {{ credentials.stdout | b64decode }} {{ item }}"
+  loop: "{{ images_list.stdout_lines }}"
+
+- name: Delete kubeadm config
+  file:
+    path: /etc/kubeadm.yml
+    state: absent
