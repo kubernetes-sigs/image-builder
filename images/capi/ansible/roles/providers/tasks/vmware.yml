@@ -49,6 +49,9 @@
 
 - name: Execute cloud-init-vmware.sh
   shell: bash -o errexit -o pipefail /tmp/cloud-init-vmware.sh
+  environment:
+    REPO_SLUG: '{{ guestinfo_datasource_slug }}'
+    GIT_REF:   '{{ guestinfo_datasource_ref }}'
 
 - name: Remove cloud-init-vmware.sh
   file:
