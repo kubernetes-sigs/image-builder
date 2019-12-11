@@ -29,7 +29,7 @@ AZURE_BUILD_NAMES ?= azure-sig-ubuntu-1804 azure-vhd-ubuntu-1804
 KUBE_JSON ?= packer/config/kubernetes.json packer/config/cni.json packer/config/containerd.json
 
 # The flags to give to Packer.
-PACKER_VAR_FILES := $(KUBE_JSON)
+PACKER_VAR_FILES += $(KUBE_JSON)
 OLD_PACKER_FLAGS := $(PACKER_FLAGS)
 PACKER_FLAGS := $(foreach f,$(abspath $(PACKER_VAR_FILES)),-var-file="$(f)" )
 PACKER_FLAGS += $(OLD_PACKER_FLAGS)
