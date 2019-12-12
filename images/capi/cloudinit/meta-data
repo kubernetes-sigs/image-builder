@@ -1,3 +1,5 @@
+cleanup-guestinfo:
+- userdata
 instance-id: iid-capi
 local-hostname: capi.vm
 network:
