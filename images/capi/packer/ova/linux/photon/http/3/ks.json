@@ -21,7 +21,6 @@
       "libnetfilter_cttimeout",
       "libnetfilter_queue",
       "nfs-utils",
-      "nginx",
       "ntp",
       "openssh-clients",
       "openssh-server",
@@ -38,7 +37,6 @@
     "postinstall": [
                     "#!/bin/sh",
                     "useradd -U --groups  wheel photon && echo 'photon:photon' | chpasswd",
-                    "systemctl disable nginx",
                     "systemctl enable sshd",
                     "echo 'photon ALL=(ALL) NOPASSWD: ALL' >/etc/sudoers.d/photon",
                     "chmod 440 /etc/sudoers.d/photon",
