@@ -39,6 +39,21 @@
     extra_opts:
       - --no-overwrite-dir
 
+- name: Creates unit file directory
+  file:
+    path: /etc/systemd/system/containerd.service.d
+    state: directory
+
+- name: Create containerd boot order drop in file
+  template:
+    dest: /etc/systemd/system/containerd.service.d/boot-order.conf
+    src: etc/systemd/system/containerd.service.d/boot-order.conf
+    
+- name: Create containerd memory pressure drop in file
+  template:
+    dest: /etc/systemd/system/containerd.service.d/memory-pressure.conf
+    src: etc/systemd/system/containerd.service.d/memory-pressure.conf
+
 - name: start containerd service
   systemd:
     name: containerd
