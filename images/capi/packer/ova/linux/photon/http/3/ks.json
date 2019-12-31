@@ -7,6 +7,10 @@
         },
     "disk": "/dev/sda",
     "type": "minimal",
+    "install_linux_esx": true,
+    "bootmode": "bios",
+    "log_level": "debug",
+    "ui": false,
     "additional_packages":[
       "minimal",
       "shadow",
