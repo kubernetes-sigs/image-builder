@@ -1,12 +1,11 @@
 {
-    "hostname": "photonos.vm",
+    "hostname": "localhost",
     "password":
         {
             "crypted": false,
             "text": "photon"
         },
     "disk": "/dev/sda",
-    "bootmode": "dualboot",
     "packages":[
         "minimal",
         "linux",
