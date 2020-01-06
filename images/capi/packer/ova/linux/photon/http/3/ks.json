@@ -6,19 +6,15 @@
             "text": "photon"
         },
     "disk": "/dev/sda",
-    "type": "minimal",
-    "install_linux_esx": true,
-    "bootmode": "bios",
-    "log_level": "debug",
-    "ui": false,
-    "additional_packages":[
-      "minimal",
-      "shadow",
-      "ca-certificates",
+    "bootmode": "dualboot",
+    "packages":[
+        "minimal",
+        "linux",
+        "initramfs"
+    ],
+    "additional_packages": [
       "conntrack-tools",
-      "curl",
       "ebtables",
-      "gzip",
       "jq",
       "libnetfilter_conntrack",
       "libnetfilter_cthelper",
@@ -35,8 +31,7 @@
       "socat",
       "sudo",
       "tar",
-      "unzip",
-      "vim"
+      "unzip"
     ],
     "postinstall": [
                     "#!/bin/sh",

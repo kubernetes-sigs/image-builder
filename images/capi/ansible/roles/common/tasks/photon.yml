@@ -29,3 +29,9 @@
 
 - name: install baseline dependencies
   command: tdnf install {{ common_photon_rpms }} -y --refresh
+
+- name: disable service docker and ensure it is masked (installed via 'minimal' package)
+  systemd:
+    name: docker
+    enabled: no
+    masked: yes
