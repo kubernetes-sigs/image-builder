@@ -1,0 +1,14 @@
+{
+  "build_name": "ubuntu-2004",
+  "distro_name": "ubuntu",
+  "os_display_name": "Ubuntu 20.04",
+  "guest_os_type": "ubuntu-64",
+  "iso_url": "http://cdimage.ubuntu.com/ubuntu-server/daily/20200107/focal-server-amd64.iso",
+  "iso_checksum": "4901eeba3ffaa56b9356bb496d161ade5bd1e2df579552aa6c40f33984a34614",
+  "iso_checksum_type": "sha256",
+  "ssh_username": "ubuntu",
+  "ssh_password": "ubuntu",
+  "boot_command_prefix": "<esc><wait><esc><wait><enter><wait>/install/vmlinuz auto console-setup/ask_detect=false console-setup/layoutcode=us console-setup/modelcode=pc105 debconf/frontend=noninteractive debian-installer=en_US fb=false initrd=/install/initrd.gz kbd-chooser/method=us keyboard-configuration/layout=USA keyboard-configuration/variant=USA locale=en_US netcfg/get_domain=local netcfg/get_hostname=localhost grub-installer/bootdev=/dev/sda preseed/url=",
+  "boot_command_suffix": "/20.04/preseed.cfg -- <wait><enter><wait>",
+  "shutdown_command": "shutdown -P now"
+}
