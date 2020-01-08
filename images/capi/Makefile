@@ -19,10 +19,10 @@ all: build
 
 # A list of the supported distribution/version combinations. Each member
 # of *_BUILD_NAMES must have a corresponding file "config/*_BUILD_NAME.json".
-OVA_BUILD_NAMES ?= ova-centos-7 ova-ubuntu-1804 ova-photon-3
+OVA_BUILD_NAMES ?= ova-centos-7 ova-ubuntu-1804 ova-ubuntu-2004 ova-photon-3
 AMI_BUILD_NAMES ?= ami-default
 GCE_BUILD_NAMES ?= gce-default
-OVA_BUILD_NAMES_ESX ?= esx-ova-centos-7 esx-ova-ubuntu-1804
+OVA_BUILD_NAMES_ESX ?= esx-ova-centos-7 esx-ova-ubuntu-1804 esx-ova-ubuntu-2004
 AZURE_BUILD_NAMES ?= azure-sig-ubuntu-1804 azure-vhd-ubuntu-1804
 
 # The version of Kubernetes to install.
