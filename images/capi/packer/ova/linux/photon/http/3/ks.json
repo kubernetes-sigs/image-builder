@@ -1,20 +1,19 @@
 {
-    "hostname": "photonos.vm",
+    "hostname": "localhost",
     "password":
         {
             "crypted": false,
             "text": "photon"
         },
     "disk": "/dev/sda",
-    "type": "minimal",
-    "additional_packages":[
-      "minimal",
-      "shadow",
-      "ca-certificates",
+    "packages":[
+        "minimal",
+        "linux",
+        "initramfs"
+    ],
+    "additional_packages": [
       "conntrack-tools",
-      "curl",
       "ebtables",
-      "gzip",
       "jq",
       "libnetfilter_conntrack",
       "libnetfilter_cthelper",
@@ -31,8 +30,7 @@
       "socat",
       "sudo",
       "tar",
-      "unzip",
-      "vim"
+      "unzip"
     ],
     "postinstall": [
                     "#!/bin/sh",

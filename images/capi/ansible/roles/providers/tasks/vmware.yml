@@ -58,6 +58,12 @@
     path:  /tmp/cloud-init-vmware.sh
     state: absent
 
+- name: Remove cloud-init /etc/cloud/cloud.cfg.d/99-disable-networking-config.cfg
+  file:
+    path: /etc/cloud/cloud.cfg.d/99-disable-networking-config.cfg
+    state: absent
+  when: ansible_os_family == "VMware Photon OS"
+  
 #- name: Unlock password
 #  replace:
 #    path: /etc/cloud/cloud.cfg
