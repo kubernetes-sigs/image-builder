@@ -22,7 +22,7 @@ all: build
 OVA_BUILD_NAMES ?= ova-centos-7 ova-ubuntu-1804 ova-ubuntu-2004 ova-photon-3
 AMI_BUILD_NAMES ?= ami-default
 GCE_BUILD_NAMES ?= gce-default
-OVA_BUILD_NAMES_ESX ?= esx-ova-centos-7 esx-ova-ubuntu-1804 esx-ova-ubuntu-2004
+OVA_BUILD_NAMES_ESX ?= esx-ova-centos-7 esx-ova-ubuntu-1804 esx-ova-ubuntu-2004 esx-ova-photon-3
 AZURE_BUILD_NAMES ?= azure-sig-ubuntu-1804 azure-vhd-ubuntu-1804
 
 # The version of Kubernetes to install.
