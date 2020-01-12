@@ -38,6 +38,8 @@
         "echo 'photon ALL=(ALL) NOPASSWD: ALL' >/etc/sudoers.d/photon",
         "chmod 440 /etc/sudoers.d/photon",
         "systemctl enable sshd",
+        "systemctl disable docker.service",
+        "systemctl mask docker.service",
         "tdnf clean all",
         "swapoff -a",
         "rm -f /swapfile"
