@@ -58,7 +58,7 @@ PACKER_FLAGS := $(foreach f,$(abspath $(PACKER_VAR_FILES)),-var-file="$(f)" ) \
 ## --------------------------------------
 ## Platform and version combinations
 ## --------------------------------------
-CENTOS_VERSIONS			:=	centos-7
+CENTOS_VERSIONS			:=	centos-7 centos-8
 PHOTON_VERSIONS			:=	photon-3
 UBUNTU_VERSIONS			:=	ubuntu-1804 ubuntu-2004
 
@@ -114,11 +114,13 @@ $(OVA_CLEAN_TARGETS):
 ## Documented targets
 ## --------------------------------------
 build-ova-centos-7: ## Builds CentOS 7 OVA w local hypervisor
+build-ova-centos-8: ## Builds CentOS 8 OVA w local hypervisor
 build-ova-photon-3: ## Builds Photon 3 OVA w local hypervisor
 build-ova-ubuntu-1804: ## Builds Ubuntu 18.04 OVA w local hypervisor
 build-ova-ubuntu-2004: ## Builds Ubuntu 20.04 OVA w local hypervisor
 
 build-esx-centos-7: ## Builds CentOS 7 OVA w remote hypervisor
+build-esx-centos-8: ## Builds CentOS 8 OVA w remote hypervisor
 build-esx-photon-3: ## Builds Photon 3 OVA w remote hypervisor
 build-esx-ubuntu-1804: ## Builds Ubuntu 18.04 OVA w remote hypervisor
 build-esx-ubuntu-2004: ## Builds Ubuntu 20.04 OVA w remote hypervisor

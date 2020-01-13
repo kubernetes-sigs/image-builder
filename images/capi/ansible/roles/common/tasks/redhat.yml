@@ -12,11 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- name: add epel repo
+- name: Add EPEL repository (7)
   yum:
-    name: "{{ common_redhat_epel_rpm }}"
+    name: "{{ common_redhat_7_epel_rpm }}"
     state: present
     lock_timeout: 60
+  when: ansible_facts['distribution_major_version'] == "7"
+
+- name: Add EPEL repository (8)
+  yum:
+    name: "{{ common_redhat_8_epel_rpm }}"
+    state: present
+    lock_timeout: 60
+  when: ansible_facts['distribution_major_version'] == "8"
 
 - name: Find existing repo files
   find:
@@ -44,11 +52,25 @@
     state: latest
     lock_timeout: 60
 
-- name: install baseline dependencies
+- name: Install baseline dependencies
   yum:
     name: "{{ common_rpms }}"
     state: present
     lock_timeout: 60
+
+- name: Install baseline dependencies (7)
+  yum:
+    name: "{{ common_7_rpms }}"
+    state: present
+    lock_timeout: 60
+  when: ansible_facts['distribution_major_version'] == "7"
+
+- name: Install baseline dependencies (8)
+  yum:
+    name: "{{ common_8_rpms }}"
+    state: present
+    lock_timeout: 60
+  when: ansible_facts['distribution_major_version'] == "8"
 
 - name: install extra rpms
   yum:

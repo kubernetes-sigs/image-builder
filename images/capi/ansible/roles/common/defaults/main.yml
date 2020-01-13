@@ -18,13 +18,19 @@ common_rpms:
 - curl
 - ebtables
 - nfs-utils
-- ntp
 - open-vm-tools
+- socat
+- yum-utils
+common_7_rpms:
+- ntp
 - python2-pip
 - python-netifaces
 - python-requests
-- socat
-- yum-utils
+common_8_rpms:
+- chrony
+- python3-pip
+- python3-netifaces
+- python3-requests
 common_extra_rpms: []
 common_debs:
 - openssh-client
@@ -38,7 +44,8 @@ common_debs:
 
 common_pinned_debs: []
 common_extra_debs: []
-common_redhat_epel_rpm: "https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm"
+common_redhat_7_epel_rpm: "https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm"
+common_redhat_8_epel_rpm: "https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm"
 disable_public_repos: false
 extra_repos: ""
 common_photon_rpms: "python3-pip python-requests ebtables socat ntp jq nfs-utils net-tools conntrack-tools distrib-compat openssl-c_rehash"
