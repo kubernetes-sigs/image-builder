@@ -12,6 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
+- name: Put templated sources.list in place
+  template:
+    src: etc/apt/sources.list.j2
+    dest: /etc/apt/sources.list
+
 - name: Find existing repo files
   find:
     depth: 1
@@ -38,7 +43,6 @@
   apt:
     force_apt_get: True
     update_cache: True
-    cache_valid_time: 3600
 
 - name: perform a dist-upgrade
   apt:

@@ -25,15 +25,28 @@ common_rpms:
 - python-requests
 - socat
 - yum-utils
+
 common_debs:
-- openssh-client
-- openssh-server
 - apt-transport-https
+- conntrack
+- conntrackd
+- curl
 - ebtables
-- socat
-- ntp
 - jq
-- nfs-client
+- gnupg
+- libnetfilter-acct1
+- libnetfilter-cttimeout1
+- libnetfilter-log1
+- linux-cloud-tools-virtual
+- linux-tools-virtual
+- nfs-common
+- ntp
+- open-vm-tools
+- python3-distutils
+- python3-netifaces
+- python3-pip
+- socat
+
 common_photon_rpms:
 - conntrack-tools
 - distrib-compat
