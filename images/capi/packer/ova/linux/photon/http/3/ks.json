@@ -11,29 +11,12 @@
         "initramfs"
     ],
     "additional_packages": [
-        "conntrack-tools",
-        "ebtables",
-        "jq",
-        "libnetfilter_conntrack",
-        "libnetfilter_cthelper",
-        "libnetfilter_cttimeout",
-        "libnetfilter_queue",
-        "nfs-utils",
-        "ntp",
-        "openssh-clients",
         "openssh-server",
-        "python-netifaces",
-        "python-requests",
-        "python-pip",
-        "sed",
-        "socat",
-        "sudo",
-        "tar",
-        "unzip"
+        "sudo"
     ],
     "postinstall": [
         "#!/bin/sh",
-        "tdnf install -y conntrack-tools ebtables jq libnetfilter_conntrack libnetfilter_cthelper libnetfilter_cttimeout libnetfilter_queue nfs-utils ntp openssh-clients openssh-server python-netifaces python-requests python-pip sed socat sudo tar unzip",
+        "tdnf install -y openssh-server sudo",
         "useradd -U -d /home/photon -m --groups wheel photon && echo 'photon:photon' | chpasswd",
         "echo 'photon ALL=(ALL) NOPASSWD: ALL' >/etc/sudoers.d/photon",
         "chmod 440 /etc/sudoers.d/photon",

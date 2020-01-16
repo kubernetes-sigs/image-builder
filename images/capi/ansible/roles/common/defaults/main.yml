@@ -43,9 +43,12 @@ common_photon_rpms:
 - ntp
 - nfs-utils
 - openssl-c_rehash
+- python-netifaces
 - python3-pip
 - python-requests
 - socat
+- tar
+- unzip
 
 common_pinned_debs: []
 common_extra_debs: []
