@@ -5,8 +5,6 @@
 # - AZURE_CLIENT_ID - Service principal ID
 # - AZURE_CLIENT_SECRET - Service principal secret
 # - AZURE_SUBSCRIPTION_ID - Subscription ID used by the pipeline
-# - START_DATE - start date for the storage account SAS token
-# - EXPIRY_DATE - expiry date for the for the storage account SAS token
 # - KUBERNETES_VERSION - version of Kubernetes to build the image with, e.g. `1.16.2`
 
 trigger: none
@@ -40,13 +38,30 @@ jobs:
       RESOURCE_GROUP_NAME="$(cat packer.out | grep "resource group name:" | cut -d " " -f 4)"
       STORAGE_ACCOUNT_NAME=$(cat packer.out | grep "storage name:" | cut -d " " -f 3)
       OS_DISK_URI=$(cat packer.out | grep "OSDiskUri:" | cut -d " " -f 2)
-      printf "COPY ME ----> ${OS_DISK_URI}?" | tee vhd-url.out
+      printf "${OS_DISK_URI}?" | tee vhd-url.out
       az login --service-principal -u $(AZURE_CLIENT_ID) -p $(AZURE_CLIENT_SECRET) --tenant ${AZURE_TENANT_ID}
       az account set -s ${AZURE_SUBSCRIPTION_ID}
       ACCOUNT_KEY=$(az storage account keys list -g ${RESOURCE_GROUP_NAME} --subscription ${AZURE_SUBSCRIPTION_ID} --account-name ${STORAGE_ACCOUNT_NAME} --query '[0].value')
-      az storage container generate-sas --name system --permissions lr --account-name ${STORAGE_ACCOUNT_NAME} --account-key ${ACCOUNT_KEY} --start ${START_DATE} --expiry ${EXPIRY_DATE} | tr -d '\"' | tee -a vhd-url.out
+      start_date=$(date +"%Y-%m-%dT00:00Z" -d "-1 day")
+      expiry_date=$(date +"%Y-%m-%dT00:00Z" -d "+1 year")
+      az storage container generate-sas --name system --permissions lr --account-name ${STORAGE_ACCOUNT_NAME} --account-key ${ACCOUNT_KEY} --start $start_date --expiry $expiry_date | tr -d '\"' | tee -a vhd-url.out
     displayName: Getting OS VHD URL
     workingDirectory: '$(system.defaultWorkingDirectory)/images/capi/packer/azure'
+    condition: eq(variables.CLEANUP, 'False')
+  - script: |
+      VHD_URL="$(cat vhd-url.out)"
+      cat <<EOF > vhd-publishing-info.json
+      {
+          "vhd_url" : "$VHD_URL"
+      }
+      EOF
+    displayName: Generating publishing info for VHD
+    workingDirectory: '$(system.defaultWorkingDirectory)/images/capi/packer/azure'
+    condition: eq(variables.CLEANUP, 'False')
+  - task: PublishPipelineArtifact@1
+    inputs:
+      artifact: 'publishing-info'
+      path: '$(system.defaultWorkingDirectory)/images/capi/packer/azure/vhd-publishing-info.json'
     condition: eq(variables.CLEANUP, 'False')
   - script: |
       RESOURCE_GROUP_NAME="$(cat packer.out | grep "resource group name:" | cut -d " " -f 4)"

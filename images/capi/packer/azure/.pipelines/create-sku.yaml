@@ -1,0 +1,33 @@
+# Required pipeline variables:
+# - BUILD_POOL - Azure DevOps build pool to use
+# - CONTAINER_IMAGE - Dev container image URL to use. Should have Azure CLI, Packer and Ansible.
+# - AZURE_TENANT_ID - tenant ID
+# - AZURE_CLIENT_ID - Service principal ID
+# - AZURE_CLIENT_SECRET - Service principal secret
+# - KUBERNETES_VERSION - version of Kubernetes to create the sku for, e.g. `1.16.2`
+# - PUBLISHER - the name of the publisher to create the sku for
+# - OFFER - the name of the offer to create the sku for
+# - SKU_TEMPLATE_FILE - the base template file to use for the sku
+
+trigger: none
+pr: none
+
+jobs:
+- job: build_vhd_linux
+  container: $[ variables['CONTAINER_IMAGE'] ]
+  timeoutInMinutes: 120
+  strategy:
+    maxParallel: 0
+  pool:
+    name: $(BUILD_POOL)
+  steps:
+  - script: |
+      export AZURE_CLIENT_SECRET=$(AZURE_CLIENT_SECRET)
+      ./scripts/new-sku.sh
+    displayName: Create a new marketplace SKU
+    workingDirectory: '$(system.defaultWorkingDirectory)/images/capi/packer/azure'
+  - task: PublishPipelineArtifact@1
+    inputs:
+      artifact: 'sku-info'
+      path: '$(system.defaultWorkingDirectory)/images/capi/packer/azure/sku-publishing-info.json'
+      
