@@ -12,6 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
+- name: RHEL subscription
+  redhat_subscription:
+    state: present
+    username: "{{ lookup('env', 'RHSM_USER') }}"
+    password: "{{ lookup('env', 'RHSM_PASS') }}"
+    auto_attach: true
+  when: ansible_distribution == "RedHat"
+
 - name: add epel repo
   yum:
     name: "{{ redhat_epel_rpm }}"

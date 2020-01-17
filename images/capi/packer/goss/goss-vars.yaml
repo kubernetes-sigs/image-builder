@@ -112,6 +112,14 @@ centos:
       cloud-init:
       cloud-utils-growpart:
       python2-pip:
+rhel:
+  common-package: *common_rpms
+  ova:
+    package:
+      open-vm-tools:
+      cloud-init:
+      cloud-utils-growpart:
+      python2-pip:
 ubuntu:
   common-package:
     <<: *common_debs

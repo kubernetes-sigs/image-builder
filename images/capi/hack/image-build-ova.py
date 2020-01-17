@@ -105,6 +105,7 @@ def main():
 
     OS_id_map = {"vmware-photon-64": {"id": "36", "version": "", "type": "vmwarePhoton64Guest"},
                  "centos7-64": {"id": "107", "version": "7", "type": "centos7-64"},
+                 "rhel7-64": {"id": "80", "version": "7", "type": "rhel7_64guest"},
                  "ubuntu-64": {"id": "94", "version": "", "type": "ubuntu-64"}}
 
     # Create the OVF file.
