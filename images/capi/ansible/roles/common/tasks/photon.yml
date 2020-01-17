@@ -27,8 +27,12 @@
     owner: photon
     group: photon
 
+- name: Concatenate the Photon RPMs
+  set_fact:
+    photon_rpms: "{{ common_photon_rpms | join(' ') }}"
+
 - name: install baseline dependencies
-  command: tdnf install {{ common_photon_rpms }} -y --refresh
+  command: tdnf install {{ photon_rpms }} -y --refresh
 
 - name: disable service docker and ensure it is masked (installed via 'minimal' package)
   systemd:
