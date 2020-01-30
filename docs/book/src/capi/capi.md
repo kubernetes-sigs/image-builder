@@ -6,6 +6,7 @@ The Image Builder can be used to build images intended for use with CAPI provide
 
 * [AWS](./providers/aws.md)  
 * [Azure](./providers/azure.md)
+* [DigitalOcean](./providers/digitalocean.md)
 * Google *TODO*
 * [vSphere](./providers/vsphere.md)
 
@@ -20,6 +21,7 @@ Check the Makefile to see a list of images that may be built:
 | `make build-ami-default` |
 | `make build-azure-sig-ubuntu-1804` |
 | `make build-azure-vhd-ubuntu-1804` |
+| `make build-do-default` |
 | `make build-esx-ova-centos-7` |
 | `make build-esx-ova-ubuntu-1804` |
 | `make build-gce-default` |

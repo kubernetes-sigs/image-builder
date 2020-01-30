@@ -73,6 +73,8 @@ AMI_BUILD_NAMES			?=	ami-default
 GCE_BUILD_NAMES			?=	gce-default
 AZURE_BUILD_NAMES		?=	azure-sig-ubuntu-1804 azure-vhd-ubuntu-1804
 
+DO_BUILD_NAMES 			?=	do-default
+
 ## --------------------------------------
 ## Dynamic build targets
 ## --------------------------------------
@@ -81,6 +83,7 @@ ESX_BUILD_TARGETS	:= $(addprefix build-,$(ESX_BUILD_NAMES))
 AMI_BUILD_TARGETS	:= $(addprefix build-,$(AMI_BUILD_NAMES))
 GCE_BUILD_TARGETS	:= $(addprefix build-,$(GCE_BUILD_NAMES))
 AZURE_BUILD_TARGETS	:= $(addprefix build-,$(AZURE_BUILD_NAMES))
+DO_BUILD_TARGETS 	:= $(addprefix build-,$(DO_BUILD_NAMES))
 
 .PHONY: $(OVA_BUILD_TARGETS)
 $(OVA_BUILD_TARGETS):
@@ -101,6 +104,10 @@ $(GCE_BUILD_TARGETS):
 .PHONY: $(AZURE_BUILD_TARGETS)
 $(AZURE_BUILD_TARGETS):
 	. $(abspath packer/azure/scripts/init-$(subst build-azure-,,$@).sh) && packer build $(PACKER_FLAGS) -var-file="$(abspath packer/azure/azure-config.json)" -var-file="$(abspath packer/azure/$(subst build-,,$@).json)" -only="$(subst build-azure-,,$@)" packer/azure/packer.json
+
+$(DO_BUILD_TARGETS):
+	packer build $(PACKER_FLAGS) -var-file="$(abspath packer/digitalocean/$(subst build-,,$@).json)" packer/digitalocean/packer.json
+.PHONY: $(DO_BUILD_TARGETS)
 
 ## --------------------------------------
 ## Dynamic clean targets
@@ -128,6 +135,8 @@ build-gce-default: ## Builds the GCE default image
 
 build-azure-ubuntu-1804: $(AZURE_BUILD_TARGETS)
 build-azure-ubuntu-1804: ## Builds Ubuntu 18.04 for Azure
+
+build-do-default: ## Builds the DigitalOcean snapshot default image
 
 ## --------------------------------------
 ## Global targets
