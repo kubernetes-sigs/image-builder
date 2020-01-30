@@ -128,10 +128,6 @@
     {
       "type": "shell-local",
       "command": "./hack/image-build-ova.py --vmx {{user `vmx_version`}} {{user `output_dir`}}"
-    },
-    {
-      "type": "shell-local",
-      "command": "./hack/image-post-create-config.sh {{user `output_dir`}}"
     }
   ]
 }
