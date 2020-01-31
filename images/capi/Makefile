@@ -45,7 +45,8 @@ endif
 # of Kubernetes, CNI, and ContainerD to install.
 PACKER_VAR_FILES +=	packer/config/kubernetes.json \
 					packer/config/cni.json \
-					packer/config/containerd.json
+					packer/config/containerd.json \
+					packer/config/ansible-args.json
 
 # Initialize a list of flags to pass to Packer. This includes any existing flags
 # specified by PACKER_FLAGS, as well as prefixing the list with the variable
