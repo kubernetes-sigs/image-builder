@@ -61,6 +61,18 @@
   - { path: /var/lib/apt/lists, state: absent,    mode: "0755" }
   - { path: /var/lib/apt/lists, state: directory, mode: "0755" }
 
+- name: Disable unwanted systemd services
+  systemd:
+    name: "{{ item }}"
+    state: stopped
+    enabled: false
+  loop:
+  - apt-daily
+  - apt-daily.timer
+  - apt-daily-upgrade
+  - apt-daily-upgrade.timer
+  - unattended-upgrades
+
 - name: Reset network interface IDs
   file:
     state: absent

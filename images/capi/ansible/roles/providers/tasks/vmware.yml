@@ -63,7 +63,7 @@
     path: /etc/cloud/cloud.cfg.d/99-disable-networking-config.cfg
     state: absent
   when: ansible_os_family == "VMware Photon OS"
-  
+
 #- name: Unlock password
 #  replace:
 #    path: /etc/cloud/cloud.cfg
@@ -76,3 +76,9 @@
     dest:  /usr/lib/cloud-init
     state: link
   when: ansible_os_family == "RedHat"
+
+- name: Disable Hyper-V KVP protocol daemon
+  systemd:
+    name: hv-kvp-daemon
+    state: stopped
+    enabled: false
