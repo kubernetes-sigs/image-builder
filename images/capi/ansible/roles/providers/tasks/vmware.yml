@@ -77,8 +77,9 @@
     state: link
   when: ansible_os_family == "RedHat"
 
-- name: Disable Hyper-V KVP protocol daemon
+- name: Disable Hyper-V KVP protocol daemon on Ubuntu
   systemd:
     name: hv-kvp-daemon
     state: stopped
     enabled: false
+  when: ansible_os_family == "Debian"
