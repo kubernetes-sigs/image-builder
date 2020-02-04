@@ -16,7 +16,6 @@
     ],
     "postinstall": [
         "#!/bin/sh",
-        "tdnf install -y openssh-server sudo",
         "useradd -U -d /home/builder -m --groups wheel builder && echo 'builder:builder' | chpasswd",
         "echo 'builder ALL=(ALL) NOPASSWD: ALL' >/etc/sudoers.d/builder",
         "chmod 440 /etc/sudoers.d/builder",
