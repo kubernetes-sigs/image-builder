@@ -31,7 +31,7 @@ ${HOME}/.packer.d/plugins/packer-provisioner-goss:
 	mkdir -p /tmp/packer-plugins
 	curl -L -o /tmp/packer-plugins/packer-provisioner-goss ${PLUGINS_GOSS_URL}
 	echo ${PLUGINS_GOSS_SHA256-$(BINARYPATHPATTERN)}  */tmp/packer-plugins/packer-provisioner-goss > /tmp/packer-plugins/SHA256SUMS
-	shasum -c /tmp/packer-plugins/SHA256SUMS
+	{ shasum -c /tmp/packer-plugins/SHA256SUMS || sha256sum -c /tmp/packer-plugins/SHA256SUMS ; } 2>/dev/null
 	mv /tmp/packer-plugins/packer-provisioner-goss ${HOME}/.packer.d/plugins
 	chmod +x ${HOME}/.packer.d/plugins/packer-provisioner-goss
 
