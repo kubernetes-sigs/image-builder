@@ -43,11 +43,7 @@ VMX_FILE=$(/bin/ls "${1-}"/*.vmx)
 # Get the SSH user.
 SSH_USER="${SSH_USER:-${2-}}"
 if [ -z "${SSH_USER}" ]; then
-  if [[ ${VMX_FILE} = *centos* ]]; then
-    SSH_USER=centos
-  elif [[ ${VMX_FILE} = *ubuntu* ]]; then
-    SSH_USER=ubuntu
-  fi
+  SSH_USER=builder
 fi
 if [ -z "${SSH_USER}" ]; then
   echo "SSH_USER is required" 1>&2

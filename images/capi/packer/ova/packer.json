@@ -42,6 +42,8 @@
     "remote_username": "",
     "remote_password": "",
     "skip_compaction": "false",
+    "ssh_username": "builder",
+    "ssh_password": "builder",
     "vmx_version": "13",
     "vnc_bind_address": "127.0.0.1",
     "vnc_disable_password": "false",

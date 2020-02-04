@@ -6,8 +6,6 @@
   "iso_url": "https://mirrors.edge.kernel.org/centos/7.7.1908/isos/x86_64/CentOS-7-x86_64-Minimal-1908.iso",
   "iso_checksum": "9a2c47d97b9975452f7d582264e9fc16d108ed8252ac6816239a3b58cef5c53d",
   "iso_checksum_type": "sha256",
-  "ssh_username": "centos",
-  "ssh_password": "centos",
   "boot_command_prefix": "<tab> text ks=",
   "boot_command_suffix": "/7/ks.cfg<enter><wait>",
   "shutdown_command": "sys-unconfig"
