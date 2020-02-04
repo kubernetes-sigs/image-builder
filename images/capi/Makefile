@@ -28,7 +28,7 @@ help: ## Display this help
 	@echo '  The "build-ova" targets have analogue "clean-ova" targets for'
 	@echo '  cleaning artifacts created from building OVAs using a local'
 	@echo '  hypervisor.'
-	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[36m<target>\033[0m\n"} /^[a-zA-Z0-9_-]+:.*?##/ { printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2 } /^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5) } ' $(MAKEFILE_LIST)
+	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[36m<target>\033[0m\n\n"} /^[a-zA-Z0-9_-]+:.*?##/ { printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2 } /^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5) } ' $(MAKEFILE_LIST)
 
 ## --------------------------------------
 ## Packer flags
@@ -119,7 +119,21 @@ $(OVA_CLEAN_TARGETS):
 	rm -fr output/$(subst clean-ova-,,$@)*
 
 ## --------------------------------------
-## Documented targets
+## Global targets
+## --------------------------------------
+.PHONY: build
+build:	$(OVA_BUILD_TARGETS) \
+		$(AMI_BUILD_TARGETS) \
+		$(GCE_BUILD_TARGETS) \
+		$(AZURE_BUILD_TARGETS)
+build: ## Builds all images
+
+.PHONY: clean
+clean: $(OVA_CLEAN_TARGETS)
+clean: ## Cleans all local image caches
+
+## --------------------------------------
+## Document dynamic targets
 ## --------------------------------------
 build-ova-centos-7: ## Builds CentOS 7 OVA w local hypervisor
 build-ova-photon-3: ## Builds Photon 3 OVA w local hypervisor
@@ -145,17 +159,3 @@ build-do-default: ## Builds the DigitalOcean snapshot default image
 .PHONY: plugins
 packer-plugins: ## Install Packer plugins for GCE and AMI builds
 		make -C packer plugins
-
-## --------------------------------------
-## Global targets
-## --------------------------------------
-.PHONY: build
-build:	$(OVA_BUILD_TARGETS) \
-		$(AMI_BUILD_TARGETS) \
-		$(GCE_BUILD_TARGETS) \
-		$(AZURE_BUILD_TARGETS)
-build: ## Builds all images
-
-.PHONY: clean
-clean: $(OVA_CLEAN_TARGETS)
-clean: ## Cleans all local image caches
