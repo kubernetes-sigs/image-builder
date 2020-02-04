@@ -2,7 +2,7 @@
     "hostname": "localhost",
     "password": {
         "crypted": false,
-        "text": "photon"
+        "text": "builder"
     },
     "disk": "/dev/sda",
     "packages": [
@@ -17,9 +17,9 @@
     "postinstall": [
         "#!/bin/sh",
         "tdnf install -y openssh-server sudo",
-        "useradd -U -d /home/photon -m --groups wheel photon && echo 'photon:photon' | chpasswd",
-        "echo 'photon ALL=(ALL) NOPASSWD: ALL' >/etc/sudoers.d/photon",
-        "chmod 440 /etc/sudoers.d/photon",
+        "useradd -U -d /home/builder -m --groups wheel builder && echo 'builder:builder' | chpasswd",
+        "echo 'builder ALL=(ALL) NOPASSWD: ALL' >/etc/sudoers.d/builder",
+        "chmod 440 /etc/sudoers.d/builder",
         "systemctl enable sshd",
         "systemctl disable docker.service",
         "systemctl mask docker.service",

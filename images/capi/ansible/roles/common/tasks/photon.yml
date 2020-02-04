@@ -12,20 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- name: add home dir for photon user
+- name: add home dir for builder user
   file:
     state: directory
-    path: /home/photon
+    path: /home/builder
     mode: 0755
-    owner: photon
-    group: photon
+    owner: builder
+    group: builder
 
 - name: add bash_profile
   template:
-    dest: /home/photon/.bash_profile
+    dest: /home/builder/.bash_profile
     src: photon_bash_profile
-    owner: photon
-    group: photon
+    owner: builder
+    group: builder
 
 - name: Concatenate the Photon RPMs
   set_fact:
