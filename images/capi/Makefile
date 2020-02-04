@@ -140,6 +140,13 @@ build-azure-ubuntu-1804: ## Builds Ubuntu 18.04 for Azure
 build-do-default: ## Builds the DigitalOcean snapshot default image
 
 ## --------------------------------------
+## Plugin targets
+## --------------------------------------
+.PHONY: plugins
+packer-plugins: ## Install Packer plugins for GCE and AMI builds
+		make -C packer plugins
+
+## --------------------------------------
 ## Global targets
 ## --------------------------------------
 .PHONY: build
