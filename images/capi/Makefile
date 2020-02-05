@@ -23,12 +23,54 @@ SHELL := /usr/bin/env bash
 ## --------------------------------------
 ## Help
 ## --------------------------------------
+##@ Helpers
 help: ## Display this help
 	@echo NOTE
 	@echo '  The "build-ova" targets have analogue "clean-ova" targets for'
 	@echo '  cleaning artifacts created from building OVAs using a local'
 	@echo '  hypervisor.'
-	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[36m<target>\033[0m\n"} /^[a-zA-Z0-9_-]+:.*?##/ { printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2 } /^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5) } ' $(MAKEFILE_LIST)
+	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[36m<target>\033[0m\n"} /^[a-zA-Z0-9_-]+:.*?##/ { printf "  \033[36m%-27s\033[0m %s\n", $$1, $$2 } /^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5) } ' $(MAKEFILE_LIST)
+
+## --------------------------------------
+## Dependencies
+## --------------------------------------
+##@ Dependencies
+
+.PHONY: deps
+deps: ## Installs/checks all dependencies
+deps: deps-ami deps-azure deps-do deps-gce deps-ova
+
+.PHONY: deps-ami
+deps-ami: ## Installs/checks dependencies for AMI builds
+deps-ami:
+	hack/ensure-ansible.sh
+	hack/ensure-packer.sh
+	hack/ensure-goss.sh
+
+.PHONY: deps-azure
+deps-azure: ## Installs/checks dependencies for Azure builds
+deps-azure:
+	hack/ensure-ansible.sh
+	hack/ensure-packer.sh
+	hack/ensure-jq.sh
+
+.PHONY: deps-do
+deps-do: ## Installs/checks dependencies for DigitalOcean builds
+deps-do:
+	hack/ensure-ansible.sh
+	hack/ensure-packer.sh
+
+.PHONY: deps-gce
+deps-gce: ## Installs/checks dependencies for GCE builds
+deps-gce:
+	hack/ensure-ansible.sh
+	hack/ensure-packer.sh
+
+.PHONY: deps-ova
+deps-ova: ## Installs/checks dependencies for OVA builds
+deps-ova:
+	hack/ensure-ansible.sh
+	hack/ensure-packer.sh
 
 ## --------------------------------------
 ## Packer flags
@@ -119,8 +161,18 @@ $(OVA_CLEAN_TARGETS):
 	rm -fr output/$(subst clean-ova-,,$@)*
 
 ## --------------------------------------
-## Documented targets
+## Document dynamic build targets
 ## --------------------------------------
+##@ Builds
+build-ami-default: ## Builds the AMI default image
+
+build-azure-sig-ubuntu-1804: ## Builds Ubuntu 18.04 Azure managed image in Shared Image Gallery
+build-azure-vhd-ubuntu-1804: ## Builds Ubuntu 18.04 VHD image for Azure
+
+build-do-default: ## Builds the DigitalOcean snapshot default image
+
+build-gce-default: ## Builds the GCE default image
+
 build-ova-centos-7: ## Builds CentOS 7 OVA w local hypervisor
 build-ova-photon-3: ## Builds Photon 3 OVA w local hypervisor
 build-ova-ubuntu-1804: ## Builds Ubuntu 18.04 OVA w local hypervisor
@@ -131,24 +183,19 @@ build-esx-photon-3: ## Builds Photon 3 OVA w remote hypervisor
 build-esx-ubuntu-1804: ## Builds Ubuntu 18.04 OVA w remote hypervisor
 build-esx-ubuntu-2004: ## Builds Ubuntu 20.04 OVA w remote hypervisor
 
-build-ami-default: ## Builds the AMI default image
-build-gce-default: ## Builds the GCE default image
-
-build-azure-ubuntu-1804: $(AZURE_BUILD_TARGETS)
-build-azure-ubuntu-1804: ## Builds Ubuntu 18.04 for Azure
-
-build-do-default: ## Builds the DigitalOcean snapshot default image
-
 ## --------------------------------------
-## Global targets
+## Clean targets
 ## --------------------------------------
-.PHONY: build
-build:	$(OVA_BUILD_TARGETS) \
-		$(AMI_BUILD_TARGETS) \
-		$(GCE_BUILD_TARGETS) \
-		$(AZURE_BUILD_TARGETS)
-build: ## Builds all images
-
-.PHONY: clean
-clean: $(OVA_CLEAN_TARGETS)
+##@ Cleaning
+.PHONY: clean-ova
 clean: ## Cleans all local image caches
+clean: $(OVA_CLEAN_TARGETS) clean-packer-cache
+
+.PHONY: clean-ova
+clean-ova: ## Removes all ova image output directories (see NOTE at top of help)
+clean-ova: $(OVA_CLEAN_TARGETS)
+
+.PHONY: clean-packer-cache
+clean-packer-cache: ## Removes the packer cache
+clean-packer-cache:
+	rm -fr packer_cache/*

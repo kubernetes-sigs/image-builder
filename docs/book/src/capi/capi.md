@@ -14,20 +14,7 @@ The Image Builder can be used to build images intended for use with CAPI provide
 
 Within this repo, there is a Makefile located at `images/capi/Makefile` that can be used to create the default images.
 
-Check the Makefile to see a list of images that may be built:
-
-| Targets |
-|---------|
-| `make build-ami-default` |
-| `make build-azure-sig-ubuntu-1804` |
-| `make build-azure-vhd-ubuntu-1804` |
-| `make build-do-default` |
-| `make build-esx-ova-centos-7` |
-| `make build-esx-ova-ubuntu-1804` |
-| `make build-gce-default` |
-| `make build-ova-centos-7` |
-| `make build-ova-photon-3` |
-| `make build-ova-ubuntu-1804` |
+Run `make` or `make help` to see the current list of targets. The targets are categorized into `Dependencies`, `Builds`, and `Cleaning`. The Dependency targets will check that your system has the proper tools installed to run the build for your specific provider. If the dependencies are not present, they will be installed.
 
 ## Configuration
 
@@ -35,9 +22,10 @@ The `images/capi/packer/config` directory includes several JSON files that defin
 
 | File | Description |
 |------|-------------|
-| `packer/config/kubernetes.json` | The version of Kubernetes to install |
+| `packer/config/ansible-args.json` | A common set of variables that are sent to the Ansible playbook |
 | `packer/config/cni.json` | The version of Kubernetes CNI to install |
 | `packer/config/containerd.json` | The version of containerd to install |
+| `packer/config/kubernetes.json` | The version of Kubernetes to install |
 
 ## Kubernetes versions
 | Tested Kubernetes Versions |
@@ -45,3 +33,4 @@ The `images/capi/packer/config` directory includes several JSON files that defin
 | `1.14.x` |
 | `1.15.x` |
 | `1.16.x` |
+| `1.17.x` |
