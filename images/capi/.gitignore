@@ -3,3 +3,4 @@
 /packer_cache/
 /output-*/
 /output/
+/.bin/

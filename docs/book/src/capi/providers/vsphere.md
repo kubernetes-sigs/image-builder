@@ -4,6 +4,8 @@ This directory contains tooling for building base images for use as nodes in Kub
 
 ## Prerequisites
 
+The `make deps-ova` target will test that Ansible and Packer are installed and available. If they are not, they will be installed to `images/capi/.bin`. This directory will need to be added to your `$PATH`.
+
 ### Hypervisor
 
 The images may be built using one of the following hypervisors:
@@ -32,9 +34,11 @@ For more information about how the files in the `cloudinit` directory are used, 
 
 ## Building Images
 
+From the `images/capi` directory, run `make build-ova-<OS>`, where `<OS>` is the desired operating system. The available choices are listed via `make help`.
+
 ### Configuration
 
-In additon to the configuration found in `images/capi/packer/config`, the `ova` directory includes several JSON files that define the configuration for the images:
+In addition to the configuration found in `images/capi/packer/config`, the `ova` directory includes several JSON files that define the configuration for the images:
 
 | File | Description |
 |------|-------------|

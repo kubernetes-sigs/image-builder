@@ -4,6 +4,8 @@ This directory contains tooling for building base images for use as nodes in Kub
 
 ## Prerequisites
 
+The `make deps-ami` target will test that Ansible, Packer, and Goss are installed and available. If they are not, they will be installed to `images/capi/.bin`. This directory will need to be added to your `$PATH`.
+
 ### Prerequisites for all images
 
 - [Packer](https://www.packer.io/intro/getting-started/install.html)
@@ -13,10 +15,10 @@ This directory contains tooling for building base images for use as nodes in Kub
 #### Installing the goss plugin
 
 To install `packer-goss` plugin the following should be executed inside of the
-`images/capi/packer/ami` directory:
+`images/capi` directory:
 
 ```bash
-make plugins
+make deps-ami
 ```
 
 ### Prerequisites for Amazon Web Services

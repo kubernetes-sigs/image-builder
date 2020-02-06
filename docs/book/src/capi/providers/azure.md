@@ -4,6 +4,8 @@ This directory contains tooling for building base images for use as nodes in Kub
 
 ## Prerequisites
 
+The `make deps-azure` target will test that Ansible, Packer, and `jq` are installed and available. If they are not, they will be installed to `images/capi/.bin`. This directory will need to be added to your `$PATH`.
+
 ### Prerequisites for all images
 
 - [Packer](https://www.packer.io/intro/getting-started/install.html)
@@ -19,8 +21,8 @@ This directory contains tooling for building base images for use as nodes in Kub
 
 ### Building Managed Images in Shared Image Galleries
 
-From the images/capi directory, run `make build-azure-sig-ubuntu-1804`
+From the `images/capi` directory, run `make build-azure-sig-ubuntu-1804`
 
 ### Building VHDs
 
-From the images/capi directory, run `make build-azure-vhd-ubuntu-1804`
+From the `images/capi` directory, run `make build-azure-vhd-ubuntu-1804`
