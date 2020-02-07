@@ -1,6 +1,11 @@
 # CAPI Images
 
-The Image Builder can be used to build images intended for use with CAPI providers. Each provider has its own format of images that it can work with. For example, AWS instances use AMIs, and vSphere uses OVAs.
+The Image Builder can be used to build images intended for use with Kubernetes [CAPI](https://cluster-api.sigs.k8s.io/) providers. Each provider has its own format of images that it can work with. For example, AWS instances use AMIs, and vSphere uses OVAs.
+
+## Prerequisites
+
+[Packer](https://www.packer.io) and [Ansible](https://github.com/ansible/ansible) are used for building these images. This tooling has been forked and extended from the [Wardroom](https://github.com/heptiolabs/wardroom) project.
+
 
 ## Providers
 

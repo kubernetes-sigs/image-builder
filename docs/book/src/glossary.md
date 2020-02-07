@@ -11,42 +11,32 @@ Amazon Web Services
 
 ## AMI
 
-Amazon Machine Image
-
-https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AMIs.html
+[Amazon Machine Image](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AMIs.html)
 
 # C
 ---
 
 ## CAPA
 
-Cluster API Provider AWS
-
-https://github.com/kubernetes-sigs/cluster-api-provider-aws
+[Cluster API Provider AWS](https://github.com/kubernetes-sigs/cluster-api-provider-aws)
 
 ## CAPG
 
-Cluster API Provider GCP
-
-https://github.com/kubernetes-sigs/cluster-api-provider-gcp
+[Cluster API Provider GCP](https://github.com/kubernetes-sigs/cluster-api-provider-gcp)
 
 ## CAPI
 
 The Cluster API is a Kubernetes project to bring declarative, Kubernetes-style APIs to cluster creation, configuration, and management. It provides optional, additive functionality on top of core Kubernetes.
 
-(source: https://github.com/kubernetes-sigs/cluster-api)
+[source](https://github.com/kubernetes-sigs/cluster-api)
 
 ## CAPV
 
-Cluster API Provider vSphere
-
-https://github.com/kubernetes-sigs/cluster-api-provider-vsphere
+[Cluster API Provider vSphere](https://github.com/kubernetes-sigs/cluster-api-provider-vsphere)
 
 ## CAPZ
 
-Cluster API Prover Azure
-
-https://github.com/kubernetes-sigs/cluster-api-provider-azure
+[Cluster API Prover Azure](https://github.com/kubernetes-sigs/cluster-api-provider-azure)
 
 # E
 ---
@@ -66,7 +56,7 @@ Kubernetes
 
 Kubernetes (K8s) is an open-source system for automating deployment, scaling, and management of containerized applications.
 
-(source: https://kubernetes.io)
+[source](https://kubernetes.io)
 
 # O
 ---
@@ -83,7 +73,7 @@ Open Virtualization Format
 
 An open standard for packaging and distributing virtual appliances or, more generally, software to be run in virtual machines.
 
-(source: https://en.wikipedia.org/wiki/Open_Virtualization_Format)
+[source](https://en.wikipedia.org/wiki/Open_Virtualization_Format)
 
 # V
 ---
