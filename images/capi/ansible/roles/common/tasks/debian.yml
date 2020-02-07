@@ -58,7 +58,7 @@
 - name: install extra debs
   apt:
     force_apt_get: True
-    name: "{{ common_extra_debs }}"
+    name: "{{ extra_debs.split() }}"
     state: latest
 
 - name: install pinned debs

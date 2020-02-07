@@ -52,6 +52,6 @@
 
 - name: install extra rpms
   yum:
-    name: "{{ common_extra_rpms }}"
+    name: "{{ extra_rpms.split() }}"
     state: present
     lock_timeout: 60

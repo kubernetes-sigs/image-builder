@@ -6,6 +6,7 @@
     "client_id": null,
     "client_secret": null,
     "disable_public_repos": "false",
+    "extra_debs": "",
     "extra_repos": "",
     "azure_location": null,
     "vm_size": "",
