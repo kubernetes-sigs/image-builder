@@ -38,8 +38,12 @@ Several variables can be used to customize the image build.
 
 | Variable | Description | Default |
 |----------|-------------|---------|
+| `disable_public_repos` | If set to `"true"`, this will disable all existing package repositories defined in the OS before doing any package installs. The `extra_repos` variable *must* be set for package installs to succeed. | `"false"` |
 | `extra_debs` | This can be set to a space delimited string containing the names of additional deb packages to install | `""` |
+| `extra_repos` | A comma-separated list of files to add to the image containing repository definitions. The files should be given as absolute paths. | `""` |
 | `extra_rpms` | This can be set to a space delimited string containing the names of additional RPM packages to install | `""` |
+| `reenable_public_repos` | If set to `"false"`, the package repositories disabled by setting `disable_public_repos` will remain disabled at the end of the build. | `"true"` |
+| `remove_extra_repos` | If set to `"true"`, the package repositories added to the OS through the use of `extra_repos` will be removed at the end of the build. | `"false"` |
 
 The variables found in `packer/config/*.json` or `packer/<provider>/*.json` should not need to be modified directly. For customization it is better to create a JSON file with your changes and provide it via the `PACKER_VAR_FILES` environment variable. Variables set in this file will override any previous values. Multiple files can be passed via `PACKER_VAR_FILES`, with the last file taking precedence over any others.
 
@@ -75,6 +79,30 @@ Then, execute the build (using a Photon OVA as an example) with the following:
 PACKER_VAR_FILES=extra_vars.json make build-ova-photon-3
 ```
 
+##### Disabling default repos and using an internal package mirror
+
+A common use-case within enterprise environments is to have a package repository available on an internal network to install from rather than reaching out to the internet. To support this, you can inject custom repository definitions into the image, and optionally disable the use of the default ones.
+
+For example, to build an image using only an internal mirror, create a file called `internal_repos.json` and populate it with the following:
+
+
+```json
+{
+  "disable_public_repos": "true",
+  "extra_repos": "/home/<user>/repo.list",
+  "remove_extra_repos": "true"
+}
+```
+
+This example assumes that you have an RPM repository definition available at `/home/<user>/mirror.repo`, and it is correctly configured to point to your internal mirror. It will be added to the image within `/etc/yum.repos.d`, with all existing repositories found with `/etc/yum.repos.d` disabled by setting `disable_public_repos` to `"true"`. Furthermore, the (optional) use of `"remove_extra_repos"` means that at the end of the build, the repository definition that was added will be removed. This is useful if the image you are building will be shared externally and you do not wish to include a file with internal network services and addresses.
+
+For Ubuntu images, the process works the same but you would need to add a `.list` file pointing to your DEB package mirror.
+
+Then, execute the build (using a Photon OVA as an example) with the following:
+
+```sh
+PACKER_VAR_FILES=internal_repos.json make build-ova-photon-3
+```
 
 ## Kubernetes versions
 | Tested Kubernetes Versions |

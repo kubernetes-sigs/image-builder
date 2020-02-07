@@ -1,4 +1,4 @@
-# Copyright 2019 The Kubernetes Authors.
+# Copyright 2020 The Kubernetes Authors.
 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,25 +12,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- name: Define file modes
-  set_fact:
-    last_log_mode:   "0644"
-    machine_id_mode: "0444"
+- name: Find existing repo files
+  find:
+    depth: 1
+    paths: /etc/yum.repos.d
+    patterns: '*.repo'
+  register: repo_files
+  when: disable_public_repos|bool
 
-- import_tasks: rpm_repos.yml
+- name: Disable repos
+  command: "mv {{ item.path }} {{ item.path }}.disabled"
+  loop: "{{ repo_files.files }}"
+  when: disable_public_repos|bool
 
-- name: Remove yum package caches
-  yum:
-    autoremove: yes
-    lock_timeout: 60
-
-- name: Remove yum package lists
-  command: /usr/bin/yum -y clean all
-
-- name: Reset network interface IDs
-  shell: sed -i '/^\(HWADDR\|UUID\)=/d' /etc/sysconfig/network-scripts/ifcfg-*
-
-- name: Remove the kickstart log
-  file:
-    state: absent
-    path: /root/anaconda-ks.cfg
+- name: Install extra repos
+  copy:
+    src: "{{ item }}"
+    dest: "/etc/yum.repos.d/{{ item | basename }}"
+  loop: "{{ extra_repos.split(',') }}"
+  when: extra_repos != ""

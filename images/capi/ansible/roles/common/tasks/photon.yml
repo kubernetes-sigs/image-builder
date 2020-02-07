@@ -27,6 +27,8 @@
     owner: builder
     group: builder
 
+- import_tasks: rpm_repos.yml
+
 - name: Concatenate the Photon RPMs
   set_fact:
     photon_rpms: "{{ common_photon_rpms | join(' ') }}"
