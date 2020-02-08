@@ -83,20 +83,29 @@ ifeq (1,$(strip $(FOREGROUND)))
 PACKER_FLAGS += -var="headless=false"
 endif
 
+# We want the var files passed to Packer to have a specific order, because the
+# precenence of the variables they contain depends on the order. Files listed
+# later on the CLI have higher precedence. We want the common var files found in
+# packer/config to be listed first, then the var files that specific to the
+# provider, then any user-supplied var files so that a user can override what
+# they need to.
+
 # A list of variable files given to Packer to configure things like the versions
-# of Kubernetes, CNI, and ContainerD to install.
-PACKER_VAR_FILES +=	packer/config/kubernetes.json \
+# of Kubernetes, CNI, and ContainerD to install. Any additional files from the
+# environment are appended.
+COMMON_VAR_FILES :=	packer/config/kubernetes.json \
 					packer/config/cni.json \
 					packer/config/containerd.json \
 					packer/config/ansible-args.json
 
 # Initialize a list of flags to pass to Packer. This includes any existing flags
 # specified by PACKER_FLAGS, as well as prefixing the list with the variable
-# files from PACKER_VAR_FILES, with each file prefixed by -var-file=.
+# files from COMMON_VAR_FILES, with each file prefixed by -var-file=.
 #
 # Any existing values from PACKER_FLAGS take precendence over variable files.
-PACKER_FLAGS := $(foreach f,$(abspath $(PACKER_VAR_FILES)),-var-file="$(f)" ) \
+PACKER_FLAGS := $(foreach f,$(abspath $(COMMON_VAR_FILES)),-var-file="$(f)" ) \
 				$(PACKER_FLAGS)
+PACKER_VAR_FILES := $(foreach f,$(abspath $(PACKER_VAR_FILES)),-var-file="$(f)" )
 
 ## --------------------------------------
 ## Platform and version combinations
@@ -130,26 +139,26 @@ DO_BUILD_TARGETS 	:= $(addprefix build-,$(DO_BUILD_NAMES))
 
 .PHONY: $(OVA_BUILD_TARGETS)
 $(OVA_BUILD_TARGETS):
-	packer build $(PACKER_FLAGS) -var-file="$(abspath packer/ova/$(subst build-,,$@).json)" packer/ova/packer.json
+	packer build $(PACKER_FLAGS) -var-file="$(abspath packer/ova/$(subst build-,,$@).json)" $(PACKER_VAR_FILES) packer/ova/packer.json
 
 .PHONY: $(ESX_BUILD_TARGETS)
 $(ESX_BUILD_TARGETS):
-	packer build $(PACKER_FLAGS) -var-file="$(abspath packer/ova/$(subst build-esx-,,$@).json)" -var-file="packer/ova/esx.json" -except=shell-local packer/ova/packer.json
+	packer build $(PACKER_FLAGS) -var-file="$(abspath packer/ova/$(subst build-esx-,,$@).json)" -var-file="packer/ova/esx.json" -except=shell-local $(PACKER_VAR_FILES) packer/ova/packer.json
 
 .PHONY: $(AMI_BUILD_TARGETS)
 $(AMI_BUILD_TARGETS):
-	packer build $(PACKER_FLAGS) -var-file="$(abspath packer/ami/$(subst build-,,$@).json)" packer/ami/packer.json
+	packer build $(PACKER_FLAGS) -var-file="$(abspath packer/ami/$(subst build-,,$@).json)" $(PACKER_VAR_FILES) packer/ami/packer.json
 
 .PHONY: $(GCE_BUILD_TARGETS)
 $(GCE_BUILD_TARGETS):
-	packer build $(PACKER_FLAGS) -var-file="$(abspath packer/gce/$(subst build-,,$@).json)" packer/gce/packer.json
+	packer build $(PACKER_FLAGS) -var-file="$(abspath packer/gce/$(subst build-,,$@).json)" $(PACKER_VAR_FILES) packer/gce/packer.json
 
 .PHONY: $(AZURE_BUILD_TARGETS)
 $(AZURE_BUILD_TARGETS):
-	. $(abspath packer/azure/scripts/init-$(subst build-azure-,,$@).sh) && packer build $(PACKER_FLAGS) -var-file="$(abspath packer/azure/azure-config.json)" -var-file="$(abspath packer/azure/$(subst build-,,$@).json)" -only="$(subst build-azure-,,$@)" packer/azure/packer.json
+	. $(abspath packer/azure/scripts/init-$(subst build-azure-,,$@).sh) && packer build $(PACKER_FLAGS) -var-file="$(abspath packer/azure/azure-config.json)" -var-file="$(abspath packer/azure/$(subst build-,,$@).json)" -only="$(subst build-azure-,,$@)" $(PACKER_VAR_FILES) packer/azure/packer.json
 
 $(DO_BUILD_TARGETS):
-	packer build $(PACKER_FLAGS) -var-file="$(abspath packer/digitalocean/$(subst build-,,$@).json)" packer/digitalocean/packer.json
+	packer build $(PACKER_FLAGS) -var-file="$(abspath packer/digitalocean/$(subst build-,,$@).json)" $(PACKER_VAR_FILES) packer/digitalocean/packer.json
 .PHONY: $(DO_BUILD_TARGETS)
 
 ## --------------------------------------
