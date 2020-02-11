@@ -29,5 +29,5 @@
   copy:
     src: "{{ item }}"
     dest: "/etc/yum.repos.d/{{ item | basename }}"
-  loop: "{{ extra_repos.split(',') }}"
+  loop: "{{ extra_repos.split() }}"
   when: extra_repos != ""

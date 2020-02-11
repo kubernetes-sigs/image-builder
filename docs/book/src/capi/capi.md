@@ -40,7 +40,7 @@ Several variables can be used to customize the image build.
 |----------|-------------|---------|
 | `disable_public_repos` | If set to `"true"`, this will disable all existing package repositories defined in the OS before doing any package installs. The `extra_repos` variable *must* be set for package installs to succeed. | `"false"` |
 | `extra_debs` | This can be set to a space delimited string containing the names of additional deb packages to install | `""` |
-| `extra_repos` | A comma-separated list of files to add to the image containing repository definitions. The files should be given as absolute paths. | `""` |
+| `extra_repos` | A space delimited string containing the names of files to add to the image containing repository definitions. The files should be given as absolute paths. | `""` |
 | `extra_rpms` | This can be set to a space delimited string containing the names of additional RPM packages to install | `""` |
 | `reenable_public_repos` | If set to `"false"`, the package repositories disabled by setting `disable_public_repos` will remain disabled at the end of the build. | `"true"` |
 | `remove_extra_repos` | If set to `"true"`, the package repositories added to the OS through the use of `extra_repos` will be removed at the end of the build. | `"false"` |
@@ -89,7 +89,7 @@ For example, to build an image using only an internal mirror, create a file call
 ```json
 {
   "disable_public_repos": "true",
-  "extra_repos": "/home/<user>/repo.list",
+  "extra_repos": "/home/<user>/mirror.repo",
   "remove_extra_repos": "true"
 }
 ```

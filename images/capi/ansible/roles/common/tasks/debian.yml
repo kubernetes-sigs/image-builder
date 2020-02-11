@@ -36,7 +36,7 @@
   copy:
     src: "{{ item }}"
     dest: "/etc/apt/sources.list.d/{{ item | basename }}"
-  loop: "{{ extra_repos.split(',') }}"
+  loop: "{{ extra_repos.split() }}"
   when: extra_repos != ""
 
 - name: update apt cache
