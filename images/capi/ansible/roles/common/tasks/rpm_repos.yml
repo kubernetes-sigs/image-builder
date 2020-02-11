@@ -1,4 +1,4 @@
-# Copyright 2018 The Kubernetes Authors.
+# Copyright 2020 The Kubernetes Authors.
 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,18 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- name: Put templated sources.list in place
-  template:
-    src: etc/apt/sources.list.j2
-    dest: /etc/apt/sources.list
-
 - name: Find existing repo files
   find:
     depth: 1
-    paths:
-      - /etc/apt
-      - /etc/apt/sources.list.d
-    patterns: '*.list'
+    paths: /etc/yum.repos.d
+    patterns: '*.repo'
   register: repo_files
   when: disable_public_repos|bool
 
@@ -35,35 +28,6 @@
 - name: Install extra repos
   copy:
     src: "{{ item }}"
-    dest: "/etc/apt/sources.list.d/{{ item | basename }}"
+    dest: "/etc/yum.repos.d/{{ item | basename }}"
   loop: "{{ extra_repos.split() }}"
   when: extra_repos != ""
-
-- name: update apt cache
-  apt:
-    force_apt_get: True
-    update_cache: True
-
-- name: perform a dist-upgrade
-  apt:
-    force_apt_get: True
-    upgrade: dist
-
-- name: install baseline dependencies
-  apt:
-    force_apt_get: True
-    name: "{{ common_debs }}"
-    state: latest
-
-- name: install extra debs
-  apt:
-    force_apt_get: True
-    name: "{{ extra_debs.split() }}"
-    state: latest
-
-- name: install pinned debs
-  apt:
-    force_apt_get: True
-    name: "{{ common_pinned_debs }}"
-    state: present
-    force: yes
