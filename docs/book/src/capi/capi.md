@@ -42,6 +42,9 @@ Several variables can be used to customize the image build.
 | `extra_debs` | This can be set to a space delimited string containing the names of additional deb packages to install | `""` |
 | `extra_repos` | A space delimited string containing the names of files to add to the image containing repository definitions. The files should be given as absolute paths. | `""` |
 | `extra_rpms` | This can be set to a space delimited string containing the names of additional RPM packages to install | `""` |
+| `http_proxy` | This can be set to URL to use as an HTTP proxy during the Ansible stage of building | `""` |
+| `https_proxy` | This can be set to URL to use as an HTTPS proxy during the Ansible stage of building | `""` |
+| `no_proxy` | This can be set to a comma-delimited list of domains that should be exluded from proxying during the Ansible stage of building | `""` |
 | `reenable_public_repos` | If set to `"false"`, the package repositories disabled by setting `disable_public_repos` will remain disabled at the end of the build. | `"true"` |
 | `remove_extra_repos` | If set to `"true"`, the package repositories added to the OS through the use of `extra_repos` will be removed at the end of the build. | `"false"` |
 
@@ -102,6 +105,24 @@ Then, execute the build (using a Photon OVA as an example) with the following:
 
 ```sh
 PACKER_VAR_FILES=internal_repos.json make build-ova-photon-3
+```
+
+##### Setting up an HTTP Proxy
+
+The Packer tool itself honors the standard env vars of `HTTP_PROXY`, `HTTPS_PROXY`, and `NO_PROXY`. If these variables are set and exported, they will be honored if Packer needs to download an ISO during a build. However, in order to use these proxies with Ansible (for use during package installation or binary download), we need to pass them via JSON file.
+
+For example, to set the HTTP_PROXY env var for the Ansible stage of the build, create a `proxy.json` and populate it with the following:
+
+```json
+{
+  "http_proxy": "http://proxy.corp.com"
+}
+```
+
+Then, execute the build (using a Photon OVA as an example) with the following:
+
+```sh
+PACKER_VAR_FILES=proxy.json make build-ova-photon-3
 ```
 
 ## Kubernetes versions
