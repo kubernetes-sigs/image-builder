@@ -88,11 +88,11 @@ Images may be downloaded via HTTP:
 
 #### Accessing Local VMs
 
-After the images are built, the VMs from they are built are prepped for local testing. Simply boot the VM locally with Fusion or Workstation and the machine will be initialized with cloud-init data from the `cloudinit` directory. The VMs may be accessed via SSH by using the command `hack/image-ssh.sh BUILD_DIR`.
+After the images are built, the VMs from they are built are prepped for local testing. Simply boot the VM locally with Fusion or Workstation and the machine will be initialized with cloud-init data from the `cloudinit` directory. The VMs may be accessed via SSH by using the command `hack/image-ssh.sh BUILD_DIR capv`.
 
 #### Accessing Remote VMs
 
-After deploying an image to vSphere, use `hack/image-govc-cloudinit.sh VM` to snapshot the image and update it with cloud-init data from the `cloudinit` directory. The VM may now be accessed with `ssh -i cloudinit/id_rsa.capi SSH_USER@VM_IP`.
+After deploying an image to vSphere, use `hack/image-govc-cloudinit.sh VM` to snapshot the image and update it with cloud-init data from the `cloudinit` directory. Start the VM and now it may be accessed with `ssh -i cloudinit/id_rsa.capi capv@VM_IP`.
 
 ### Initialize a CNI
 
@@ -135,8 +135,8 @@ EOF
 As a non-root user:
 
 ```shell
-curl -LO https://dl.k8s.io/$(</etc/kubernetes_community_ami_version)/kubernetes-test.tar.gz
-tar -zxvf kubernetes-test.tar.gz kubernetes/platforms/linux/amd64
-cd kubernetes/platforms/linux/amd64
+curl -LO https://dl.k8s.io/$(</etc/kubernetes-version)/kubernetes-test-linux-amd64.tar.gz
+tar -zxvf kubernetes-test-linux-amd64.tar.gz
+cd kubernetes/test/bin
 sudo ./ginkgo --nodes=8 --flakeAttempts=2 --focus="\[Conformance\]" --skip="\[Flaky\]|\[Serial\]|\[sig-network\]|Container Lifecycle Hook" ./e2e_node.test -- --k8s-bin-dir=/usr/bin --container-runtime=remote --container-runtime-endpoint unix:///var/run/containerd/containerd.sock --container-runtime-process-name /usr/local/bin/containerd --container-runtime-pid-file= --kubelet-flags="--cgroups-per-qos=true --cgroup-root=/ --runtime-cgroups=/system.slice/containerd.service" --extra-log="{\"name\": \"containerd.log\", \"journalctl\": [\"-u\", \"containerd\"]}"
 ```
