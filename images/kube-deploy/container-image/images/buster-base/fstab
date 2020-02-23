@@ -1,0 +1,5 @@
+# /etc/fstab: static file system information.
+#
+# <file sys>    <mount point>   <type>  <options>       <dump>  <pass>
+
+UUID={{UUID_ROOT}}       /       ext4    rw,discard,errors=remount-ro    0       1

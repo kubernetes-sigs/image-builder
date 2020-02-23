@@ -1,0 +1,74 @@
+#!/bin/bash
+
+IMAGE=${1}
+REGION=${2}
+INSTANCE_ID=${3}
+if [[ -z "${INSTANCE_ID}" ]]; then
+  echo "syntax: ${0} <container-image-name> <region> <instance-id of ec2 worker>"
+  exit 1
+fi
+
+set -e
+#set -x
+
+ROOT=$(dirname "${BASH_SOURCE[0]}")
+
+IMAGE_DESCRIPTION="image upload test"
+
+RUN_ID=$(date +%Y%m%d-%H%M)
+IMAGE_NAME="imagebuilder-${IMAGE}-${RUN_ID}"
+
+# Compress locally before uploading
+echo "Compressing image to workspace/${IMAGE}.raw.gz"
+rm -f workspace/${IMAGE}.raw.gz
+gzip -k workspace/${IMAGE}.raw
+
+echo "Waiting for worker instance ${INSTANCE_ID} to be ready..."
+aws ec2 wait instance-status-ok --region ${REGION} --instance-id ${INSTANCE_ID}
+
+WORKER_IP=`aws ec2 describe-instances --region ${REGION} --instance-id ${INSTANCE_ID} --query Reservations[].Instances[].PublicIpAddress --output text`
+echo "Worker instance has public IP: ${WORKER_IP}"
+
+
+SSH_OPTIONS="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o User=ec2-user"
+ssh ${SSH_OPTIONS} ${WORKER_IP} uptime
+
+echo "Uploading compressed image"
+scp ${SSH_OPTIONS} workspace/${IMAGE}.raw.gz ${WORKER_IP}:/tmp/${IMAGE}.raw.gz
+
+VOLUME_ID=$(aws ec2 describe-instances --region ${REGION} --instance-id ${INSTANCE_ID} --query "Reservations[].Instances[0].BlockDeviceMappings[?DeviceName == '/dev/xvdj' ].Ebs.VolumeId" --output text)
+echo "Temporary volume has id ${VOLUME_ID}"
+
+VOLUME_PATH=/dev/disk/by-id/nvme-Amazon_Elastic_Block_Store_${VOLUME_ID//-}
+echo "Temporary volume is registered at ${VOLUME_PATH}"
+
+# Check it exists:
+ssh ${SSH_OPTIONS} ${WORKER_IP} ls -l ${VOLUME_PATH}
+
+echo "Expanding disk image onto temporary volume"
+# conv=sparse skips writing zero blocks.  Note this is `bs`, so a large `bs` may render this less effective.
+ssh ${SSH_OPTIONS} ${WORKER_IP} "gunzip -c /tmp/${IMAGE}.raw.gz | sudo dd status=progress bs=4k of=${VOLUME_PATH}"
+
+ssh ${SSH_OPTIONS} ${WORKER_IP} sudo sync
+ssh ${SSH_OPTIONS} ${WORKER_IP} sudo sync
+
+# TODO: Tag with image name / image description?
+echo "Creating disk snapshot"
+SNAPSHOT_ID=`aws ec2 create-snapshot --region ${REGION} --volume-id ${VOLUME_ID} --tag-specifications 'ResourceType=snapshot,Tags=[{Key=k8s.io/role/imagebuilder,Value=1}]' --query SnapshotId --output text`
+aws ec2 wait snapshot-completed --region ${REGION} --snapshot-id ${SNAPSHOT_ID}
+
+echo "Registering as new disk image"
+IMAGE_ID=`aws ec2 register-image \
+  --region ${REGION} \
+  --architecture x86_64 \
+  --block-device-mappings DeviceName=/dev/sda1,Ebs=\{SnapshotId=${SNAPSHOT_ID}\} \
+  --description "${IMAGE_DESCRIPTION}" \
+  --ena-support \
+  --name "${IMAGE_NAME}" \
+  --root-device-name /dev/sda1 \
+  --sriov-net-support=simple \
+  --virtualization-type=hvm \
+  --query ImageId --output text`
+echo "IMAGE_ID=$IMAGE_ID"
+
+# We can't delete the snapshot, it is backing the image
