@@ -36,16 +36,6 @@ fi
 
 export GOVC_VM="${1-}"
 
-create_snapshot() {
-  snapshots="$(govc snapshot.tree)"
-  if [[ ${snapshots} = *${1-}* ]]; then
-    echo "image-govc-cloudinit: skip snapshot '${1-}'; already exists"
-  else
-    echo "image-post-cloudinit: create snapshot '${1-}'"
-    vmrun snapshot "${VMX_FILE}" "${1-}"
-  fi
-}
-
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
 
 # If the VM has a "new" snapshot then revert to it and delete all other
@@ -69,8 +59,8 @@ echo "image-govc-cloudinit: initializing cloud-init data"
 govc vm.change \
   -e "guestinfo.userdata.encoding=base64" \
   -e "guestinfo.metadata.encoding=base64" \
-  -e "guestinfo.userdata='$(base64 -w0 <build/images/cloudinit/user-data)'" \
-  -e "guestinfo.metadata='$(base64 -w0 <build/images/cloudinit/meta-data)'"
+  -e "guestinfo.userdata='$(base64 -w0 <cloudinit/user-data)'" \
+  -e "guestinfo.metadata='$(base64 -w0 <cloudinit/meta-data)'"
 
 echo "image-govc-cloudinit: creating snapshot 'cloudinit'"
 govc snapshot.create cloudinit
