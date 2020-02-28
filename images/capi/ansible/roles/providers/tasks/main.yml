@@ -23,3 +23,6 @@
 
 - include_tasks: googlecompute.yml
   when: packer_builder_type.startswith('googlecompute')
+
+- include_tasks: qemu.yml
+  when: packer_builder_type is search('qemu')
