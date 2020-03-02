@@ -47,7 +47,7 @@
   "builders": [{
       "name": "ubuntu-1804",
       "type": "amazon-ebs",
-      "instance_type": "t2.small",
+      "instance_type": "t3.small",
       "source_ami": "{{user `ubuntu_18_04_ami`}}",
       "source_ami_filter": {
         "filters": {
@@ -89,7 +89,7 @@
     {
       "name": "centos-7",
       "type": "amazon-ebs",
-      "instance_type": "t2.small",
+      "instance_type": "t3.small",
       "source_ami": "{{user `centos_7_ami`}}",
       "source_ami_filter": {
         "filters": {
