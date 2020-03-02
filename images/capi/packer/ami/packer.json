@@ -129,7 +129,7 @@
     {
       "name": "amazon-2",
       "type": "amazon-ebs",
-      "instance_type": "t2.small",
+      "instance_type": "t3.small",
       "source_ami": "{{user `amazon_2_ami`}}",
       "source_ami_filter": {
         "filters": {
@@ -147,6 +147,7 @@
       "snapshot_groups": "{{user `snapshot_groups`}}",
       "snapshot_users": "{{user `snapshot_users`}}",
       "encrypt_boot": "{{user `encrypted`}}",
+      "kms_key_id": "{{user `kms_key_id`}}",
       "ami_regions": "{{user `ami_regions`}}",
       "access_key": "{{user `aws_access_key`}}",
       "profile": "{{ user `aws_profile`}}",
