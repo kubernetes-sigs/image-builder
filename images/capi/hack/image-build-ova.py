@@ -78,6 +78,11 @@ def main():
     # TODO(akutz) Support multiple VMDK files in the OVF/OVA
     vmdk = vmdk_files[0]
 
+    # Get the image-builder version
+    ibv = os.getenv('GIT_VERSION')
+    if ibv is None:
+        ibv = "unknown"
+
     # Create the OVF file.
     ovf = "%s.ovf" % build['name']
     create_ovf(ovf, {
@@ -89,6 +94,7 @@ def main():
         'CONTAINERD_VERSION': build_data['containerd_version'],
         'EULA': eula,
         'OS_NAME': build_data['os_name'],
+        'IB_VERSION': ibv,
         'ISO_CHECKSUM': build_data['iso_checksum'],
         'ISO_CHECKSUM_TYPE': build_data['iso_checksum_type'],
         'ISO_URL': build_data['iso_url'],
@@ -324,6 +330,7 @@ ${EULA}
       <Property ovf:userConfigurable="false" ovf:value="${BUILD_DATE}" ovf:type="string" ovf:key="BUILD_DATE"/>
       <Property ovf:userConfigurable="false" ovf:value="${CNI_VERSION}" ovf:type="string" ovf:key="CNI_VERSION"/>
       <Property ovf:userConfigurable="false" ovf:value="${CONTAINERD_VERSION}" ovf:type="string" ovf:key="CONTAINERD_VERSION"/>
+      <Property ovf:userConfigurable="false" ovf:value="${IB_VERSION}" ovf:type="string" ovf:key="IMAGE_BUILDER_VERSION"/>
       <Property ovf:userConfigurable="false" ovf:value="${ISO_URL}" ovf:type="string" ovf:key="ISO_URL"/>
       <Property ovf:userConfigurable="false" ovf:value="${ISO_CHECKSUM}" ovf:type="string" ovf:key="ISO_CHECKSUM"/>
       <Property ovf:userConfigurable="false" ovf:value="${ISO_CHECKSUM_TYPE}" ovf:type="string" ovf:key="ISO_CHECKSUM_TYPE"/>
