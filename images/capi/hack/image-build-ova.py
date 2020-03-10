@@ -86,6 +86,7 @@ def main():
         'ARTIFACT_ID': build['artifact_id'],
         'BUILD_TIMESTAMP': build_data['build_timestamp'],
         'CNI_VERSION': build_data['kubernetes_cni_semver'],
+        'CONTAINERD_VERSION': build_data['containerd_version'],
         'EULA': eula,
         'OS_NAME': build_data['os_name'],
         'ISO_CHECKSUM': build_data['iso_checksum'],
@@ -322,6 +323,7 @@ ${EULA}
       <Property ovf:userConfigurable="false" ovf:value="${BUILD_TIMESTAMP}" ovf:type="string" ovf:key="BUILD_TIMESTAMP"></Property>
       <Property ovf:userConfigurable="false" ovf:value="${BUILD_DATE}" ovf:type="string" ovf:key="BUILD_DATE"></Property>
       <Property ovf:userConfigurable="false" ovf:value="${CNI_VERSION}" ovf:type="string" ovf:key="CNI_VERSION"></Property>
+      <Property ovf:userConfigurable="false" ovf:value="${CONTAINERD_VERSION}" ovf:type="string" ovf:key="CONTAINERD_VERSION"></Property>
       <Property ovf:userConfigurable="false" ovf:value="${ISO_URL}" ovf:type="string" ovf:key="ISO_URL"></Property>
       <Property ovf:userConfigurable="false" ovf:value="${ISO_CHECKSUM}" ovf:type="string" ovf:key="ISO_CHECKSUM"></Property>
       <Property ovf:userConfigurable="false" ovf:value="${ISO_CHECKSUM_TYPE}" ovf:type="string" ovf:key="ISO_CHECKSUM_TYPE"></Property>
