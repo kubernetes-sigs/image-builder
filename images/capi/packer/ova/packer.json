@@ -135,7 +135,7 @@
     },
     {
       "type": "shell-local",
-      "command": "./hack/image-build-ova.py --vmx {{user `vmx_version`}} {{user `output_dir`}}"
+      "command": "./hack/image-build-ova.py --vmx {{user `vmx_version`}} --eula ./hack/ovf_eula.txt {{user `output_dir`}}"
     },
     {
       "type": "shell-local",
