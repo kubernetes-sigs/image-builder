@@ -172,7 +172,7 @@ def stream_optimize_vmdk_files(inlist):
         f['stream_size'] = os.path.getsize(outfile)
 
 
-_OVF_TEMPLATE = '''<?xml version='1.0' encoding='UTF-8'?>
+_OVF_TEMPLATE = '''<?xml version='1.0' encoding='utf-8'?>
 <Envelope xmlns="http://schemas.dmtf.org/ovf/envelope/1" xmlns:ovf="http://schemas.dmtf.org/ovf/envelope/1" xmlns:vmw="http://www.vmware.com/schema/ovf" xmlns:rasd="http://schemas.dmtf.org/wbem/wscim/1/cim-schema/2/CIM_ResourceAllocationSettingData" xmlns:vssd="http://schemas.dmtf.org/wbem/wscim/1/cim-schema/2/CIM_VirtualSystemSettingData">
   <References>
     <File ovf:id="file1" ovf:href="${BUILD_NAME}.ova.vmdk" ovf:size="${STREAM_DISK_SIZE}"/>
@@ -320,15 +320,15 @@ ${EULA}
       <ProductUrl>https://github.com/kubernetes-sigs/cluster-api-provider-vsphere</ProductUrl>
       <VendorUrl>https://vmware.com</VendorUrl>
       <Category>Cluster API Provider (CAPI)</Category>
-      <Property ovf:userConfigurable="false" ovf:value="${BUILD_TIMESTAMP}" ovf:type="string" ovf:key="BUILD_TIMESTAMP"></Property>
-      <Property ovf:userConfigurable="false" ovf:value="${BUILD_DATE}" ovf:type="string" ovf:key="BUILD_DATE"></Property>
-      <Property ovf:userConfigurable="false" ovf:value="${CNI_VERSION}" ovf:type="string" ovf:key="CNI_VERSION"></Property>
-      <Property ovf:userConfigurable="false" ovf:value="${CONTAINERD_VERSION}" ovf:type="string" ovf:key="CONTAINERD_VERSION"></Property>
-      <Property ovf:userConfigurable="false" ovf:value="${ISO_URL}" ovf:type="string" ovf:key="ISO_URL"></Property>
-      <Property ovf:userConfigurable="false" ovf:value="${ISO_CHECKSUM}" ovf:type="string" ovf:key="ISO_CHECKSUM"></Property>
-      <Property ovf:userConfigurable="false" ovf:value="${ISO_CHECKSUM_TYPE}" ovf:type="string" ovf:key="ISO_CHECKSUM_TYPE"></Property>
-      <Property ovf:userConfigurable="false" ovf:value="${KUBERNETES_SEMVER}" ovf:type="string" ovf:key="KUBERNETES_SEMVER"></Property>
-      <Property ovf:userConfigurable="false" ovf:value="${KUBERNETES_SOURCE_TYPE}" ovf:type="string" ovf:key="KUBERNETES_SOURCE_TYPE"></Property>
+      <Property ovf:userConfigurable="false" ovf:value="${BUILD_TIMESTAMP}" ovf:type="string" ovf:key="BUILD_TIMESTAMP"/>
+      <Property ovf:userConfigurable="false" ovf:value="${BUILD_DATE}" ovf:type="string" ovf:key="BUILD_DATE"/>
+      <Property ovf:userConfigurable="false" ovf:value="${CNI_VERSION}" ovf:type="string" ovf:key="CNI_VERSION"/>
+      <Property ovf:userConfigurable="false" ovf:value="${CONTAINERD_VERSION}" ovf:type="string" ovf:key="CONTAINERD_VERSION"/>
+      <Property ovf:userConfigurable="false" ovf:value="${ISO_URL}" ovf:type="string" ovf:key="ISO_URL"/>
+      <Property ovf:userConfigurable="false" ovf:value="${ISO_CHECKSUM}" ovf:type="string" ovf:key="ISO_CHECKSUM"/>
+      <Property ovf:userConfigurable="false" ovf:value="${ISO_CHECKSUM_TYPE}" ovf:type="string" ovf:key="ISO_CHECKSUM_TYPE"/>
+      <Property ovf:userConfigurable="false" ovf:value="${KUBERNETES_SEMVER}" ovf:type="string" ovf:key="KUBERNETES_SEMVER"/>
+      <Property ovf:userConfigurable="false" ovf:value="${KUBERNETES_SOURCE_TYPE}" ovf:type="string" ovf:key="KUBERNETES_SOURCE_TYPE"/>
     </ProductSection>
   </VirtualSystem>
 </Envelope>
