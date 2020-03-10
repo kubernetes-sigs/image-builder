@@ -48,11 +48,16 @@
   template:
     dest: /etc/systemd/system/containerd.service.d/boot-order.conf
     src: etc/systemd/system/containerd.service.d/boot-order.conf
-    
+
 - name: Create containerd memory pressure drop in file
   template:
     dest: /etc/systemd/system/containerd.service.d/memory-pressure.conf
     src: etc/systemd/system/containerd.service.d/memory-pressure.conf
+
+- name: Create containerd max tasks drop in file
+  template:
+    dest: /etc/systemd/system/containerd.service.d/max-tasks.conf
+    src: etc/systemd/system/containerd.service.d/max-tasks.conf
 
 - name: start containerd service
   systemd:
