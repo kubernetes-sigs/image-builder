@@ -78,6 +78,15 @@ def main():
     # TODO(akutz) Support multiple VMDK files in the OVF/OVA
     vmdk = vmdk_files[0]
 
+    # Get the image-builder version
+    ibv = os.getenv('GIT_VERSION')
+    if ibv is None:
+        ibv = "unknown"
+
+    OS_id_map = {"vmware-photon-64": {"id": "36", "version": "", "type": "vmwarePhoton64Guest"},
+                 "centos7-64": {"id": "107", "version": "7", "type": "centos7-64"},
+                 "ubuntu-64": {"id": "94", "version": "", "type": "ubuntu-64"}}
+
     # Create the OVF file.
     ovf = "%s.ovf" % build['name']
     create_ovf(ovf, {
@@ -85,10 +94,14 @@ def main():
         'BUILD_NAME': build['name'],
         'ARTIFACT_ID': build['artifact_id'],
         'BUILD_TIMESTAMP': build_data['build_timestamp'],
-        'CAPI_VERSION': build_data['capi_version'],
         'CNI_VERSION': build_data['kubernetes_cni_semver'],
+        'CONTAINERD_VERSION': build_data['containerd_version'],
         'EULA': eula,
         'OS_NAME': build_data['os_name'],
+        'OS_ID': OS_id_map[build_data['guest_os_type']]['id'],
+        'OS_TYPE': OS_id_map[build_data['guest_os_type']]['type'],
+        'OS_VERSION': OS_id_map[build_data['guest_os_type']]['version'],
+        'IB_VERSION': ibv,
         'ISO_CHECKSUM': build_data['iso_checksum'],
         'ISO_CHECKSUM_TYPE': build_data['iso_checksum_type'],
         'ISO_URL': build_data['iso_url'],
@@ -172,7 +185,7 @@ def stream_optimize_vmdk_files(inlist):
         f['stream_size'] = os.path.getsize(outfile)
 
 
-_OVF_TEMPLATE = '''<?xml version='1.0' encoding='UTF-8'?>
+_OVF_TEMPLATE = '''<?xml version='1.0' encoding='utf-8'?>
 <Envelope xmlns="http://schemas.dmtf.org/ovf/envelope/1" xmlns:ovf="http://schemas.dmtf.org/ovf/envelope/1" xmlns:vmw="http://www.vmware.com/schema/ovf" xmlns:rasd="http://schemas.dmtf.org/wbem/wscim/1/cim-schema/2/CIM_ResourceAllocationSettingData" xmlns:vssd="http://schemas.dmtf.org/wbem/wscim/1/cim-schema/2/CIM_VirtualSystemSettingData">
   <References>
     <File ovf:id="file1" ovf:href="${BUILD_NAME}.ova.vmdk" ovf:size="${STREAM_DISK_SIZE}"/>
@@ -198,9 +211,8 @@ _OVF_TEMPLATE = '''<?xml version='1.0' encoding='UTF-8'?>
       <Info>A human-readable annotation</Info>
       <Annotation>Cluster API vSphere image - ${OS_NAME} and Kubernetes ${KUBERNETES_SEMVER} - https://github.com/kubernetes-sigs/cluster-api-provider-vsphere/tree/master/build/images</Annotation>
     </AnnotationSection>
-    <OperatingSystemSection ovf:id="101" vmw:osType="other3xLinux64Guest">
+    <OperatingSystemSection ovf:id="${OS_ID}" ovf:version="${OS_VERSION}" vmw:osType="${OS_TYPE}">
       <Info>The operating system installed</Info>
-      <Description>Other 3.x or later Linux (64-bit)</Description>
     </OperatingSystemSection>
     <VirtualHardwareSection>
       <Info>Virtual hardware requirements</Info>
@@ -315,20 +327,19 @@ ${EULA}
       <Info>Information about the installed software</Info>
       <Product>${OS_NAME} and Kubernetes ${KUBERNETES_SEMVER}</Product>
       <Vendor>VMware Inc.</Vendor>
+      <VendorUrl>https://vmware.com</VendorUrl>
       <Version>kube-${KUBERNETES_SEMVER}</Version>
       <FullVersion>kube-${KUBERNETES_SEMVER}</FullVersion>
-      <ProductUrl>https://github.com/kubernetes-sigs/cluster-api-provider-vsphere</ProductUrl>
-      <VendorUrl>https://vmware.com</VendorUrl>
-      <Category>Cluster API Provider (CAPI)</Category>
-      <Property ovf:userConfigurable="false" ovf:value="${BUILD_TIMESTAMP}" ovf:type="string" ovf:key="BUILD_TIMESTAMP"></Property>
-      <Property ovf:userConfigurable="false" ovf:value="${BUILD_DATE}" ovf:type="string" ovf:key="BUILD_DATE"></Property>
-      <Property ovf:userConfigurable="false" ovf:value="${CAPI_VERSION}" ovf:type="string" ovf:key="CAPI_VERSION"></Property>
-      <Property ovf:userConfigurable="false" ovf:value="${CNI_VERSION}" ovf:type="string" ovf:key="CNI_VERSION"></Property>
-      <Property ovf:userConfigurable="false" ovf:value="${ISO_URL}" ovf:type="string" ovf:key="ISO_URL"></Property>
-      <Property ovf:userConfigurable="false" ovf:value="${ISO_CHECKSUM}" ovf:type="string" ovf:key="ISO_CHECKSUM"></Property>
-      <Property ovf:userConfigurable="false" ovf:value="${ISO_CHECKSUM_TYPE}" ovf:type="string" ovf:key="ISO_CHECKSUM_TYPE"></Property>
-      <Property ovf:userConfigurable="false" ovf:value="${KUBERNETES_SEMVER}" ovf:type="string" ovf:key="KUBERNETES_SEMVER"></Property>
-      <Property ovf:userConfigurable="false" ovf:value="${KUBERNETES_SOURCE_TYPE}" ovf:type="string" ovf:key="KUBERNETES_SOURCE_TYPE"></Property>
+      <Property ovf:userConfigurable="false" ovf:value="${BUILD_TIMESTAMP}" ovf:type="string" ovf:key="BUILD_TIMESTAMP"/>
+      <Property ovf:userConfigurable="false" ovf:value="${BUILD_DATE}" ovf:type="string" ovf:key="BUILD_DATE"/>
+      <Property ovf:userConfigurable="false" ovf:value="${CNI_VERSION}" ovf:type="string" ovf:key="CNI_VERSION"/>
+      <Property ovf:userConfigurable="false" ovf:value="${CONTAINERD_VERSION}" ovf:type="string" ovf:key="CONTAINERD_VERSION"/>
+      <Property ovf:userConfigurable="false" ovf:value="${IB_VERSION}" ovf:type="string" ovf:key="IMAGE_BUILDER_VERSION"/>
+      <Property ovf:userConfigurable="false" ovf:value="${ISO_URL}" ovf:type="string" ovf:key="ISO_URL"/>
+      <Property ovf:userConfigurable="false" ovf:value="${ISO_CHECKSUM}" ovf:type="string" ovf:key="ISO_CHECKSUM"/>
+      <Property ovf:userConfigurable="false" ovf:value="${ISO_CHECKSUM_TYPE}" ovf:type="string" ovf:key="ISO_CHECKSUM_TYPE"/>
+      <Property ovf:userConfigurable="false" ovf:value="${KUBERNETES_SEMVER}" ovf:type="string" ovf:key="KUBERNETES_SEMVER"/>
+      <Property ovf:userConfigurable="false" ovf:value="${KUBERNETES_SOURCE_TYPE}" ovf:type="string" ovf:key="KUBERNETES_SOURCE_TYPE"/>
     </ProductSection>
   </VirtualSystem>
 </Envelope>
