@@ -83,6 +83,10 @@ def main():
     if ibv is None:
         ibv = "unknown"
 
+    OS_id_map = {"vmware-photon-64": {"id": "36", "version": "", "type": "vmwarePhoton64Guest"},
+                 "centos7-64": {"id": "107", "version": "7", "type": "centos7-64"},
+                 "ubuntu-64": {"id": "94", "version": "", "type": "ubuntu-64"}}
+
     # Create the OVF file.
     ovf = "%s.ovf" % build['name']
     create_ovf(ovf, {
@@ -94,6 +98,9 @@ def main():
         'CONTAINERD_VERSION': build_data['containerd_version'],
         'EULA': eula,
         'OS_NAME': build_data['os_name'],
+        'OS_ID': OS_id_map[build_data['guest_os_type']]['id'],
+        'OS_TYPE': OS_id_map[build_data['guest_os_type']]['type'],
+        'OS_VERSION': OS_id_map[build_data['guest_os_type']]['version'],
         'IB_VERSION': ibv,
         'ISO_CHECKSUM': build_data['iso_checksum'],
         'ISO_CHECKSUM_TYPE': build_data['iso_checksum_type'],
@@ -204,9 +211,8 @@ _OVF_TEMPLATE = '''<?xml version='1.0' encoding='utf-8'?>
       <Info>A human-readable annotation</Info>
       <Annotation>Cluster API vSphere image - ${OS_NAME} and Kubernetes ${KUBERNETES_SEMVER} - https://github.com/kubernetes-sigs/cluster-api-provider-vsphere/tree/master/build/images</Annotation>
     </AnnotationSection>
-    <OperatingSystemSection ovf:id="101" vmw:osType="other3xLinux64Guest">
+    <OperatingSystemSection ovf:id="${OS_ID}" ovf:version="${OS_VERSION}" vmw:osType="${OS_TYPE}">
       <Info>The operating system installed</Info>
-      <Description>Other 3.x or later Linux (64-bit)</Description>
     </OperatingSystemSection>
     <VirtualHardwareSection>
       <Info>Virtual hardware requirements</Info>
