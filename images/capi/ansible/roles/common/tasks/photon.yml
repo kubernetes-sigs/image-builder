@@ -29,15 +29,29 @@
 
 - import_tasks: rpm_repos.yml
 
+- name: Perform a tdnf distro-sync
+  command: tdnf distro-sync -y --refresh
+  register: distro
+  changed_when: '"Nothing to do" not in distro.stderr'
+
+  # When the linux package is upgraded on Photon, the current /lib/modules
+  # folder is removed, causing future package installs to file if they involve
+  # kmods, which a lot of our future packages do. A reboot fixes this. In the
+  # future it might be nice to only reboot if that package was upgraded, but
+  # a reboot of Photon is generally very fast so this is fine for now.
+- name: Reboot after distro sync
+  reboot:
+  when: distro.changed
+
 - name: Concatenate the Photon RPMs
   set_fact:
     photon_rpms: "{{ common_photon_rpms | join(' ') }}"
 
 - name: install baseline dependencies
-  command: tdnf install {{ photon_rpms }} -y --refresh
+  command: tdnf install {{ photon_rpms }} -y
 
 - name: install extra RPMs
-  command: tdnf install {{ extra_rpms }} -y --refresh
+  command: tdnf install {{ extra_rpms }} -y
   when: extra_rpms != ""
 
 - name: disable service docker and ensure it is masked (installed via 'minimal' package)
