@@ -17,6 +17,7 @@
     src:   "/usr/local/bin/{{ item }}"
     dest:  "/usr/bin/{{ item }}"
     state: link
+    force: yes
   loop:
   - ctr
   - crictl
