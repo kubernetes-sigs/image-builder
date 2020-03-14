@@ -4,6 +4,7 @@
     "ansible_extra_vars": "guestinfo_datasource_slug={{user `guestinfo_datasource_slug`}} guestinfo_datasource_ref={{user `guestinfo_datasource_ref`}} ",
     "boot_wait": "10s",
     "build_timestamp": "{{timestamp}}",
+    "build_version": "{{user `build_name`}}-kube-{{user `kubernetes_semver`}}",
     "containerd_version": null,
     "containerd_sha256": null,
     "containerd_url": "https://storage.googleapis.com/cri-containerd-release/cri-containerd-{{user `containerd_version`}}.linux-amd64.tar.gz",
@@ -35,7 +36,7 @@
     "kubernetes_rpm_gpg_check": null,
     "kubernetes_container_registry": null,
     "network": "",
-    "output_dir": "./output/{{user `build_name`}}-kube-{{user `kubernetes_semver`}}",
+    "output_dir": "./output/{{user `build_version`}}",
     "reenable_public_repos": "true",
     "remove_extra_repos": "false",
     "remote_type": "",
@@ -55,7 +56,7 @@
   "builders": [
     {
       "name": "{{user `build_name`}}",
-      "vm_name": "{{build_name}}-kube-{{user `kubernetes_semver`}}",
+      "vm_name": "{{user `build_version`}}",
       "vmdk_name": "{{build_name}}",
       "output_directory": "{{user `output_dir`}}",
       "type": "vmware-iso",
@@ -113,7 +114,7 @@
         "--extra-vars",
         "{{user `ansible_extra_vars`}}"
       ]
-    }
+   }
   ],
   "post-processors": [
     {
@@ -135,12 +136,22 @@
       }
     },
     {
+      "name": "esx",
       "type": "shell-local",
-      "command": "GIT_VERSION=`git describe --dirty` ./hack/image-build-ova.py --vmx {{user `vmx_version`}} --eula ./hack/ovf_eula.txt {{user `output_dir`}}"
+      "inline": [
+        "cd {{user `output_dir`}}",
+        "tar xf {{user `build_version`}}.ova",
+        "rm {{user `build_version`}}.ova",
+        "GIT_VERSION=`git describe --dirty` ../../hack/image-build-ova.py --vmx {{user `vmx_version`}} --eula ../../hack/ovf_eula.txt --vmdk_file {{user `build_version`}}-disk1.vmdk"
+      ]
     },
     {
+      "name": "local",
       "type": "shell-local",
-      "command": "./hack/image-post-create-config.sh {{user `output_dir`}}"
+      "inline": [
+        "GIT_VERSION=`git describe --dirty` ./hack/image-build-ova.py --vmx {{user `vmx_version`}} --eula ./hack/ovf_eula.txt {{user `output_dir`}}",
+        "./hack/image-post-create-config.sh {{user `output_dir`}}"
+      ]
     }
   ]
 }

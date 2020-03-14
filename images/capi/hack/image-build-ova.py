@@ -42,6 +42,12 @@ def main():
                         metavar='EULA',
                         default='./ovf_eula.txt',
                         help='Text file containing EULA')
+    parser.add_argument('--vmdk_file',
+                        nargs='?',
+                        metavar='FILE',
+                        default=None,
+                        help='Use FILE as VMDK instead of reading from manifest. '
+                             'Must be in BUILD_DIR')
     parser.add_argument(dest='build_dir',
                         nargs='?',
                         metavar='BUILD_DIR',
@@ -69,8 +75,11 @@ def main():
     print("image-build-ova: loaded %s-kube-%s" % (build['name'],
                                                   build_data['kubernetes_semver']))
 
-    # Get a list of the VMDK files from the packer manifest.
-    vmdk_files = get_vmdk_files(build['files'])
+    if args.vmdk_file is None:
+        # Get a list of the VMDK files from the packer manifest.
+        vmdk_files = get_vmdk_files(build['files'])
+    else:
+        vmdk_files = [{"name": args.vmdk_file, "size": os.path.getsize(args.vmdk_file)}]
 
     # Create stream-optimized versions of the VMDK files.
     stream_optimize_vmdk_files(vmdk_files)
@@ -88,10 +97,9 @@ def main():
                  "ubuntu-64": {"id": "94", "version": "", "type": "ubuntu-64"}}
 
     # Create the OVF file.
-    ovf = "%s.ovf" % build['name']
+    ovf = "%s-kube-%s.ovf" % (build['name'], build_data['kubernetes_semver'])
     create_ovf(ovf, {
         'BUILD_DATE': build_data['build_date'],
-        'BUILD_NAME': build['name'],
         'ARTIFACT_ID': build['artifact_id'],
         'BUILD_TIMESTAMP': build_data['build_timestamp'],
         'CNI_VERSION': build_data['kubernetes_cni_semver'],
@@ -107,17 +115,18 @@ def main():
         'ISO_URL': build_data['iso_url'],
         'KUBERNETES_SEMVER': build_data['kubernetes_semver'],
         'KUBERNETES_SOURCE_TYPE': build_data['kubernetes_source_type'],
+        'DISK_NAME': vmdk['stream_name'],
         'POPULATED_DISK_SIZE': vmdk['size'],
         'STREAM_DISK_SIZE': vmdk['stream_size'],
         'VMX_VERSION': args.vmx_version,
     })
 
     # Create the OVA manifest.
-    ova_manifest = "%s.mf" % build['name']
+    ova_manifest = "%s-kube-%s.mf" % (build['name'], build_data['kubernetes_semver'])
     create_ova_manifest(ova_manifest, [ovf, vmdk['stream_name']])
 
     # Create the OVA.
-    ova = "%s.ova" % build['name']
+    ova = "%s-kube-%s.ova" % (build['name'], build_data['kubernetes_semver'])
     create_ova(ova, [ovf, ova_manifest, vmdk['stream_name']])
 
 
@@ -188,7 +197,7 @@ def stream_optimize_vmdk_files(inlist):
 _OVF_TEMPLATE = '''<?xml version='1.0' encoding='utf-8'?>
 <Envelope xmlns="http://schemas.dmtf.org/ovf/envelope/1" xmlns:ovf="http://schemas.dmtf.org/ovf/envelope/1" xmlns:vmw="http://www.vmware.com/schema/ovf" xmlns:rasd="http://schemas.dmtf.org/wbem/wscim/1/cim-schema/2/CIM_ResourceAllocationSettingData" xmlns:vssd="http://schemas.dmtf.org/wbem/wscim/1/cim-schema/2/CIM_VirtualSystemSettingData">
   <References>
-    <File ovf:id="file1" ovf:href="${BUILD_NAME}.ova.vmdk" ovf:size="${STREAM_DISK_SIZE}"/>
+    <File ovf:id="file1" ovf:href="${DISK_NAME}" ovf:size="${STREAM_DISK_SIZE}"/>
   </References>
   <DiskSection>
     <Info>List of the virtual disks</Info>
