@@ -39,9 +39,3 @@
 - name: install extra RPMs
   command: tdnf install {{ extra_rpms }} -y --refresh
   when: extra_rpms != ""
-
-- name: disable service docker and ensure it is masked (installed via 'minimal' package)
-  systemd:
-    name: docker
-    enabled: no
-    masked: yes
