@@ -110,9 +110,6 @@ def main():
         'OS_TYPE': OS_id_map[build_data['guest_os_type']]['type'],
         'OS_VERSION': OS_id_map[build_data['guest_os_type']]['version'],
         'IB_VERSION': ibv,
-        'ISO_CHECKSUM': build_data['iso_checksum'],
-        'ISO_CHECKSUM_TYPE': build_data['iso_checksum_type'],
-        'ISO_URL': build_data['iso_url'],
         'KUBERNETES_SEMVER': build_data['kubernetes_semver'],
         'KUBERNETES_SOURCE_TYPE': build_data['kubernetes_source_type'],
         'DISK_NAME': vmdk['stream_name'],
@@ -345,9 +342,6 @@ ${EULA}
       <Property ovf:userConfigurable="false" ovf:value="${CNI_VERSION}" ovf:type="string" ovf:key="CNI_VERSION"/>
       <Property ovf:userConfigurable="false" ovf:value="${CONTAINERD_VERSION}" ovf:type="string" ovf:key="CONTAINERD_VERSION"/>
       <Property ovf:userConfigurable="false" ovf:value="${IB_VERSION}" ovf:type="string" ovf:key="IMAGE_BUILDER_VERSION"/>
-      <Property ovf:userConfigurable="false" ovf:value="${ISO_URL}" ovf:type="string" ovf:key="ISO_URL"/>
-      <Property ovf:userConfigurable="false" ovf:value="${ISO_CHECKSUM}" ovf:type="string" ovf:key="ISO_CHECKSUM"/>
-      <Property ovf:userConfigurable="false" ovf:value="${ISO_CHECKSUM_TYPE}" ovf:type="string" ovf:key="ISO_CHECKSUM_TYPE"/>
       <Property ovf:userConfigurable="false" ovf:value="${KUBERNETES_SEMVER}" ovf:type="string" ovf:key="KUBERNETES_SEMVER"/>
       <Property ovf:userConfigurable="false" ovf:value="${KUBERNETES_SOURCE_TYPE}" ovf:type="string" ovf:key="KUBERNETES_SOURCE_TYPE"/>
     </ProductSection>
