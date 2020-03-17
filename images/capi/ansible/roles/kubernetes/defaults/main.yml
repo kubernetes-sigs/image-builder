@@ -27,3 +27,5 @@ kubernetes_imgs:
 - pause.tar
 - coredns.tar
 - etcd.tar
+
+kubernetes_cni_http_checksum: "sha1:{{ kubernetes_cni_http_source }}/{{ kubernetes_cni_semver }}/cni-plugins-{{ kubernetes_goarch }}-{{ kubernetes_cni_semver }}.tgz.sha1"
