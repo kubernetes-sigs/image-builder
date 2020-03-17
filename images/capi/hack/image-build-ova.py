@@ -339,6 +339,7 @@ ${EULA}
       <Version>kube-${KUBERNETES_SEMVER}</Version>
       <FullVersion>kube-${KUBERNETES_SEMVER}</FullVersion>
       <VendorUrl>https://vmware.com</VendorUrl>
+      <Category>Cluster API Provider (CAPI)</Category>
       <Property ovf:userConfigurable="false" ovf:value="${BUILD_TIMESTAMP}" ovf:type="string" ovf:key="BUILD_TIMESTAMP"/>
       <Property ovf:userConfigurable="false" ovf:value="${BUILD_DATE}" ovf:type="string" ovf:key="BUILD_DATE"/>
       <Property ovf:userConfigurable="false" ovf:value="${CNI_VERSION}" ovf:type="string" ovf:key="CNI_VERSION"/>
