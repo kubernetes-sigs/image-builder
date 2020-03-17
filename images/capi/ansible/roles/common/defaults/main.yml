@@ -53,6 +53,7 @@ common_photon_rpms:
 - net-tools
 - ntp
 - openssl-c_rehash
+- open-vm-tools
 - python-netifaces
 - python3-pip
 - python-requests
