@@ -16,7 +16,7 @@
         "libtool", "linux",
         "motd",
         "net-tools",
-        "openssh", "openvm-tools",
+        "openssh", "open-vm-tools",
         "pkg-config", "photon-release", "photon-repos", "procps-ng",
         "rpm",
         "sed",
