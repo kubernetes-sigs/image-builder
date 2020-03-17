@@ -33,6 +33,7 @@ common_debs:
 - ebtables
 - jq
 - gnupg
+- ipset
 - libnetfilter-acct1
 - libnetfilter-cttimeout1
 - libnetfilter-log1
