@@ -38,7 +38,7 @@ help: ## Display this help
 
 .PHONY: deps
 deps: ## Installs/checks all dependencies
-deps: deps-ami deps-azure deps-do deps-gce deps-ova
+deps: deps-ami deps-azure deps-do deps-gce deps-ova deps-vsphere
 
 .PHONY: deps-ami
 deps-ami: ## Installs/checks dependencies for AMI builds
@@ -69,6 +69,12 @@ deps-gce:
 .PHONY: deps-ova
 deps-ova: ## Installs/checks dependencies for OVA builds
 deps-ova:
+	hack/ensure-ansible.sh
+	hack/ensure-packer.sh
+
+.PHONY: deps-vsphere
+deps-vsphere: ## Installs/checks dependencies for vSphere builds
+deps-vsphere:
 	hack/ensure-ansible.sh
 	hack/ensure-packer.sh
 
@@ -118,6 +124,7 @@ PLATFORMS_AND_VERSIONS	:=	$(CENTOS_VERSIONS) \
 							$(PHOTON_VERSIONS) \
 							$(UBUNTU_VERSIONS)
 
+VSPHERE_BUILD_NAMES		:=	$(addprefix vsphere-,$(PLATFORMS_AND_VERSIONS))
 OVA_BUILD_NAMES			:=	$(addprefix ova-,$(PLATFORMS_AND_VERSIONS))
 ESX_BUILD_NAMES			:=	$(addprefix esx-,$(OVA_BUILD_NAMES))
 
@@ -130,12 +137,17 @@ DO_BUILD_NAMES 			?=	do-default
 ## --------------------------------------
 ## Dynamic build targets
 ## --------------------------------------
+VSPHERE_BUILD_TARGETS	:= $(addprefix build-,$(VSPHERE_BUILD_NAMES))
 OVA_BUILD_TARGETS	:= $(addprefix build-,$(OVA_BUILD_NAMES))
 ESX_BUILD_TARGETS	:= $(addprefix build-,$(ESX_BUILD_NAMES))
 AMI_BUILD_TARGETS	:= $(addprefix build-,$(AMI_BUILD_NAMES))
 GCE_BUILD_TARGETS	:= $(addprefix build-,$(GCE_BUILD_NAMES))
 AZURE_BUILD_TARGETS	:= $(addprefix build-,$(AZURE_BUILD_NAMES))
 DO_BUILD_TARGETS 	:= $(addprefix build-,$(DO_BUILD_NAMES))
+
+.PHONY: $(VSPHERE_BUILD_TARGETS)
+$(VSPHERE_BUILD_TARGETS):
+	packer build $(PACKER_FLAGS) -var-file="$(abspath packer/vsphere/$(subst build-,,$@).json)" $(PACKER_VAR_FILES) packer/vsphere/packer.json
 
 .PHONY: $(OVA_BUILD_TARGETS)
 $(OVA_BUILD_TARGETS):
@@ -181,6 +193,11 @@ build-azure-vhd-ubuntu-1804: ## Builds Ubuntu 18.04 VHD image for Azure
 build-do-default: ## Builds the DigitalOcean snapshot default image
 
 build-gce-default: ## Builds the GCE default image
+
+build-vsphere-centos-7: ## Builds CentOS 7 template on vSphere
+build-vsphere-photon-3: ## Builds Photon 3 template on vSphere
+build-vsphere-ubuntu-1804: ## Builds Ubuntu 18.04 template on vSphere
+build-vsphere-ubuntu-2004: ## Builds Ubuntu 20.04 template on vSphere
 
 build-ova-centos-7: ## Builds CentOS 7 OVA w local hypervisor
 build-ova-photon-3: ## Builds Photon 3 OVA w local hypervisor
