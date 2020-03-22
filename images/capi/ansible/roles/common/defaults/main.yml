@@ -60,6 +60,7 @@ common_photon_rpms:
 - socat
 - tar
 - unzip
+- nfs-utils
 
 common_pinned_debs: []
 common_redhat_epel_rpm: "https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm"
