@@ -1,0 +1,7 @@
+# Use config version 2 to enable new configuration fields.
+# Config file is parsed as version 1 by default.
+version = 2
+
+[plugins]
+  [plugins."io.containerd.grpc.v1.cri"]
+    sandbox_image = "{{ containerd_pause_image }}"
