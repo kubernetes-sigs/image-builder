@@ -125,6 +125,7 @@ PLATFORMS_AND_VERSIONS	:=	$(CENTOS_VERSIONS) \
 							$(UBUNTU_VERSIONS)
 
 OVA_BUILD_NAMES			:=	$(addprefix ova-,$(PLATFORMS_AND_VERSIONS))
+VSPHERE_BUILD_NAMES		:=	$(addprefix vsphere-,$(OVA_BUILD_NAMES))
 ESX_BUILD_NAMES			:=	$(addprefix esx-,$(OVA_BUILD_NAMES))
 
 AMI_BUILD_NAMES			?=	ami-default
@@ -138,6 +139,7 @@ QEMU_BUILD_NAMES			?=	qemu-ubuntu-1804
 ## --------------------------------------
 ## Dynamic build targets
 ## --------------------------------------
+VSPHERE_BUILD_TARGETS	:= $(addprefix build-,$(VSPHERE_BUILD_NAMES))
 OVA_BUILD_TARGETS	:= $(addprefix build-,$(OVA_BUILD_NAMES))
 ESX_BUILD_TARGETS	:= $(addprefix build-,$(ESX_BUILD_NAMES))
 AMI_BUILD_TARGETS	:= $(addprefix build-,$(AMI_BUILD_NAMES))
@@ -146,13 +148,17 @@ AZURE_BUILD_TARGETS	:= $(addprefix build-,$(AZURE_BUILD_NAMES))
 DO_BUILD_TARGETS 	:= $(addprefix build-,$(DO_BUILD_NAMES))
 QEMU_BUILD_TARGETS	:= $(addprefix build-,$(QEMU_BUILD_NAMES))
 
+.PHONY: $(VSPHERE_BUILD_TARGETS)
+$(VSPHERE_BUILD_TARGETS):
+	packer build $(PACKER_FLAGS) -var-file="$(abspath packer/ova/$(subst build-vsphere-,,$@).json)" -var-file="packer/ova/vsphere.json"  -except=esx -except=local $(PACKER_VAR_FILES) -only=vsphere -force packer/ova/packer.json
+
 .PHONY: $(OVA_BUILD_TARGETS)
 $(OVA_BUILD_TARGETS):
-	packer build $(PACKER_FLAGS) -var-file="$(abspath packer/ova/$(subst build-,,$@).json)" -except=esx $(PACKER_VAR_FILES) packer/ova/packer.json
+	packer build $(PACKER_FLAGS) -var-file="$(abspath packer/ova/$(subst build-,,$@).json)" -except=esx -except=vsphere $(PACKER_VAR_FILES) -only=vmware-iso packer/ova/packer.json
 
 .PHONY: $(ESX_BUILD_TARGETS)
 $(ESX_BUILD_TARGETS):
-	packer build $(PACKER_FLAGS) -var-file="$(abspath packer/ova/$(subst build-esx-,,$@).json)" -var-file="packer/ova/esx.json" -except=local $(PACKER_VAR_FILES) packer/ova/packer.json
+	packer build $(PACKER_FLAGS) -var-file="$(abspath packer/ova/$(subst build-esx-,,$@).json)" -var-file="packer/ova/esx.json" -except=vsphere -except=local $(PACKER_VAR_FILES) -only=vmware-iso packer/ova/packer.json
 
 .PHONY: $(AMI_BUILD_TARGETS)
 $(AMI_BUILD_TARGETS):
@@ -200,6 +206,11 @@ build-azure-vhd-ubuntu-1804: ## Builds Ubuntu 18.04 VHD image for Azure
 build-do-default: ## Builds the DigitalOcean snapshot default image
 
 build-gce-default: ## Builds the GCE default image
+
+build-vsphere-ova-centos-7: ## Builds CentOS 7 template on vSphere
+build-vsphere-ova-photon-3: ## Builds Photon 3 template on vSphere
+build-vsphere-ova-ubuntu-1804: ## Builds Ubuntu 18.04 template on vSphere
+build-vsphere-ova-ubuntu-2004: ## Builds Ubuntu 20.04 template on vSphere
 
 build-ova-centos-7: ## Builds CentOS 7 OVA w local hypervisor
 build-ova-photon-3: ## Builds Photon 3 OVA w local hypervisor

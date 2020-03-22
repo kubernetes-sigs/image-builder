@@ -8,31 +8,45 @@ The `make deps-ova` target will test that Ansible and Packer are installed and a
 
 The images may be built using one of the following hypervisors:
 
-| OS | Builder |
-|----|---------|
-| Linux | VMware Workstation |
-| macOS | VMware Fusion |
+| OS | Builder | Build target |
+|----|---------|--------------|
+| Linux | VMware Workstation | build-ova-<OS> |
+| macOS | VMware Fusion | build-ova-<OS> |
+| ESXi | ESXi | build-esx-ova-<OS> |
+| vSphere | vSphere >= 6.5 | build-vsphere-ova-<OS> |
 
-The `vmware-iso` builder supports building against a remote VMware ESX server, but is untested with this project.
 
-### Tools
+The `esxi` builder supports building against a remote VMware ESX server with [specific configuration](https://packer.io/docs/builders/vmware-iso.html#building-on-a-remote-vsphere-hypervisor) (ssh access), but is untested with this project.
+The `vsphere` builder supports building against a remote VMware vSphere using standard API.
 
-- [Packer](https://www.packer.io/intro/getting-started/install.html)
+
+### Prerequisites for all images
+
+- [Packer](https://www.packer.io/intro/getting-started/install.html) version >= 1.5.5
 - [Ansible](http://docs.ansible.com/ansible/latest/intro_installation.html) version >= 2.8.0
 
-## The `cloudinit` Directory
+### Prerequisites for vSphere builder
 
-The `cloudinit` contains files that:
+Complete the `vsphere.json` configuration file with credentials and informations specific to the remote vSphere hypervisor used to build the `ova` file.
+This file must have the following format (`cluster` can be replace by `host`):
+```
+{
+    "vcenter_server":"FQDN of vcenter",
+    "username":"vcenter_username",
+    "password":"vcenter_password",
+    "datastore":"template_datastore",
+    "folder": "template_folder_on_vcenter",
+    "cluster": "esxi_cluster_used_for_template_creation",
+    "network": "network_attached_to_template",
+    "insecure_connection": "false"
+}
+```
 
-- **Are** example data used for testing
-- Are **not** included in any of the images
-- Should **not** be used in production systems
-
-For more information about how the files in the `cloudinit` directory are used, please refer to the section on [accessing the images](#accessing-the-images).
+If you prefer to use a different configuration file, you can create it with the same format and export `PACKER_VAR_FILES` environment variable containing the full path to it.
 
 ## Building Images
 
-From the `images/capi` directory, run `make build-ova-<OS>`, where `<OS>` is the desired operating system. The available choices are listed via `make help`.
+From the `images/capi` directory, run `make build-ova-<OS>` or `make build-vsphere-ova-<OS>`, where `<OS>` is the desired operating system. The available choices are listed via `make help`.
 
 ### Configuration
 
@@ -44,6 +58,7 @@ In addition to the configuration found in `images/capi/packer/config`, the `ova`
 | `ova-centos-7.json` | The settings for the CentOS 7 image |
 | `ova-photon-3.json` | The settings for the Photon 3 image |
 | `ova-ubuntu-1804.json` | The settings for the Ubuntu 1804 image |
+| `vsphere.json` | Additional settings needed when building on a remote vSphere |
 
 
 The images are built and located in `images/capi/output/BUILD_NAME+kube-KUBERNETES_VERSION`
@@ -93,6 +108,7 @@ After the images are built, the VMs from they are built are prepped for local te
 #### Accessing Remote VMs
 
 After deploying an image to vSphere, use `hack/image-govc-cloudinit.sh VM` to snapshot the image and update it with cloud-init data from the `cloudinit` directory. Start the VM and now it may be accessed with `ssh -i cloudinit/id_rsa.capi capv@VM_IP`.
+This hack necessitate the `govc` utility from [VMmare](https://github.com/vmware/govmomi/tree/master/govc)
 
 ### Initialize a CNI
 
@@ -140,3 +156,13 @@ tar -zxvf kubernetes-test-linux-amd64.tar.gz
 cd kubernetes/test/bin
 sudo ./ginkgo --nodes=8 --flakeAttempts=2 --focus="\[Conformance\]" --skip="\[Flaky\]|\[Serial\]|\[sig-network\]|Container Lifecycle Hook" ./e2e_node.test -- --k8s-bin-dir=/usr/bin --container-runtime=remote --container-runtime-endpoint unix:///var/run/containerd/containerd.sock --container-runtime-process-name /usr/local/bin/containerd --container-runtime-pid-file= --kubelet-flags="--cgroups-per-qos=true --cgroup-root=/ --runtime-cgroups=/system.slice/containerd.service" --extra-log="{\"name\": \"containerd.log\", \"journalctl\": [\"-u\", \"containerd\"]}"
 ```
+
+## The `cloudinit` Directory
+
+The `cloudinit` contains files that:
+
+- **Are** example data used for testing
+- Are **not** included in any of the images
+- Should **not** be used in production systems
+
+For more information about how the files in the `cloudinit` directory are used, please refer to the section on [accessing the images](#accessing-the-images).
