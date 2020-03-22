@@ -15,7 +15,7 @@ The `make deps-vsphere` target will test that Ansible and Packer are installed a
 - Create a configuration file with the following format (`cluster` can be replace by `host`):
 ```
 {
-    "kubernetes_semver":"1.17.3",
+    "kubernetes_semver":"v1.17.3",
     "vcenter_server":"FQDN of vcenter",
     "username":"vcenter_username",
     "password":"vcenter_password",
