@@ -72,6 +72,12 @@ deps-ova:
 	hack/ensure-ansible.sh
 	hack/ensure-packer.sh
 
+.PHONY: deps-qemu
+deps-qemu: ## Installs/checks dependencies for QEMU builds
+deps-qemu:
+	hack/ensure-ansible.sh
+	hack/ensure-packer.sh
+
 ## --------------------------------------
 ## Packer flags
 ## --------------------------------------
@@ -127,6 +133,8 @@ AZURE_BUILD_NAMES		?=	azure-sig-ubuntu-1804 azure-vhd-ubuntu-1804
 
 DO_BUILD_NAMES 			?=	do-default
 
+QEMU_BUILD_NAMES			?=	qemu-ubuntu-1804
+
 ## --------------------------------------
 ## Dynamic build targets
 ## --------------------------------------
@@ -136,6 +144,7 @@ AMI_BUILD_TARGETS	:= $(addprefix build-,$(AMI_BUILD_NAMES))
 GCE_BUILD_TARGETS	:= $(addprefix build-,$(GCE_BUILD_NAMES))
 AZURE_BUILD_TARGETS	:= $(addprefix build-,$(AZURE_BUILD_NAMES))
 DO_BUILD_TARGETS 	:= $(addprefix build-,$(DO_BUILD_NAMES))
+QEMU_BUILD_TARGETS	:= $(addprefix build-,$(QEMU_BUILD_NAMES))
 
 .PHONY: $(OVA_BUILD_TARGETS)
 $(OVA_BUILD_TARGETS):
@@ -161,6 +170,11 @@ $(DO_BUILD_TARGETS):
 	packer build $(PACKER_FLAGS) -var-file="$(abspath packer/digitalocean/$(subst build-,,$@).json)" $(PACKER_VAR_FILES) packer/digitalocean/packer.json
 .PHONY: $(DO_BUILD_TARGETS)
 
+$(QEMU_BUILD_TARGETS):
+	packer build $(PACKER_FLAGS) -var-file="$(abspath packer/qemu/$(subst build-,,$@).json)" $(PACKER_VAR_FILES) packer/qemu/packer.json
+.PHONY: $(QEMU_BUILD_TARGETS)
+
+
 ## --------------------------------------
 ## Dynamic clean targets
 ## --------------------------------------
@@ -168,6 +182,11 @@ OVA_CLEAN_TARGETS := $(subst build-,clean-,$(OVA_BUILD_TARGETS))
 .PHONY: $(OVA_CLEAN_TARGETS)
 $(OVA_CLEAN_TARGETS):
 	rm -fr output/$(subst clean-ova-,,$@)*
+
+QEMU_CLEAN_TARGETS := $(subst build-,clean-,$(QEMU_BUILD_TARGETS))
+.PHONY: $(QEMU_CLEAN_TARGETS)
+$(QEMU_CLEAN_TARGETS):
+	rm -fr output/$(subst clean-qemu-,,$@)*
 
 ## --------------------------------------
 ## Document dynamic build targets
@@ -192,17 +211,23 @@ build-esx-photon-3: ## Builds Photon 3 OVA w remote hypervisor
 build-esx-ubuntu-1804: ## Builds Ubuntu 18.04 OVA w remote hypervisor
 build-esx-ubuntu-2004: ## Builds Ubuntu 20.04 OVA w remote hypervisor
 
+build-qemu-ubuntu-1804: ## Builds Ubuntu 18.04 QEMU image
+
 ## --------------------------------------
 ## Clean targets
 ## --------------------------------------
 ##@ Cleaning
-.PHONY: clean-ova
+.PHONY: clean
 clean: ## Cleans all local image caches
-clean: $(OVA_CLEAN_TARGETS) clean-packer-cache
+clean: $(OVA_CLEAN_TARGETS) $(QEMU_CLEAN_TARGETS) clean-packer-cache
 
 .PHONY: clean-ova
 clean-ova: ## Removes all ova image output directories (see NOTE at top of help)
 clean-ova: $(OVA_CLEAN_TARGETS)
+
+.PHONY: clean-qemu
+clean-qemu: ## Removes all qemu image output directories (see NOTE at top of help)
+clean-qemu: $(QEMU_CLEAN_TARGETS)
 
 .PHONY: clean-packer-cache
 clean-packer-cache: ## Removes the packer cache

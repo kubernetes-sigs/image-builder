@@ -13,6 +13,7 @@ The Image Builder can be used to build images intended for use with Kubernetes [
 * [Azure](./providers/azure.md)
 * [DigitalOcean](./providers/digitalocean.md)
 * Google *TODO*
+* [OpenStack](./providers/openstack.md)
 * [vSphere](./providers/vsphere.md)
 
 ## Make targets
