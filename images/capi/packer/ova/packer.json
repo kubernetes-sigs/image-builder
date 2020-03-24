@@ -16,7 +16,7 @@
     "extra_rpms": "",
     "format": "",
     "guestinfo_datasource_slug": "https://raw.githubusercontent.com/vmware/cloud-init-vmware-guestinfo",
-    "guestinfo_datasource_ref": "v1.3.0",
+    "guestinfo_datasource_ref": "v1.3.1",
     "guest_os_type": null,
     "headless": "true",
     "kubernetes_cni_rpm_version": null,
