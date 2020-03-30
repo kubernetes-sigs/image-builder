@@ -1,8 +1,9 @@
 {
     "hostname": "localhost",
     "password": {
-        "crypted": false,
-        "text": "builder"
+        "crypted": true,
+        "text": "*",
+        "age": -1
     },
     "disk": "/dev/sda",
     "packages": [
