@@ -13,6 +13,7 @@
         "e2fsprogs",
         "file", "filesystem", "findutils",
         "gdbm", "grep", "gzip",
+        "haveged",
         "iana-etc", "initramfs", "iptables", "iproute2", "iputils",
         "libtool", "linux",
         "motd",
