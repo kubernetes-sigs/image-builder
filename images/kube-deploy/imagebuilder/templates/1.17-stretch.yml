@@ -145,17 +145,18 @@ plugins:
        - [ 'chroot', '{root}', '/bin/sh', '-c', 'echo "APT::Periodic::Unattended-Upgrade \"0\"; " >> /etc/apt/apt.conf.d/20auto-upgrades' ]
        # - [ 'chroot', '{root}', 'apt-get', 'remove', '--yes', 'unattended-upgrades' ]
 
-       # Install docker
-       - [ 'wget', 'https://download.docker.com/linux/debian/dists/stretch/pool/stable/amd64/containerd.io_1.2.10-3_amd64.deb', '-O', '{root}/tmp/containerd.deb' ]
-       - [ '/bin/sh', '-c', 'cd {root}/tmp; echo "186f2f2c570f37b363102e6b879073db6dec671d  containerd.deb" | shasum -c -' ]
-       - [ 'wget', 'https://download.docker.com/linux/debian/dists/stretch/pool/stable/amd64/docker-ce-cli_19.03.4~3-0~debian-stretch_amd64.deb', '-O', '{root}/tmp/docker-cli.deb' ]
-       - [ '/bin/sh', '-c', 'cd {root}/tmp; echo "57f71ee764abb19a0b4c580ff14b1eb3de3a9e08  docker-cli.deb" | shasum -c -' ]
-       - [ 'wget', 'https://download.docker.com/linux/debian/dists/stretch/pool/stable/amd64/docker-ce_19.03.4~3-0~debian-stretch_amd64.deb', '-O', '{root}/tmp/docker.deb' ]
-       - [ '/bin/sh', '-c', 'cd {root}/tmp; echo "2b8dcb2d75334fab29242ac069d1fbcfb65e88e3  docker.deb" | shasum -c -' ]
-       - [ 'chroot', '{root}', '/bin/sh', '-c', 'DEBIAN_FRONTEND=noninteractive dpkg --install /tmp/containerd.deb' ]
-       - [ 'chroot', '{root}', '/bin/sh', '-c', 'DEBIAN_FRONTEND=noninteractive dpkg --install /tmp/docker-cli.deb' ]
-       - [ 'chroot', '{root}', '/bin/sh', '-c', 'DEBIAN_FRONTEND=noninteractive dpkg --install /tmp/docker.deb' ]
-       - [ 'rm', '{root}/tmp/containerd.deb', '{root}/tmp/docker-cli.deb', '{root}/tmp/docker.deb' ]
+       # Install Docker
+       - [ 'mkdir', '-p', '{root}/var/cache/nodeup/packages' ]
+       - [ 'wget', 'https://download.docker.com/linux/debian/dists/stretch/pool/stable/amd64/containerd.io_1.2.10-3_amd64.deb', '-O', '{root}/var/cache/nodeup/packages/containerd.io.deb' ]
+       - [ '/bin/sh', '-c', 'cd {root}/var/cache/nodeup/packages; echo "186f2f2c570f37b363102e6b879073db6dec671d  containerd.io.deb" | shasum -c -' ]
+       - [ 'wget', 'https://download.docker.com/linux/debian/dists/stretch/pool/stable/amd64/docker-ce-cli_19.03.4~3-0~debian-stretch_amd64.deb', '-O', '{root}/var/cache/nodeup/packages/docker-ce-cli.deb' ]
+       - [ '/bin/sh', '-c', 'cd {root}/var/cache/nodeup/packages; echo "57f71ee764abb19a0b4c580ff14b1eb3de3a9e08  docker-ce-cli.deb" | shasum -c -' ]
+       - [ 'wget', 'https://download.docker.com/linux/debian/dists/stretch/pool/stable/amd64/docker-ce_19.03.4~3-0~debian-stretch_amd64.deb', '-O', '{root}/var/cache/nodeup/packages/docker-ce.deb' ]
+       - [ '/bin/sh', '-c', 'cd {root}/var/cache/nodeup/packages; echo "2b8dcb2d75334fab29242ac069d1fbcfb65e88e3  docker-ce.deb" | shasum -c -' ]
+       - [ 'chroot', '{root}', '/bin/sh', '-c', 'DEBIAN_FRONTEND=noninteractive dpkg --install /var/cache/nodeup/packages/containerd.io.deb' ]
+       - [ 'chroot', '{root}', '/bin/sh', '-c', 'DEBIAN_FRONTEND=noninteractive dpkg --install /var/cache/nodeup/packages/docker-ce-cli.deb' ]
+       - [ 'chroot', '{root}', '/bin/sh', '-c', 'DEBIAN_FRONTEND=noninteractive dpkg --install /var/cache/nodeup/packages/docker-ce.deb' ]
+       - [ 'chroot', '{root}', 'systemctl', 'disable', 'containerd.service', 'docker.service', 'docker.socket' ]
 
        # We perform a full replacement of some grub conf variables:
        #   GRUB_CMDLINE_LINUX_DEFAULT (add memory cgroup)
