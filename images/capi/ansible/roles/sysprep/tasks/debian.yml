@@ -24,7 +24,6 @@
   loop: "{{ extra_repos.split() }}"
   when: remove_extra_repos and extra_repos != ""
 
-
 - name: Find disabled repo files
   find:
     depth: 1
