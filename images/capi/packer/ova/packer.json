@@ -2,23 +2,32 @@
   "variables": {
     "ansible_common_vars": "",
     "ansible_extra_vars": "guestinfo_datasource_slug={{user `guestinfo_datasource_slug`}} guestinfo_datasource_ref={{user `guestinfo_datasource_ref`}} ",
+    "boot_order": "disk,cdrom",
     "boot_wait": "10s",
     "build_timestamp": "{{timestamp}}",
     "build_version": "{{user `build_name`}}-kube-{{user `kubernetes_semver`}}",
+    "cluster": "",
     "containerd_version": null,
     "containerd_sha256": null,
     "containerd_url": "https://storage.googleapis.com/cri-containerd-release/cri-containerd-{{user `containerd_version`}}.linux-amd64.tar.gz",
+    "convert_to_template": "true",
+    "datastore": "",
     "disable_public_repos": "false",
     "disk_type_id": "0",
+    "disk_controller_type": "pvscsi",
+    "disk_thin_provisioned": "true",
     "existing_ansible_ssh_args": "{{env `ANSIBLE_SSH_ARGS`}}",
     "extra_debs": "",
     "extra_repos": "",
     "extra_rpms": "",
+    "folder": "",
     "format": "",
     "guestinfo_datasource_slug": "https://raw.githubusercontent.com/vmware/cloud-init-vmware-guestinfo",
     "guestinfo_datasource_ref": "v1.3.0",
     "guest_os_type": null,
+    "vsphere_guest_os_type": null,
     "headless": "true",
+    "insecure_connection": "false",
     "kubernetes_cni_rpm_version": null,
     "kubernetes_cni_deb_version": null,
     "kubernetes_cni_semver": null,
@@ -36,6 +45,7 @@
     "kubernetes_rpm_gpg_check": null,
     "kubernetes_container_registry": null,
     "network": "",
+    "network_card": "vmxnet3",
     "output_dir": "./output/{{user `build_version`}}",
     "reenable_public_repos": "true",
     "remove_extra_repos": "false",
@@ -47,7 +57,10 @@
     "skip_compaction": "false",
     "ssh_username": "builder",
     "ssh_password": "builder",
+    "vm_version": "13",
     "vmx_version": "13",
+    "username": "",
+    "vcenter_server": "",
     "vnc_bind_address": "127.0.0.1",
     "vnc_disable_password": "false",
     "vnc_port_min": "5900",
@@ -55,7 +68,7 @@
   },
   "builders": [
     {
-      "name": "{{user `build_name`}}",
+      "name": "ova",
       "vm_name": "{{user `build_version`}}",
       "vmdk_name": "{{build_name}}",
       "output_directory": "{{user `output_dir`}}",
@@ -98,6 +111,58 @@
       "vmx_data": {
         "ethernet0.networkName": "{{user `network`}}"
       }
+    },
+    {
+      "type": "vsphere-iso",
+      "name": "vsphere",
+
+      "vcenter_server":      "{{user `vcenter_server`}}",
+      "username":            "{{user `username`}}",
+      "password":            "{{user `password`}}",
+      "insecure_connection": "{{user `insecure_connection`}}",
+
+      "vm_name": "{{user `build_version`}}",
+      "datastore": "{{user `datastore`}}",
+      "folder": "{{user `folder`}}",
+      "host":     "{{user `host`}}",
+      "convert_to_template": "true",
+      "cluster": "{{user `cluster`}}",
+      "network": "{{user `network`}}",
+
+
+
+      "vm_version": "{{user `vm_version`}}",
+      "CPUs": 1,
+      "boot_order": "disk,cdrom",
+      "cpu_cores": 1,
+      "RAM": 2048,
+      "disk_size": 20480,
+      "disk_controller_type": "{{user `disk_controller_type`}}",
+      "disk_thin_provisioned": "{{user `disk_thin_provisioned`}}",
+      "network_card": "{{user `network_card`}}",
+      "guest_os_type": "{{user `vsphere_guest_os_type`}}",
+
+      "boot_wait": "{{user `boot_wait`}}",
+      "http_directory": "./packer/ova/linux/{{user `distro_name`}}/http/",
+      "iso_urls": "{{user `iso_url`}}",
+      "iso_checksum": "{{user `iso_checksum`}}",
+      "iso_checksum_type": "{{user `iso_checksum_type`}}",
+
+      "communicator": "ssh",
+      "ssh_username": "{{user `ssh_username`}}",
+      "ssh_password": "{{user `ssh_password`}}",
+      "ssh_timeout": "4h",
+      "boot_command": [
+        "{{user `boot_command_prefix`}}",
+        "http://{{ .HTTPIP }}:{{ .HTTPPort }}",
+        "{{user `boot_command_suffix`}}"
+      ],
+      "shutdown_command": "echo '{{user `ssh_password`}}' | sudo -S -E sh -c 'usermod -L {{user `ssh_username`}} && {{user `shutdown_command`}}'",
+
+      "export": {
+        "force": true,
+        "output_directory": "{{user `output_dir`}}"
+      }
     }
   ],
   "provisioners": [
@@ -126,6 +191,7 @@
         "build_date": "{{isotime}}",
         "containerd_version": "{{user `containerd_version`}}",
         "guest_os_type": "{{user `guest_os_type`}}",
+        "vsphere_guest_os_type": "{{user `vsphere_guest_os_type`}}",
         "kubernetes_cni_semver": "{{user `kubernetes_cni_semver`}}",
         "kubernetes_semver": "{{user `kubernetes_semver`}}",
         "kubernetes_source_type": "{{user `kubernetes_source_type`}}",
