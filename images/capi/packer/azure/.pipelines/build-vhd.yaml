@@ -29,6 +29,7 @@ jobs:
     displayName: Write configuration files
     workingDirectory: '$(system.defaultWorkingDirectory)/images/capi/packer/config'
   - script: |
+      set -o pipefail
       export AZURE_CLIENT_ID=$(AZURE_CLIENT_ID)
       export AZURE_CLIENT_SECRET=$(AZURE_CLIENT_SECRET)
       make build-azure-vhd-ubuntu-1804 | tee packer/azure/packer.out
