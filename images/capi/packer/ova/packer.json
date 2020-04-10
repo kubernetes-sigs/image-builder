@@ -204,14 +204,22 @@
         "cd {{user `output_dir`}}",
         "tar xf {{user `build_version`}}.ova",
         "rm {{user `build_version`}}.ova",
-        "GIT_VERSION=`git describe --dirty` ../../hack/image-build-ova.py --vmx {{user `vmx_version`}} --eula ../../hack/ovf_eula.txt --vmdk_file {{user `build_version`}}-disk1.vmdk"
+        "GIT_VERSION=`git describe --dirty` ../../hack/image-build-ova.py --stream_vmdk --vmx {{user `vmx_version`}} --eula ../../hack/ovf_eula.txt --vmdk_file {{user `build_version`}}-disk1.vmdk"
+      ]
+    },
+    {
+      "name": "vsphere",
+      "type": "shell-local",
+      "inline": [
+        "cd {{user `output_dir`}}",
+        "GIT_VERSION=`git describe --dirty` ../../hack/image-build-ova.py --vmx {{user `vmx_version`}} --eula ../../hack/ovf_eula.txt --vmdk_file {{user `build_version`}}-disk-0.vmdk"
       ]
     },
     {
       "name": "local",
       "type": "shell-local",
       "inline": [
-        "GIT_VERSION=`git describe --dirty` ./hack/image-build-ova.py --vmx {{user `vmx_version`}} --eula ./hack/ovf_eula.txt {{user `output_dir`}}",
+        "GIT_VERSION=`git describe --dirty` ./hack/image-build-ova.py --stream_vmdk --vmx {{user `vmx_version`}} --eula ./hack/ovf_eula.txt {{user `output_dir`}}",
         "./hack/image-post-create-config.sh {{user `output_dir`}}"
       ]
     }

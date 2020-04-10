@@ -33,6 +33,10 @@ import tarfile
 def main():
     parser = argparse.ArgumentParser(
         description="Builds an OVA using the artifacts from a Packer build")
+    parser.add_argument('--stream_vmdk',
+                        dest='stream_vmdk',
+                        default=False,
+                        help='Compress vmdk file')
     parser.add_argument('--vmx',
                         dest='vmx_version',
                         default='13',
@@ -82,7 +86,12 @@ def main():
         vmdk_files = [{"name": args.vmdk_file, "size": os.path.getsize(args.vmdk_file)}]
 
     # Create stream-optimized versions of the VMDK files.
-    stream_optimize_vmdk_files(vmdk_files)
+    if args.stream_vmdk is True:
+        stream_optimize_vmdk_files(vmdk_files)
+    else:
+        for f in vmdk_files:
+            f['stream_name'] = f['name']
+            f['stream_size'] = os.path.getsize(f['name'])
 
     # TODO(akutz) Support multiple VMDK files in the OVF/OVA
     vmdk = vmdk_files[0]
