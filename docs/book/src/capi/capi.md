@@ -80,7 +80,7 @@ Note that since the `extra_rpms` variable is a string, and we need the string to
 Then, execute the build (using a Photon OVA as an example) with the following:
 
 ```sh
-PACKER_VAR_FILES=extra_vars.json make build-ova-local-photon-3
+PACKER_VAR_FILES=extra_vars.json make build-node-ova-local-photon-3
 ```
 
 ##### Disabling default repos and using an internal package mirror
@@ -105,7 +105,7 @@ For Ubuntu images, the process works the same but you would need to add a `.list
 Then, execute the build (using a Photon OVA as an example) with the following:
 
 ```sh
-PACKER_VAR_FILES=internal_repos.json make build-ova-local-photon-3
+PACKER_VAR_FILES=internal_repos.json make build-node-ova-local-photon-3
 ```
 
 ##### Setting up an HTTP Proxy
@@ -123,7 +123,7 @@ For example, to set the HTTP_PROXY env var for the Ansible stage of the build, c
 Then, execute the build (using a Photon OVA as an example) with the following:
 
 ```sh
-PACKER_VAR_FILES=proxy.json make build-ova-local-photon-3
+PACKER_VAR_FILES=proxy.json make build-node-ova-local-photon-3
 ```
 
 ## Kubernetes versions

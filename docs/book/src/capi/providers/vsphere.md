@@ -10,10 +10,10 @@ The images may be built using one of the following hypervisors:
 
 | OS | Builder | Build target |
 |----|---------|--------------|
-| Linux | VMware Workstation | build-ova-local-<OS> |
-| macOS | VMware Fusion | build-ova-local-<OS> |
-| ESXi | ESXi | build-ova-esx-<OS> |
-| vSphere | vSphere >= 6.5 | build-ova-vsphere-<OS> |
+| Linux | VMware Workstation | build-node-ova-local-<OS> |
+| macOS | VMware Fusion | build-node-ova-local-<OS> |
+| ESXi | ESXi | build-node-ova-esx-<OS> |
+| vSphere | vSphere >= 6.5 | build-node-ova-vsphere-<OS> |
 
 
 The `esxi` builder supports building against a remote VMware ESX server with [specific configuration](https://packer.io/docs/builders/vmware-iso.html#building-on-a-remote-vsphere-hypervisor) (ssh access), but is untested with this project.
@@ -46,7 +46,7 @@ If you prefer to use a different configuration file, you can create it with the 
 
 ## Building Images
 
-From the `images/capi` directory, run `make build-ova-<hypervisor>-<OS>`, where `<hypervisor>` is your target hypervisor (`local`, `vsphere` or `esx`) and `<OS>` is the desired operating system. The available choices are listed via `make help`.
+From the `images/capi` directory, run `make build-node-ova-<hypervisor>-<OS>`, where `<hypervisor>` is your target hypervisor (`local`, `vsphere` or `esx`) and `<OS>` is the desired operating system. The available choices are listed via `make help`.
 
 ### Configuration
 
