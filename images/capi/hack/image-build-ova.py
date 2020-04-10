@@ -76,7 +76,7 @@ def main():
     # Get the first build.
     build = data['builds'][0]
     build_data = build['custom_data']
-    print("image-build-ova: loaded %s-kube-%s" % (build['name'],
+    print("image-build-ova: loaded %s-kube-%s" % (build_data['build_name'],
                                                   build_data['kubernetes_semver']))
 
     if args.vmdk_file is None:
@@ -106,7 +106,7 @@ def main():
                  "ubuntu-64": {"id": "94", "version": "", "type": "ubuntu-64"}}
 
     # Create the OVF file.
-    ovf = "%s-kube-%s.ovf" % (build['name'], build_data['kubernetes_semver'])
+    ovf = "%s-kube-%s.ovf" % (build_data['build_name'], build_data['kubernetes_semver'])
     create_ovf(ovf, {
         'BUILD_DATE': build_data['build_date'],
         'ARTIFACT_ID': build['artifact_id'],
@@ -128,11 +128,11 @@ def main():
     })
 
     # Create the OVA manifest.
-    ova_manifest = "%s-kube-%s.mf" % (build['name'], build_data['kubernetes_semver'])
+    ova_manifest = "%s-kube-%s.mf" % (build_data['build_name'], build_data['kubernetes_semver'])
     create_ova_manifest(ova_manifest, [ovf, vmdk['stream_name']])
 
     # Create the OVA.
-    ova = "%s-kube-%s.ova" % (build['name'], build_data['kubernetes_semver'])
+    ova = "%s-kube-%s.ova" % (build_data['build_name'], build_data['kubernetes_semver'])
     create_ova(ova, [ovf, ova_manifest, vmdk['stream_name']])
 
 

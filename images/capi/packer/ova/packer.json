@@ -186,6 +186,7 @@
       "output": "{{user `output_dir`}}/packer-manifest.json",
       "strip_path": true,
       "custom_data": {
+        "build_name": "{{user `build_name`}}",
         "build_timestamp": "{{user `build_timestamp`}}",
         "build_date": "{{isotime}}",
         "containerd_version": "{{user `containerd_version`}}",
