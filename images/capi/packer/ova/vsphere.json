@@ -1,0 +1,9 @@
+{
+    "vcenter_server":"",
+    "username":"",
+    "password":"",
+    "datastore":"",
+    "folder": "",
+    "cluster": "",
+    "network": ""
+}
