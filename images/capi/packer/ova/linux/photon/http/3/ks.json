@@ -19,7 +19,7 @@
         "net-tools",
         "openssh", "open-vm-tools",
         "pkg-config", "photon-release", "photon-repos", "procps-ng",
-        "rpm",
+        "rng-tools", "rpm",
         "sed",
         "tdnf", "tzdata",
         "util-linux",
