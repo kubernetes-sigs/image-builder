@@ -1,7 +1,7 @@
 {
   "variables": {
     "ansible_common_vars": "",
-    "ansible_extra_vars": "guestinfo_datasource_slug={{user `guestinfo_datasource_slug`}} guestinfo_datasource_ref={{user `guestinfo_datasource_ref`}} ",
+    "ansible_extra_vars": "guestinfo_datasource_slug={{user `guestinfo_datasource_slug`}} guestinfo_datasource_ref={{user `guestinfo_datasource_ref`}} guestinfo_datasource_script={{user `guestinfo_datasource_script`}}",
     "boot_wait": "10s",
     "build_timestamp": "{{timestamp}}",
     "build_version": "{{user `build_name`}}-kube-{{user `kubernetes_semver`}}",
@@ -23,6 +23,7 @@
     "format": "",
     "guestinfo_datasource_slug": "https://raw.githubusercontent.com/vmware/cloud-init-vmware-guestinfo",
     "guestinfo_datasource_ref": "v1.3.1",
+    "guestinfo_datasource_script": "{{user `guestinfo_datasource_slug`}}/{{user `guestinfo_datasource_ref`}}/install.sh",
     "guest_os_type": null,
     "vsphere_guest_os_type": null,
     "headless": "true",
