@@ -17,18 +17,14 @@
         "libtool", "linux",
         "motd",
         "net-tools",
-        "openssh", "open-vm-tools",
+        "openssh-server", "open-vm-tools",
         "pkg-config", "photon-release", "photon-repos", "procps-ng",
-        "rpm",
-        "sed",
+        "rng-tools", "rpm",
+        "sed", "sudo",
         "tdnf", "tzdata",
         "util-linux",
         "vim",
         "which"
-    ],
-    "additional_packages": [
-        "openssh-server",
-        "sudo"
     ],
     "postinstall": [
         "#!/bin/sh",
