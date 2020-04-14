@@ -58,7 +58,7 @@ type AWSConfig struct {
 
 func (c *AWSConfig) InitDefaults(region string) {
 	c.Config.InitDefaults()
-	c.InstanceType = "m3.medium"
+	c.InstanceType = "c4.large"
 
 	if region == "" {
 		region = "us-east-1"
@@ -71,52 +71,46 @@ func (c *AWSConfig) InitDefaults(region string) {
 		// A slightly older image, but the newest one we have
 		c.ImageID = "ami-da69a1b7"
 
-	// Debian 9.10 images from https://wiki.debian.org/Cloud/AmazonEC2Image/Stretch
+	// Debian 10.3 images from https://wiki.debian.org/Cloud/AmazonEC2Image/Buster
 	case "ap-east-1":
-		c.ImageID = "ami-0a81e23ced9c32d26"
+		c.ImageID = "ami-f9c58188"
 	case "ap-northeast-1":
-		c.ImageID = "ami-0aad015f7b135e198"
+		c.ImageID = "ami-0fae5501ae428f9d7"
 	case "ap-northeast-2":
-		c.ImageID = "ami-00a96e50f990be54c"
+		c.ImageID = "ami-0522874b039290246"
 	case "ap-south-1":
-		c.ImageID = "ami-0c7bd0941d9b93c88"
+		c.ImageID = "ami-03b4e18f70aca8973"
 	case "ap-southeast-1":
-		c.ImageID = "ami-0cca8bafd3ad1ad08"
+		c.ImageID = "ami-0852293c17f5240b3"
 	case "ap-southeast-2":
-		c.ImageID = "ami-0c6d33437a8337f6e"
+		c.ImageID = "ami-03ea2db714f1f6acf"
 	case "ca-central-1":
-		c.ImageID = "ami-001c474f9452c7d93"
+		c.ImageID = "ami-094511e5020cdea18"
 	case "eu-central-1":
-		c.ImageID = "ami-04dd896c9036d974b"
+		c.ImageID = "ami-0394acab8c5063f6f"
 	case "eu-north-1":
-		c.ImageID = "ami-04cc93d303a4dd18c"
+		c.ImageID = "ami-0c82d9a7f5674320a"
 	case "eu-west-1":
-		c.ImageID = "ami-08d95e3db80c57a5e"
+		c.ImageID = "ami-006d280940ad4a96c"
 	case "eu-west-2":
-		c.ImageID = "ami-04129aa76aebf3aa2"
+		c.ImageID = "ami-08fe9ea08db6f1258"
 	case "eu-west-3":
-		c.ImageID = "ami-024a4edbad921fd5c"
+		c.ImageID = "ami-04563f5eab11f2b87"
 	case "me-south-1":
-		c.ImageID = "ami-0e8670e0374463e7b"
+		c.ImageID = "ami-0492a01b319d1f052"
 	case "sa-east-1":
-		c.ImageID = "ami-082e93a75a7f2ba1d"
+		c.ImageID = "ami-05e16feea94258a69"
 	case "us-east-1":
-		c.ImageID = "ami-02c3fa55e499f1fb3"
+		c.ImageID = "ami-04d70e069399af2e9"
 	case "us-east-2":
-		c.ImageID = "ami-06858f33bbe384bbb"
+		c.ImageID = "ami-04100f1cdba76b497"
 	case "us-west-1":
-		c.ImageID = "ami-0dd6bad099b8b3889"
+		c.ImageID = "ami-014c78f266c5b7163"
 	case "us-west-2":
-		c.ImageID = "ami-0964442b6f325859a"
+		c.ImageID = "ami-023b7a69b9328e1f9"
 
 	default:
 		klog.Warningf("Building in unknown region %q - will require specifying an image, may not work correctly")
-	}
-
-	// Not all regions support m3.medium
-	switch c.Region {
-	case "us-east-2":
-		c.InstanceType = "m4.large"
 	}
 }
 
