@@ -24,6 +24,7 @@
     "kubernetes_series": null,
     "kubernetes_semver": null,
     "kubernetes_source_type": null,
+    "kubernetes_load_additional_imgs": null,
     "kubernetes_http_source": null,
     "kubernetes_rpm_version": null,
     "kubernetes_deb_version": null,
