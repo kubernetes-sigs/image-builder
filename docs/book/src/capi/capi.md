@@ -14,8 +14,7 @@ The Image Builder can be used to build images intended for use with Kubernetes [
 * [DigitalOcean](./providers/digitalocean.md)
 * Google *TODO*
 * [OpenStack](./providers/openstack.md)
-* [vSphere OVA](./providers/vsphere.md)
-* [vSphere Template](./providers/vsphere-template.md)
+* [vSphere](./providers/vsphere.md)
 
 ## Make targets
 

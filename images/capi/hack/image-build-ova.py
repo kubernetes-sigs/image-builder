@@ -35,7 +35,7 @@ def main():
         description="Builds an OVA using the artifacts from a Packer build")
     parser.add_argument('--stream_vmdk',
                         dest='stream_vmdk',
-                        default=False,
+                        action='store_true',
                         help='Compress vmdk file')
     parser.add_argument('--vmx',
                         dest='vmx_version',

@@ -150,15 +150,15 @@ QEMU_BUILD_TARGETS	:= $(addprefix build-,$(QEMU_BUILD_NAMES))
 
 .PHONY: $(VSPHERE_BUILD_TARGETS)
 $(VSPHERE_BUILD_TARGETS):
-	packer build $(PACKER_FLAGS) -var-file="$(abspath packer/ova/$(subst build-vsphere-,,$@).json)" $(PACKER_VAR_FILES) -except=esx -except=local -only=vsphere -force packer/ova/packer.json
+	packer build $(PACKER_FLAGS) -var-file="$(abspath packer/ova/$(subst build-vsphere-,,$@).json)" -var-file="packer/ova/vsphere.json"  -except=esx -except=local $(PACKER_VAR_FILES) -only=vsphere -force packer/ova/packer.json
 
 .PHONY: $(OVA_BUILD_TARGETS)
 $(OVA_BUILD_TARGETS):
-	packer build $(PACKER_FLAGS) -var-file="$(abspath packer/ova/$(subst build-,,$@).json)" -except=esx -except=vsphere $(PACKER_VAR_FILES)  -only=ova packer/ova/packer.json
+	packer build $(PACKER_FLAGS) -var-file="$(abspath packer/ova/$(subst build-,,$@).json)" -except=esx -except=vsphere $(PACKER_VAR_FILES) -only=vmware-iso packer/ova/packer.json
 
 .PHONY: $(ESX_BUILD_TARGETS)
 $(ESX_BUILD_TARGETS):
-	packer build $(PACKER_FLAGS) -var-file="$(abspath packer/ova/$(subst build-esx-,,$@).json)" -var-file="packer/ova/esx.json" -except=vsphere -except=local $(PACKER_VAR_FILES) packer/ova/packer.json
+	packer build $(PACKER_FLAGS) -var-file="$(abspath packer/ova/$(subst build-esx-,,$@).json)" -var-file="packer/ova/esx.json" -except=vsphere -except=local $(PACKER_VAR_FILES) -only=vmware-iso packer/ova/packer.json
 
 .PHONY: $(AMI_BUILD_TARGETS)
 $(AMI_BUILD_TARGETS):

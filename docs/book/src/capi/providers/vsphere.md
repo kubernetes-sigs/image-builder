@@ -12,7 +12,7 @@ The images may be built using one of the following hypervisors:
 |----|---------|--------------|
 | Linux | VMware Workstation | build-ova-<OS> |
 | macOS | VMware Fusion | build-ova-<OS> |
-| esxi | Esxi | build-esx-ova-<OS> |
+| ESXi | ESXi | build-esx-ova-<OS> |
 | vSphere | vSphere >= 6.5 | build-vsphere-ova-<OS> |
 
 
@@ -107,7 +107,7 @@ After the images are built, the VMs from they are built are prepped for local te
 #### Accessing Remote VMs
 
 After deploying an image to vSphere, use `hack/image-govc-cloudinit.sh VM` to snapshot the image and update it with cloud-init data from the `cloudinit` directory. Start the VM and now it may be accessed with `ssh -i cloudinit/id_rsa.capi capv@VM_IP`.
-This hack necessitate the `govc` utility from [VMare](https://github.com/vmware/govmomi/tree/master/govc)
+This hack necessitate the `govc` utility from [VMmare](https://github.com/vmware/govmomi/tree/master/govc)
 
 ### Initialize a CNI
 
