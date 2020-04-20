@@ -1,0 +1,9 @@
+image: python:3.8
+
+before_script:
+  - make -C images/capi deps-ova
+
+test:
+  script:
+    - make -C images/capi build-vsphere-ova-ubuntu-1804
+
