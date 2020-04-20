@@ -158,7 +158,7 @@ $(NODE_OVA_ESX_BUILD_TARGETS):
 
 .PHONY: $(NODE_OVA_VSPHERE_BUILD_TARGETS)
 $(NODE_OVA_VSPHERE_BUILD_TARGETS):
-	packer build $(PACKER_FLAGS) -var-file="$(abspath packer/ova/$(subst build-ova-vsphere-,,$@).json)" -var-file="packer/ova/vsphere.json"  -except=esx -except=local $(PACKER_VAR_FILES) -only=vsphere -force packer/ova/packer.json
+	packer build $(PACKER_FLAGS) -var-file="$(abspath packer/ova/$(subst build-node-ova-vsphere-,,$@).json)" -var-file="packer/ova/vsphere.json"  -except=esx -except=local $(PACKER_VAR_FILES) -only=vsphere -force packer/ova/packer.json
 
 .PHONY: $(AMI_BUILD_TARGETS)
 $(AMI_BUILD_TARGETS):
