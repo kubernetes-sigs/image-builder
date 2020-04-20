@@ -3,6 +3,7 @@
   "distro_name": "ubuntu",
   "os_display_name": "Ubuntu 18.04",
   "guest_os_type": "ubuntu-64",
+  "vsphere_guest_os_type": "ubuntu64Guest",
   "iso_url": "http://old-releases.ubuntu.com/releases/18.04.2/ubuntu-18.04.2-server-amd64.iso",
   "iso_checksum": "a2cb36dc010d98ad9253ea5ad5a07fd6b409e3412c48f1860536970b073c98f5",
   "iso_checksum_type": "sha256",

@@ -3,6 +3,7 @@
   "distro_name": "photon",
   "os_display_name": "VMware Photon OS 64-bit",
   "guest_os_type": "vmware-photon-64",
+  "vsphere_guest_os_type": "vmwarePhoton64Guest",
   "iso_url": "https://dl.bintray.com/vmware/photon/3.0/Rev2/iso/Update1/photon-minimal-3.0-a0f216d.iso",
   "iso_checksum": "090f5c98b6b8406dbc3ad856aa1ed23bad1ce5b0",
   "iso_checksum_type": "sha1",
