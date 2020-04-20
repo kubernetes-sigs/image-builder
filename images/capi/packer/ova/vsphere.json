@@ -1,0 +1,11 @@
+{
+    "vcenter_server":"",
+    "username":"",
+    "password":"",
+    "datastore":"",
+    "folder": "",
+    "cluster": "",
+    "network": "",
+    "convert_to_template": "false",
+    "insecure_connection": "false"
+}

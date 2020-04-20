@@ -33,6 +33,10 @@ import tarfile
 def main():
     parser = argparse.ArgumentParser(
         description="Builds an OVA using the artifacts from a Packer build")
+    parser.add_argument('--stream_vmdk',
+                        dest='stream_vmdk',
+                        action='store_true',
+                        help='Compress vmdk file')
     parser.add_argument('--vmx',
                         dest='vmx_version',
                         default='13',
@@ -72,7 +76,7 @@ def main():
     # Get the first build.
     build = data['builds'][0]
     build_data = build['custom_data']
-    print("image-build-ova: loaded %s-kube-%s" % (build['name'],
+    print("image-build-ova: loaded %s-kube-%s" % (build_data['build_name'],
                                                   build_data['kubernetes_semver']))
 
     if args.vmdk_file is None:
@@ -82,7 +86,12 @@ def main():
         vmdk_files = [{"name": args.vmdk_file, "size": os.path.getsize(args.vmdk_file)}]
 
     # Create stream-optimized versions of the VMDK files.
-    stream_optimize_vmdk_files(vmdk_files)
+    if args.stream_vmdk is True:
+        stream_optimize_vmdk_files(vmdk_files)
+    else:
+        for f in vmdk_files:
+            f['stream_name'] = f['name']
+            f['stream_size'] = os.path.getsize(f['name'])
 
     # TODO(akutz) Support multiple VMDK files in the OVF/OVA
     vmdk = vmdk_files[0]
@@ -97,7 +106,7 @@ def main():
                  "ubuntu-64": {"id": "94", "version": "", "type": "ubuntu-64"}}
 
     # Create the OVF file.
-    ovf = "%s-kube-%s.ovf" % (build['name'], build_data['kubernetes_semver'])
+    ovf = "%s-kube-%s.ovf" % (build_data['build_name'], build_data['kubernetes_semver'])
     create_ovf(ovf, {
         'BUILD_DATE': build_data['build_date'],
         'ARTIFACT_ID': build['artifact_id'],
@@ -119,11 +128,11 @@ def main():
     })
 
     # Create the OVA manifest.
-    ova_manifest = "%s-kube-%s.mf" % (build['name'], build_data['kubernetes_semver'])
+    ova_manifest = "%s-kube-%s.mf" % (build_data['build_name'], build_data['kubernetes_semver'])
     create_ova_manifest(ova_manifest, [ovf, vmdk['stream_name']])
 
     # Create the OVA.
-    ova = "%s-kube-%s.ova" % (build['name'], build_data['kubernetes_semver'])
+    ova = "%s-kube-%s.ova" % (build_data['build_name'], build_data['kubernetes_semver'])
     create_ova(ova, [ovf, ova_manifest, vmdk['stream_name']])
 
 
