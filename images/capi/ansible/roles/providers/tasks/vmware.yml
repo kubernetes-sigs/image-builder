@@ -44,7 +44,7 @@
 
 - name: Download cloud-init datasource for VMware Guestinfo
   get_url:
-    url:  https://raw.githubusercontent.com/vmware/cloud-init-vmware-guestinfo/master/install.sh
+    url:  '{{ guestinfo_datasource_script }}'
     dest: /tmp/cloud-init-vmware.sh
 
 - name: Execute cloud-init-vmware.sh

@@ -1,6 +1,11 @@
-image: python:3.8
+image: ubuntu:bionic
 
 before_script:
+  - apt update
+  - apt upgrade -y
+  - apt install python3-devel
+  - env
+  - pwd
   - make -C images/capi deps-ova
 
 test:

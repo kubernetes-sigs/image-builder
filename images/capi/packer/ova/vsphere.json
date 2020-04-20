@@ -5,5 +5,7 @@
     "datastore":"",
     "folder": "",
     "cluster": "",
-    "network": ""
+    "network": "",
+    "convert_to_template": "false",
+    "insecure_connection": "false"
 }
