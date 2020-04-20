@@ -10,10 +10,10 @@ The images may be built using one of the following hypervisors:
 
 | OS | Builder | Build target |
 |----|---------|--------------|
-| Linux | VMware Workstation | build-ova-<OS> |
-| macOS | VMware Fusion | build-ova-<OS> |
-| ESXi | ESXi | build-esx-ova-<OS> |
-| vSphere | vSphere >= 6.5 | build-vsphere-ova-<OS> |
+| Linux | VMware Workstation | build-node-ova-local-<OS> |
+| macOS | VMware Fusion | build-node-ova-local-<OS> |
+| ESXi | ESXi | build-node-ova-esx-<OS> |
+| vSphere | vSphere >= 6.5 | build-node-ova-vsphere-<OS> |
 
 
 The `esxi` builder supports building against a remote VMware ESX server with [specific configuration](https://packer.io/docs/builders/vmware-iso.html#building-on-a-remote-vsphere-hypervisor) (ssh access), but is untested with this project.
@@ -46,7 +46,7 @@ If you prefer to use a different configuration file, you can create it with the 
 
 ## Building Images
 
-From the `images/capi` directory, run `make build-ova-<OS>` or `make build-vsphere-ova-<OS>`, where `<OS>` is the desired operating system. The available choices are listed via `make help`.
+From the `images/capi` directory, run `make build-node-ova-<hypervisor>-<OS>`, where `<hypervisor>` is your target hypervisor (`local`, `vsphere` or `esx`) and `<OS>` is the desired operating system. The available choices are listed via `make help`.
 
 ### Configuration
 
@@ -55,9 +55,10 @@ In addition to the configuration found in `images/capi/packer/config`, the `ova`
 | File | Description |
 |------|-------------|
 | `esx.json` | Additional settings needed when building on a remote ESXi host |
-| `ova-centos-7.json` | The settings for the CentOS 7 image |
-| `ova-photon-3.json` | The settings for the Photon 3 image |
-| `ova-ubuntu-1804.json` | The settings for the Ubuntu 1804 image |
+| `centos-7.json` | The settings for the CentOS 7 image |
+| `photon-3.json` | The settings for the Photon 3 image |
+| `ubuntu-1804.json` | The settings for the Ubuntu 18.04 image |
+| `ubuntu-2004.json` | The settings for the Ubuntu 20.04 image |
 | `vsphere.json` | Additional settings needed when building on a remote vSphere |
 
 

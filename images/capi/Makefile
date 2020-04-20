@@ -26,7 +26,7 @@ SHELL := /usr/bin/env bash
 ##@ Helpers
 help: ## Display this help
 	@echo NOTE
-	@echo '  The "build-ova" targets have analogue "clean-ova" targets for'
+	@echo '  The "build-node-ova" targets have analogue "clean-node-ova" targets for'
 	@echo '  cleaning artifacts created from building OVAs using a local'
 	@echo '  hypervisor.'
 	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[36m<target>\033[0m\n"} /^[a-zA-Z0-9_-]+:.*?##/ { printf "  \033[36m%-27s\033[0m %s\n", $$1, $$2 } /^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5) } ' $(MAKEFILE_LIST)
@@ -124,9 +124,9 @@ PLATFORMS_AND_VERSIONS	:=	$(CENTOS_VERSIONS) \
 							$(PHOTON_VERSIONS) \
 							$(UBUNTU_VERSIONS)
 
-OVA_BUILD_NAMES			:=	$(addprefix ova-,$(PLATFORMS_AND_VERSIONS))
-VSPHERE_BUILD_NAMES		:=	$(addprefix vsphere-,$(OVA_BUILD_NAMES))
-ESX_BUILD_NAMES			:=	$(addprefix esx-,$(OVA_BUILD_NAMES))
+NODE_OVA_LOCAL_BUILD_NAMES			:=	$(addprefix node-ova-local-,$(PLATFORMS_AND_VERSIONS))
+NODE_OVA_ESX_BUILD_NAMES			:=	$(addprefix node-ova-esx-,$(PLATFORMS_AND_VERSIONS))
+NODE_OVA_VSPHERE_BUILD_NAMES		:=	$(addprefix node-ova-vsphere-,$(PLATFORMS_AND_VERSIONS))
 
 AMI_BUILD_NAMES			?=	ami-default
 GCE_BUILD_NAMES			?=	gce-default
@@ -139,26 +139,26 @@ QEMU_BUILD_NAMES			?=	qemu-ubuntu-1804
 ## --------------------------------------
 ## Dynamic build targets
 ## --------------------------------------
-VSPHERE_BUILD_TARGETS	:= $(addprefix build-,$(VSPHERE_BUILD_NAMES))
-OVA_BUILD_TARGETS	:= $(addprefix build-,$(OVA_BUILD_NAMES))
-ESX_BUILD_TARGETS	:= $(addprefix build-,$(ESX_BUILD_NAMES))
+NODE_OVA_LOCAL_BUILD_TARGETS	:= $(addprefix build-,$(NODE_OVA_LOCAL_BUILD_NAMES))
+NODE_OVA_ESX_BUILD_TARGETS	:= $(addprefix build-,$(NODE_OVA_ESX_BUILD_NAMES))
+NODE_OVA_VSPHERE_BUILD_TARGETS	:= $(addprefix build-,$(NODE_OVA_VSPHERE_BUILD_NAMES))
 AMI_BUILD_TARGETS	:= $(addprefix build-,$(AMI_BUILD_NAMES))
 GCE_BUILD_TARGETS	:= $(addprefix build-,$(GCE_BUILD_NAMES))
 AZURE_BUILD_TARGETS	:= $(addprefix build-,$(AZURE_BUILD_NAMES))
 DO_BUILD_TARGETS 	:= $(addprefix build-,$(DO_BUILD_NAMES))
 QEMU_BUILD_TARGETS	:= $(addprefix build-,$(QEMU_BUILD_NAMES))
 
-.PHONY: $(VSPHERE_BUILD_TARGETS)
-$(VSPHERE_BUILD_TARGETS):
-	packer build $(PACKER_FLAGS) -var-file="$(abspath packer/ova/$(subst build-vsphere-,,$@).json)" -var-file="packer/ova/vsphere.json"  -except=esx -except=local $(PACKER_VAR_FILES) -only=vsphere -force packer/ova/packer.json
+.PHONY: $(NODE_OVA_LOCAL_BUILD_TARGETS)
+$(NODE_OVA_LOCAL_BUILD_TARGETS):
+	packer build $(PACKER_FLAGS) -var-file="$(abspath packer/ova/$(subst build-node-ova-local-,,$@).json)" -except=esx $(PACKER_VAR_FILES) packer/ova/packer.json
 
-.PHONY: $(OVA_BUILD_TARGETS)
-$(OVA_BUILD_TARGETS):
-	packer build $(PACKER_FLAGS) -var-file="$(abspath packer/ova/$(subst build-,,$@).json)" -except=esx -except=vsphere $(PACKER_VAR_FILES) -only=vmware-iso packer/ova/packer.json
+.PHONY: $(NODE_OVA_ESX_BUILD_TARGETS)
+$(NODE_OVA_ESX_BUILD_TARGETS):
+	packer build $(PACKER_FLAGS) -var-file="$(abspath packer/ova/$(subst build-node-ova-esx-,,$@).json)" -var-file="packer/ova/esx.json" -except=local $(PACKER_VAR_FILES) packer/ova/packer.json
 
-.PHONY: $(ESX_BUILD_TARGETS)
-$(ESX_BUILD_TARGETS):
-	packer build $(PACKER_FLAGS) -var-file="$(abspath packer/ova/$(subst build-esx-,,$@).json)" -var-file="packer/ova/esx.json" -except=vsphere -except=local $(PACKER_VAR_FILES) -only=vmware-iso packer/ova/packer.json
+.PHONY: $(NODE_OVA_VSPHERE_BUILD_TARGETS)
+$(NODE_OVA_VSPHERE_BUILD_TARGETS):
+	packer build $(PACKER_FLAGS) -var-file="$(abspath packer/ova/$(subst build-ova-vsphere-,,$@).json)" -var-file="packer/ova/vsphere.json"  -except=esx -except=local $(PACKER_VAR_FILES) -only=vsphere -force packer/ova/packer.json
 
 .PHONY: $(AMI_BUILD_TARGETS)
 $(AMI_BUILD_TARGETS):
@@ -184,15 +184,15 @@ $(QEMU_BUILD_TARGETS):
 ## --------------------------------------
 ## Dynamic clean targets
 ## --------------------------------------
-OVA_CLEAN_TARGETS := $(subst build-,clean-,$(OVA_BUILD_TARGETS))
-.PHONY: $(OVA_CLEAN_TARGETS)
-$(OVA_CLEAN_TARGETS):
-	rm -fr output/$(subst clean-ova-,,$@)*
+NODE_OVA_LOCAL_CLEAN_TARGETS := $(subst build-,clean-,$(NODE_OVA_LOCAL_BUILD_TARGETS))
+.PHONY: $(NODE_OVA_LOCAL_CLEAN_TARGETS)
+$(NODE_OVA_LOCAL_CLEAN_TARGETS):
+	rm -fr output/$(subst clean-node-ova-local-,,$@)-kube*
 
 QEMU_CLEAN_TARGETS := $(subst build-,clean-,$(QEMU_BUILD_TARGETS))
 .PHONY: $(QEMU_CLEAN_TARGETS)
 $(QEMU_CLEAN_TARGETS):
-	rm -fr output/$(subst clean-qemu-,,$@)*
+	rm -fr output/$(subst clean-qemu-,,$@)-kube*
 
 ## --------------------------------------
 ## Document dynamic build targets
@@ -207,20 +207,20 @@ build-do-default: ## Builds the DigitalOcean snapshot default image
 
 build-gce-default: ## Builds the GCE default image
 
-build-vsphere-ova-centos-7: ## Builds CentOS 7 template on vSphere
-build-vsphere-ova-photon-3: ## Builds Photon 3 template on vSphere
-build-vsphere-ova-ubuntu-1804: ## Builds Ubuntu 18.04 template on vSphere
-build-vsphere-ova-ubuntu-2004: ## Builds Ubuntu 20.04 template on vSphere
+build-node-ova-local-centos-7: ## Builds CentOS 7 OVA w local hypervisor
+build-node-ova-local-photon-3: ## Builds Photon 3 OVA w local hypervisor
+build-node-ova-local-ubuntu-1804: ## Builds Ubuntu 18.04 OVA w local hypervisor
+build-node-ova-local-ubuntu-2004: ## Builds Ubuntu 20.04 OVA w local hypervisor
 
-build-ova-centos-7: ## Builds CentOS 7 OVA w local hypervisor
-build-ova-photon-3: ## Builds Photon 3 OVA w local hypervisor
-build-ova-ubuntu-1804: ## Builds Ubuntu 18.04 OVA w local hypervisor
-build-ova-ubuntu-2004: ## Builds Ubuntu 20.04 OVA w local hypervisor
+build-node-ova-esx-centos-7: ## Builds CentOS 7 OVA w remote hypervisor
+build-node-ova-esx-photon-3: ## Builds Photon 3 OVA w remote hypervisor
+build-node-ova-esx-ubuntu-1804: ## Builds Ubuntu 18.04 OVA w remote hypervisor
+build-node-ova-esx-ubuntu-2004: ## Builds Ubuntu 20.04 OVA w remote hypervisor
 
-build-esx-centos-7: ## Builds CentOS 7 OVA w remote hypervisor
-build-esx-photon-3: ## Builds Photon 3 OVA w remote hypervisor
-build-esx-ubuntu-1804: ## Builds Ubuntu 18.04 OVA w remote hypervisor
-build-esx-ubuntu-2004: ## Builds Ubuntu 20.04 OVA w remote hypervisor
+build-node-ova-vsphere-centos-7: ## Builds CentOS 7 template on vSphere
+build-node-ova-vsphere-photon-3: ## Builds Photon 3 template on vSphere
+build-node-ova-vsphere-ubuntu-1804: ## Builds Ubuntu 18.04 template on vSphere
+build-node-ova-vsphere-ubuntu-2004: ## Builds Ubuntu 20.04 template on vSphere
 
 build-qemu-ubuntu-1804: ## Builds Ubuntu 18.04 QEMU image
 
@@ -230,11 +230,11 @@ build-qemu-ubuntu-1804: ## Builds Ubuntu 18.04 QEMU image
 ##@ Cleaning
 .PHONY: clean
 clean: ## Cleans all local image caches
-clean: $(OVA_CLEAN_TARGETS) $(QEMU_CLEAN_TARGETS) clean-packer-cache
+clean: $(NODE_OVA_CLEAN_TARGETS) $(QEMU_CLEAN_TARGETS) clean-packer-cache
 
 .PHONY: clean-ova
 clean-ova: ## Removes all ova image output directories (see NOTE at top of help)
-clean-ova: $(OVA_CLEAN_TARGETS)
+clean-ova: $(NODE_OVA_LOCAL_CLEAN_TARGETS)
 
 .PHONY: clean-qemu
 clean-qemu: ## Removes all qemu image output directories (see NOTE at top of help)
