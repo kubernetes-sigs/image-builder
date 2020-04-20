@@ -4,7 +4,7 @@
     "ansible_extra_vars": "guestinfo_datasource_slug={{user `guestinfo_datasource_slug`}} guestinfo_datasource_ref={{user `guestinfo_datasource_ref`}} guestinfo_datasource_script={{user `guestinfo_datasource_script`}}",
     "boot_wait": "10s",
     "build_timestamp": "{{timestamp}}",
-    "build_version": "{{user `build_name`}}-kube-{{user `kubernetes_semver`}}-{{isotime "2006-01-02T15:04"}}",
+    "build_version": "{{user `build_name`}}-kube-{{user `kubernetes_semver`}}-{{isotime \"2006-01-02T15:04\"}}",
     "cluster": "",
     "containerd_version": null,
     "containerd_sha256": null,
