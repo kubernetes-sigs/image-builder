@@ -12,14 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- name: add home dir for builder user
-  file:
-    state: directory
-    path: /home/builder
-    mode: 0755
-    owner: builder
-    group: builder
-
 - name: add bash_profile
   template:
     dest: /home/builder/.bash_profile

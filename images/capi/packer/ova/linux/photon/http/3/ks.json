@@ -7,8 +7,8 @@
     },
     "disk": "/dev/sda",
     "packages": [
-        "bc", "bridge-utils", "bzip2",
-        "cloud-init", "cpio", "cracklib-dicts",
+        "bash", "bc", "bridge-utils", "bzip2",
+        "ca-certificates", "cloud-init", "cpio", "cracklib-dicts",
         "dbus",
         "e2fsprogs",
         "file", "filesystem", "findutils",

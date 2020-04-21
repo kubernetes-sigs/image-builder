@@ -12,16 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- hosts: all
-  become: yes
+- name: Create new-ca.sh file
+  copy:
+    src: files/usr/local/bin/new-ca.sh
+    dest: /usr/local/bin/new-ca.sh
+    owner: root
+    group: root
+    mode: 0755
 
-  roles:
-    - role: haproxy
-    - role: providers
-    - role: pki
-    - role: sysprep
-
-  environment:
-    HTTP_PROXY: "{{ http_proxy | default('') }}"
-    HTTPS_PROXY: "{{ https_proxy | default('') }}"
-    NO_PROXY: "{{ no_proxy | default('') }}"
+- name: Create new-cert.sh file
+  copy:
+    src: files/usr/local/bin/new-cert.sh
+    dest: /usr/local/bin/new-cert.sh
+    owner: root
+    group: root
+    mode: 0755
