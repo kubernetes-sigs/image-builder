@@ -30,7 +30,7 @@ The `images/capi/packer/config` directory includes several JSON files that defin
 |------|-------------|
 | `packer/config/ansible-args.json` | A common set of variables that are sent to the Ansible playbook |
 | `packer/config/cni.json` | The version of Kubernetes CNI to install |
-| `packer/config/containerd.json` | The version of containerd to install |
+| `packer/config/containerd.json` | The version of containerd to install and customizations specific to the containerd runtime |
 | `packer/config/kubernetes.json` | The version of Kubernetes to install |
 
 ### Customization
@@ -48,6 +48,8 @@ Several variables can be used to customize the image build.
 | `no_proxy` | This can be set to a comma-delimited list of domains that should be exluded from proxying during the Ansible stage of building | `""` |
 | `reenable_public_repos` | If set to `"false"`, the package repositories disabled by setting `disable_public_repos` will remain disabled at the end of the build. | `"true"` |
 | `remove_extra_repos` | If set to `"true"`, the package repositories added to the OS through the use of `extra_repos` will be removed at the end of the build. | `"false"` |
+| `containerd_pause_image` | This can be used to override the default containerd pause image used to hold the network namespace and IP for the pod. | `"k8s.gcr.io/pause:3.2"` |
+| `containerd_additional_settings` | This is a string, base64 encoded, that contains additional configuration for containerd. It must be version 2 and not contain the pause image configuration block. See `image-builder/images/capi/ansible/roles/containerd/templates/etc/containerd/config.toml` for the template. | `null` |
 
 The variables found in `packer/config/*.json` or `packer/<provider>/*.json` should not need to be modified directly. For customization it is better to create a JSON file with your changes and provide it via the `PACKER_VAR_FILES` environment variable. Variables set in this file will override any previous values. Multiple files can be passed via `PACKER_VAR_FILES`, with the last file taking precedence over any others.
 
