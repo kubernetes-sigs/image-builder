@@ -131,6 +131,18 @@
   - { path: /var/log, state: absent }
   - { path: /var/log, state: directory }
 
+- name: Create a log directory for kube-apiserver audit logs
+  file:
+    path: "{{ item.path }}"
+    state: "{{ item.state }}"
+    mode: "{{ item.mode }}"
+    owner: root
+    group: root
+  loop:
+  - { path: /var/log/kubernetes, state: directory, mode: "0755" }
+  - { path: /var/log/kubernetes/audit.log, state: touch, mode: "0600" }
+  when: kubernetes_semver != '' # Ensure audit log is not created for HA Proxy images, since this task is shared amongst build targets
+
 - name: Truncate shell history
   file:
     state: absent
