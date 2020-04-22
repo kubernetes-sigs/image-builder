@@ -4,16 +4,22 @@
     "ansible_extra_vars": "guestinfo_datasource_slug={{user `guestinfo_datasource_slug`}} guestinfo_datasource_ref={{user `guestinfo_datasource_ref`}} guestinfo_datasource_script={{user `guestinfo_datasource_script`}} dataplane_url={{user `dataplane_url`}}",
     "build_timestamp": "{{timestamp}}",
     "build_version": "{{user `build_name`}}-haproxy-v{{user `dataplaneapi_version`}}",
+    "cluster": "",
     "dataplaneapi_version": "1.2.4",
     "dataplane_url": "https://github.com/haproxytech/dataplaneapi/releases/download/v{{user `dataplaneapi_version`}}/dataplaneapi",
+    "datastore": "",
     "existing_ansible_ssh_args": "{{env `ANSIBLE_SSH_ARGS`}}",
-    "output_dir": "./output/{{user `build_version`}}"
+    "folder": "",
+    "output_dir": "./output/{{user `build_version`}}",
+    "username": "",
+    "vcenter_server": "",
+    "vsphere_guest_os_type": null
   },
   "builders": [
     {
-      "name": "{{user `build_name`}}",
+      "name": "vmware-iso",
       "vm_name": "{{user `build_version`}}",
-      "vmdk_name": "{{build_name}}",
+      "vmdk_name": "{{user `build_version`}}",
       "output_directory": "{{user `output_dir`}}",
       "type": "vmware-iso",
       "version": "{{user `vmx_version`}}",
@@ -51,6 +57,55 @@
       "format": "{{user `format`}}",
       "vmx_data": {
         "ethernet0.networkName": "{{user `network`}}"
+      }
+    },
+    {
+      "type": "vsphere-iso",
+      "name": "vsphere",
+
+      "vcenter_server":      "{{user `vcenter_server`}}",
+      "username":            "{{user `username`}}",
+      "password":            "{{user `password`}}",
+      "insecure_connection": "{{user `insecure_connection`}}",
+
+      "vm_name": "{{user `build_version`}}",
+      "datastore": "{{user `datastore`}}",
+      "folder": "{{user `folder`}}",
+      "host":     "{{user `host`}}",
+      "convert_to_template": "{{user `convert_to_template`}}",
+      "cluster": "{{user `cluster`}}",
+      "network": "{{user `network`}}",
+
+      "vm_version": "{{user `vmx_version`}}",
+      "CPUs": 1,
+      "cpu_cores": 1,
+      "RAM": 2048,
+      "disk_size": 20480,
+      "disk_controller_type": "{{user `disk_controller_type`}}",
+      "disk_thin_provisioned": "{{user `disk_thin_provisioned`}}",
+      "network_card": "{{user `network_card`}}",
+      "guest_os_type": "{{user `vsphere_guest_os_type`}}",
+
+      "boot_wait": "{{user `boot_wait`}}",
+      "http_directory": "./packer/ova/linux/{{user `distro_name`}}/http/",
+      "iso_urls": "{{user `iso_url`}}",
+      "iso_checksum": "{{user `iso_checksum`}}",
+      "iso_checksum_type": "{{user `iso_checksum_type`}}",
+
+      "communicator": "ssh",
+      "ssh_username": "{{user `ssh_username`}}",
+      "ssh_password": "{{user `ssh_password`}}",
+      "ssh_timeout": "4h",
+      "boot_command": [
+        "{{user `boot_command_prefix`}}",
+        "http://{{ .HTTPIP }}:{{ .HTTPPort }}",
+        "{{user `boot_command_suffix`}}"
+      ],
+      "shutdown_command": "echo '{{user `ssh_password`}}' | sudo -S -E sh -c 'usermod -L {{user `ssh_username`}} && {{user `shutdown_command`}}'",
+
+      "export": {
+        "force": true,
+        "output_directory": "{{user `output_dir`}}"
       }
     }
   ],

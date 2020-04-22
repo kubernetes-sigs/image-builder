@@ -161,27 +161,27 @@ QEMU_BUILD_TARGETS	:= $(addprefix build-,$(QEMU_BUILD_NAMES))
 
 .PHONY: $(NODE_OVA_LOCAL_BUILD_TARGETS)
 $(NODE_OVA_LOCAL_BUILD_TARGETS):
-	packer build $(PACKER_NODE_FLAGS) -var-file="packer/ova/packer-common.json" -var-file="$(abspath packer/ova/$(subst build-node-ova-local-,,$@).json)" -except=esx -except=vsphere $(PACKER_VAR_FILES) packer/ova/packer-node.json
+	packer build $(PACKER_NODE_FLAGS) -var-file="packer/ova/packer-common.json" -var-file="$(abspath packer/ova/$(subst build-node-ova-local-,,$@).json)" -except=esx -except=vsphere -only=vmware-iso $(PACKER_VAR_FILES) packer/ova/packer-node.json
 
 .PHONY: $(NODE_OVA_ESX_BUILD_TARGETS)
 $(NODE_OVA_ESX_BUILD_TARGETS):
-	packer build $(PACKER_NODE_FLAGS) -var-file="packer/ova/packer-common.json" -var-file="$(abspath packer/ova/$(subst build-node-ova-esx-,,$@).json)" -var-file="packer/ova/esx.json" -except=local -except=vsphere $(PACKER_VAR_FILES) packer/ova/packer-node.json
+	packer build $(PACKER_NODE_FLAGS) -var-file="packer/ova/packer-common.json" -var-file="$(abspath packer/ova/$(subst build-node-ova-esx-,,$@).json)" -var-file="packer/ova/esx.json" -except=local -except=vsphere -only=vmware-iso $(PACKER_VAR_FILES) packer/ova/packer-node.json
 
 .PHONY: $(NODE_OVA_VSPHERE_BUILD_TARGETS)
 $(NODE_OVA_VSPHERE_BUILD_TARGETS):
-	packer build $(PACKER_NODE_FLAGS) -var-file="packer/ova/packer-common.json" -var-file="$(abspath packer/ova/$(subst build-node-ova-vsphere-,,$@).json)" -var-file="packer/ova/vsphere.json"  -except=esx -except=local $(PACKER_VAR_FILES) -only=vsphere -force packer/ova/packer-node.json
+	packer build $(PACKER_NODE_FLAGS) -var-file="packer/ova/packer-common.json" -var-file="$(abspath packer/ova/$(subst build-node-ova-vsphere-,,$@).json)" -var-file="packer/ova/vsphere.json" -except=esx -except=local -only=vsphere-iso $(PACKER_VAR_FILES) -only=vsphere packer/ova/packer-node.json
 
 .PHONY: $(HAPROXY_OVA_LOCAL_BUILD_TARGETS)
 $(HAPROXY_OVA_LOCAL_BUILD_TARGETS):
-	packer build $(PACKER_HAPROXY_FLAGS) -var-file="packer/ova/packer-common.json" -var-file="$(abspath packer/ova/$(subst build-haproxy-ova-local-,,$@).json)" -except=esx -except=vsphere $(PACKER_VAR_FILES) packer/ova/packer-haproxy.json
+	packer build $(PACKER_HAPROXY_FLAGS) -var-file="packer/ova/packer-common.json" -var-file="$(abspath packer/ova/$(subst build-haproxy-ova-local-,,$@).json)" -except=esx -except=vsphere -only=vmware-iso $(PACKER_VAR_FILES) packer/ova/packer-haproxy.json
 
 .PHONY: $(HAPROXY_OVA_ESX_BUILD_TARGETS)
 $(HAPROXY_OVA_ESX_BUILD_TARGETS):
-	packer build $(PACKER_HAPROXY_FLAGS) -var-file="packer/ova/packer-common.json" -var-file="$(abspath packer/ova/$(subst build-haproxy-ova-esx-,,$@).json)" -var-file="packer/ova/esx.json" -except=local -except=vsphere $(PACKER_VAR_FILES) packer/ova/packer-haproxy.json
+	packer build $(PACKER_HAPROXY_FLAGS) -var-file="packer/ova/packer-common.json" -var-file="$(abspath packer/ova/$(subst build-haproxy-ova-esx-,,$@).json)" -var-file="packer/ova/esx.json" -except=local -except=vsphere -only=vmware-iso $(PACKER_VAR_FILES) packer/ova/packer-haproxy.json
 
 .PHONY: $(HAPROXY_OVA_VSPHERE_BUILD_TARGETS)
 $(HAPROXY_OVA_VSPHERE_BUILD_TARGETS):
-	packer build $(PACKER_HAPROXY_FLAGS) -var-file="packer/ova/packer-common.json" -var-file="$(abspath packer/ova/$(subst build-haproxy-ova-vsphere-,,$@).json)" -var-file="packer/ova/vsphere.json"  -except=esx -except=local $(PACKER_VAR_FILES) -only=vsphere -force packer/ova/packer-haproxy.json
+	packer build $(PACKER_HAPROXY_FLAGS) -var-file="packer/ova/packer-common.json" -var-file="$(abspath packer/ova/$(subst build-haproxy-ova-vsphere-,,$@).json)" -var-file="packer/ova/vsphere.json" -except=esx -except=local -only=vsphere-iso $(PACKER_VAR_FILES) -only=vsphere packer/ova/packer-haproxy.json
 
 .PHONY: $(AMI_BUILD_TARGETS)
 $(AMI_BUILD_TARGETS):
