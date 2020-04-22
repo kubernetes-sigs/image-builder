@@ -252,7 +252,7 @@ func (a *AWSCloud) GetInstance() (Instance, error) {
 }
 
 // findSubnet returns a subnet tagged with our role tag, if one exists
-func (c *AWSCloud) findSubnet() (*ec2.Subnet, error) {
+func (a *AWSCloud) findSubnet() (*ec2.Subnet, error) {
 	request := &ec2.DescribeSubnetsInput{}
 	request.Filters = []*ec2.Filter{
 		{
@@ -262,7 +262,7 @@ func (c *AWSCloud) findSubnet() (*ec2.Subnet, error) {
 	}
 
 	klog.V(2).Infof("AWS DescribeSubnets Filter:tag-key=%s", tagRoleKey)
-	response, err := c.ec2.DescribeSubnets(request)
+	response, err := a.ec2.DescribeSubnets(request)
 	if err != nil {
 		return nil, fmt.Errorf("error making AWS DescribeSubnets call: %v", err)
 	}
@@ -275,7 +275,7 @@ func (c *AWSCloud) findSubnet() (*ec2.Subnet, error) {
 }
 
 // findSecurityGroup returns a security group tagged with our role tag, if one exists
-func (c *AWSCloud) findSecurityGroup(vpcID string) (*ec2.SecurityGroup, error) {
+func (a *AWSCloud) findSecurityGroup(vpcID string) (*ec2.SecurityGroup, error) {
 	request := &ec2.DescribeSecurityGroupsInput{}
 	request.Filters = []*ec2.Filter{
 		{
@@ -289,7 +289,7 @@ func (c *AWSCloud) findSecurityGroup(vpcID string) (*ec2.SecurityGroup, error) {
 	}
 
 	klog.V(2).Infof("AWS DescribeSecurityGroups Filter:tag-key=%s", tagRoleKey)
-	response, err := c.ec2.DescribeSecurityGroups(request)
+	response, err := a.ec2.DescribeSecurityGroups(request)
 	if err != nil {
 		return nil, fmt.Errorf("error making AWS DescribeSecurityGroups call: %v", err)
 	}
@@ -302,12 +302,12 @@ func (c *AWSCloud) findSecurityGroup(vpcID string) (*ec2.SecurityGroup, error) {
 }
 
 // describeSubnet returns a subnet with the specified id, if it exists
-func (c *AWSCloud) describeSubnet(subnetID string) (*ec2.Subnet, error) {
+func (a *AWSCloud) describeSubnet(subnetID string) (*ec2.Subnet, error) {
 	request := &ec2.DescribeSubnetsInput{}
 	request.SubnetIds = []*string{&subnetID}
 
 	klog.V(2).Infof("AWS DescribeSubnetsInput ID:%q", subnetID)
-	response, err := c.ec2.DescribeSubnets(request)
+	response, err := a.ec2.DescribeSubnets(request)
 	if err != nil {
 		return nil, fmt.Errorf("error making AWS DescribeSubnets call: %v", err)
 	}
@@ -320,12 +320,12 @@ func (c *AWSCloud) describeSubnet(subnetID string) (*ec2.Subnet, error) {
 }
 
 // TagResource adds AWS tags to the specified resource
-func (a *AWSCloud) TagResource(resourceId string, tags ...*ec2.Tag) error {
+func (a *AWSCloud) TagResource(resourceID string, tags ...*ec2.Tag) error {
 	request := &ec2.CreateTagsInput{}
-	request.Resources = aws.StringSlice([]string{resourceId})
+	request.Resources = aws.StringSlice([]string{resourceID})
 	request.Tags = tags
 
-	klog.V(2).Infof("AWS CreateTags Resource=%q", resourceId)
+	klog.V(2).Infof("AWS CreateTags Resource=%q", resourceID)
 	_, err := a.ec2.CreateTags(request)
 	if err != nil {
 		return fmt.Errorf("error making AWS CreateTag call: %v", err)
@@ -334,12 +334,12 @@ func (a *AWSCloud) TagResource(resourceId string, tags ...*ec2.Tag) error {
 	return err
 }
 
-func (c *AWSCloud) findSSHKey(name string) (*ec2.KeyPairInfo, error) {
+func (a *AWSCloud) findSSHKey(name string) (*ec2.KeyPairInfo, error) {
 	request := &ec2.DescribeKeyPairsInput{
 		KeyNames: []*string{&name},
 	}
 
-	response, err := c.ec2.DescribeKeyPairs(request)
+	response, err := a.ec2.DescribeKeyPairs(request)
 	if awsErr, ok := err.(awserr.Error); ok {
 		if awsErr.Code() == "InvalidKeyPair.NotFound" {
 			return nil, nil
@@ -362,8 +362,8 @@ func (c *AWSCloud) findSSHKey(name string) (*ec2.KeyPairInfo, error) {
 	return k, nil
 }
 
-func (c *AWSCloud) ensureSSHKey() (string, error) {
-	publicKey, err := ReadFile(c.config.SSHPublicKey)
+func (a *AWSCloud) ensureSSHKey() (string, error) {
+	publicKey, err := ReadFile(a.config.SSHPublicKey)
 	if err != nil {
 		return "", err
 	}
@@ -374,7 +374,7 @@ func (c *AWSCloud) ensureSSHKey() (string, error) {
 
 	name := "imagebuilder-" + hash
 
-	key, err := c.findSSHKey(name)
+	key, err := a.findSSHKey(name)
 	if err != nil {
 		return "", err
 	}
@@ -389,7 +389,7 @@ func (c *AWSCloud) ensureSSHKey() (string, error) {
 	request.KeyName = &name
 	request.PublicKeyMaterial = []byte(publicKey)
 
-	response, err := c.ec2.ImportKeyPair(request)
+	response, err := a.ec2.ImportKeyPair(request)
 	if err != nil {
 		return "", fmt.Errorf("error creating AWS KeyPair: %v", err)
 	}
@@ -398,23 +398,23 @@ func (c *AWSCloud) ensureSSHKey() (string, error) {
 }
 
 // CreateInstance creates an instance for building an image instance
-func (c *AWSCloud) CreateInstance() (Instance, error) {
-	if c.useLocalhost {
-		return &LocalhostInstance{cloud: c}, nil
+func (a *AWSCloud) CreateInstance() (Instance, error) {
+	if a.useLocalhost {
+		return &LocalhostInstance{cloud: a}, nil
 	}
 
 	var err error
-	sshKeyName := c.config.SSHKeyName
+	sshKeyName := a.config.SSHKeyName
 	if sshKeyName == "" {
-		sshKeyName, err = c.ensureSSHKey()
+		sshKeyName, err = a.ensureSSHKey()
 		if err != nil {
 			return nil, err
 		}
 	}
 
-	subnetID := c.config.SubnetID
+	subnetID := a.config.SubnetID
 	if subnetID == "" {
-		subnet, err := c.findSubnet()
+		subnet, err := a.findSubnet()
 		if err != nil {
 			return nil, err
 		}
@@ -426,7 +426,7 @@ func (c *AWSCloud) CreateInstance() (Instance, error) {
 		}
 	}
 
-	subnet, err := c.describeSubnet(subnetID)
+	subnet, err := a.describeSubnet(subnetID)
 	if err != nil {
 		return nil, err
 	}
@@ -434,18 +434,18 @@ func (c *AWSCloud) CreateInstance() (Instance, error) {
 		return nil, fmt.Errorf("could not find subnet %q", subnetID)
 	}
 
-	if c.config.ImageID == "" {
+	if a.config.ImageID == "" {
 		return nil, fmt.Errorf("ImageID must be specified")
 	}
 
-	if c.config.InstanceType == "" {
+	if a.config.InstanceType == "" {
 		return nil, fmt.Errorf("InstanceType must be specified")
 	}
 
-	securityGroupID := c.config.SecurityGroupID
+	securityGroupID := a.config.SecurityGroupID
 	if securityGroupID == "" {
 		vpcID := *subnet.VpcId
-		securityGroup, err := c.findSecurityGroup(vpcID)
+		securityGroup, err := a.findSecurityGroup(vpcID)
 		if err != nil {
 			return nil, err
 		}
@@ -458,11 +458,11 @@ func (c *AWSCloud) CreateInstance() (Instance, error) {
 	}
 
 	request := &ec2.RunInstancesInput{}
-	request.ImageId = aws.String(c.config.ImageID)
+	request.ImageId = aws.String(a.config.ImageID)
 	request.KeyName = aws.String(sshKeyName)
-	request.InstanceType = aws.String(c.config.InstanceType)
-	if c.config.InstanceProfile != "" {
-		request.IamInstanceProfile = &ec2.IamInstanceProfileSpecification{Name: aws.String(c.config.InstanceProfile)}
+	request.InstanceType = aws.String(a.config.InstanceType)
+	if a.config.InstanceProfile != "" {
+		request.IamInstanceProfile = &ec2.IamInstanceProfileSpecification{Name: aws.String(a.config.InstanceProfile)}
 	}
 	request.NetworkInterfaces = []*ec2.InstanceNetworkInterfaceSpecification{
 		{
@@ -475,8 +475,8 @@ func (c *AWSCloud) CreateInstance() (Instance, error) {
 	request.MaxCount = aws.Int64(1)
 	request.MinCount = aws.Int64(1)
 
-	klog.V(2).Infof("AWS RunInstances InstanceType=%q ImageId=%q KeyName=%q", c.config.InstanceType, c.config.ImageID, sshKeyName)
-	response, err := c.ec2.RunInstances(request)
+	klog.V(2).Infof("AWS RunInstances InstanceType=%q ImageId=%q KeyName=%q", a.config.InstanceType, a.config.ImageID, sshKeyName)
+	response, err := a.ec2.RunInstances(request)
 	if err != nil {
 		return nil, fmt.Errorf("error making AWS RunInstances call: %v", err)
 	}
@@ -486,12 +486,12 @@ func (c *AWSCloud) CreateInstance() (Instance, error) {
 		if instanceID == "" {
 			return nil, fmt.Errorf("AWS RunInstances call returned empty InstanceId")
 		}
-		err := c.TagResource(instanceID, &ec2.Tag{
+		err := a.TagResource(instanceID, &ec2.Tag{
 			Key: aws.String(tagRoleKey), Value: aws.String("'"),
 		})
 		if err != nil {
 			klog.Warningf("Tagging instance %q failed; will terminate to prevent leaking", instanceID)
-			e2 := c.TerminateInstance(instanceID)
+			e2 := a.TerminateInstance(instanceID)
 			if e2 != nil {
 				klog.Warningf("error terminating instance %q, will leak instance", instanceID)
 			}
@@ -499,7 +499,7 @@ func (c *AWSCloud) CreateInstance() (Instance, error) {
 		}
 
 		return &AWSInstance{
-			cloud:      c,
+			cloud:      a,
 			instance:   instance,
 			instanceID: instanceID,
 		}, nil
@@ -715,7 +715,7 @@ func (i *AWSImage) image() (*ec2.Image, error) {
 	return image, nil
 }
 
-func (i *AWSImage) imageSnapshotId() (string, error) {
+func (i *AWSImage) imageSnapshotID() (string, error) {
 	image, err := i.image()
 	if err != nil {
 		return "", err
@@ -768,7 +768,7 @@ func (i *AWSImage) ensurePublic() error {
 		return fmt.Errorf("error making image public (%q in region %q): %v", i.imageID, i.region, err)
 	}
 
-	snapshotID, err := i.imageSnapshotId()
+	snapshotID, err := i.imageSnapshotID()
 	if err != nil {
 		return err
 	}
@@ -887,10 +887,10 @@ func (i *AWSImage) copyImageToRegion(regionName string) (string, error) {
 	if destImage != nil {
 		imageID = aws.StringValue(destImage.ImageId)
 	} else {
-		var snapshotId string
+		var snapshotID string
 
 		{
-			sourceSnapshotID, err := i.imageSnapshotId()
+			sourceSnapshotID, err := i.imageSnapshotID()
 			if err != nil {
 				return "", err
 			}
@@ -909,10 +909,10 @@ func (i *AWSImage) copyImageToRegion(regionName string) (string, error) {
 			if err != nil {
 				return "", fmt.Errorf("error copying snapshot to region %q: %v", regionName, err)
 			}
-			snapshotId = aws.StringValue(response.SnapshotId)
+			snapshotID = aws.StringValue(response.SnapshotId)
 		}
 
-		if err := waitSnapshotCompleted(targetEC2, snapshotId); err != nil {
+		if err := waitSnapshotCompleted(targetEC2, snapshotID); err != nil {
 			return "", err
 		}
 
@@ -935,7 +935,7 @@ func (i *AWSImage) copyImageToRegion(regionName string) (string, error) {
 				if copy.Ebs != nil {
 					if aws.StringValue(copy.Ebs.SnapshotId) != "" {
 						found = true
-						copy.Ebs.SnapshotId = aws.String(snapshotId)
+						copy.Ebs.SnapshotId = aws.String(snapshotID)
 						copy.Ebs.Encrypted = nil
 					}
 				}
@@ -945,7 +945,7 @@ func (i *AWSImage) copyImageToRegion(regionName string) (string, error) {
 				return "", fmt.Errorf("unable to remap block device mappings for image %q", aws.StringValue(image.ImageId))
 			}
 
-			klog.V(2).Infof("AWS RegisterImage SnapshotId=%q, Region=%q", snapshotId, regionName)
+			klog.V(2).Infof("AWS RegisterImage SnapshotId=%q, Region=%q", snapshotID, regionName)
 			response, err := targetEC2.RegisterImage(request)
 			if err != nil {
 				return "", fmt.Errorf("error copying image to region %q: %v", regionName, err)
