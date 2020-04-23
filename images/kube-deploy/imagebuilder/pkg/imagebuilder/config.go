@@ -117,6 +117,8 @@ func (c *AWSConfig) InitDefaults(region string) {
 	switch c.Region {
 	case "us-east-2":
 		c.InstanceType = "m4.large"
+	case "ap-south-1":
+		c.InstanceType = "m4.large"
 	}
 }
 
