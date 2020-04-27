@@ -9,3 +9,6 @@ dist/
 *.vmdk
 *.out
 ./image-builder
+
+# Emacs temp files
+*~
