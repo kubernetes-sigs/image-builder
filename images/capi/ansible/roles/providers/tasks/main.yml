@@ -19,7 +19,8 @@
   when: packer_builder_type.startswith('azure') 
 
 - include_tasks: vmware.yml
-  when: packer_builder_type is search('vmware')
+  when: packer_builder_type is search('vmware') or 
+        packer_builder_type is search('vsphere')
 
 - include_tasks: googlecompute.yml
   when: packer_builder_type.startswith('googlecompute')
