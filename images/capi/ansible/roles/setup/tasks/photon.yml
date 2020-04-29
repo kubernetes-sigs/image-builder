@@ -45,7 +45,7 @@
 
 - name: Concatenate the Photon RPMs
   set_fact:
-    photon_rpms: "{{ common_photon_rpms | join(' ') }}"
+    photon_rpms: "{{ rpms | join(' ') }}"
 
 - name: install baseline dependencies
   command: tdnf install {{ photon_rpms }} -y

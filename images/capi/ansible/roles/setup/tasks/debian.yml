@@ -52,7 +52,7 @@
 - name: install baseline dependencies
   apt:
     force_apt_get: True
-    name: "{{ common_debs }}"
+    name: "{{ debs }}"
     state: latest
 
 - name: install extra debs
@@ -64,6 +64,6 @@
 - name: install pinned debs
   apt:
     force_apt_get: True
-    name: "{{ common_pinned_debs }}"
+    name: "{{ pinned_debs }}"
     state: present
     force: yes

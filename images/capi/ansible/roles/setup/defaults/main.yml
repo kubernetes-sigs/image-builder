@@ -1,4 +1,4 @@
-# Copyright 2018 The Kubernetes Authors.
+# Copyright 2020 The Kubernetes Authors.
 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,28 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- name: add epel repo
-  yum:
-    name: "{{ common_redhat_epel_rpm }}"
-    state: present
-    lock_timeout: 60
+debs: ""
+extra_debs: ""
+pinned_debs: []
 
-- import_tasks: rpm_repos.yml
+redhat_epel_rpm: "https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm"
+rpms: ""
+extra_rpms: ""
 
-- name: perform a yum update
-  yum:
-    name: '*'
-    state: latest
-    lock_timeout: 60
-
-- name: install baseline dependencies
-  yum:
-    name: "{{ common_rpms }}"
-    state: present
-    lock_timeout: 60
-
-- name: install extra rpms
-  yum:
-    name: "{{ extra_rpms.split() }}"
-    state: present
-    lock_timeout: 60
+disable_public_repos: false
+extra_repos: ""
