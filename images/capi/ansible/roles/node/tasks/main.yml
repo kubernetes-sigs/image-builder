@@ -12,15 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- import_tasks: debian.yml
-  when: ansible_os_family == "Debian"
-
-- import_tasks: redhat.yml
-  when: ansible_os_family == "RedHat"
-
-- import_tasks: photon.yml
-  when: ansible_os_family == "VMware Photon OS"
-
 - name: Ensure overlay module is present
   modprobe:
     name: overlay

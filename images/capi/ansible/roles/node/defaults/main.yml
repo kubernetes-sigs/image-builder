@@ -61,12 +61,6 @@ common_photon_rpms:
 - tar
 - unzip
 
-common_pinned_debs: []
-common_redhat_epel_rpm: "https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm"
-disable_public_repos: false
-extra_debs: ""
-extra_rpms: ""
-extra_repos: ""
 #photon does not have backward compatibility for legacy distro behavior for sysctl.conf by default
 #as it uses systemd-sysctl. set this var so we can use for sysctl conf file value.
 sysctl_conf_file: "{{ '/etc/sysctl.d/99-sysctl.conf' if ansible_os_family == 'VMware Photon OS' else '/etc/sysctl.conf' }}"
