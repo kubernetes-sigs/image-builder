@@ -1,0 +1,170 @@
+{
+  "variables": {
+    "ansible_common_vars": "",
+    "ansible_extra_vars": "guestinfo_datasource_slug={{user `guestinfo_datasource_slug`}} guestinfo_datasource_ref={{user `guestinfo_datasource_ref`}} guestinfo_datasource_script={{user `guestinfo_datasource_script`}} dataplane_url={{user `dataplane_url`}}",
+    "build_timestamp": "{{timestamp}}",
+    "build_version": "{{user `build_name`}}-haproxy-v{{user `dataplaneapi_version`}}",
+    "cluster": "",
+    "dataplaneapi_version": "1.2.4",
+    "dataplane_url": "https://github.com/haproxytech/dataplaneapi/releases/download/v{{user `dataplaneapi_version`}}/dataplaneapi",
+    "datastore": "",
+    "existing_ansible_ssh_args": "{{env `ANSIBLE_SSH_ARGS`}}",
+    "folder": "",
+    "output_dir": "./output/{{user `build_version`}}",
+    "username": "",
+    "vcenter_server": "",
+    "vsphere_guest_os_type": null
+  },
+  "builders": [
+    {
+      "name": "vmware-iso",
+      "vm_name": "{{user `build_version`}}",
+      "vmdk_name": "{{user `build_version`}}",
+      "output_directory": "{{user `output_dir`}}",
+      "type": "vmware-iso",
+      "version": "{{user `vmx_version`}}",
+      "cpus": 1,
+      "cores": 1,
+      "memory": 2048,
+      "disk_size": 20480,
+      "disk_type_id": "{{user `disk_type_id`}}",
+      "boot_wait": "{{user `boot_wait`}}",
+      "http_directory": "./packer/ova/linux/{{user `distro_name`}}/http/",
+      "guest_os_type": "{{user `guest_os_type`}}",
+      "headless": "{{user `headless`}}",
+      "iso_url": "{{user `iso_url`}}",
+      "iso_checksum": "{{user `iso_checksum`}}",
+      "iso_checksum_type": "{{user `iso_checksum_type`}}",
+      "ssh_username": "{{user `ssh_username`}}",
+      "ssh_password": "{{user `ssh_password`}}",
+      "ssh_timeout": "{{user `ssh_timeout`}}",
+      "boot_command": [
+        "{{user `boot_command_prefix`}}",
+        "http://{{ .HTTPIP }}:{{ .HTTPPort }}",
+        "{{user `boot_command_suffix`}}"
+      ],
+      "shutdown_command": "echo '{{user `ssh_password`}}' | sudo -S -E sh -c 'usermod -L {{user `ssh_username`}} && {{user `shutdown_command`}}'",
+      "skip_compaction": "{{user `skip_compaction`}}",
+      "vnc_bind_address": "{{user `vnc_bind_address`}}",
+      "vnc_port_min": "{{user `vnc_port_min`}}",
+      "vnc_port_max": "{{user `vnc_port_max`}}",
+      "vnc_disable_password": "{{user `vnc_disable_password`}}",
+      "remote_type": "{{user `remote_type`}}",
+      "remote_host": "{{user `remote_host`}}",
+      "remote_datastore": "{{user `remote_datastore`}}",
+      "remote_username": "{{user `remote_username`}}",
+      "remote_password": "{{user `remote_password`}}",
+      "format": "{{user `format`}}",
+      "vmx_data": {
+        "ethernet0.networkName": "{{user `network`}}"
+      }
+    },
+    {
+      "type": "vsphere-iso",
+      "name": "vsphere",
+
+      "vcenter_server":      "{{user `vcenter_server`}}",
+      "username":            "{{user `username`}}",
+      "password":            "{{user `password`}}",
+      "insecure_connection": "{{user `insecure_connection`}}",
+
+      "vm_name": "{{user `build_version`}}",
+      "datastore": "{{user `datastore`}}",
+      "folder": "{{user `folder`}}",
+      "host":     "{{user `host`}}",
+      "convert_to_template": "{{user `convert_to_template`}}",
+      "cluster": "{{user `cluster`}}",
+      "network": "{{user `network`}}",
+
+      "vm_version": "{{user `vmx_version`}}",
+      "CPUs": 1,
+      "cpu_cores": 1,
+      "RAM": 2048,
+      "disk_size": 20480,
+      "disk_controller_type": "{{user `disk_controller_type`}}",
+      "disk_thin_provisioned": "{{user `disk_thin_provisioned`}}",
+      "network_card": "{{user `network_card`}}",
+      "guest_os_type": "{{user `vsphere_guest_os_type`}}",
+
+      "boot_wait": "{{user `boot_wait`}}",
+      "http_directory": "./packer/ova/linux/{{user `distro_name`}}/http/",
+      "iso_urls": "{{user `iso_url`}}",
+      "iso_checksum": "{{user `iso_checksum`}}",
+      "iso_checksum_type": "{{user `iso_checksum_type`}}",
+
+      "communicator": "ssh",
+      "ssh_username": "{{user `ssh_username`}}",
+      "ssh_password": "{{user `ssh_password`}}",
+      "ssh_timeout": "4h",
+      "boot_command": [
+        "{{user `boot_command_prefix`}}",
+        "http://{{ .HTTPIP }}:{{ .HTTPPort }}",
+        "{{user `boot_command_suffix`}}"
+      ],
+      "shutdown_command": "echo '{{user `ssh_password`}}' | sudo -S -E sh -c 'usermod -L {{user `ssh_username`}} && {{user `shutdown_command`}}'",
+
+      "export": {
+        "force": true,
+        "output_directory": "{{user `output_dir`}}"
+      }
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "ansible",
+      "playbook_file": "./ansible/haproxy.yml",
+      "ansible_env_vars": [
+        "ANSIBLE_SSH_ARGS='{{user `existing_ansible_ssh_args`}} -o IdentitiesOnly=yes'",
+        "ANSIBLE_REMOTE_TEMP='/tmp/.ansible/'"
+      ],
+      "extra_arguments": [
+        "--extra-vars",
+        "{{user `ansible_common_vars`}}",
+        "--extra-vars",
+        "{{user `ansible_extra_vars`}}"
+      ]
+    }
+  ],
+  "post-processors": [
+    {
+      "type": "manifest",
+      "output": "{{user `output_dir`}}/packer-manifest.json",
+      "strip_path": true,
+      "custom_data": {
+        "build_name": "{{user `build_name`}}",
+        "build_timestamp": "{{user `build_timestamp`}}",
+        "build_date": "{{isotime}}",
+        "guest_os_type": "{{user `guest_os_type`}}",
+        "vsphere_guest_os_type": "{{user `vsphere_guest_os_type`}}",
+        "dataplaneapi_version": "v{{user `dataplaneapi_version`}}",
+        "os_name": "{{user `os_display_name`}}"
+      }
+    },
+    {
+      "name": "esx",
+      "type": "shell-local",
+      "inline": [
+        "cd {{user `output_dir`}}",
+        "tar xf {{user `build_version`}}.ova",
+        "rm {{user `build_version`}}.ova",
+        "GIT_VERSION=`git describe --dirty` ../../hack/image-build-ova.py --stream_vmdk --haproxy --vmx {{user `vmx_version`}} --eula ../../hack/ovf_eula.txt --vmdk_file {{user `build_version`}}-disk1.vmdk"
+      ]
+    },
+    {
+      "name": "vsphere",
+      "type": "shell-local",
+      "inline": [
+        "cd {{user `output_dir`}}",
+        "GIT_VERSION=`git describe --dirty` ../../hack/image-build-ova.py --haproxy --vmx {{user `vmx_version`}} --eula ../../hack/ovf_eula.txt --vmdk_file {{user `build_version`}}-disk-0.vmdk"
+      ]
+    },
+    {
+      "name": "local",
+      "type": "shell-local",
+      "inline": [
+        "GIT_VERSION=`git describe --dirty` ./hack/image-build-ova.py --stream_vmdk --haproxy --vmx {{user `vmx_version`}} --eula ./hack/ovf_eula.txt {{user `output_dir`}}",
+        "./hack/image-post-create-config.sh {{user `output_dir`}}"
+      ]
+    }
+  ]
+}
