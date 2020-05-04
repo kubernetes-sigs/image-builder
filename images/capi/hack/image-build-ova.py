@@ -244,7 +244,7 @@ _NODE_OVF_TEMPLATE = '''<?xml version='1.0' encoding='utf-8'?>
     <Name>${ARTIFACT_ID}</Name>
     <AnnotationSection>
       <Info>A human-readable annotation</Info>
-      <Annotation>Cluster API vSphere image - ${OS_NAME} and Kubernetes ${KUBERNETES_SEMVER} - https://github.com/kubernetes-sigs/cluster-api-provider-vsphere/tree/master/build/images</Annotation>
+      <Annotation>Cluster API vSphere image - ${OS_NAME} and Kubernetes ${KUBERNETES_SEMVER} - https://github.com/kubernetes-sigs/cluster-api-provider-vsphere</Annotation>
     </AnnotationSection>
     <OperatingSystemSection ovf:id="${OS_ID}" ovf:version="${OS_VERSION}" vmw:osType="${OS_TYPE}">
       <Info>The operating system installed</Info>
@@ -402,7 +402,7 @@ _HAPROXY_OVF_TEMPLATE = '''<?xml version='1.0' encoding='utf-8'?>
     <Name>${ARTIFACT_ID}</Name>
     <AnnotationSection>
       <Info>A human-readable annotation</Info>
-      <Annotation>Cluster API vSphere HAProxy Load Balancer - ${OS_NAME} and HAProxy dataplane API ${DATAPLANEAPI_VERSION} - https://github.com/kubernetes-sigs/cluster-api-provider-vsphere/tree/master</Annotation>
+      <Annotation>Cluster API vSphere HAProxy Load Balancer - ${OS_NAME} and HAProxy dataplane API ${DATAPLANEAPI_VERSION} - https://github.com/kubernetes-sigs/cluster-api-provider-vsphere</Annotation>
     </AnnotationSection>
     <OperatingSystemSection ovf:id="${OS_ID}" ovf:version="${OS_VERSION}" vmw:osType="${OS_TYPE}">
       <Info>The operating system installed</Info>
