@@ -260,12 +260,12 @@ build-qemu-ubuntu-1804: ## Builds Ubuntu 18.04 QEMU image
 ## --------------------------------------
 ##@ Cleaning
 .PHONY: clean
-clean: ## Cleans all local image caches
-clean: $(NODE_OVA_CLEAN_TARGETS) $(QEMU_CLEAN_TARGETS) clean-packer-cache
+clean: ## Removes all image output directories and packer image cache
+clean: $(NODE_OVA_LOCAL_CLEAN_TARGETS) $(HAPROXY_OVA_LOCAL_CLEAN_TARGETS) $(QEMU_CLEAN_TARGETS) clean-packer-cache
 
 .PHONY: clean-ova
 clean-ova: ## Removes all ova image output directories (see NOTE at top of help)
-clean-ova: $(NODE_OVA_LOCAL_CLEAN_TARGETS)
+clean-ova: $(NODE_OVA_LOCAL_CLEAN_TARGETS) $(HAPROXY_OVA_LOCAL_CLEAN_TARGETS)
 
 .PHONY: clean-qemu
 clean-qemu: ## Removes all qemu image output directories (see NOTE at top of help)
