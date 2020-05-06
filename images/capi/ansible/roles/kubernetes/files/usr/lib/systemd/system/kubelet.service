@@ -1,6 +1,8 @@
 [Unit]
 Description=kubelet: The Kubernetes Node Agent
-Documentation=https://kubernetes.io/docs/
+Documentation=https://kubernetes.io/docs/home/
+Wants=network-online.target
+After=network-online.target
 
 [Service]
 ExecStart=/usr/bin/kubelet
