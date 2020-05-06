@@ -134,6 +134,7 @@
         "build_name": "{{user `build_name`}}",
         "build_timestamp": "{{user `build_timestamp`}}",
         "build_date": "{{isotime}}",
+        "build_type": "haproxy",
         "guest_os_type": "{{user `guest_os_type`}}",
         "vsphere_guest_os_type": "{{user `vsphere_guest_os_type`}}",
         "dataplaneapi_version": "v{{user `dataplaneapi_version`}}",
