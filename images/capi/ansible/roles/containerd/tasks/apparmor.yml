@@ -1,0 +1,12 @@
+- name: Copy in apparmor profile
+  template:
+    dest: /etc/apparmor.d/container-default
+    src: etc/apparmor.d/container-default
+  when: ansible_os_family == "Debian" || ansible_os_family == "VMware Photon OS"
+
+- name: start apparmor service
+  systemd:
+    name: apparmor
+    daemon_reload: yes
+    enabled: True
+    state: started

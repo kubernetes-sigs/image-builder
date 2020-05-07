@@ -46,6 +46,8 @@ common_debs:
 - socat
 
 common_photon_rpms:
+- apparmor-profiles
+- apparmor-utils
 - conntrack-tools
 - distrib-compat
 - ebtables

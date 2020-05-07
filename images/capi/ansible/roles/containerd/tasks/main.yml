@@ -69,6 +69,9 @@
     dest: /etc/containerd/config.toml
     src: etc/containerd/config.toml
 
+- import_tasks: apparmor.yml
+  when: ansible_os_family == "VMware Photon OS" || ansible_os_family == "Debian"
+
 - name: start containerd service
   systemd:
     name: containerd
