@@ -73,3 +73,12 @@
     sysctl_set: yes
     reload: yes
     sysctl_file: "{{ sysctl_conf_file }}"
+
+- name: Ensure conntrackd logrotate is present
+  copy:
+    src: conntrackd
+    dest: /etc/logrotate.d/conntrackd
+    owner: root
+    group: root
+    mode: 0644
+    

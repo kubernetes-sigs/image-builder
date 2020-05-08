@@ -1,0 +1,14 @@
+/var/log/conntrackd-stats.log {
+    su root syslog
+    compress
+    dateext
+    notifempty
+    missingok
+    nocreate
+    weekly
+    rotate 2
+    copytruncate
+    postrotate
+        invoke-rc.d conntrackd restart > /dev/null
+    endscript
+}
