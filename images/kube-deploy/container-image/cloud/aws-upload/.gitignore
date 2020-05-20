@@ -1,0 +1,4 @@
+id_rsa.pub
+*.tfstate
+*.tfstate.backup
+.terraform/

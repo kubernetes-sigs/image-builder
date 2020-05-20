@@ -1,0 +1,28 @@
+#!/bin/bash
+
+IMAGE=${1}
+GCS_PATH=${2}
+if [[ -z "${GCS_PATH}" ]]; then
+  echo "syntax: ${0} <container-image-name> <gcs path>"
+  exit 1
+fi
+
+set -e
+#set -x
+
+ROOT=$(dirname "${BASH_SOURCE[0]}")
+
+RUN_ID=$(date +%Y%m%d-%H%M)
+IMAGE_NAME="imagebuilder-${IMAGE}-${RUN_ID}"
+
+pushd workspace
+rm -f compressed-image.tar.gz
+# Create a tar file of the image.  GCE requires the file be named disk.raw.
+# Make it sparse for (potential) efficiency
+tar Sczf compressed-image.tar.gz ${IMAGE}.raw --transform="s|${IMAGE}.raw|disk.raw|"
+
+gsutil cp compressed-image.tar.gz ${GCS_PATH}/${IMAGE_NAME}.tar.gz
+popd
+
+
+gcloud compute images create ${IMAGE_NAME} --family ${IMAGE} --source-uri ${GCS_PATH}/${IMAGE_NAME}.tar.gz

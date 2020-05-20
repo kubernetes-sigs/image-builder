@@ -1,0 +1,25 @@
+timeout: 3600s
+options:
+  substitution_option: ALLOW_LOOSE
+  machineType: 'N1_HIGHCPU_8'
+steps:
+- name: 'gcr.io/cloud-builders/docker'
+  args: [ 'pull', 'debian:buster' ]
+- name: 'gcr.io/cloud-builders/docker'
+  args: [ 'build', '-t', 'buster-base', 'images/buster-base' ]
+- name: 'gcr.io/cloud-builders/docker'
+  args: [ 'build', '-t', 'buster-gce', 'images/buster-gce' ]
+- name: 'gcr.io/cloud-builders/docker'
+  entrypoint: "bash"
+  args: [
+          '-c', 'tools/container-to-raw buster-gce'
+        ]
+  env:
+  - DOCKER_BUILDKIT=0
+- name: 'gcr.io/cloud-builders/gsutil'
+  entrypoint: 'bash'
+  args: [
+          '-c', 'tools/upload-to-gce buster-gce $$DEST'
+        ]
+  env:
+  - DEST=gs://${PROJECT_ID}-images/cloudbuild

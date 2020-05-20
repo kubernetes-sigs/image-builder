@@ -1,0 +1,2 @@
+deb http://packages.cloud.google.com/apt google-compute-engine-buster-stable main
+deb http://packages.cloud.google.com/apt google-cloud-packages-archive-keyring-buster main
