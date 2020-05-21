@@ -39,6 +39,8 @@ Several variables can be used to customize the image build.
 
 | Variable | Description | Default |
 |----------|-------------|---------|
+| `custom_role` | If set to `"true"`, this will cause `image-builder` to run a custom Ansible role right before the `sysprep` role to allow for further customization. | `"false"` |
+| `custom_role_name` | This must be set if `custom_role` is set to `"true"`, and is the name of the role to run. If the role is placed is in the `ansible/roles` directory, it can be referenced by name. Otherwise, it must be a fully qualified path to the role. | `""` |
 | `disable_public_repos` | If set to `"true"`, this will disable all existing package repositories defined in the OS before doing any package installs. The `extra_repos` variable *must* be set for package installs to succeed. | `"false"` |
 | `extra_debs` | This can be set to a space delimited string containing the names of additional deb packages to install | `""` |
 | `extra_repos` | A space delimited string containing the names of files to add to the image containing repository definitions. The files should be given as absolute paths. | `""` |

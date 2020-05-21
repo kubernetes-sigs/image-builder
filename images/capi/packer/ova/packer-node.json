@@ -159,6 +159,7 @@
         "build_date": "{{isotime}}",
         "build_type": "node",
         "containerd_version": "{{user `containerd_version`}}",
+        "custom_role": "{{user `custom_role`}}",
         "guest_os_type": "{{user `guest_os_type`}}",
         "vsphere_guest_os_type": "{{user `vsphere_guest_os_type`}}",
         "kubernetes_cni_semver": "{{user `kubernetes_cni_semver`}}",

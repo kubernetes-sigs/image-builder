@@ -15,11 +15,18 @@
 - hosts: all
   become: yes
 
-  roles:
-    - role: haproxy
-    - role: providers
-    - role: pki
-    - role: sysprep
+  tasks:
+    - include_role:
+        name: haproxy
+    - include_role:
+        name: providers
+    - include_role:
+        name: pki
+    - include_role:
+        name: "{{ custom_role_name }}"
+      when: custom_role | default(false)|bool
+    - include_role:
+        name: sysprep
 
   environment:
     HTTP_PROXY: "{{ http_proxy | default('') }}"
