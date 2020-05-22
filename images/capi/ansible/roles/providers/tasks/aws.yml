@@ -17,8 +17,8 @@
     name: "{{ packages }}"
   vars:
     packages:
-      - https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
       - awscli
+  when: ansible_distribution != "Amazon"
 
 - name: install aws agents RPM
   package:
@@ -26,7 +26,18 @@
     state: present
   with_items:
     - https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
-  when: ansible_os_family == "RedHat"
+  when: 
+    - ansible_os_family == "RedHat" 
+    - ansible_distribution != "Amazon"
+
+- name: install aws agents RPM
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - amazon-ssm-agent
+    - awscli
+  when: ansible_distribution == "Amazon"
 
 - name: Ensure ssm agent is running RPM
   service:
