@@ -49,6 +49,7 @@ common_photon_rpms:
 - conntrack-tools
 - distrib-compat
 - ebtables
+- ethtool
 - jq
 - net-tools
 - ntp
