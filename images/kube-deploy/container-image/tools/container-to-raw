@@ -35,7 +35,7 @@ fi
 docker run --name ${EXPORT_NAME} ${IMAGE} /bin/true
 
 SUDO=sudo
-if [[ `whoami` -eq 'root' ]]; then
+if [[ `whoami` == 'root' ]]; then
     echo "Running as root; won't use sudo"
     SUDO=""
 fi
