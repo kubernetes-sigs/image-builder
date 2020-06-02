@@ -2,6 +2,11 @@ provider "aws" {
   region = "us-east-2"
 }
 
+# Export the region, for scripts
+output "test_instance_region" {
+  value = "us-east-2"
+}
+
 variable "image_name" {
   type    = string
   default = "buster-aws"
@@ -31,7 +36,7 @@ data "aws_ami" "default" {
 # Allow inbound SSH
 resource "aws_security_group" "allow_ssh" {
   description = "Allow SSH inbound traffic"
-  vpc_id      = "${data.aws_vpc.main.id}"
+  vpc_id      = data.aws_vpc.main.id
 
   ingress {
     description = "Inbound SSH"
@@ -42,19 +47,33 @@ resource "aws_security_group" "allow_ssh" {
   }
 }
 
+# Allow all outbound traffic
+resource "aws_security_group" "allow_outbound" {
+  description = "Allow all outbound traffic"
+  vpc_id      = data.aws_vpc.main.id
+
+  egress {
+    description = "All outbound"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
 # Upload our ssh key
 resource "aws_key_pair" "default" {
   key_name   = "imagebuilder-aws-test"
-  public_key = "${file("id_rsa.pub")}"
+  public_key = file("id_rsa.pub")
 }
 
 # Create a test instance
 resource "aws_instance" "test" {
-  vpc_security_group_ids = ["${aws_security_group.allow_ssh.id}"]
-  key_name               = "${aws_key_pair.default.key_name}"
+  vpc_security_group_ids = [aws_security_group.allow_ssh.id, aws_security_group.allow_outbound.id]
+  key_name               = aws_key_pair.default.key_name
 
   associate_public_ip_address = true
-  ami                         = "${data.aws_ami.default.id}"
+  ami                         = data.aws_ami.default.id
   instance_type               = "t3.medium"
 
   root_block_device {
@@ -63,7 +82,7 @@ resource "aws_instance" "test" {
   }
 }
 
-# Output the instance id
+# Output the instance information
 output "test_instance_id" {
   value = aws_instance.test.id
 }

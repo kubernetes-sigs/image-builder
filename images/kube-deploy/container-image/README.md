@@ -97,7 +97,12 @@ pushd cloud/aws-test
 terraform init
 terraform apply
 TEST_INSTANCE_PUBLIC_IP=`terraform output test_instance_public_ip`
+TEST_INSTANCE_ID=`terraform output test_instance_id`
+TEST_INSTANCE_REGION=`terraform output test_instance_region`
 popd
+
+# If running in a script, it can be useful to wait for the instance to be ready
+aws ec2 wait instance-status-ok --instance-id ${TEST_INSTANCE_ID} --region ${TEST_INSTANCE_REGION}
 
 # SSH to the instance and test it out
 ssh admin@${TEST_INSTANCE_PUBLIC_IP}
