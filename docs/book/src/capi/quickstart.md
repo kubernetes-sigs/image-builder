@@ -10,7 +10,7 @@ To get the latest image-builder source on your machine, execute the following:
 
 ```sh
 curl -L https://github.com/kubernetes-sigs/image-builder/tarball/master -o image-builder.tgz
-tar xzf image-builder.tgz
+tar xzf image-builder.tgz --one-top-level=image-builder --strip-components 1
 cd image-builder/images/capi
 ```
 
