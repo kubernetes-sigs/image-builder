@@ -17,7 +17,7 @@ fetch_vagrantfile
 
 list_boxes | while read -r channel release; do
     export FLATCAR_CHANNEL="$channel"
-    export FLATCAR_VERSION="$release" 
+    export FLATCAR_VERSION="$release"
 
     echo "##############################################"
     echo "Image:"

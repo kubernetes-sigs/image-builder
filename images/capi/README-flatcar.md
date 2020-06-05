@@ -31,10 +31,23 @@ Before running `packer build` command, please make sure the following:
 
 ## Usage
 
-Provisioning and `kubeadm` initialisation is automated; start a new build with
+Flatcar qemu images can be built using the Makefile; a convenience wrapper
+script is provided to import the VM into vagrant and to initialise `kubeadm`.
+
+### Convenience wrapper script
+
+The wrapper script will call `make` (see below) to build an image,
+import the image to vagrant, start a VM, and initialise `kubeadm`. After the
+script concluded, users are all set up and can start interacting with kubernetes.
+
+Start a new build with
 ```shell
 ./hack/image-build-flatcar.sh [<channel>] [<release-version>]
 ```
+
+Flatcar Container Linux maintains four distinct
+channels: `alpha`, `beta`, `stable`, and `edge`. For details please refer to
+the [releases page](https://www.flatcar-linux.org/releases/).
 
 The build script will default to the latest release of the `stable` channel.
 
@@ -52,6 +65,28 @@ You're now set up to interact with your cluster via `vagrant ssh`. Try e.g.
 $ vagrant ssh 'kubectl cluster-info'
 Kubernetes master is running at https://10.0.2.15:6443
 KubeDNS is running at https://10.0.2.15:6443/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
+```
+
+Get an overview of all images built by using `hack/boxes-flatcar.sh`. The
+helper script will list all available images / VMs and will output environment
+variables for convenient copy/paste.
+
+### Makefile build
+
+Make target `build-qemu-flatcar` will build a Flatcar Container Linux qemu
+image. The make variables `FLATCAR_CHANNEL` and `FLATCAR_VERSION` can be set to
+build specific releases. THe build will default to the current stable release.
+
+Example usage:
+```shell
+$ make build-qemu-flatcar
+or
+$ make FLATCAR_CHANNEL=beta build-qemu-flatcar
+or
+$ make FLATCAR_CHANNEL=stable FLATCAR_VERSION=2512.2.0 build-qemu-flatcar
+or
+$ make FLATCAR_CHANNEL=stable FLATCAR_VERSION=$(hack/image-grok-latest-flatcar-version.sh stable) \
+  build-qemu-flatcar
 ```
 
 ## Notes
