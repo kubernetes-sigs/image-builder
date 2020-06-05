@@ -33,6 +33,8 @@
     "kubernetes_deb_gpg_key": null,
     "kubernetes_rpm_gpg_check": null,
     "kubernetes_container_registry": null,
+    "machine_id_mode": "444",
+    "python_path": "",
     "output_directory": "./output/{{user `build_name`}}-kube-{{user `kubernetes_semver`}}",
     "qemu_binary": "qemu-system-x86_64",
     "ssh_password": "builder",
@@ -40,7 +42,7 @@
   },
   "builders": [
     {
-      "name": "{{ user `build_name`}}",
+      "name": "flatcar-stable",
       "vm_name": "{{user `build_name`}}-kube-{{user `kubernetes_semver`}}",
       "output_directory": "{{user `output_directory`}}",
       "type": "qemu",
@@ -65,10 +67,20 @@
       "shutdown_command": "echo '{{user `ssh_password`}}' | sudo -S -E sh -c 'usermod -L {{user `ssh_username`}} && {{user `shutdown_command`}}'",
       "ssh_password": "{{user `ssh_password`}}",
       "ssh_username": "{{user `ssh_username`}}",
+      "ssh_private_key_file": "vagrant-insecure-key",
       "ssh_timeout": "2h"
     }
   ],
   "provisioners": [
+    {
+      "type": "shell",
+      "environment_vars": [
+        "BUILD_NAME={{user `build_name`}}"
+      ],
+      "script": "./packer/files/bootstrap-flatcar.sh",
+      "execute_command": "sudo -S -E {{.Vars}} bash '{{.Path}}'",
+      "only": ["flatcar-stable"]
+    },
     {
       "type": "ansible",
       "playbook_file": "./ansible/node.yml",
@@ -83,6 +95,12 @@
         "--extra-vars",
         "{{user `ansible_extra_vars`}}"
       ]
+    }
+  ],
+  "post-processors": [
+    {
+      "type": "vagrant",
+      "only": ["flatcar-stable"]
     }
   ]
 }

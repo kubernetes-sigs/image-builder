@@ -1,0 +1,23 @@
+{
+  "build_name": "flatcar-{{env `FLATCAR_CHANNEL`}}-{{env `FLATCAR_VERSION`}}",
+  "channel_name": "{{env `FLATCAR_CHANNEL`}}",
+  "distro_name": "flatcar",
+  "os_display_name": "Flatcar Container Linux ({{env `FLATCAR_CHANNEL`}} channel release {{env `FLATCAR_VERSION`}})",
+  "guest_os_type": "linux-64",
+  "iso_url": "https://{{env `FLATCAR_CHANNEL`}}.release.flatcar-linux.net/amd64-usr/{{env `FLATCAR_VERSION`}}/flatcar_production_iso_image.iso",
+  "iso_checksum": "https://{{env `FLATCAR_CHANNEL`}}.release.flatcar-linux.net/amd64-usr/{{env `FLATCAR_VERSION`}}/flatcar_production_iso_image.iso.DIGESTS.asc",
+  "iso_checksum_type": "file",
+  "release_version": "{{env `FLATCAR_VERSION`}}",
+  "ansible_extra_vars": "ansible_python_interpreter=/opt/bin/python",
+  "boot_command_prefix": "curl -sLo .ssh/authorized_keys https://raw.githubusercontent.com/hashicorp/vagrant/master/keys/vagrant.pub<enter>curl -sLo /tmp/ignition.json https://raw.githubusercontent.com/flatcar-linux/flatcar-packer-qemu/master/ignition-vagrant.json<enter>sed -i 's/\"name\": \"vagrant\"/\"name\": \"builder\"/' /tmp/ignition.json<enter>sudo flatcar-install -d /dev/sda -C {{user `channel_name`}} -V {{user `release_version`}} -i /tmp/ignition.json<enter>sudo reboot<enter><wait3m>",
+  "boot_wait": "120s",
+  "containerd_cri_socket": "/run/docker/libcontainerd/docker-containerd.sock",
+  "crictl_source_type": "http",
+  "kubernetes_cni_source_type": "http",
+  "kubernetes_source_type": "http",
+  "python_path": "/opt/bin/builder-env/site-packages",
+  "shutdown_command": "shutdown -P now",
+  "systemd_prefix": "/etc/systemd",
+  "sysusr_prefix": "/opt",
+  "sysusrlocal_prefix": "/opt"
+}

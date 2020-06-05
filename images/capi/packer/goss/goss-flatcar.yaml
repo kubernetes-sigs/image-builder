@@ -1,0 +1,7 @@
+service:
+  containerd:
+    enabled: true
+    running: true
+command:
+  crictl ps:
+    exit-status: 0

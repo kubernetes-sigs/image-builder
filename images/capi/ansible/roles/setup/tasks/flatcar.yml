@@ -12,14 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- import_tasks: debian.yml
-  when: ansible_os_family == "Debian"
+- name: Fetch /etc/os-release
+  raw: cat /etc/os-release
+  register: os_release
+  changed_when: false
+  # This command should always run, even in check mode
+  check_mode: false
+  environment: {}
 
-- import_tasks: flatcar.yml
-  when: ansible_os_family == "Flatcar"
-
-- import_tasks: redhat.yml
-  when: ansible_os_family == "RedHat"
-
-- import_tasks: photon.yml
-  when: ansible_os_family == "VMware Photon OS"
+- include_tasks: bootstrap-flatcar.yml
+  when: '"Flatcar" in os_release.stdout'

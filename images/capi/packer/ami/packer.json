@@ -39,6 +39,7 @@
     "kubernetes_semver": null,
     "kubernetes_source_type": null,
     "manifest_output": "manifest.json",
+    "python_path": "",
     "skip_profile_validation": "false",
     "snapshot_groups": "all",
     "snapshot_users": "",
@@ -114,6 +115,14 @@
         "while [ ! -f /var/lib/cloud/instance/boot-finished ]; do echo 'Waiting for cloud-init...'; sleep 1; done",
         "sudo apt-get -qq update && sudo DEBIAN_FRONTEND=noninteractive apt-get -qqy install python python-pip"
       ]
+    },
+    {
+      "type": "shell",
+      "environment_vars": [
+        "BUILD_NAME={{user `build_name`}}"
+      ],
+      "script": "./packer/files/bootstrap-flatcar.sh",
+      "execute_command": "sudo -S -E {{.Vars}} bash '{{.Path}}'"
     },
     {
       "type": "ansible",

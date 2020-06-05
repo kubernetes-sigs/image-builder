@@ -19,10 +19,10 @@
     dest: /tmp/crictl.tar.gz
     mode: 0600
 
-- name: Create /usr/local/bin directory
+- name: Create "{{ sysusrlocal_prefix }}/bin" directory
   file:
     state: directory
-    path: /usr/local/bin
+    path: "{{ sysusrlocal_prefix }}/bin"
     mode: 0755
     owner: root
     group: root
@@ -31,7 +31,7 @@
   unarchive:
     remote_src: True
     src: /tmp/crictl.tar.gz
-    dest: /usr/local/bin
+    dest: "{{ sysusrlocal_prefix }}/bin"
     extra_opts:
       - --no-overwrite-dir
 

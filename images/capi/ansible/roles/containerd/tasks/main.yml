@@ -39,6 +39,45 @@
     dest: /
     extra_opts:
       - --no-overwrite-dir
+  when: ansible_os_family != "Flatcar"
+
+- name: unpack containerd for Flatcar into /opt
+  unarchive:
+    remote_src: True
+    src: /tmp/containerd.tar.gz
+    dest: /opt
+    exclude:
+      - ./usr/local/bin/containerd
+      - ./usr/local/bin/containerd-stress
+      - ./usr/local/bin/critest
+      - ./usr/local/sbin/runc
+      - ./etc
+      - ./opt
+    extra_opts:
+      - --no-overwrite-dir
+      - --strip=3
+  when: ansible_os_family == "Flatcar"
+
+- name: unpack containerd for Flatcar into /etc
+  unarchive:
+    remote_src: True
+    src: /tmp/containerd.tar.gz
+    dest: /
+    exclude:
+      - ./etc/systemd/system/containerd.service
+      - ./etc/containerd/config.toml
+      - ./usr
+      - ./opt
+    extra_opts:
+      - --no-overwrite-dir
+  when: ansible_os_family == "Flatcar"
+
+- name: Create systemd unit file for containerd
+  template:
+    dest: /etc/systemd/system/containerd.service
+    src: etc/systemd/system/containerd-flatcar.service
+    mode: 0600
+  when: ansible_os_family == "Flatcar"
 
 # Remove /opt/cni directory, as we will install cni later
 - name: delete /opt/cni directory
@@ -62,6 +101,7 @@
     dest: /etc/systemd/system/containerd.service.d/boot-order.conf
     src: etc/systemd/system/containerd.service.d/boot-order.conf
     mode: 0644
+  when: ansible_os_family != "Flatcar"
 
 - name: Create containerd memory pressure drop in file
   template:

@@ -1,3 +1,35 @@
+## template: jinja
+
+{% if ansible_os_family == "Flatcar" %}
+# persistent data location
+root = "/var/lib/containerd"
+# runtime state information
+state = "/run/docker/libcontainerd/containerd"
+# set containerd as a subreaper on linux when it is not running as PID 1
+subreaper = true
+# set containerd's OOM score
+oom_score = -999
+
+# grpc configuration
+[grpc]
+address = "/run/docker/libcontainerd/docker-containerd.sock"
+# socket uid
+uid = 0
+# socket gid
+gid = 0
+
+[plugins.linux]
+# shim binary name/path
+shim = "containerd-shim"
+# runtime binary name/path
+runtime = "runc"
+# do not use a shim when starting containers, saves on memory but
+# live restore is not supported
+no_shim = false
+# display shim logs in the containerd daemon's log output
+shim_debug = true
+
+{% else %}
 # Use config version 2 to enable new configuration fields.
 # Config file is parsed as version 1 by default.
 version = 2
@@ -5,5 +37,7 @@ version = 2
 [plugins]
   [plugins."io.containerd.grpc.v1.cri"]
     sandbox_image = "{{ containerd_pause_image }}"
+
+{% endif %}
     
 {{containerd_additional_settings | b64decode}}
