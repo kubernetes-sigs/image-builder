@@ -76,6 +76,7 @@
     {
       "type": "ansible",
       "playbook_file": "./ansible/node.yml",
+      "user": "builder",
       "ansible_env_vars": [
         "ANSIBLE_SSH_ARGS='{{user `existing_ansible_ssh_args`}} -o IdentitiesOnly=yes'",
         "ANSIBLE_REMOTE_TEMP='/tmp/.ansible/'"
