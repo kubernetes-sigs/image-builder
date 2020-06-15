@@ -13,6 +13,25 @@ The image is built using KVM hypervisor.
 - [Packer](https://www.packer.io/intro/getting-started/install.html)
 - [Ansible](http://docs.ansible.com/ansible/latest/intro_installation.html) version >= 2.8.0
 
+### Prerequisites for QCOW2
+
+This section assumes Ubuntu 18.04 LTS.
+
+#### Installing packages to use qemu-img
+
+```bash
+# apt install qemu-kvm libvirt-bin qemu-utils
+```
+
+#### Adding your user to the kvm group
+
+```bash
+$ sudo usermod -a -G kvm <yourusername>
+$ sudo chown root:kvm /dev/kvm
+```
+
+Then exit and log back in to make the change take place.
+
 ## Building Images
 
 ### Building QCOW2 Image
