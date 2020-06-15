@@ -120,7 +120,7 @@
   - { path: /root/.ssh/authorized_keys }
   - { path: "/home/{{ ansible_env.SUDO_USER }}/.ssh/authorized_keys" }
 
-- name: Remove and recreate /var/log
+- name: Remove and recreate /var/log and daily log folder.
   file:
     state: "{{ item.state }}"
     path: "{{ item.path }}"
@@ -130,6 +130,7 @@
   loop:
   - { path: /var/log, state: absent }
   - { path: /var/log, state: directory }
+  - { path: /var/log/sa, state: directory }
 
 - name: Create a log directory for kube-apiserver audit logs
   file:

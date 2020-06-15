@@ -7,6 +7,7 @@
     "aws_profile": "",
     "aws_region": "",
     "iam_instance_profile": "",
+    "skip_profile_validation": "false",
     "build_timestamp": "{{timestamp}}",
     "disable_public_repos": "false",
     "encrypted": "false",
@@ -34,6 +35,7 @@
     "kubernetes_deb_gpg_key": null,
     "kubernetes_rpm_gpg_check": null,
     "kubernetes_container_registry": null,
+    "ami_description": "Cluster API base image designed for {{user `kubernetes_semver`}}",
     "existing_ansible_ssh_args": "{{env `ANSIBLE_SSH_ARGS`}}",
     "ami_groups": "all",
     "ami_users": "",
@@ -43,9 +45,12 @@
     "snapshot_users": "",
     "ami_regions": "ap-south-1,eu-west-3,eu-west-2,eu-west-1,ap-northeast-2,ap-northeast-1,sa-east-1,ca-central-1,ap-southeast-1,ap-southeast-2,eu-central-1,us-east-1,us-east-2,us-west-1,us-west-2",
     "vpc_id": "",
-    "subnet_id": ""
+    "subnet_id": "",
+    "manifest_output": "manifest.json",
+    "goss_url": "https://github.com/aelsabbahy/goss/releases/download/v0.3.2/goss-linux-amd64"
   },
-  "builders": [{
+  "builders": [
+    {
       "name": "ubuntu-1804",
       "type": "amazon-ebs",
       "instance_type": "t3.small",
@@ -63,6 +68,7 @@
       "ami_name": "capa-ami-ubuntu-18.04-{{user `kubernetes_deb_version` | clean_resource_name}}-{{user `build_timestamp`}}",
       "ami_groups": "{{user `ami_groups`}}",
       "ami_users": "{{user `ami_users`}}",
+      "ami_description": "{{user `ami_description`}}",
       "snapshot_groups": "{{user `snapshot_groups`}}",
       "snapshot_users": "{{user `snapshot_users`}}",
       "encrypt_boot": "{{user `encrypted`}}",
@@ -73,6 +79,7 @@
       "region": "{{ user `aws_region` }}",
       "secret_key": "{{user `aws_secret_key`}}",
       "iam_instance_profile": "{{user `iam_instance_profile`}}",
+      "skip_profile_validation": "{{user `skip_profile_validation`}}",
       "ssh_username": "ubuntu",
       "vpc_id": "{{ user `vpc_id` }}",
       "subnet_id": "{{ user `subnet_id` }}",
@@ -84,7 +91,8 @@
         "distribution_release": "bionic",
         "distribution_version": "18.04",
         "kubernetes_version": "{{user `kubernetes_semver`}}",
-        "kubernetes_cni_version": "{{user `kubernetes_cni_semver`}}"
+        "kubernetes_cni_version": "{{user `kubernetes_cni_semver`}}",
+        "containerd_version": "{{user `containerd_version`}}"
       }
     },
     {
@@ -105,6 +113,7 @@
       "ami_name": "capa-ami-centos-7-{{user `kubernetes_deb_version` | clean_resource_name}}-{{user `build_timestamp`}}",
       "ami_groups": "{{user `ami_groups`}}",
       "ami_users": "{{user `ami_users`}}",
+      "ami_description": "{{user `ami_description`}}",
       "snapshot_groups": "{{user `snapshot_groups`}}",
       "snapshot_users": "{{user `snapshot_users`}}",
       "encrypt_boot": "{{user `encrypted`}}",
@@ -116,6 +125,7 @@
       "region": "{{ user `aws_region` }}",
       "secret_key": "{{user `aws_secret_key`}}",
       "iam_instance_profile": "{{user `iam_instance_profile`}}",
+      "skip_profile_validation": "{{user `skip_profile_validation`}}",
       "ssh_username": "centos",
       "vpc_id": "{{ user `vpc_id` }}",
       "subnet_id": "{{ user `subnet_id` }}",
@@ -127,7 +137,8 @@
         "distribution_release": "Core",
         "distribution_version": "7",
         "kubernetes_version": "{{user `kubernetes_semver`}}",
-        "kubernetes_cni_version": "{{user `kubernetes_cni_semver`}}"
+        "kubernetes_cni_version": "{{user `kubernetes_cni_semver`}}",
+        "containerd_version": "{{user `containerd_version`}}"
       }
     },
     {
@@ -148,6 +159,7 @@
       "ami_name": "capa-ami-amazon-2-{{user `kubernetes_deb_version` | clean_resource_name}}-{{user `build_timestamp`}}",
       "ami_groups": "{{user `ami_groups`}}",
       "ami_users": "{{user `ami_users`}}",
+      "ami_description": "{{user `ami_description`}}",
       "snapshot_groups": "{{user `snapshot_groups`}}",
       "snapshot_users": "{{user `snapshot_users`}}",
       "encrypt_boot": "{{user `encrypted`}}",
@@ -158,6 +170,7 @@
       "region": "{{ user `aws_region` }}",
       "secret_key": "{{user `aws_secret_key`}}",
       "iam_instance_profile": "{{user `iam_instance_profile`}}",
+      "skip_profile_validation": "{{user `skip_profile_validation`}}",
       "ssh_username": "ec2-user",
       "vpc_id": "{{ user `vpc_id` }}",
       "subnet_id": "{{ user `subnet_id` }}",
@@ -169,19 +182,19 @@
         "distribution_release": "Amazon Linux 2",
         "distribution_version": "2",
         "kubernetes_version": "{{user `kubernetes_semver`}}",
-        "kubernetes_cni_version": "{{user `kubernetes_cni_semver`}}"
+        "kubernetes_cni_version": "{{user `kubernetes_cni_semver`}}",
+        "containerd_version": "{{user `containerd_version`}}"
       }
     }
   ],
-  "provisioners": [{
+  "provisioners": [
+    {
       "type": "shell",
       "inline": [
         "while [ ! -f /var/lib/cloud/instance/boot-finished ]; do echo 'Waiting for cloud-init...'; sleep 1; done",
         "sudo apt-get -qq update && sudo DEBIAN_FRONTEND=noninteractive apt-get -qqy install python python-pip"
       ],
-      "only": [
-        "ubuntu-1804"
-      ]
+      "only": ["ubuntu-1804"]
     },
     {
       "type": "ansible",
@@ -199,10 +212,20 @@
     },
     {
       "type": "goss",
+      "url": "{{user `goss_url`}}",
       "use_sudo": true,
-      "tests": [
-        "packer/goss/goss.yaml"
-      ]
+      "tests": ["packer/goss/goss.yaml"]
+    }
+  ],
+  "post-processors": [
+    {
+      "type": "manifest",
+      "output": "{{user `manifest_output`}}",
+      "custom_data": {
+        "kubernetes_version": "{{user `kubernetes_semver`}}",
+        "kubernetes_cni_version": "{{user `kubernetes_cni_semver`}}",
+        "containerd_version": "{{user `containerd_version`}}"
+      }
     }
   ]
 }

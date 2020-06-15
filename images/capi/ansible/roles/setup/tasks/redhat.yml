@@ -17,6 +17,7 @@
     name: "{{ redhat_epel_rpm }}"
     state: present
     lock_timeout: 60
+  when: redhat_epel_rpm != ""
 
 - import_tasks: rpm_repos.yml
 
