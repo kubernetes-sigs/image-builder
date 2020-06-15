@@ -39,6 +39,7 @@
     "existing_ansible_ssh_args": "{{env `ANSIBLE_SSH_ARGS`}}",
     "ami_groups": "all",
     "ami_users": "",
+    "redhat_epel_rpm": "https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm",
     "reenable_public_repos": "true",
     "remove_extra_repos": "false",
     "snapshot_groups": "all",
