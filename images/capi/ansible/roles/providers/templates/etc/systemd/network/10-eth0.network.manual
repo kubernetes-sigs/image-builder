@@ -1,0 +1,8 @@
+[Match]
+Name=eth0
+[Network]
+LinkLocalAddressing=no
+DHCP=ipv4
+[DHCP]
+UseDomains=true
+ClientIdentifier=mac

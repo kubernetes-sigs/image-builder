@@ -33,6 +33,7 @@
   # a reboot of Photon is generally very fast so this is fine for now.
 - name: Reboot after distro sync
   reboot:
+    post_reboot_delay: "{{ post_reboot_delay }}"
   when: distro.changed
 
 - name: Concatenate the Photon RPMs

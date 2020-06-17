@@ -13,7 +13,7 @@ The `make deps-azure` target will test that Ansible, Packer, and `jq` are instal
 
 - An Azure account
 - The Azure CLI installed and configured
-- Set environment variables for `AZURE_SUBSCRIPTION_ID`, `AZURE_CLIENT_ID`, `AZURE_CLIENT_SECRET`
+- Set environment variables for `AZURE_SUBSCRIPTION_ID`, `AZURE_CLIENT_ID`, `AZURE_CLIENT_SECRET`, `AZURE_LOCATION`
 
 ## Building Images
 

@@ -22,3 +22,5 @@ extra_rpms: ""
 
 disable_public_repos: false
 extra_repos: ""
+
+post_reboot_delay: 30

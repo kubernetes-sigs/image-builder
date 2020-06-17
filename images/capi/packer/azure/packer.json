@@ -8,6 +8,7 @@
     "disable_public_repos": "false",
     "extra_debs": "",
     "extra_repos": "",
+    "extra_rpms": "",
     "azure_location": null,
     "vm_size": "",
     "build_timestamp": "{{timestamp}}",
@@ -33,8 +34,17 @@
     "kubernetes_rpm_gpg_check": null,
     "kubernetes_container_registry": null,
     "existing_ansible_ssh_args": "{{env `ANSIBLE_SSH_ARGS`}}",
+    "cloud_environment_name": "Public",
     "reenable_public_repos": "true",
-    "remove_extra_repos": "false"
+    "remove_extra_repos": "false",
+    "photon_image_url": "https://photon3.blob.core.windows.net/vhds/photon-azure-3.0-a9bc127.vhd",
+    "custom_role": "",
+    "custom_role_name": "",
+    "http_proxy": "",
+    "https_proxy": "",
+    "headless": "true",
+    "no_proxy": "",
+    "redhat_epel_rpm": "https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm"
   },
   "builders": [
     {
@@ -53,6 +63,7 @@
       "capture_name_prefix": "capi-{{user `build_timestamp`}}",
       "storage_account": "{{user `storage_account_name`}}",
       "location": "{{user `azure_location`}}",
+      "cloud_environment_name": "{{user `cloud_environment_name`}}",
       "ssh_username": "packer",
       "azure_tags": {
         "build_timestamp": "{{user `build_timestamp`}}",
@@ -85,12 +96,38 @@
         ]
       },
       "location": "{{user `azure_location`}}",
+      "cloud_environment_name": "{{user `cloud_environment_name`}}",
       "ssh_username": "packer",
       "azure_tags": {
         "build_timestamp": "{{user `build_timestamp`}}",
         "distribution": "ubuntu",
         "distribution_release": "bionic",
         "distribution_version": "1804",
+        "kubernetes_version": "{{user `kubernetes_semver`}}"
+      }
+    },
+    {
+      "name": "vhd-photon-3",
+      "type": "azure-arm",
+      "os_type": "Linux",
+      "os_disk_size_gb": "5",
+      "image_url": "{{user `photon_image_url`}}",
+      "subscription_id": "{{user `subscription_id`}}",
+      "client_id": "{{user `client_id`}}",
+      "client_secret": "{{user `client_secret`}}",
+      "vm_size": "{{user `vm_size`}}",
+      "resource_group_name": "{{user `resource_group_name`}}",
+      "build_resource_group_name": "{{user `resource_group_name`}}",
+      "capture_container_name": "{{user `capture_container_name`}}",
+      "capture_name_prefix": "capi-{{user `build_timestamp`}}",
+      "storage_account": "{{user `storage_account_name`}}",
+      "cloud_environment_name": "{{user `cloud_environment_name`}}",
+      "ssh_username": "builder",
+      "azure_tags": {
+        "build_timestamp": "{{user `build_timestamp`}}",
+        "distribution": "photon",
+        "distribution_release": "3",
+        "distribution_version": "3",
         "kubernetes_version": "{{user `kubernetes_semver`}}"
       }
     }
@@ -101,7 +138,8 @@
       "inline": [
         "while [ ! -f /var/lib/cloud/instance/boot-finished ]; do echo 'Waiting for cloud-init...'; sleep 1; done",
         "sudo apt-get -qq update && sudo DEBIAN_FRONTEND=noninteractive apt-get -qqy install python python-pip"
-      ]
+      ],
+      "only": ["sig-ubuntu-1804", "vhd-ubuntu-1804"]
     },
     {
       "type": "ansible",
@@ -115,8 +153,29 @@
         "--extra-vars",
         "{{user `ansible_common_vars`}}",
         "--extra-vars",
-        "{{user `ansible_extra_vars`}}"
+        "{{user `ansible_extra_vars`}}",
+        "--extra-vars",
+        "azure_local=True"
       ]
+    }
+  ],
+  "post-processors": [
+    {
+      "type": "manifest",
+      "output": "./packer-manifest.json",
+      "strip_path": true,
+      "custom_data": {
+        "build_name": "{{user `build_name`}}",
+        "build_timestamp": "{{user `build_timestamp`}}",
+        "build_date": "{{isotime}}",
+        "build_type": "node",
+        "containerd_version": "{{user `containerd_version`}}",
+        "custom_role": "{{user `custom_role`}}",
+        "kubernetes_cni_semver": "{{user `kubernetes_cni_semver`}}",
+        "kubernetes_semver": "{{user `kubernetes_semver`}}",
+        "kubernetes_source_type": "{{user `kubernetes_source_type`}}",
+        "os_name": "{{user `distro_name`}}"
+      }
     }
   ]
 }

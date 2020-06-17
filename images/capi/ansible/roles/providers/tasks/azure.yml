@@ -12,13 +12,54 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- name: install Azure clients
+- name: Install Azure client RPM packages on PhotonOS
+  command: tdnf install {{ packages }} --nogpgcheck -y
+  vars:
+    packages: "python-pyasn1 WALinuxAgent"
+  when: ansible_os_family == "VMware Photon OS"
+
+- name: install Azure clients through pip3
   pip:
     executable: pip3
     name: "{{ packages }}"
   vars:
     packages:
       - azure-cli
+  when: ansible_distribution == "Ubuntu" or ansible_os_family == "VMware Photon OS"
+
+- name: Add Microsoft signing key for RPM
+  rpm_key:
+    state: present
+    key: https://packages.microsoft.com/keys/microsoft.asc
+  when: ansible_os_family == "RedHat"
+
+- name: Add Azure CLI repository for RPM
+  yum_repository:
+    name: azure-cli
+    description: azure-cli
+    file: azure-cli
+    enabled: true
+    baseurl: https://packages.microsoft.com/yumrepos/azure-cli
+    gpgcheck: "{{ ansible_os_family == 'RedHat'|bool }}"
+    gpgkey: https://packages.microsoft.com/keys/microsoft.asc
+  when: ansible_os_family == "RedHat"
+
+- name: Refresh yum after repo addition since new repository is added
+  shell: 
+    cmd: yum updateinfo --enablerepo=azure-cli
+    warn: false
+  when: ansible_os_family == "RedHat"
+
+- name: Ansible yum install azure-cli, python-pyasn1, and WALinuxAgent
+  yum:
+    name:
+    - python-pyasn1
+    - WALinuxAgent
+    - azure-cli
+    enablerepo: azure-cli
+    update_cache: yes
+    state: latest
+  when: ansible_os_family == "RedHat"
 
 - name: Ansible apt install chrony
   apt:
@@ -31,14 +72,14 @@
     path: /etc/chrony/chrony.conf
     create: yes
     line: refclock PHC /dev/ptp0 poll 3 dpoll -2 offset 0
-  when: ansible_distribution == "Ubuntu"  
+  when: ansible_distribution == "Ubuntu"
 
 - name: Ensure makestep parameter set as per Azure recommendation
   lineinfile:
     path: /etc/chrony/chrony.conf
     regexp: '^makestep'
     line: makestep 1.0 -1
-  when: ansible_distribution == "Ubuntu"  
+  when: ansible_distribution == "Ubuntu"
 
 - name: Enable chrony.service
   systemd:
@@ -46,4 +87,20 @@
     state: started
     daemon_reload: yes
     name: chrony.service
-  when: ansible_distribution == "Ubuntu"  
+  when: ansible_distribution == "Ubuntu"
+
+- name: Make sure device file exists
+  template:
+    src: etc/systemd/network/10-eth0.network.manual
+    dest: /etc/systemd/network/10-eth0.network.manual
+    owner: systemd-network
+    group: systemd-network
+    mode: '0644'
+  when: ansible_os_family == "VMware Photon OS"
+
+- name: enable waagent service
+  systemd:
+    name: waagent
+    enabled: yes
+    state: started
+  when: ansible_os_family == "RedHat" or ansible_os_family == "VMware Photon OS"
