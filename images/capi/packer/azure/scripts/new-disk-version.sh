@@ -34,7 +34,7 @@ do
 done
 
 echo "Getting pub..."
-(set -x ; curl -fsSL https://github.com/devigned/pub/releases/download/v0.2.0/pub_v0.2.0_linux_amd64.tar.gz -o pub; tar -xzf pub)
+(set -x ; curl -fsSL https://github.com/devigned/pub/releases/download/v0.2.3/pub_v0.2.3_linux_amd64.tar.gz -o pub; tar -xzf pub)
 
 echo "SKU publishing info:"
 cat $SKU_INFO
