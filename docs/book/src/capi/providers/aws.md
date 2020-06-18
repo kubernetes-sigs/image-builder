@@ -26,23 +26,6 @@ make deps-ami
 
 ## Building Images
 
-### Build Variables
-
-The following variables can be overriden when building images using the `-var` option when calling `packer build`:
-
-| Variable               | Default   | Description                   |
-| ---------------------- | --------- | ----------------------------- |
-| kubernetes_version     | 1.13.6-00 | Kubernetes Version to install |
-| kubernetes_cni_version | 0.8.6-00  | CNI Version to install        |
-
-For example, to build all images for use with Kubernetes 1.14.0 for build version 1:
-
-```sh
-packer build -var kubernetes_version=1.14.0-00
-```
-
-There are additional variables that may be set that affect the behavior of specific builds or packer post-processors. `packer inspect packer.json` will list all available variables and their default values.
-
 ### Building private AMIs
 
 Pass in the `-var ami_groups=""` and `-var snapshot_groups=""` parameters to

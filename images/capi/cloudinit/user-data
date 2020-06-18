@@ -230,7 +230,7 @@ write_files:
       etcd: {}
       imageRepository: k8s.gcr.io
       kind: ClusterConfiguration
-      kubernetesVersion: 1.16.2
+      kubernetesVersion: 1.16.11
       networking:
         dnsDomain: cluster.local
         podSubnet: 100.96.0.0/11
