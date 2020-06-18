@@ -22,7 +22,7 @@
   when: kubernetes_source_type == "pkg" and ansible_os_family == "VMware Photon OS"
 
 - import_tasks: url.yml
-  when: kubernetes_source_type == "http" and kubernetes_cni_source_type == "http"
+  when: kubernetes_source_type == "http"
 
 - name: Ensure that the kubelet is running
   service:

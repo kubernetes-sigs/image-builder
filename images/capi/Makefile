@@ -97,10 +97,9 @@ endif
 # they need to.
 
 # A list of variable files given to Packer to configure things like the versions
-# of Kubernetes, CNI, and ContainerD to install. Any additional files from the
+# of Kubernetes and ContainerD to install. Any additional files from the
 # environment are appended.
 COMMON_NODE_VAR_FILES :=	packer/config/kubernetes.json \
-					packer/config/cni.json \
 					packer/config/containerd.json \
 					packer/config/ansible-args.json
 

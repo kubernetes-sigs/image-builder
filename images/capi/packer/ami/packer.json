@@ -18,11 +18,6 @@
     "containerd_version": null,
     "containerd_sha256": null,
     "containerd_url": "https://storage.googleapis.com/cri-containerd-release/cri-containerd-{{user `containerd_version`}}.linux-amd64.tar.gz",
-    "kubernetes_cni_rpm_version": null,
-    "kubernetes_cni_deb_version": null,
-    "kubernetes_cni_semver": null,
-    "kubernetes_cni_source_type": null,
-    "kubernetes_cni_http_source": null,
     "kubernetes_semver": null,
     "kubernetes_source_type": null,
     "kubernetes_load_additional_imgs": null,
@@ -92,7 +87,6 @@
         "distribution_release": "bionic",
         "distribution_version": "18.04",
         "kubernetes_version": "{{user `kubernetes_semver`}}",
-        "kubernetes_cni_version": "{{user `kubernetes_cni_semver`}}",
         "containerd_version": "{{user `containerd_version`}}"
       }
     },
@@ -138,7 +132,6 @@
         "distribution_release": "Core",
         "distribution_version": "7",
         "kubernetes_version": "{{user `kubernetes_semver`}}",
-        "kubernetes_cni_version": "{{user `kubernetes_cni_semver`}}",
         "containerd_version": "{{user `containerd_version`}}"
       }
     },
@@ -183,7 +176,6 @@
         "distribution_release": "Amazon Linux 2",
         "distribution_version": "2",
         "kubernetes_version": "{{user `kubernetes_semver`}}",
-        "kubernetes_cni_version": "{{user `kubernetes_cni_semver`}}",
         "containerd_version": "{{user `containerd_version`}}"
       }
     }
@@ -224,7 +216,6 @@
       "output": "{{user `manifest_output`}}",
       "custom_data": {
         "kubernetes_version": "{{user `kubernetes_semver`}}",
-        "kubernetes_cni_version": "{{user `kubernetes_cni_semver`}}",
         "containerd_version": "{{user `containerd_version`}}"
       }
     }

@@ -29,7 +29,6 @@ The `images/capi/packer/config` directory includes several JSON files that defin
 | File | Description |
 |------|-------------|
 | `packer/config/ansible-args.json` | A common set of variables that are sent to the Ansible playbook |
-| `packer/config/cni.json` | The version of Kubernetes CNI to install |
 | `packer/config/containerd.json` | The version of containerd to install and customizations specific to the containerd runtime |
 | `packer/config/kubernetes.json` | The version of Kubernetes to install |
 

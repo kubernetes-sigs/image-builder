@@ -134,7 +134,6 @@ def main():
         ovf = "%s-kube-%s.ovf" % (build_data['build_name'], build_data['kubernetes_semver'])
         ova_manifest = "%s-kube-%s.mf" % (build_data['build_name'], build_data['kubernetes_semver'])
         ova = "%s-kube-%s.ova" % (build_data['build_name'], build_data['kubernetes_semver'])
-        data['CNI_VERSION'] = build_data['kubernetes_cni_semver']
         data['CONTAINERD_VERSION'] = build_data['containerd_version']
         data['KUBERNETES_SEMVER'] = build_data['kubernetes_semver']
         data['KUBERNETES_SOURCE_TYPE'] = build_data['kubernetes_source_type']
@@ -369,7 +368,6 @@ ${EULA}
       <Category>Cluster API Provider (CAPI)</Category>
       <Property ovf:userConfigurable="false" ovf:value="${BUILD_TIMESTAMP}" ovf:type="string" ovf:key="BUILD_TIMESTAMP"/>
       <Property ovf:userConfigurable="false" ovf:value="${BUILD_DATE}" ovf:type="string" ovf:key="BUILD_DATE"/>
-      <Property ovf:userConfigurable="false" ovf:value="${CNI_VERSION}" ovf:type="string" ovf:key="CNI_VERSION"/>
       <Property ovf:userConfigurable="false" ovf:value="${CONTAINERD_VERSION}" ovf:type="string" ovf:key="CONTAINERD_VERSION"/>
       <Property ovf:userConfigurable="false" ovf:value="${CUSTOM_ROLE}" ovf:type="string" ovf:key="CUSTOM_ROLE"/>
       <Property ovf:userConfigurable="false" ovf:value="${IB_VERSION}" ovf:type="string" ovf:key="IMAGE_BUILDER_VERSION"/>
