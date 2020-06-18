@@ -33,7 +33,7 @@ The following variables can be overriden when building images using the `-var` o
 | Variable               | Default   | Description                   |
 | ---------------------- | --------- | ----------------------------- |
 | kubernetes_version     | 1.13.6-00 | Kubernetes Version to install |
-| kubernetes_cni_version | 0.7.5-00  | CNI Version to install        |
+| kubernetes_cni_version | 0.8.6-00  | CNI Version to install        |
 
 For example, to build all images for use with Kubernetes 1.14.0 for build version 1:
 
