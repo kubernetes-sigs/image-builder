@@ -27,6 +27,8 @@ The `vsphere` builder supports building against a remote VMware vSphere using st
 
 ### Prerequisites for vSphere builder
 
+Packer version >= 1.6.0 is required (older versions still work for building from remote ESXi and locally options).
+
 Complete the `vsphere.json` configuration file with credentials and informations specific to the remote vSphere hypervisor used to build the `ova` file.
 This file must have the following format (`cluster` can be replace by `host`):
 ```
