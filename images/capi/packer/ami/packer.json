@@ -22,6 +22,7 @@
     "extra_rpms": "",
     "goss_url": "https://github.com/aelsabbahy/goss/releases/download/v0.3.2/goss-linux-amd64",
     "iam_instance_profile": "",
+    "ib_version": "{{env `IB_VERSION`}}",
     "kms_key_id": "",
     "kubernetes_cni_deb_version": null,
     "kubernetes_cni_http_source": null,
@@ -91,7 +92,8 @@
         "containerd_version": "{{user `containerd_version`}}",
         "distribution": "{{user `distribution`}}",
         "distribution_release": "{{user `distribution_release`}}",
-        "distribution_version": "user `distribution_version`",
+        "distribution_version": "{{user `distribution_version`}}",
+        "image_builder_version": "{{user `ib_version`}}",
         "kubernetes_cni_version": "{{user `kubernetes_cni_semver`}}",
         "kubernetes_version": "{{user `kubernetes_semver`}}",
         "source_ami": "{{user `source_ami`}}"
