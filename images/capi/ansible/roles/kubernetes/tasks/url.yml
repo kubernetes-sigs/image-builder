@@ -33,7 +33,7 @@
 
 - name: Download CNI tarball
   get_url:
-    url: "{{ kubernetes_cni_http_source }}/{{ kubernetes_cni_semver }}/cni-plugins-{{ kubernetes_goarch }}-{{ kubernetes_cni_semver }}.tgz"
+    url: "{{ kubernetes_cni_http_source }}/{{ kubernetes_cni_semver }}/cni-plugins-linux-{{ kubernetes_goarch }}-{{ kubernetes_cni_semver }}.tgz"
     checksum: "{{ kubernetes_cni_http_checksum }}"
     dest: /tmp/cni.tar.gz
     mode: 0755
