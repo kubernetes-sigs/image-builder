@@ -136,7 +136,7 @@ HAPROXY_OVA_LOCAL_BUILD_NAMES			:=	$(addprefix haproxy-ova-local-,$(PHOTON_VERSI
 HAPROXY_OVA_ESX_BUILD_NAMES			:=	$(addprefix haproxy-ova-esx-,$(PHOTON_VERSIONS))
 HAPROXY_OVA_VSPHERE_BUILD_NAMES		:=	$(addprefix haproxy-ova-vsphere-,$(PHOTON_VERSIONS))
 
-AMI_BUILD_NAMES			?=	ami-default
+AMI_BUILD_NAMES			?=	ami-centos-7 ami-ubuntu-1804 ami-amazon-2
 GCE_BUILD_NAMES			?=	gce-default
 AZURE_BUILD_NAMES		?=	azure-sig-ubuntu-1804 azure-vhd-ubuntu-1804
 
@@ -185,7 +185,7 @@ $(HAPROXY_OVA_VSPHERE_BUILD_TARGETS):
 
 .PHONY: $(AMI_BUILD_TARGETS)
 $(AMI_BUILD_TARGETS):
-	packer build $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/ami/$(subst build-,,$@).json)" $(PACKER_VAR_FILES) packer/ami/packer.json
+	packer build $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/ami/$(subst build-ami-,,$@).json)" $(PACKER_VAR_FILES) packer/ami/packer.json
 
 .PHONY: $(GCE_BUILD_TARGETS)
 $(GCE_BUILD_TARGETS):
@@ -226,7 +226,9 @@ $(QEMU_CLEAN_TARGETS):
 ## Document dynamic build targets
 ## --------------------------------------
 ##@ Builds
-build-ami-default: ## Builds the AMI default image
+build-ami-amazon-2: ## Builds Amazon-2 Linux AMI
+build-ami-centos-7: ## Builds CentOS 7 AMI
+build-ami-ubuntu-1804: ## Builds Ubuntu 18.04 AMI
 
 build-azure-sig-ubuntu-1804: ## Builds Ubuntu 18.04 Azure managed image in Shared Image Gallery
 build-azure-vhd-ubuntu-1804: ## Builds Ubuntu 18.04 VHD image for Azure
