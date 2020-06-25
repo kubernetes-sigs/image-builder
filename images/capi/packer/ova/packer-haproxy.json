@@ -10,6 +10,7 @@
     "datastore": "",
     "existing_ansible_ssh_args": "{{env `ANSIBLE_SSH_ARGS`}}",
     "folder": "",
+    "ib_version": "{{env `IB_VERSION`}}",
     "output_dir": "./output/{{user `build_version`}}",
     "username": "",
     "vcenter_server": "",
@@ -92,7 +93,7 @@
       "http_directory": "./packer/ova/linux/{{user `distro_name`}}/http/",
       "iso_urls": "{{user `iso_url`}}",
       "iso_checksum": "{{user `iso_checksum_type`}}:{{user `iso_checksum`}}",
-            
+
       "communicator": "ssh",
       "ssh_username": "{{user `ssh_username`}}",
       "ssh_password": "{{user `ssh_password`}}",
@@ -146,6 +147,7 @@
         "build_type": "haproxy",
         "custom_role": "{{user `custom_role`}}",
         "guest_os_type": "{{user `guest_os_type`}}",
+        "ib_version": "{{user `ib_version`}}",
         "vsphere_guest_os_type": "{{user `vsphere_guest_os_type`}}",
         "dataplaneapi_version": "v{{user `dataplaneapi_version`}}",
         "os_name": "{{user `os_display_name`}}"
@@ -158,7 +160,7 @@
         "cd {{user `output_dir`}}",
         "tar xf {{user `build_version`}}.ova",
         "rm {{user `build_version`}}.ova",
-        "GIT_VERSION=`git describe --dirty` ../../hack/image-build-ova.py --stream_vmdk --haproxy --vmx {{user `vmx_version`}} --eula ../../hack/ovf_eula.txt --vmdk_file {{user `build_version`}}-disk1.vmdk"
+        "../../hack/image-build-ova.py --stream_vmdk --haproxy --vmx {{user `vmx_version`}} --eula ../../hack/ovf_eula.txt --vmdk_file {{user `build_version`}}-disk1.vmdk"
       ]
     },
     {
@@ -166,14 +168,14 @@
       "type": "shell-local",
       "inline": [
         "cd {{user `output_dir`}}",
-        "GIT_VERSION=`git describe --dirty` ../../hack/image-build-ova.py --haproxy --vmx {{user `vmx_version`}} --eula ../../hack/ovf_eula.txt --vmdk_file {{user `build_version`}}-disk-0.vmdk"
+        "../../hack/image-build-ova.py --haproxy --vmx {{user `vmx_version`}} --eula ../../hack/ovf_eula.txt --vmdk_file {{user `build_version`}}-disk-0.vmdk"
       ]
     },
     {
       "name": "local",
       "type": "shell-local",
       "inline": [
-        "GIT_VERSION=`git describe --dirty` ./hack/image-build-ova.py --stream_vmdk --haproxy --vmx {{user `vmx_version`}} --eula ./hack/ovf_eula.txt {{user `output_dir`}}",
+        "./hack/image-build-ova.py --stream_vmdk --haproxy --vmx {{user `vmx_version`}} --eula ./hack/ovf_eula.txt {{user `output_dir`}}",
         "./hack/image-post-create-config.sh {{user `output_dir`}}"
       ]
     }

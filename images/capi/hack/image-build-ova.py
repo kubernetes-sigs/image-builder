@@ -103,11 +103,6 @@ def main():
     # TODO(akutz) Support multiple VMDK files in the OVF/OVA
     vmdk = vmdk_files[0]
 
-    # Get the image-builder version
-    ibv = os.getenv('GIT_VERSION')
-    if ibv is None:
-        ibv = "unknown"
-
     OS_id_map = {"vmware-photon-64": {"id": "36", "version": "", "type": "vmwarePhoton64Guest"},
                  "centos7-64": {"id": "107", "version": "7", "type": "centos7-64"},
                  "ubuntu-64": {"id": "94", "version": "", "type": "ubuntu-64"}}
@@ -123,7 +118,7 @@ def main():
         'OS_ID': OS_id_map[build_data['guest_os_type']]['id'],
         'OS_TYPE': OS_id_map[build_data['guest_os_type']]['type'],
         'OS_VERSION': OS_id_map[build_data['guest_os_type']]['version'],
-        'IB_VERSION': ibv,
+        'IB_VERSION': build_data['ib_version'],
         'DISK_NAME': vmdk['stream_name'],
         'POPULATED_DISK_SIZE': vmdk['size'],
         'STREAM_DISK_SIZE': vmdk['stream_size'],
