@@ -29,6 +29,8 @@ make deps-ami
 From the `images/capi` directory, run `make build-ami-<OS>`, where `<OS>` is
 the desired operating system. The available choices are listed via `make help`.
 
+To build all available OS's, uses the `-all` target. If you want to build them in parallel, use `make -j`. For example, `make -j build-ami-all`.
+
 In the output of a successful `make` command is a list of created AMIs. To
 format them you can copy the output and pipe it through this to get a desired
 table:
