@@ -3,6 +3,10 @@ ubuntu1804:
   distribution: Ubuntu
   distribution_release: bionic
   distribution_version: 18.04
+  digitalocean:
+    image: ubuntu-18-04-x64
+  gce:
+    source_image_family: ubuntu-1804-lts
   docker:
     image: ubuntu
     tag: 18.04
@@ -35,3 +39,54 @@ ubuntu1804:
     image_publisher: Canonical
     image_offer: UbuntuServer
     image_sku: 18.04-LTS
+
+ubuntu2004:
+  ubuntu1804:
+  os: ubuntu
+  distribution: Ubuntu
+  distribution_release: focal fossa
+  distribution_version: 20.04
+  digitalocean:
+    image: ubuntu-20-04-x64
+  gce:
+    source_image_family: ubuntu-2004-lts
+  docker:
+    image: ubuntu
+    tag: 20.04
+  qemu:
+    url: https://cloud-images.ubuntu.com/releases/focal/release-20200625/ubuntu-20.04-server-cloudimg-amd64.img
+    checksum: d75d900f406d073205eff1b3711ea4a9f5cf8a46f9c714e41ce7c8b28ec5fc06
+  iso: &iso
+    url: http://cdimage.ubuntu.com/ubuntu-legacy-server/releases/20.04/release/ubuntu-20.04-legacy-server-amd64.iso
+    checksum: 36f15879bd9dfd061cd588620a164a82972663fdd148cce1f70d57d314c21b73
+    checksumType: sha256
+    ssh_username: ubuntu
+    ssh_password: ubuntu
+    shutdown_command: shutdown -P now
+    os_display_name: Ubuntu 20.04
+    boot_command: <esc><wait><esc><wait><enter><wait>/install/vmlinuz auto console-setup/ask_detect=false console-setup/layoutcode=us console-setup/modelcode=pc105 debconf/frontend=noninteractive debian-installer=en_US fb=false initrd=/install/initrd.gz kbd-chooser/method=us keyboard-configuration/layout=USA keyboard-configuration/variant=USA locale=en_US netcfg/get_domain=local netcfg/get_hostname=localhost grub-installer/bootdev=/dev/sda preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/preseed.cfg  -- <wait><enter><wait>
+  ami: &ami
+    ssh_username: ubuntu
+    source_ami_filter:
+      filters:
+        "virtualization-type": hvm
+        "name": ubuntu/images/*ubuntu-focal-20.04-amd64-server-*
+        "root-device-type": ebs
+        "architecture": x86_64
+      owners:
+        - "099720109477"
+      most_recent: true
+  vmware-iso:
+    <<: *iso
+    os_display_name: Ubuntu 20.04
+    guest_os_type: ubuntu-64
+  vmware-vmx:
+    <<: *iso
+    os_display_name: Ubuntu 20.04
+    guest_os_type: ubuntu-64
+  amazon-ebs:
+    <<: *ami
+  azure:
+    image_publisher: Canonical
+    image_offer: UbuntuServer
+    image_sku: 20.04-LTS

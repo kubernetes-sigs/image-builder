@@ -1,11 +1,48 @@
-centos7:
+centos76: &centos76
   os: centos
   distribution: CentOS
   distribution_release: Core
   distribution_version: 7
-  iso: &iso
+  docker:
+    image: centos
+    tag: 7.6.1810
+  iso: &isocentos76
     url: https://mirrors.edge.kernel.org/centos/7.6.1810/isos/x86_64/CentOS-7-x86_64-Minimal-1810.iso
     checksum: 38d5d51d9d100fd73df031ffd6bd8b1297ce24660dc8c13a3b8b4534a4bd291c
+  boot_command: <tab> text ks=/7/ks.cfg<enter><wait>
+  shutdown_command: sys-unconfig
+  os_display_name: CentOS 7
+  guest_os_type: centos-64
+  ami:
+    filters:
+      virtualization-type: hvm
+      name: CentOS Linux 7 x86_64 HVM EBS ENA*
+      root-device-type: ebs
+      architecture: x86_64
+    owners:
+      - "410186602215"
+    most_recent: true
+  vmware-iso:
+    <<: *isocentos76
+  vmware-vmx:
+    <<: *isocentos76
+  amazon-ebs:
+    <<: *isocentos76
+
+centos78: &centos78
+  os: centos
+  distribution: CentOS
+  distribution_release: Core
+  distribution_version: 7
+  docker:
+    image: centos
+    tag: 7.8.2003
+  qemu:
+    url: https://cloud.centos.org/centos/7/images/CentOS-7-x86_64-GenericCloud-2003.qcow2
+    checksum: 1db30c9c272fb37b00111b93dcebff16c278384755bdbe158559e9c240b73b80
+  iso: &isocentos78
+    url: https://mirrors.edge.kernel.org/centos/7.8.2003/isos/x86_64/CentOS-7-x86_64-Minimal-2003.iso
+    checksum: 659691c28a0e672558b003d223f83938f254b39875ee7559d1a4a14c79173193
   boot_command: <tab> text ks=/7/ks.cfg<enter><wait>
   shutdown_command: sys-unconfig
   os_display_name: CentOS 7
@@ -20,8 +57,48 @@ centos7:
       - "410186602215"
     most_recent: true
   vmware-iso:
-    <<: *iso
+    <<: *centos78
   vmware-vmx:
-    <<: *iso
+    <<: *centos78
   amazon-ebs:
-    <<: *ami
+    <<: *centos78
+
+centos:
+  <<: *centos78
+
+centos82: &centos82
+  os: centos
+  distribution: CentOS
+  distribution_release: Core
+  distribution_version: 8
+  docker:
+    image: centos
+    tag: 8.2.2004
+  qemu:
+    url: https://cloud.centos.org/centos/8/x86_64/images/CentOS-8-GenericCloud-8.2.2004-20200611.2.x86_64.qcow2
+    checksum: d8984b9baee57b127abce310def0f4c3c9d5b3cea7ea8451fc4ffcbc9935b640
+  iso: &isocentos82
+    url: https://mirrors.edge.kernel.org/centos/8/isos/x86_64/CentOS-8.2.2004-x86_64-minimal.iso
+    checksum: 47ab14778c823acae2ee6d365d76a9aed3f95bb8d0add23a06536b58bb5293c0
+    checksumType: sha256
+  boot_command: <tab> text ks=/7/ks.cfg<enter><wait>
+  shutdown_command: sys-unconfig
+  os_display_name: CentOS 8
+  guest_os_type: centos-64
+  ami: &ami
+    filters:
+      virtualization-type: hvm
+      name: CentOS Linux 8 x86_64 HVM EBS ENA*
+      root-device-type: ebs
+      architecture: x86_64
+    owners:
+      - "410186602215"
+    most_recent: true
+  vmware-iso:
+    <<: *isocentos82
+  vmware-vmx:
+    <<: *isocentos82
+  amazon-ebs:
+    <<: *isocentos82
+
+centos8: *centos82

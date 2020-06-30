@@ -1,0 +1,23 @@
+photon3:
+  distro_name: photon
+
+  vmx:
+    os_display_name: VMware Photon OS 64-bit
+    guest_os_type: vmware-photon-64
+    vsphere_guest_os_type: vmwarePhoton64Guest
+
+  docker:
+    image: photon
+    tag: 3.0-20200626
+
+  ova:
+    url: http://dl.bintray.com/vmware/photon/3.0/GA/ova/photon-hw11-3.0-26156e2.ova
+    checksum: 5394b482ef10261d5bb732601572539c2ddba3ed
+    checksumType: sha1
+
+  iso: &iso
+    url: https://packages.vmware.com/photon/3.0/Rev2/iso/Update2/photon-minimal-3.0-a0f216d.iso
+    checksum: a5acf94d564f63a174a9de200e04ab6cfe2451f2
+    checksumType: sha1
+    shutdown_command: shutdown  now
+    boot_command: <esc><wait> vmlinuz initrd=initrd.img root/dev/ram0 loglevel=3 photon.media=cdrom ks=/3/ks.json<enter><wait>
