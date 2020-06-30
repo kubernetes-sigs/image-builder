@@ -1,0 +1,50 @@
+# Copyright 2019 The Kubernetes Authors.
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+
+# http://www.apache.org/licenses/LICENSE-2.0
+
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+---
+- name: add epel repo
+  yum:
+    name: "https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm"
+    state: present
+    lock_timeout: 60
+
+- name: prereqs for Azure CLI. Attention! This installs a compiler on the system
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - libffi-devel
+    - gcc
+    - openssl-devel
+    - "python3-pip"
+    - cloud-init 
+  become: true
+
+- name: install virtual environment
+  command: pip3 install virtualenv 
+  become: true
+
+- name: create virtual environment
+  command: python3 -m virtualenv /azure-cli 
+  become: true
+
+- name: install azure cli
+  command: /azure-cli/bin/python -m pip --no-cache-dir install azure-cli==2.3.1 
+  become: true
+
+- name: copy az helper script
+  template:
+    src: az
+    dest: /usr/bin/az
+    mode: 0755
+  become: true
