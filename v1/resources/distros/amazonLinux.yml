@@ -1,0 +1,16 @@
+amazonLinux2:
+  os: amazonLinux
+  distribution: Amazon Linux
+  distribution_release: Amazon Linux 2
+  distribution_version: 2
+  ami: &ami
+    filters:
+      virtualization-type: hvm
+      name: amzn2-ami-hvm-2*
+      root-device-type: ebs
+      architecture: x86_64
+    owners:
+      - "amazon"
+    most_recent: true
+  amazon-ebs:
+    <<: *ami
