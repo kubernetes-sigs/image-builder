@@ -1,0 +1,37 @@
+ubuntu1804:
+  os: ubuntu
+  distribution: Ubuntu
+  distribution_release: bionic
+  distribution_version: 18.04
+  docker:
+    image: ubuntu
+    tag: 18.04
+  qemu:
+    url: https://cloud-images.ubuntu.com/releases/18.04/release-20190617/ubuntu-18.04-server-cloudimg-amd64.img
+  iso: &iso
+    url: http://old-releases.ubuntu.com/releases/18.04.2/ubuntu-18.04.2-server-amd64.iso
+    checksum: a2cb36dc010d98ad9253ea5ad5a07fd6b409e3412c48f1860536970b073c98f5
+    checksumType: sha256
+    shutdown_command: shutdown -P now
+    boot_command: <esc><wait><esc><wait><enter><wait>/install/vmlinuz auto console-setup/ask_detect=false console-setup/layoutcode=us console-setup/modelcode=pc105 debconf/frontend=noninteractive debian-installer=en_US fb=false initrd=/install/initrd.gz kbd-chooser/method=us keyboard-configuration/layout=USA keyboard-configuration/variant=USA locale=en_US netcfg/get_domain=local netcfg/get_hostname=localhost grub-installer/bootdev=/dev/sda preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/preseed.cfg <enter>
+  ami: &ami
+    ssh_username: ubuntu
+    source_ami_filter:
+      filters:
+        "virtualization-type": hvm
+        "name": ubuntu/images/*ubuntu-bionic-18.04-amd64-server-*
+        "root-device-type": ebs
+        "architecture": x86_64
+      owners:
+        - "099720109477"
+      most_recent: true
+  vmware-iso:
+    <<: *iso
+  vmware-vmx:
+    <<: *iso
+  amazon-ebs:
+    <<: *ami
+  azure:
+    image_publisher: Canonical
+    image_offer: UbuntuServer
+    image_sku: 18.04-LTS
