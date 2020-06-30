@@ -1,8 +1,13 @@
 amazon-ebs:
   instance_type: t3.small
   region: us-east-1
+  ami_regions: ap-south-1,eu-west-3,eu-west-2,eu-west-1,ap-northeast-2,ap-northeast-1,sa-east-1,ca-central-1,ap-southeast-1,ap-southeast-2,eu-central-1,us-east-1,us-east-2,us-west-1,us-west-2
 gce:
-  zone: us-central-1
+  zone: us-central-1-a
+  project_id: "{{env `GCP_PROJECT_ID`}}"
+  machine_type: n1-standard-1
+  # image_family:
+  # image_name
 vmware-iso:
   version: 13
   disk_adapter_type: scsi
@@ -17,3 +22,18 @@ vmware-vmx:
   cpus: "2"
   disk_size: "20480"
   memory: "2048"
+
+azure:
+  azure_location: "{{env `AZURE_LOCATION`}}"
+  vm_size: "Standard_B2ms"
+  subscription_id: "{{env `AZURE_SUBSCRIPTION_ID`}}"
+  client_id: "{{env `AZURE_CLIENT_ID`}}"
+  client_secret: "{{env `AZURE_CLIENT_SECRET`}}"
+
+digitalocean:
+  type: digitalocean
+  region: nyc1
+  size: s-1vcpu-1gb
+  api_token: "{{env `DIGITALOCEAN_ACCESS_TOKEN`}}"
+  snapshot_regions:
+    ["nyc1", "sgp1", "lon1", "nyc3", "ams3", "fra1", "tor1", "sfo2", "blr1"]
