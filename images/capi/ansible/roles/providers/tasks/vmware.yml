@@ -76,3 +76,11 @@
     state: stopped
     enabled: false
   when: ansible_os_family == "Debian"
+ 
+- name: Create provider vmtools config drop-in file
+  copy:
+    src: files/etc/vmware-tools/tools.conf
+    dest: /etc/vmware-tools/tools.conf
+    owner: root
+    group: root
+    mode: 0644
