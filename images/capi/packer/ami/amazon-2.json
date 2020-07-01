@@ -1,0 +1,10 @@
+{
+  "ami_filter_name": "amzn2-ami-hvm-2*",
+  "ami_filter_owners": "amazon",
+  "build_name": "amazon-2",
+  "distribution": "Amazon Linux",
+  "distribution_release": "Amazon Linux 2",
+  "distribution_version": "2",
+  "source_ami": "",
+  "ssh_username": "ec2-user"
+}
