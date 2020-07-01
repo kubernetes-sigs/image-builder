@@ -91,6 +91,7 @@
 
       "vm_name": "{{user `build_version`}}",
       "datastore": "{{user `datastore`}}",
+      "datacenter": "{{user `datacenter`}}",
       "folder": "{{user `folder`}}",
       "host":     "{{user `host`}}",
       "convert_to_template": "{{user `convert_to_template`}}",

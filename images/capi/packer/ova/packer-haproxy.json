@@ -69,6 +69,7 @@
       "insecure_connection": "{{user `insecure_connection`}}",
 
       "vm_name": "{{user `build_version`}}",
+      "datacenter": "{{user `datacenter`}}",
       "datastore": "{{user `datastore`}}",
       "folder": "{{user `folder`}}",
       "host":     "{{user `host`}}",
