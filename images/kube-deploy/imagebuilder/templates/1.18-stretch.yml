@@ -1,8 +1,8 @@
 ---
 {{ if eq .Cloud "aws" }}
-name: k8s-1.17-debian-{system.release}-{system.architecture}-{provider.virtualization}-ebs-{%Y}-{%m}-{%d}
+name: k8s-1.18-debian-{system.release}-{system.architecture}-{provider.virtualization}-ebs-{%Y}-{%m}-{%d}
 {{ else }}
-name: k8s-1.17-debian-{system.release}-{system.architecture}-{%Y}-{%m}-{%d}
+name: k8s-1.18-debian-{system.release}-{system.architecture}-{%Y}-{%m}-{%d}
 {{ end }}
 provider:
 {{ if eq .Cloud "aws" }}
@@ -16,7 +16,7 @@ provider:
 {{ else }}
   name: {{ .Cloud }}
 {{ end }}
-  description: Kubernetes 1.17 Base Image - Debian {system.release} {system.architecture}
+  description: Kubernetes 1.18 Base Image - Debian {system.release} {system.architecture}
 bootstrapper:
   workspace: /target
   # tarball speeds up development, but for prod builds we want to be 100% sure...
@@ -146,22 +146,20 @@ plugins:
        # - [ 'chroot', '{root}', 'apt-get', 'remove', '--yes', 'unattended-upgrades' ]
 
        # Preload some files to our cache, in the hope we can avoid some downloads
-       - [ 'chroot', '{root}', 'mkdir', '-p', '/var/cache/nodeup/packages' ]
+       - [ 'chroot', '{root}', 'mkdir', '-p', '/var/cache/nodeup/archives' ]
 
-       - [ 'wget', 'https://download.docker.com/linux/debian/dists/stretch/pool/stable/amd64/docker-ce_19.03.11~3-0~debian-stretch_amd64.deb', '-O', '{root}/var/cache/nodeup/packages/docker-ce.deb' ]
-       - [ '/bin/sh', '-c', 'cd {root}/var/cache/nodeup/packages; echo "e5a6cde8a9e5249bdfbad4d9c38ab23f22dd55595ad5f6a1c11cfbc9ed3129b6  docker-ce.deb" | sha256sum -c -' ]
-       - [ 'wget', 'https://download.docker.com/linux/debian/dists/stretch/pool/stable/amd64/docker-ce-cli_19.03.11~3-0~debian-stretch_amd64.deb', '-O', '{root}/var/cache/nodeup/packages/docker-ce-cli.deb' ]
-       - [ '/bin/sh', '-c', 'cd {root}/var/cache/nodeup/packages; echo "4b2644b31c66537155334941a46219515a937aa97b0d9f9c074380062f73216d  docker-ce-cli.deb" | sha256sum -c -' ]
-       - [ 'wget', 'https://download.docker.com/linux/debian/dists/stretch/pool/stable/amd64/containerd.io_1.2.13-2_amd64.deb', '-O', '{root}/var/cache/nodeup/packages/containerd.io.deb' ]
-       - [ '/bin/sh', '-c', 'cd {root}/var/cache/nodeup/packages; echo "c2f6d8070ccf3813644cd465c2640c0e8f2967ecd01ccecbdcfa4b2acc9c9c92  containerd.io.deb" | sha256sum -c -' ]
+       - [ 'wget', 'https://download.docker.com/linux/static/stable/x86_64/docker-19.03.11.tgz', '-O', '{root}/var/cache/nodeup/archives/docker-ce' ]
+       - [ '/bin/sh', '-c', 'cd {root}/var/cache/nodeup/archives; echo "0f4336378f61ed73ed55a356ac19e46699a995f2aff34323ba5874d131548b9e  docker-ce" | sha256sum -c -' ]
+       - [ 'wget', 'https://storage.googleapis.com/cri-containerd-release/cri-containerd-1.2.13.linux-amd64.tar.gz', '-O', '{root}/var/cache/nodeup/archives/containerd.io' ]
+       - [ '/bin/sh', '-c', 'cd {root}/var/cache/nodeup/archives; echo "92d6ae6c60f6b068652b31811ce23d650ec0f6cc1e618ec9ae23db9321956258  containerd.io" | sha256sum -c -' ]
 
        - [ 'wget', 'https://storage.googleapis.com/k8s-artifacts-cni/release/v0.8.6/cni-plugins-linux-amd64-v0.8.6.tgz', '-O', '{root}/var/cache/nodeup/sha256:994fbfcdbb2eedcfa87e48d8edb9bb365f4e2747a7e47658482556c12fd9b2f5_https___storage_googleapis_com_k8s-artifacts-cni_release_v0_8_6_cni-plugins-linux-amd64-v0_8_6_tgz' ]
        - [ '/bin/sh', '-c', 'cd {root}/var/cache/nodeup; echo "994fbfcdbb2eedcfa87e48d8edb9bb365f4e2747a7e47658482556c12fd9b2f5  sha256:994fbfcdbb2eedcfa87e48d8edb9bb365f4e2747a7e47658482556c12fd9b2f5_https___storage_googleapis_com_k8s-artifacts-cni_release_v0_8_6_cni-plugins-linux-amd64-v0_8_6_tgz" | sha256sum -c -' ]
 
-       - [ 'wget', 'https://storage.googleapis.com/kubernetes-release/release/v1.17.8/bin/linux/amd64/kubectl', '-O', '{root}/var/cache/nodeup/sha256:01283cbc2b09555cbf2a71c162097552a62a4fd48a0a4c06e34e9b853b815486_https___storage_googleapis_com_kubernetes-release_release_v1_17_8_bin_linux_amd64_kubectl' ]
-       - [ '/bin/sh', '-c', 'cd {root}/var/cache/nodeup; echo "01283cbc2b09555cbf2a71c162097552a62a4fd48a0a4c06e34e9b853b815486  sha256:01283cbc2b09555cbf2a71c162097552a62a4fd48a0a4c06e34e9b853b815486_https___storage_googleapis_com_kubernetes-release_release_v1_17_8_bin_linux_amd64_kubectl" | sha256sum -c -' ]
-       - [ 'wget', 'https://storage.googleapis.com/kubernetes-release/release/v1.17.8/bin/linux/amd64/kubelet', '-O', '{root}/var/cache/nodeup/sha256:b39081fb40332ae12d262b04dc81630e5c6550fb196f09b60f3d726283dff17f_https___storage_googleapis_com_kubernetes-release_release_v1_17_8_bin_linux_amd64_kubelet' ]
-       - [ '/bin/sh', '-c', 'cd {root}/var/cache/nodeup; echo "b39081fb40332ae12d262b04dc81630e5c6550fb196f09b60f3d726283dff17f  sha256:b39081fb40332ae12d262b04dc81630e5c6550fb196f09b60f3d726283dff17f_https___storage_googleapis_com_kubernetes-release_release_v1_17_8_bin_linux_amd64_kubelet" | sha256sum -c -' ]
+       - [ 'wget', 'https://storage.googleapis.com/kubernetes-release/release/v1.18.5/bin/linux/amd64/kubectl', '-O', '{root}/var/cache/nodeup/sha256:69d9b044ffaf544a4d1d4b40272f05d56aaf75d7e3c526d5418d1d3c78249e45_https___storage_googleapis_com_kubernetes-release_release_v1_18_5_bin_linux_amd64_kubectl' ]
+       - [ '/bin/sh', '-c', 'cd {root}/var/cache/nodeup; echo "69d9b044ffaf544a4d1d4b40272f05d56aaf75d7e3c526d5418d1d3c78249e45  sha256:69d9b044ffaf544a4d1d4b40272f05d56aaf75d7e3c526d5418d1d3c78249e45_https___storage_googleapis_com_kubernetes-release_release_v1_18_5_bin_linux_amd64_kubectl" | sha256sum -c -' ]
+       - [ 'wget', 'https://storage.googleapis.com/kubernetes-release/release/v1.18.5/bin/linux/amd64/kubelet', '-O', '{root}/var/cache/nodeup/sha256:8c328f65d30f0edd0fd4f529b09d6fc588cfb7b524d5c9f181e36de6e494e19c_https___storage_googleapis_com_kubernetes-release_release_v1_18_5_bin_linux_amd64_kubelet' ]
+       - [ '/bin/sh', '-c', 'cd {root}/var/cache/nodeup; echo "8c328f65d30f0edd0fd4f529b09d6fc588cfb7b524d5c9f181e36de6e494e19c  sha256:8c328f65d30f0edd0fd4f529b09d6fc588cfb7b524d5c9f181e36de6e494e19c_https___storage_googleapis_com_kubernetes-release_release_v1_18_5_bin_linux_amd64_kubelet" | sha256sum -c -' ]
 
        # Unlike earlier images, we no longer preinstall docker, instead we try to prepopulate the download cache.
        # Preinstalling docker caused problems with the iptables/nftables transition, also with containerd vs docker skew.
