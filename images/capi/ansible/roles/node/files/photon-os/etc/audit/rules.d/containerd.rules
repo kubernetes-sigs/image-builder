@@ -1,0 +1,10 @@
+-w /var/lib/containerd/ -p rwxa -k containerd
+-w /etc/containerd/ -p rwxa -k containerd
+-w /etc/systemd/system/containerd.service -p rwxa -k containerd
+-w /etc/systemd/system/containerd.service.d/ -p rwxa -k containerd
+-w /run/containerd/ -p rwxa -k containerd
+-w /usr/local/bin/containerd-shim -p rwxa -k containerd
+-w /usr/local/bin/containerd-shim-runc-v1 -p rwxa -k containerd
+-w /usr/local/bin/containerd-shim-runc-v2 -p rwxa -k containerd
+-w /usr/local/sbin/runc -p rwxa -k containerd
+-w /usr/local/bin/containerd -p rwxa -k containerd
