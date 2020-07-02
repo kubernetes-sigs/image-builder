@@ -89,7 +89,7 @@ packages:
     - btrfs-tools
 
 {{ if eq .Cloud "aws" }}
-    # cloud-initramfs-growroot will resize the master partition on boot
+    # cloud-initramfs-growroot will resize the main partition on boot
     - cloud-initramfs-growroot
 
     # So we can install the latest awscli
