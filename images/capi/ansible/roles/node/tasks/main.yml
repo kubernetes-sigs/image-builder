@@ -73,3 +73,10 @@
     sysctl_set: yes
     reload: yes
     sysctl_file: "{{ sysctl_conf_file }}"
+
+- name: Disable swap memory
+  shell: |
+    swapoff -a
+
+- name: Edit fstab file to disable swap
+  shell: sed -ri '/\sswap\s/s/^#?/#/' /etc/fstab
