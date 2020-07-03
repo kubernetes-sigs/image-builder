@@ -1,0 +1,10 @@
+{
+  "ami_filter_name": "photon-ami-*",
+  "ami_filter_owners": "798022768933",
+  "build_name": "photon-3",
+  "distribution": "Photon",
+  "distribution_release": "Core",
+  "distribution_version": "3",
+  "source_ami": "",
+  "ssh_username": "root"
+}

@@ -113,6 +113,17 @@
       ]
     },
     {
+      "type": "shell",
+      "environment_vars": [
+        "BUILD_NAME={{user `build_name`}}"
+      ],
+      "inline": [
+        "if [ $BUILD_NAME != \"photon-3\" ]; then exit 0; fi",
+        "while [ ! -f /var/lib/cloud/instance/boot-finished ]; do echo 'Waiting for cloud-init...'; sleep 1; done",
+        "useradd -U -d /home/builder -m --groups wheel builder # photon3 expects builder user to be present"
+      ]
+    },
+    {
       "type": "ansible",
       "playbook_file": "./ansible/node.yml",
       "ansible_env_vars": [
