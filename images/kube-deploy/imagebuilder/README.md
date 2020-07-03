@@ -69,7 +69,7 @@ Build code: `make`
 
 Run the image builder:
 ```
-cd ${GOPATH}/src/sigs.k8s.io/image-builder/images/kube-deploy/imagebuilder`
+cd ${GOPATH}/src/sigs.k8s.io/image-builder/images/kube-deploy/imagebuilder
 make
 ${GOPATH}/bin/imagebuilder --config aws.yaml --v=8
 ```
