@@ -1,10 +1,34 @@
 package:
   cloud-init:
     installed: true
+  kubeadm:
+    installed: true
+  kubelet:
+    installed: true
+  kubectl:
+    installed: true
+  kubernetes-cni:
+    installed: true
 service:
   containerd:
     enabled: true
     running: true
+  kubelet:
+    enabled: true
+    running: false
 command:
   crictl ps:
     exit-status: 0
+    stdout: []
+    stderr: []
+    timeout: 0
+  kubeadm init phase preflight:
+    exit-status: 0
+    stdout: []
+    stderr: []
+    timeout: 0
+process:
+  containerd:
+    running: true
+  dockerd:
+    running: false
