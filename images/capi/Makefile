@@ -108,7 +108,8 @@ endif
 COMMON_NODE_VAR_FILES :=	packer/config/kubernetes.json \
 					packer/config/cni.json \
 					packer/config/containerd.json \
-					packer/config/ansible-args.json
+					packer/config/ansible-args.json \
+					packer/config/goss-args.json
 
 COMMON_HAPROXY_VAR_FILES := packer/ova/packer-common.json \
 					packer/config/ansible-args.json

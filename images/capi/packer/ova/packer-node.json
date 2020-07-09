@@ -155,7 +155,15 @@
         "--extra-vars",
         "{{user `ansible_extra_vars`}}"
       ]
-   }
+   },{
+      "type": "goss",
+      "arch": "{{user `goss_arch`}}",
+      "format": "{{user `goss_format`}}",
+      "tests": ["packer/goss/goss.yaml"],
+      "url": "{{user `goss_url`}}",
+      "use_sudo": true,
+      "version": "{{user `goss_version`}}"
+    }
   ],
   "post-processors": [
     {
