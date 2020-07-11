@@ -12,6 +12,7 @@
     "existing_ansible_ssh_args": "{{env `ANSIBLE_SSH_ARGS`}}",
     "folder": "",
     "guest_os_type": null,
+    "ib_version": "{{env `IB_VERSION`}}",
     "vsphere_guest_os_type": null,
     "kubernetes_cni_rpm_version": null,
     "kubernetes_cni_deb_version": null,
@@ -90,6 +91,7 @@
 
       "vm_name": "{{user `build_version`}}",
       "datastore": "{{user `datastore`}}",
+      "datacenter": "{{user `datacenter`}}",
       "folder": "{{user `folder`}}",
       "host":     "{{user `host`}}",
       "convert_to_template": "{{user `convert_to_template`}}",
@@ -168,6 +170,7 @@
         "containerd_version": "{{user `containerd_version`}}",
         "custom_role": "{{user `custom_role`}}",
         "guest_os_type": "{{user `guest_os_type`}}",
+        "ib_version": "{{user `ib_version`}}",
         "vsphere_guest_os_type": "{{user `vsphere_guest_os_type`}}",
         "kubernetes_cni_semver": "{{user `kubernetes_cni_semver`}}",
         "kubernetes_semver": "{{user `kubernetes_semver`}}",
@@ -182,7 +185,7 @@
         "cd {{user `output_dir`}}",
         "tar xf {{user `build_version`}}.ova",
         "rm {{user `build_version`}}.ova",
-        "GIT_VERSION=`git describe --dirty` ../../hack/image-build-ova.py --stream_vmdk --node --vmx {{user `vmx_version`}} --eula ../../hack/ovf_eula.txt --vmdk_file {{user `build_version`}}-disk1.vmdk"
+        "../../hack/image-build-ova.py --stream_vmdk --node --vmx {{user `vmx_version`}} --eula ../../hack/ovf_eula.txt --vmdk_file {{user `build_version`}}-disk1.vmdk"
       ]
     },
     {
@@ -190,14 +193,14 @@
       "type": "shell-local",
       "inline": [
         "cd {{user `output_dir`}}",
-        "GIT_VERSION=`git describe --dirty` ../../hack/image-build-ova.py --node --vmx {{user `vmx_version`}} --eula ../../hack/ovf_eula.txt --vmdk_file {{user `build_version`}}-disk-0.vmdk"
+        "../../hack/image-build-ova.py --node --vmx {{user `vmx_version`}} --eula ../../hack/ovf_eula.txt --vmdk_file {{user `build_version`}}-disk-0.vmdk"
       ]
     },
     {
       "name": "local",
       "type": "shell-local",
       "inline": [
-        "GIT_VERSION=`git describe --dirty` ./hack/image-build-ova.py --stream_vmdk --node --vmx {{user `vmx_version`}} --eula ./hack/ovf_eula.txt {{user `output_dir`}}",
+        "./hack/image-build-ova.py --stream_vmdk --node --vmx {{user `vmx_version`}} --eula ./hack/ovf_eula.txt {{user `output_dir`}}",
         "./hack/image-post-create-config.sh {{user `output_dir`}}"
       ]
     }

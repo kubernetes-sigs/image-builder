@@ -46,6 +46,7 @@ common_debs:
 - socat
 
 common_photon_rpms:
+- audit
 - conntrack-tools
 - distrib-compat
 - ebtables

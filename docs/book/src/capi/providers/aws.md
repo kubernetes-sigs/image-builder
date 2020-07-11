@@ -26,22 +26,76 @@ make deps-ami
 
 ## Building Images
 
-### Building private AMIs
+From the `images/capi` directory, run `make build-ami-<OS>`, where `<OS>` is
+the desired operating system. The available choices are listed via `make help`.
 
-Pass in the `-var ami_groups=""` and `-var snapshot_groups=""` parameters to
-ensure you end up with a private AMI.
+To build all available OS's, uses the `-all` target. If you want to build them in parallel, use `make -j`. For example, `make -j build-ami-all`.
 
-#### Encrypted AMIs
+In the output of a successful `make` command is a list of created AMIs. To
+format them you can copy the output and pipe it through this to get a desired
+table:
 
-Set `-var encrypted=true` for encrypted AMIs to allow for use with EC2 instances
-backed by encrypted root volumes. You must also set `-var ami_groups=""` and
-`-var snapshot_groups=""` for this to work.
+```sh
+echo 'us-fake-1: ami-123
+us-fake-2: ami-234' | column -t | sed 's/^/| /g' | sed 's/: //g' | sed 's/ami/| ami/g' | sed 's/$/ |/g'
+| us-fake-1 | ami-123 |
+| us-fake-2 | ami-234 |
+```
 
-#### Sharing private AMIs with other AWS accounts
+Note: If making the images public (the default), you must use one of the [Public CentOS images](https://wiki.centos.org/Cloud/AWS) as a base rather than a Marketplace image.
 
-Set `-var ami_users="012345789012,0123456789013"` to make your AMI visible to a
-select number of other AWS accounts, and `-var
-snapshot_users="012345789012,0123456789013"` to allow the EBS snapshot backing
+### Configuration
+
+In addition to the configuration found in `images/capi/packer/config`, the `ami`
+directory includes several JSON files that define the default configuration for
+the different operating systems.
+
+| File | Description |
+|------|-------------|
+| `amazon-2.json` | The settings for the Amazon 2 Linux image |
+| `centos-7.json` | The settings for the CentOS 7 image |
+| `ubuntu-1804.json` | The settings for the Ubuntu 18.04 image |
+
+#### Common AWS options
+
+This table lists several common options that a user may want to set via
+`PACKER_VAR_FILES` to customize their build behavior.  This is not an exhaustive
+list, and greater explanation can be found in the
+[Packer documentation for the Amazon AMI builder](https://www.packer.io/docs/builders/amazon.html).
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `ami_groups` | A list of groups that have access to launch the resulting AMI. | `"all"` |
+| `ami_regions` | A list of regions to copy the AMI to. | `"ap-south-1,eu-west-3,eu-west-2,eu-west-1,ap-northeast-2,ap-northeast-1,sa-east-1,ca-central-1,ap-southeast-1,ap-southeast-2,eu-central-1,us-east-1,us-east-2,us-west-1,us-west-2"` |
+| `ami_users` | A list of groups that have access to launch the resulting AMI. | `"all"` |
+| `aws_region` | The AWS region to build the AMI within. | `"us-east-1"` |
+| `encrypted` | Indicates whether or not to encrypt the volume. | `"false"` |
+| `kms_key_id` | ID, alias or ARN of the KMS key to use for boot volume encryption. | `""` |
+| `snapshot_groups` | A list of groups that have access to create volumes from the snapshot. | `""` |
+| `snapshot_users` | A list of groups that have access to create volumes from the snapshot. | `""` |
+
+In the below examples, the parameters can be set via variable file and the use
+of `PACKER_VAR_FILES`. See [Customization](../capi.md#customization) for
+examples.
+
+#### Examples
+
+##### Building private AMIs
+
+Set `ami_groups=""` and `snapshot_groups=""` parameters to
+ensure you end up with a private AMI. Both parameters default to `"all"`.
+
+##### Encrypted AMIs
+
+Set `encrypted=true` for encrypted AMIs to allow for use with EC2 instances
+backed by encrypted root volumes. You must also set `ami_groups=""` and
+`snapshot_groups=""` for this to work.
+
+##### Sharing private AMIs with other AWS accounts
+
+Set `ami_users="012345789012,0123456789013"` to make your AMI visible to a
+select number of other AWS accounts, and
+`snapshot_users="012345789012,0123456789013"` to allow the EBS snapshot backing
 the AMI to be copied.
 
 If you are using encrypted root volumes in multiple accounts, you will want to
@@ -49,17 +103,22 @@ build one unencrypted AMI in a root account, setting `snapshot_users`, and then
 use your own methods to copy the snapshot with encryption turned on into other
 accounts.
 
-### Limiting Images to Build
+##### Limiting AMI Regions
 
-If packer build is run without specifying which images to build, then it will attempt to build all configured images. `packer inspect packer.json` will list the configured builders. The `--only` option can be specified when running `packer build` to limit the images built.
-
-For example, to build only the Ubuntu Bionic image:
+By default images are copied to many of the available AWS regions. See
+`ami_regions` in [AWS options](#common-aws-options) for the default list. The
+list of all available regions can be obtained running:
 
 ```sh
-packer build -only=ubuntu-1804 packer.json
+aws ec2 describe-regions --query "Regions[].{Name:RegionName}" --output text | paste -sd "," -
 ```
 
-### Required Permissions to Build the AWS AMIs
+To limit the regions, provide the `ami_regions` variable as a comma-delimited list of AWS regions.
+
+For example, to build all images in us-east-1 and copy only to us-west-2 set
+`ami_regions="us-west-2"`.
+
+## Required Permissions to Build the AWS AMIs
 
 The [Packer documentation for the Amazon AMI builder](https://www.packer.io/docs/builders/amazon.html) supplies a suggested set of minimum permissions.
 
@@ -105,41 +164,6 @@ The [Packer documentation for the Amazon AMI builder](https://www.packer.io/docs
       "Resource" : "*"
   }]
 }
-```
-
-### Building the AMIs
-
-Building images requires setting additional variables not set by default. The `base-images-us-east-1.json` file is provided as an example.
-
-Note: If making the images public (the default), you must use one of the [Public CentOS images](https://wiki.centos.org/Cloud/AWS) as a base rather than a Marketplace image.
-
-To build the Ubuntu, CentOS, and Amazon Linux 2 AMIs:
-
-```sh
-packer build -var-file ami-default.json packer.json
-```
-
-The output of this command is a list of created AMIs. To format them you can
-copy the output and pipe it through this to get a desired table:
-
-```sh
-echo 'us-fake-1: ami-123
-us-fake-2: ami-234' | column -t | sed 's/^/| /g' | sed 's/: //g' | sed 's/ami/| ami/g' | sed 's/$/ |/g'
-```
-
-By default images are copied to all available AWS regions. The list of all
-available regions can be obtained running:
-
-```sh
-aws ec2 describe-regions --query "Regions[].{Name:RegionName}" --output text | paste -sd "," -
-```
-
-To limit the regions, provide the `ami_regions` variable as a comma-delimited list of AWS regions.
-
-For example, to build all images in us-east-1 and copy only to us-west-2:
-
-```sh
-packer build -var-file base-images-us-east-1.json -var ami_regions='us-west-2'
 ```
 
 ## Testing Images

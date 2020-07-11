@@ -1,0 +1,27 @@
+centos7:
+  os: centos
+  distribution: CentOS
+  distribution_release: Core
+  distribution_version: 7
+  iso: &iso
+    url: https://mirrors.edge.kernel.org/centos/7.6.1810/isos/x86_64/CentOS-7-x86_64-Minimal-1810.iso
+    checksum: 38d5d51d9d100fd73df031ffd6bd8b1297ce24660dc8c13a3b8b4534a4bd291c
+  boot_command: <tab> text ks=/7/ks.cfg<enter><wait>
+  shutdown_command: sys-unconfig
+  os_display_name: CentOS 7
+  guest_os_type: centos-64
+  ami: &ami
+    filters:
+      virtualization-type: hvm
+      name: CentOS Linux 7 x86_64 HVM EBS ENA*
+      root-device-type: ebs
+      architecture: x86_64
+    owners:
+      - "410186602215"
+    most_recent: true
+  vmware-iso:
+    <<: *iso
+  vmware-vmx:
+    <<: *iso
+  amazon-ebs:
+    <<: *ami

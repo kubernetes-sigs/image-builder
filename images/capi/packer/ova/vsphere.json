@@ -3,6 +3,7 @@
     "username":"",
     "password":"",
     "datastore":"",
+    "datacenter":"",
     "folder": "",
     "cluster": "",
     "network": "",
