@@ -19,6 +19,12 @@
 
 - import_tasks: rpm_repos.yml
 
+- name: Disable service and ensure it is masked
+  systemd:
+    name: temp-disk-swapfile
+    enabled: no
+    masked: yes
+
 - name: Remove yum package caches
   yum:
     autoremove: yes
