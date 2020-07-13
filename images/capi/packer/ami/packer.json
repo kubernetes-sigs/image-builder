@@ -129,6 +129,7 @@
       "type": "goss",
       "arch": "{{user `goss_arch`}}",
       "format": "{{user `goss_format`}}",
+      "format_options": "{{user `goss_format_options`}}",
       "tests": ["packer/goss/goss.yaml"],
       "url": "{{user `goss_url`}}",
       "use_sudo": true,
