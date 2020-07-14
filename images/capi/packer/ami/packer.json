@@ -20,7 +20,6 @@
     "extra_debs": "",
     "extra_repos": "",
     "extra_rpms": "",
-    "goss_url": "https://github.com/aelsabbahy/goss/releases/download/v0.3.2/goss-linux-amd64",
     "iam_instance_profile": "",
     "ib_version": "{{env `IB_VERSION`}}",
     "kms_key_id": "",
@@ -128,9 +127,12 @@
     },
     {
       "type": "goss",
+      "arch": "{{user `goss_arch`}}",
+      "format": "{{user `goss_format`}}",
+      "tests": ["packer/goss/goss.yaml"],
       "url": "{{user `goss_url`}}",
       "use_sudo": true,
-      "tests": ["packer/goss/goss.yaml"]
+      "version": "{{user `goss_version`}}"
     }
   ],
   "post-processors": [
