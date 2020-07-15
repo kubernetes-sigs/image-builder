@@ -12,39 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- name: add epel repo
-  yum:
-    name: "https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm"
-    state: present
-    lock_timeout: 60
-
-- name: prereqs for Azure CLI. Attention! This installs a compiler on the system
-  package:
-    name: "{{ item }}"
-    state: present
-  with_items:
-    - libffi-devel
-    - gcc
-    - openssl-devel
-    - "python3-pip"
-    - cloud-init 
+- name: import the Microsoft repository key
+  command: rpm --import https://packages.microsoft.com/keys/microsoft.asc
   become: true
 
-- name: install virtual environment
-  command: pip3 install virtualenv 
-  become: true
-
-- name: create virtual environment
-  command: python3 -m virtualenv /azure-cli 
-  become: true
-
-- name: install azure cli
-  command: /azure-cli/bin/python -m pip --no-cache-dir install azure-cli==2.3.1 
-  become: true
-
-- name: copy az helper script
+- name: copy azure-cli gpg key file
   template:
-    src: az
-    dest: /usr/bin/az
-    mode: 0755
+    src:  azure-cli.repo
+    dest: /etc/yum.repos.d/azure-cli.repo
+    mode: 0644
   become: true
+
+- name: install Azure CLI
+  package:
+    name: azure-cli
+    state: present

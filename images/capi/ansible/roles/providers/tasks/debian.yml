@@ -1,0 +1,50 @@
+# Copyright 2019 The Kubernetes Authors.
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+
+# http://www.apache.org/licenses/LICENSE-2.0
+
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+---
+- name: install Azure clients
+  pip:
+    executable: pip3
+    name: "{{ packages }}"
+  vars:
+    packages:
+      - azure-cli
+  when: ansible_distribution == "Ubuntu"
+
+- name: Ansible apt install chrony
+  apt:
+    name: chrony
+    state: present
+  when: ansible_distribution == "Ubuntu"
+  
+- name: Configure PTP
+  lineinfile:
+    path: /etc/chrony/chrony.conf
+    create: yes
+    line: refclock PHC /dev/ptp0 poll 3 dpoll -2 offset 0
+  when: ansible_distribution == "Ubuntu"
+
+- name: Ensure makestep parameter set as per Azure recommendation
+  lineinfile:
+    path: /etc/chrony/chrony.conf
+    regexp: '^makestep'
+    line: makestep 1.0 -1
+  when: ansible_distribution == "Ubuntu"
+
+- name: Enable chrony.service
+  systemd:
+    enabled: yes
+    state: started
+    daemon_reload: yes
+    name: chrony.service
+  when: ansible_distribution == "Ubuntu"

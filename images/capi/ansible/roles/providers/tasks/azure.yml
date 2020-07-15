@@ -15,39 +15,5 @@
 - import_tasks: redhat.yml
   when: ansible_os_family == "RedHat"
 
-- name: install Azure clients
-  pip:
-    executable: pip3
-    name: "{{ packages }}"
-  vars:
-    packages:
-      - azure-cli
-  when: ansible_distribution == "Ubuntu"
-
-- name: Ansible apt install chrony
-  apt:
-    name: chrony
-    state: present
-  when: ansible_distribution == "Ubuntu"
-  
-- name: Configure PTP
-  lineinfile:
-    path: /etc/chrony/chrony.conf
-    create: yes
-    line: refclock PHC /dev/ptp0 poll 3 dpoll -2 offset 0
-  when: ansible_distribution == "Ubuntu"  
-
-- name: Ensure makestep parameter set as per Azure recommendation
-  lineinfile:
-    path: /etc/chrony/chrony.conf
-    regexp: '^makestep'
-    line: makestep 1.0 -1
-  when: ansible_distribution == "Ubuntu"  
-
-- name: Enable chrony.service
-  systemd:
-    enabled: yes
-    state: started
-    daemon_reload: yes
-    name: chrony.service
-  when: ansible_distribution == "Ubuntu"  
+- import_tasks: debian.yml
+  when: ansible_os_family == "Debian"
