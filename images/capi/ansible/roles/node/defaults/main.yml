@@ -58,6 +58,7 @@ common_photon_rpms:
 - python-netifaces
 - python3-pip
 - python-requests
+- rng-tools
 - socat
 - tar
 - unzip
