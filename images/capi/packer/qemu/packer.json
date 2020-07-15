@@ -56,8 +56,7 @@
       "format": "{{user `format`}}",
       "headless": "{{user `headless`}}",
       "http_directory": "./packer/qemu/linux/{{user `distro_name`}}/http/",
-      "iso_checksum": "{{user `iso_checksum`}}",
-      "iso_checksum_type": "{{user `iso_checksum_type`}}",
+      "iso_checksum": "{{user `iso_checksum_type`}}:{{user `iso_checksum`}}",
       "iso_url": "{{user `iso_url`}}",
       "boot_command": [
         "{{user `boot_command_prefix`}}",
