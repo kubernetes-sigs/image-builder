@@ -1,0 +1,32 @@
+package:
+  cloud-init:
+    installed: true
+  kubeadm:
+    installed: true
+  kubelet:
+    installed: true
+  kubectl:
+    installed: true
+  kubernetes-cni:
+    installed: true
+service:
+  containerd:
+    enabled: true
+    running: true
+  dockerd:
+    enabled: false
+    running: false
+  kubelet:
+    enabled: true
+    running: false
+command:
+  crictl ps:
+    exit-status: 0
+    stdout: []
+    stderr: []
+    timeout: 0
+  crictl images | grep -v 'IMAGE ID' | awk -F' ' '{print $1}' | awk -F'/' '{print $2}' | awk '!seen[$0]++' | sort:
+    exit-status: 0
+    stdout: ["coredns", "etcd", "kube-apiserver", "kube-controller-manager", "kube-proxy", "kube-scheduler", "pause"]
+    stderr: []
+    timeout: 0

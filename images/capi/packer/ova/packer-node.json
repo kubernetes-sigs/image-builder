@@ -160,7 +160,8 @@
       "arch": "{{user `goss_arch`}}",
       "format": "{{user `goss_format`}}",
       "format_options": "{{user `goss_format_options`}}",
-      "tests": ["packer/goss/goss.yaml"],
+      "goss_file": "{{user `goss_entry_file`}}",
+      "tests": ["{{user `goss_tests_dir`}}"],
       "url": "{{user `goss_url`}}",
       "use_sudo": true,
       "version": "{{user `goss_version`}}"
