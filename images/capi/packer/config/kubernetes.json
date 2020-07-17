@@ -11,5 +11,6 @@
   "kubernetes_deb_repo": "\"https://apt.kubernetes.io/ kubernetes-xenial\"",
   "kubernetes_deb_gpg_key": "https://packages.cloud.google.com/apt/doc/apt-key.gpg",
   "kubernetes_container_registry": "k8s.gcr.io",
-  "kubernetes_load_additional_imgs": "false"
+  "kubernetes_load_additional_imgs": "false",
+  "kubeadm_template": "etc/kubeadm.yml"
 }
