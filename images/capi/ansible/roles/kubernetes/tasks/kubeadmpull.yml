@@ -1,7 +1,7 @@
 - name: Create kubeadm config file
   template:
     dest: /etc/kubeadm.yml
-    src: etc/kubeadm.yml
+    src: "{{ kubeadm_template }}"
 
 - name: Kubeadm pull images
   shell: 'kubeadm config images pull --config /etc/kubeadm.yml'

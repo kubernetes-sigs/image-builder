@@ -1,0 +1,57 @@
+debian8:
+  os: debian
+  ami: &ami
+  iso: &iso
+    url: https://saimei.ftp.acc.umu.se/debian-cd/current/amd64/iso-cd/debian-9.9.0-amd64-netinst.iso
+    checksum: d4a22c81c76a66558fb92e690ef70a5d67c685a08216701b15746586520f6e8e
+    boot_command: |
+      <esc><wait>
+      install <wait>
+      preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/preseed.cfg <wait>
+      debian-installer=en_US.UTF-8 <wait>
+      auto <wait>
+      locale=en_US.UTF-8 <wait>
+      kbd-chooser/method=us <wait>
+      keyboard-configuration/xkb-keymap=us <wait>
+      netcfg/get_hostname={{ .Hostname }} <wait>
+      netcfg/get_domain=local <wait>
+      fb=false <wait>
+      debconf/frontend=noninteractive <wait>
+      console-setup/ask_detect=false <wait>
+      console-keymaps-at/keymap=us <wait>
+      <enter><wait>
+  vmware-iso:
+    <<: *iso
+  vmware-vmx:
+    <<: *iso
+  amazon-ebs:
+    <<: *ami
+
+debian9:
+  os: debian
+  ami: &ami
+  iso: &iso
+    url: https://cdimage.debian.org/cdimage/archive/8.10.0/amd64/iso-cd/debian-8.10.0-amd64-netinst.iso
+    checksum: 896cc42998edf65f1db4eba83581941fb2a584f2214976432b841af96b17ccda
+    boot_command: |
+      <esc><wait>
+      install <wait>
+      preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/preseed.cfg <wait>
+      debian-installer=en_US.UTF-8 <wait>
+      auto <wait>
+      locale=en_US.UTF-8 <wait>
+      kbd-chooser/method=us <wait>
+      keyboard-configuration/xkb-keymap=us <wait>
+      netcfg/get_hostname={{ .Hostname }} <wait>
+      netcfg/get_domain=local <wait>
+      fb=false <wait>
+      debconf/frontend=noninteractive <wait>
+      console-setup/ask_detect=false <wait>
+      console-keymaps-at/keymap=us <wait>
+            "<enter><wait>
+  vmware-iso:
+    <<: *iso
+  vmware-vmx:
+    <<: *iso
+  amazon-ebs:
+    <<: *ami

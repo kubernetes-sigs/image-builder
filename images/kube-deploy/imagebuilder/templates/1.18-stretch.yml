@@ -1,0 +1,198 @@
+---
+{{ if eq .Cloud "aws" }}
+name: k8s-1.18-debian-{system.release}-{system.architecture}-{provider.virtualization}-ebs-{%Y}-{%m}-{%d}
+{{ else }}
+name: k8s-1.18-debian-{system.release}-{system.architecture}-{%Y}-{%m}-{%d}
+{{ end }}
+provider:
+{{ if eq .Cloud "aws" }}
+  name: ec2
+  virtualization: hvm
+  enhanced_networking: simple
+{{ else if eq .Cloud "gce" }}
+  name: gce
+  gcs_destination: {{ .GCSDestination }}
+  gce_project: {{ .Project }}
+{{ else }}
+  name: {{ .Cloud }}
+{{ end }}
+  description: Kubernetes 1.18 Base Image - Debian {system.release} {system.architecture}
+bootstrapper:
+  workspace: /target
+  # tarball speeds up development, but for prod builds we want to be 100% sure...
+  # tarball: true
+  # todo: switch to variant: minbase
+system:
+  release: stretch
+  architecture: amd64
+  bootloader: grub
+  charmap: UTF-8
+  locale: en_US
+  timezone: UTC
+volume:
+{{ if eq .Cloud "aws" }}
+  backing: ebs
+{{ else if eq .Cloud "gce" }}
+  backing: raw
+{{ end }}
+  partitions:
+    type: gpt
+    root:
+      filesystem: ext4
+      # We create the FS with more inodes... docker is pretty inode hungry
+      format_command: [ 'mkfs.{fs}', '-i', '4096', '{device_path}' ]
+      size: 8GiB
+packages:
+{{ if eq .Cloud "aws" }}
+  mirror: http://cloudfront.debian.net/debian
+{{ end }}
+  install:
+    # Important utils for administration
+    # if minbase - openssh-server
+
+    # Ensure systemd scripts run on shutdown
+    - acpi-support
+
+    # these packages are generally useful
+    # (and are the ones from the GCE image)
+    - rsync
+    - screen
+    - vim
+
+    # needed for docker
+    - iptables
+    - libapparmor1
+    - libltdl7
+
+    # Handy utilities
+    - htop
+    - tcpdump
+    - iotop
+    - ethtool
+    - sysstat
+
+    # needed for setfacl below
+    - acl
+
+{{ if eq .Cloud "aws" }}
+    # these packages are included in the official AWS image
+    - python-boto
+    - python3-boto
+    - apt-transport-https
+    - lvm2
+    - ncurses-term
+    - parted
+    - cloud-init
+    - cloud-utils
+    - gdisk
+    - systemd
+    - systemd-sysv
+
+    # these packages are included in the official image, but we remove them
+    # awscli : we install from pip instead
+{{ end }}
+
+    # These packages would otherwise be installed during first boot
+    - aufs-tools
+    - curl
+    - python-yaml
+    - git
+    - nfs-common
+    - bridge-utils
+    - logrotate
+    - socat
+    - python-apt
+    - apt-transport-https
+    - unattended-upgrades
+    - lvm2
+    - btrfs-tools
+
+{{ if eq .Cloud "aws" }}
+    # So we can install the latest awscli
+    - python-pip
+{{ end }}
+
+plugins:
+{{ if eq .Cloud "gce" }}
+  ntp:
+    servers:
+    - metadata.google.internal
+{{ else }}
+  ntp: {}
+{{ end }}
+
+{{ if eq .Cloud "aws" }}
+  cloud_init:
+    metadata_sources: Ec2
+    username: admin
+    enable_modules:
+      cloud_init_modules:
+        - {module: growpart, position: 4}
+{{ end }}
+
+  commands:
+    commands:
+{{ if eq .Cloud "aws" }}
+       # Install awscli through python-pip
+       - [ 'chroot', '{root}', 'pip', 'install', 'awscli' ]
+{{ end }}
+
+       # We don't enable unattended upgrades - nodeup can always add it
+       # but if we add it now, there's a race to turn it off
+       # cloud-init depends on unattended-upgrades, so we can't just remove it
+       # Instead we turn them off; we turn them on later
+       - [ 'chroot', '{root}', '/bin/sh', '-c', 'echo "APT::Periodic::Update-Package-Lists \"0\";" > /etc/apt/apt.conf.d/20auto-upgrades' ]
+       - [ 'chroot', '{root}', '/bin/sh', '-c', 'echo "APT::Periodic::Unattended-Upgrade \"0\"; " >> /etc/apt/apt.conf.d/20auto-upgrades' ]
+       # - [ 'chroot', '{root}', 'apt-get', 'remove', '--yes', 'unattended-upgrades' ]
+
+       # Preload some files to our cache, in the hope we can avoid some downloads
+       - [ 'chroot', '{root}', 'mkdir', '-p', '/var/cache/nodeup/archives' ]
+
+       - [ 'wget', 'https://download.docker.com/linux/static/stable/x86_64/docker-19.03.11.tgz', '-O', '{root}/var/cache/nodeup/archives/docker-ce' ]
+       - [ '/bin/sh', '-c', 'cd {root}/var/cache/nodeup/archives; echo "0f4336378f61ed73ed55a356ac19e46699a995f2aff34323ba5874d131548b9e  docker-ce" | sha256sum -c -' ]
+       - [ 'wget', 'https://storage.googleapis.com/cri-containerd-release/cri-containerd-1.2.13.linux-amd64.tar.gz', '-O', '{root}/var/cache/nodeup/archives/containerd.io' ]
+       - [ '/bin/sh', '-c', 'cd {root}/var/cache/nodeup/archives; echo "92d6ae6c60f6b068652b31811ce23d650ec0f6cc1e618ec9ae23db9321956258  containerd.io" | sha256sum -c -' ]
+
+       - [ 'wget', 'https://storage.googleapis.com/k8s-artifacts-cni/release/v0.8.6/cni-plugins-linux-amd64-v0.8.6.tgz', '-O', '{root}/var/cache/nodeup/sha256:994fbfcdbb2eedcfa87e48d8edb9bb365f4e2747a7e47658482556c12fd9b2f5_https___storage_googleapis_com_k8s-artifacts-cni_release_v0_8_6_cni-plugins-linux-amd64-v0_8_6_tgz' ]
+       - [ '/bin/sh', '-c', 'cd {root}/var/cache/nodeup; echo "994fbfcdbb2eedcfa87e48d8edb9bb365f4e2747a7e47658482556c12fd9b2f5  sha256:994fbfcdbb2eedcfa87e48d8edb9bb365f4e2747a7e47658482556c12fd9b2f5_https___storage_googleapis_com_k8s-artifacts-cni_release_v0_8_6_cni-plugins-linux-amd64-v0_8_6_tgz" | sha256sum -c -' ]
+
+       # Unlike earlier images, we no longer preinstall docker, instead we try to prepopulate the download cache.
+       # Preinstalling docker caused problems with the iptables/nftables transition, also with containerd vs docker skew.
+
+       # We perform a full replacement of some grub conf variables:
+       #   GRUB_CMDLINE_LINUX_DEFAULT (add memory cgroup)
+       #   GRUB_TIMEOUT (remove boot delay)
+       # (but leave the old versions commented out for people to see)
+       - [ 'chroot', '{root}', 'touch', '/etc/default/grub' ]
+       - [ 'chroot', '{root}', 'sed', '-i', 's/^GRUB_CMDLINE_LINUX_DEFAULT=/#GRUB_CMDLINE_LINUX_DEFAULT=/g', '/etc/default/grub' ]
+       - [ 'chroot', '{root}', 'sed', '-i', 's/^GRUB_TIMEOUT=/#GRUB_TIMEOUT=/g', '/etc/default/grub' ]
+       - [ 'chroot', '{root}', '/bin/sh', '-c', 'echo "# kubernetes image changes" >> /etc/default/grub' ]
+       - [ 'chroot', '{root}', '/bin/sh', '-c', 'echo "GRUB_CMDLINE_LINUX_DEFAULT=\"cgroup_enable=memory oops=panic panic=10 console=ttyS0 nvme_core.io_timeout=255\"" >> /etc/default/grub' ]
+       - [ 'chroot', '{root}', '/bin/sh', '-c', 'echo "GRUB_TIMEOUT=0" >> /etc/default/grub' ]
+       - [ 'chroot', '{root}', 'update-grub2' ]
+
+       # Update everything to latest versions
+       - [ 'chroot', '{root}', 'apt-get', 'update' ]
+       - [ 'chroot', '{root}', 'apt-get', 'dist-upgrade', '--yes' ]
+
+       # Cleanup packages
+       - [ 'chroot', '{root}', 'apt-get', 'autoremove', '--yes' ]
+
+       # Remove machine-id, so that we regenerate next boot
+       - [ 'chroot', '{root}', '/bin/sh', '-c', 'echo "" > /etc/machine-id' ]
+
+       # Ensure we have cleaned up all our SSH keys
+       - [ 'chroot', '{root}', 'bin/sh', '-c', 'shred --remove /etc/ssh/ssh_host_*_key' ]
+       - [ 'chroot', '{root}', 'bin/sh', '-c', 'shred --remove /etc/ssh/ssh_host_*_key.pub' ]
+       # Workaround bootstrap-vz bug where it errors if all keys are removed
+       - [ 'chroot', '{root}', 'bin/sh', '-c', 'touch /etc/ssh/ssh_host_rsa_key.pub' ]
+
+       # journald requires machine-id, so add a PreStart
+       - [ 'chroot', '{root}', 'mkdir', '-p', '/etc/systemd/system/debian-fixup.service.d/' ]
+       - [ 'chroot', '{root}', '/bin/sh', '-c', 'echo "[Service]" > /etc/systemd/system/debian-fixup.service.d/10-machineid.conf' ]
+       - [ 'chroot', '{root}', '/bin/sh', '-c', 'echo "ExecStartPre=/bin/systemd-machine-id-setup" >> /etc/systemd/system/debian-fixup.service.d/10-machineid.conf' ]
+
+       # Make sure journald is persistent
+       # From /usr/share/doc/systemd/README.Debian
+       - [ 'chroot', '{root}', 'install', '-d', '-g', 'systemd-journal', '/var/log/journal' ]
+       - [ 'chroot', '{root}', 'setfacl', '-R', '-nm', 'g:adm:rx,d:g:adm:rx', '/var/log/journal' ]

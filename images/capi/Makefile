@@ -20,6 +20,8 @@ SHELL := /usr/bin/env bash
 
 .DEFAULT_GOAL := help
 
+export IB_VERSION ?= $(shell git describe --dirty)
+
 ## --------------------------------------
 ## Help
 ## --------------------------------------
@@ -30,6 +32,10 @@ help: ## Display this help
 	@echo '  cleaning artifacts created from building OVAs using a local'
 	@echo '  hypervisor.'
 	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[36m<target>\033[0m\n"} /^[a-zA-Z0-9_-]+:.*?##/ { printf "  \033[36m%-27s\033[0m %s\n", $$1, $$2 } /^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5) } ' $(MAKEFILE_LIST)
+
+.PHONY: version
+version: ## Display version of image-builder
+	@echo $(IB_VERSION)
 
 ## --------------------------------------
 ## Dependencies
@@ -71,6 +77,7 @@ deps-ova: ## Installs/checks dependencies for OVA builds
 deps-ova:
 	hack/ensure-ansible.sh
 	hack/ensure-packer.sh
+	hack/ensure-goss.sh
 
 .PHONY: deps-qemu
 deps-qemu: ## Installs/checks dependencies for QEMU builds
@@ -102,7 +109,8 @@ endif
 COMMON_NODE_VAR_FILES :=	packer/config/kubernetes.json \
 					packer/config/cni.json \
 					packer/config/containerd.json \
-					packer/config/ansible-args.json
+					packer/config/ansible-args.json \
+					packer/config/goss-args.json
 
 COMMON_HAPROXY_VAR_FILES := packer/ova/packer-common.json \
 					packer/config/ansible-args.json
@@ -136,7 +144,8 @@ HAPROXY_OVA_LOCAL_BUILD_NAMES			:=	$(addprefix haproxy-ova-local-,$(PHOTON_VERSI
 HAPROXY_OVA_ESX_BUILD_NAMES			:=	$(addprefix haproxy-ova-esx-,$(PHOTON_VERSIONS))
 HAPROXY_OVA_VSPHERE_BUILD_NAMES		:=	$(addprefix haproxy-ova-vsphere-,$(PHOTON_VERSIONS))
 
-AMI_BUILD_NAMES			?=	ami-default
+
+AMI_BUILD_NAMES			?=	ami-centos-7 ami-ubuntu-1804 ami-amazon-2
 GCE_BUILD_NAMES			?=	gce-ubuntu-1804 gce-centos-7
 AZURE_BUILD_NAMES		?=	azure-sig-ubuntu-1804 azure-vhd-ubuntu-1804
 
@@ -185,7 +194,7 @@ $(HAPROXY_OVA_VSPHERE_BUILD_TARGETS):
 
 .PHONY: $(AMI_BUILD_TARGETS)
 $(AMI_BUILD_TARGETS):
-	packer build $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/ami/$(subst build-,,$@).json)" $(PACKER_VAR_FILES) packer/ami/packer.json
+	packer build $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/ami/$(subst build-ami-,,$@).json)" $(PACKER_VAR_FILES) packer/ami/packer.json
 
 .PHONY: $(GCE_BUILD_TARGETS)
 $(GCE_BUILD_TARGETS):
@@ -226,7 +235,10 @@ $(QEMU_CLEAN_TARGETS):
 ## Document dynamic build targets
 ## --------------------------------------
 ##@ Builds
-build-ami-default: ## Builds the AMI default image
+build-ami-amazon-2: ## Builds Amazon-2 Linux AMI
+build-ami-centos-7: ## Builds CentOS 7 AMI
+build-ami-ubuntu-1804: ## Builds Ubuntu 18.04 AMI
+build-ami-all: $(AMI_BUILD_TARGETS) ## Builds all AMIs
 
 build-azure-sig-ubuntu-1804: ## Builds Ubuntu 18.04 Azure managed image in Shared Image Gallery
 build-azure-vhd-ubuntu-1804: ## Builds Ubuntu 18.04 VHD image for Azure
@@ -240,18 +252,21 @@ build-node-ova-local-centos-7: ## Builds CentOS 7 Node OVA w local hypervisor
 build-node-ova-local-photon-3: ## Builds Photon 3 Node OVA w local hypervisor
 build-node-ova-local-ubuntu-1804: ## Builds Ubuntu 18.04 Node OVA w local hypervisor
 build-node-ova-local-ubuntu-2004: ## Builds Ubuntu 20.04 Node OVA w local hypervisor
+build-node-ova-local-all: $(NODE_OVA_LOCAL_BUILD_TARGETS) ## Builds all Node OVAs w local hypervisor
 build-haproxy-ova-local-photon-3: ## Builds Photon 3 HAProxy OVA w local hypervisor
 
 build-node-ova-esx-centos-7: ## Builds CentOS 7 Node OVA w remote hypervisor
 build-node-ova-esx-photon-3: ## Builds Photon 3 Node OVA w remote hypervisor
 build-node-ova-esx-ubuntu-1804: ## Builds Ubuntu 18.04 Node OVA w remote hypervisor
 build-node-ova-esx-ubuntu-2004: ## Builds Ubuntu 20.04 Node OVA w remote hypervisor
+build-node-ova-esx-all: $(NODE_OVA_ESX_BUILD_TARGETS) ## Builds all Node OVAs w remote hypervisor
 build-haproxy-ova-esx-photon-3: ## Builds Photon 3 HAProxy OVA w remote hypervisor
 
 build-node-ova-vsphere-centos-7: ## Builds CentOS 7 Node OVA and template on vSphere
 build-node-ova-vsphere-photon-3: ## Builds Photon 3 Node OVA and template on vSphere
 build-node-ova-vsphere-ubuntu-1804: ## Builds Ubuntu 18.04 Node OVA and template on vSphere
 build-node-ova-vsphere-ubuntu-2004: ## Builds Ubuntu 20.04 Node OVA and template on vSphere
+build-node-ova-vsphere-all: $(NODE_OVA_VSPHERE_BUILD_TARGETS) ## Builds all Node OVAs and templates on vSphere
 build-haproxy-ova-vsphere-photon-3: ## Builds Photon 3 HAProxy OVA and template on vSphere
 
 build-qemu-ubuntu-1804: ## Builds Ubuntu 18.04 QEMU image

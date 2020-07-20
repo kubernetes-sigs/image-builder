@@ -1,0 +1,19 @@
+amazon-ebs:
+  instance_type: t3.small
+  region: us-east-1
+gce:
+  zone: us-central-1
+vmware-iso:
+  version: 13
+  disk_adapter_type: scsi
+  guest_os_type: linux
+  cpus: "2"
+  disk_size: "20480"
+  memory: "2048"
+vmware-vmx:
+  version: 13
+  disk_adapter_type: scsi
+  guest_os_type: linux
+  cpus: "2"
+  disk_size: "20480"
+  memory: "2048"

@@ -145,17 +145,21 @@ plugins:
        - [ 'chroot', '{root}', '/bin/sh', '-c', 'echo "APT::Periodic::Unattended-Upgrade \"0\"; " >> /etc/apt/apt.conf.d/20auto-upgrades' ]
        # - [ 'chroot', '{root}', 'apt-get', 'remove', '--yes', 'unattended-upgrades' ]
 
-       # Install docker
-       - [ 'wget', 'https://download.docker.com/linux/debian/dists/stretch/pool/stable/amd64/containerd.io_1.2.10-3_amd64.deb', '-O', '{root}/tmp/containerd.deb' ]
-       - [ '/bin/sh', '-c', 'cd {root}/tmp; echo "186f2f2c570f37b363102e6b879073db6dec671d  containerd.deb" | shasum -c -' ]
-       - [ 'wget', 'https://download.docker.com/linux/debian/dists/stretch/pool/stable/amd64/docker-ce-cli_19.03.4~3-0~debian-stretch_amd64.deb', '-O', '{root}/tmp/docker-cli.deb' ]
-       - [ '/bin/sh', '-c', 'cd {root}/tmp; echo "57f71ee764abb19a0b4c580ff14b1eb3de3a9e08  docker-cli.deb" | shasum -c -' ]
-       - [ 'wget', 'https://download.docker.com/linux/debian/dists/stretch/pool/stable/amd64/docker-ce_19.03.4~3-0~debian-stretch_amd64.deb', '-O', '{root}/tmp/docker.deb' ]
-       - [ '/bin/sh', '-c', 'cd {root}/tmp; echo "2b8dcb2d75334fab29242ac069d1fbcfb65e88e3  docker.deb" | shasum -c -' ]
-       - [ 'chroot', '{root}', '/bin/sh', '-c', 'DEBIAN_FRONTEND=noninteractive dpkg --install /tmp/containerd.deb' ]
-       - [ 'chroot', '{root}', '/bin/sh', '-c', 'DEBIAN_FRONTEND=noninteractive dpkg --install /tmp/docker-cli.deb' ]
-       - [ 'chroot', '{root}', '/bin/sh', '-c', 'DEBIAN_FRONTEND=noninteractive dpkg --install /tmp/docker.deb' ]
-       - [ 'rm', '{root}/tmp/containerd.deb', '{root}/tmp/docker-cli.deb', '{root}/tmp/docker.deb' ]
+       # Preload some files to our cache, in the hope we can avoid some downloads
+       - [ 'chroot', '{root}', 'mkdir', '-p', '/var/cache/nodeup/packages' ]
+
+       - [ 'wget', 'https://download.docker.com/linux/debian/dists/stretch/pool/stable/amd64/docker-ce_19.03.11~3-0~debian-stretch_amd64.deb', '-O', '{root}/var/cache/nodeup/packages/docker-ce.deb' ]
+       - [ '/bin/sh', '-c', 'cd {root}/var/cache/nodeup/packages; echo "e5a6cde8a9e5249bdfbad4d9c38ab23f22dd55595ad5f6a1c11cfbc9ed3129b6  docker-ce.deb" | sha256sum -c -' ]
+       - [ 'wget', 'https://download.docker.com/linux/debian/dists/stretch/pool/stable/amd64/docker-ce-cli_19.03.11~3-0~debian-stretch_amd64.deb', '-O', '{root}/var/cache/nodeup/packages/docker-ce-cli.deb' ]
+       - [ '/bin/sh', '-c', 'cd {root}/var/cache/nodeup/packages; echo "4b2644b31c66537155334941a46219515a937aa97b0d9f9c074380062f73216d  docker-ce-cli.deb" | sha256sum -c -' ]
+       - [ 'wget', 'https://download.docker.com/linux/debian/dists/stretch/pool/stable/amd64/containerd.io_1.2.13-2_amd64.deb', '-O', '{root}/var/cache/nodeup/packages/containerd.io.deb' ]
+       - [ '/bin/sh', '-c', 'cd {root}/var/cache/nodeup/packages; echo "c2f6d8070ccf3813644cd465c2640c0e8f2967ecd01ccecbdcfa4b2acc9c9c92  containerd.io.deb" | sha256sum -c -' ]
+
+       - [ 'wget', 'https://storage.googleapis.com/k8s-artifacts-cni/release/v0.8.6/cni-plugins-linux-amd64-v0.8.6.tgz', '-O', '{root}/var/cache/nodeup/sha256:994fbfcdbb2eedcfa87e48d8edb9bb365f4e2747a7e47658482556c12fd9b2f5_https___storage_googleapis_com_k8s-artifacts-cni_release_v0_8_6_cni-plugins-linux-amd64-v0_8_6_tgz' ]
+       - [ '/bin/sh', '-c', 'cd {root}/var/cache/nodeup; echo "994fbfcdbb2eedcfa87e48d8edb9bb365f4e2747a7e47658482556c12fd9b2f5  sha256:994fbfcdbb2eedcfa87e48d8edb9bb365f4e2747a7e47658482556c12fd9b2f5_https___storage_googleapis_com_k8s-artifacts-cni_release_v0_8_6_cni-plugins-linux-amd64-v0_8_6_tgz" | sha256sum -c -' ]
+
+       # Unlike earlier images, we no longer preinstall docker, instead we try to prepopulate the download cache.
+       # Preinstalling docker caused problems with the iptables/nftables transition, also with containerd vs docker skew.
 
        # We perform a full replacement of some grub conf variables:
        #   GRUB_CMDLINE_LINUX_DEFAULT (add memory cgroup)

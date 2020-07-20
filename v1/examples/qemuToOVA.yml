@@ -1,0 +1,23 @@
+distroName: ubuntu1804
+input:
+  kind: vmdk
+  url: ubuntu-18.04-server-cloudimg-amd64-252-210956.vmdk
+output:
+  - kind: vmdk
+  - kind: ova
+
+engine:
+  kind: noop
+cleanup: false
+kubernetes:
+  version: 1.16.9
+container_runtime:
+  type: containerd
+  version: 1.3.4
+packages:
+  - nano #ubuntu
+  - vi #aws
+  - amazon-cli #aws
+  - amz-cli #aws amazonLinux
+commands:
+  - echo Hello Amazon #aws

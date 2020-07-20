@@ -20,9 +20,10 @@ set -o pipefail
 
 source hack/utils.sh
 
-_version="1.0.0"
-darwin_sha256="2585ccc2fb2a04c799501ed1ce1938ed30cc925c793cf1dd4b65e9876d0cdae1"
-linux_sha256="b6a01aef689ccef120af4daa44d697b9816a0e83f3e7bb172e204ccf4c64fece"
+_version="1.1.0"
+# SHA are for amd64 arch.
+darwin_sha256="157b3d281717584ccdb0069e6d5eb90c27d758169960501b2d65902235d215b0"
+linux_sha256="95efb49d7d9434c8aa8deff841ef3d83bd58988f592a72dfce46b684600f8d0a"
 _bin_url="https://github.com/YaleUniversity/packer-provisioner-goss/releases/download/v${_version}/packer-provisioner-goss-v${_version}-${HOSTOS}-${HOSTARCH}"
 
 _binfile="${HOME}/.packer.d/plugins/packer-provisioner-goss"

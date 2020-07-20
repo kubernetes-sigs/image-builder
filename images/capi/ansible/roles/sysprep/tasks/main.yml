@@ -132,7 +132,7 @@
   - { path: /var/log, state: directory }
   - { path: /var/log/sa, state: directory }
 
-- name: Create a log directory for kube-apiserver audit logs
+- name: Create log directories for k8s
   file:
     path: "{{ item.path }}"
     state: "{{ item.state }}"
@@ -143,6 +143,16 @@
   - { path: /var/log/kubernetes, state: directory, mode: "0755" }
   - { path: /var/log/kubernetes/audit.log, state: touch, mode: "0600" }
   when: kubernetes_semver != '' # Ensure audit log is not created for HA Proxy images, since this task is shared amongst build targets
+
+- name: Create a log directory for auditd in Photon OS
+  file:
+    path: "/var/log/audit"
+    state: directory
+    mode: "0640"
+    owner: root
+    group: root
+  when: kubernetes_semver != '' and ansible_os_family == "VMware Photon OS" # Ensure audit log is not created for HA Proxy images, since this task is shared amongst build targets
+
 
 - name: Truncate shell history
   file:

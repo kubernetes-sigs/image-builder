@@ -46,6 +46,7 @@ common_debs:
 - socat
 
 common_photon_rpms:
+- audit
 - conntrack-tools
 - distrib-compat
 - ebtables
@@ -57,6 +58,7 @@ common_photon_rpms:
 - python-netifaces
 - python3-pip
 - python-requests
+- rng-tools
 - socat
 - tar
 - unzip

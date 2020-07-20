@@ -15,6 +15,7 @@ The images may be built using one of the following hypervisors:
 | ESXi | ESXi | build-node-ova-esx-<OS> |
 | vSphere | vSphere >= 6.5 | build-node-ova-vsphere-<OS> |
 
+**NOTE** If you want to build all available OS's, uses the `-all` target. If you want to build them in parallel, use `make -j`. For example, `make -j build-node-ova-local-all`.
 
 The `esxi` builder supports building against a remote VMware ESX server with [specific configuration](https://packer.io/docs/builders/vmware-iso.html#building-on-a-remote-vsphere-hypervisor) (ssh access), but is untested with this project.
 The `vsphere` builder supports building against a remote VMware vSphere using standard API.

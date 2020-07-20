@@ -1,0 +1,18 @@
+distroName: ubuntu1804
+input:
+  kind: ami
+engine:
+  kind: packer
+  version: 1.5.5
+  builders:
+    amazon-ebs:
+      ami_name: !!template image-builder-{{ (time.Now).Format "2006-01-02-150405" }}
+      eula: !!template '{{ file.ReadFile "eula.txt" }}'
+      access_key: !!env AWS_ACCESS_KEY_ID
+      secret_key: !!env AWS_SECRET_ACCESS_KEY
+cleanup: false
+kubernetes:
+  version: 1.15.3
+container_runtime:
+  type: containerd
+  version: 1.3.4
