@@ -1,3 +1,25 @@
+command:
+  crictl ps:
+    exit-status: 0
+    stdout: []
+    stderr: []
+    timeout: 0
+  crictl images | grep -v 'IMAGE ID' | awk -F' ' '{print $1}' | awk -F'/' '{print $2}' | awk '!seen[$0]++' | sort:
+    exit-status: 0
+    stdout: ["coredns", "etcd", "kube-apiserver", "kube-controller-manager", "kube-proxy", "kube-scheduler", "pause"]
+    stderr: []
+    timeout: 0
+kernel-param:
+  net.bridge.bridge-nf-call-iptables:
+    value: "1"
+  net.ipv6.conf.all.forwarding:
+    value: "1"
+  net.ipv6.conf.all.disable_ipv6:
+    value: "0"
+  net.ipv4.ip_forward:
+    value: "1"
+  net.bridge.bridge-nf-call-ip6tables:
+    value: "1"
 package:
   cloud-init:
     installed: true
