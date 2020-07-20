@@ -158,11 +158,6 @@ plugins:
        - [ 'wget', 'https://storage.googleapis.com/k8s-artifacts-cni/release/v0.8.6/cni-plugins-linux-amd64-v0.8.6.tgz', '-O', '{root}/var/cache/nodeup/sha256:994fbfcdbb2eedcfa87e48d8edb9bb365f4e2747a7e47658482556c12fd9b2f5_https___storage_googleapis_com_k8s-artifacts-cni_release_v0_8_6_cni-plugins-linux-amd64-v0_8_6_tgz' ]
        - [ '/bin/sh', '-c', 'cd {root}/var/cache/nodeup; echo "994fbfcdbb2eedcfa87e48d8edb9bb365f4e2747a7e47658482556c12fd9b2f5  sha256:994fbfcdbb2eedcfa87e48d8edb9bb365f4e2747a7e47658482556c12fd9b2f5_https___storage_googleapis_com_k8s-artifacts-cni_release_v0_8_6_cni-plugins-linux-amd64-v0_8_6_tgz" | sha256sum -c -' ]
 
-       - [ 'wget', 'https://storage.googleapis.com/kubernetes-release/release/v1.17.8/bin/linux/amd64/kubectl', '-O', '{root}/var/cache/nodeup/sha256:01283cbc2b09555cbf2a71c162097552a62a4fd48a0a4c06e34e9b853b815486_https___storage_googleapis_com_kubernetes-release_release_v1_17_8_bin_linux_amd64_kubectl' ]
-       - [ '/bin/sh', '-c', 'cd {root}/var/cache/nodeup; echo "01283cbc2b09555cbf2a71c162097552a62a4fd48a0a4c06e34e9b853b815486  sha256:01283cbc2b09555cbf2a71c162097552a62a4fd48a0a4c06e34e9b853b815486_https___storage_googleapis_com_kubernetes-release_release_v1_17_8_bin_linux_amd64_kubectl" | sha256sum -c -' ]
-       - [ 'wget', 'https://storage.googleapis.com/kubernetes-release/release/v1.17.8/bin/linux/amd64/kubelet', '-O', '{root}/var/cache/nodeup/sha256:b39081fb40332ae12d262b04dc81630e5c6550fb196f09b60f3d726283dff17f_https___storage_googleapis_com_kubernetes-release_release_v1_17_8_bin_linux_amd64_kubelet' ]
-       - [ '/bin/sh', '-c', 'cd {root}/var/cache/nodeup; echo "b39081fb40332ae12d262b04dc81630e5c6550fb196f09b60f3d726283dff17f  sha256:b39081fb40332ae12d262b04dc81630e5c6550fb196f09b60f3d726283dff17f_https___storage_googleapis_com_kubernetes-release_release_v1_17_8_bin_linux_amd64_kubelet" | sha256sum -c -' ]
-
        # Unlike earlier images, we no longer preinstall docker, instead we try to prepopulate the download cache.
        # Preinstalling docker caused problems with the iptables/nftables transition, also with containerd vs docker skew.
 
