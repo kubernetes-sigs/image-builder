@@ -55,6 +55,24 @@
         "distribution_version": "1804",
         "kubernetes_version": "{{user `kubernetes_semver` | clean_resource_name}}"
       }
+    },
+    {
+      "name": "centos-7",
+      "type": "googlecompute",
+      "project_id": "{{ user `project_id` }}",
+      "machine_type": "{{ user `machine_type` }}",
+      "source_image_family": "centos-7",
+      "disk_size": 20,
+      "image_name": "cluster-api-centos-7-{{user `kubernetes_semver` | clean_resource_name}}-{{user `build_timestamp`}}",
+      "image_family": "capi-centos-7-k8s-{{user `kubernetes_series` | clean_resource_name}}",
+      "zone": "{{ user `zone` }}",
+      "ssh_username": "centos",
+      "labels": {
+        "build_timestamp": "{{user `build_timestamp`}}",
+        "distribution": "centos",
+        "distribution_version": "7",
+        "kubernetes_version": "{{user `kubernetes_semver` | clean_resource_name}}"
+      }
     }
   ],
   "provisioners": [

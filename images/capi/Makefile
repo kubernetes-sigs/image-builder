@@ -137,7 +137,7 @@ HAPROXY_OVA_ESX_BUILD_NAMES			:=	$(addprefix haproxy-ova-esx-,$(PHOTON_VERSIONS)
 HAPROXY_OVA_VSPHERE_BUILD_NAMES		:=	$(addprefix haproxy-ova-vsphere-,$(PHOTON_VERSIONS))
 
 AMI_BUILD_NAMES			?=	ami-default
-GCE_BUILD_NAMES			?=	gce-default
+GCE_BUILD_NAMES			?=	gce-ubuntu-1804 gce-centos-7
 AZURE_BUILD_NAMES		?=	azure-sig-ubuntu-1804 azure-vhd-ubuntu-1804
 
 DO_BUILD_NAMES 			?=	do-default
@@ -189,7 +189,7 @@ $(AMI_BUILD_TARGETS):
 
 .PHONY: $(GCE_BUILD_TARGETS)
 $(GCE_BUILD_TARGETS):
-	packer build $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/gce/$(subst build-,,$@).json)" $(PACKER_VAR_FILES) packer/gce/packer.json
+	packer build $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/gce/gce-default.json)" -only="$(subst build-gce-,,$@)" $(PACKER_VAR_FILES) packer/gce/packer.json
 
 .PHONY: $(AZURE_BUILD_TARGETS)
 $(AZURE_BUILD_TARGETS):
@@ -233,7 +233,8 @@ build-azure-vhd-ubuntu-1804: ## Builds Ubuntu 18.04 VHD image for Azure
 
 build-do-default: ## Builds the DigitalOcean snapshot default image
 
-build-gce-default: ## Builds the GCE default image
+build-gce-ubuntu-1804: ## Builds the GCE default image for ubuntu
+build-gce-centos-7: ## Builds the GCE default image for centos
 
 build-node-ova-local-centos-7: ## Builds CentOS 7 Node OVA w local hypervisor
 build-node-ova-local-photon-3: ## Builds Photon 3 Node OVA w local hypervisor
