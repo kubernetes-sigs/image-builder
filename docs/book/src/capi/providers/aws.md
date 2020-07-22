@@ -1,30 +1,18 @@
 # Building Images for AWS
 
-## Prerequisites
-
-The `make deps-ami` target will test that Ansible, Packer, and Goss are installed and available. If they are not, they will be installed to `images/capi/.bin`. This directory will need to be added to your `$PATH`.
-
-### Prerequisites for all images
-
-- [Packer](https://www.packer.io/intro/getting-started/install.html)
-- [Ansible](http://docs.ansible.com/ansible/latest/intro_installation.html) version >= 2.8.0
-- [goss](https://github.com/YaleUniversity/packer-provisioner-goss)
-
-#### Installing the goss plugin
-
-To install `packer-goss` plugin the following should be executed inside of the
-`images/capi` directory:
-
-```bash
-make deps-ami
-```
-
-### Prerequisites for Amazon Web Services
+## Prerequisites for Amazon Web Services
 
 - An AWS account
 - The AWS CLI installed and configured
 
 ## Building Images
+
+The build [prerequisites](../capi.md#prerequisites) for using `image-builder` for
+building AMIs are managed by running:
+
+```bash
+make deps-ami
+```
 
 From the `images/capi` directory, run `make build-ami-<OS>`, where `<OS>` is
 the desired operating system. The available choices are listed via `make help`.
