@@ -16,7 +16,7 @@ Engines are specified and configured using the `engine` section:
 ```yaml
 engine:
   kind: packer
-  version: 1.5.5
+  version: 1.6.0
   builders:
     amazon-ebs:
       ami_name: !!template image-builder-{{ (time.Now).Format "2006-01-02-150405" }}
