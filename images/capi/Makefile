@@ -146,7 +146,8 @@ HAPROXY_OVA_VSPHERE_BUILD_NAMES		:=	$(addprefix haproxy-ova-vsphere-,$(PHOTON_VE
 
 AMI_BUILD_NAMES			?=	ami-centos-7 ami-ubuntu-1804 ami-amazon-2
 GCE_BUILD_NAMES			?=	gce-default
-AZURE_BUILD_NAMES		?=	azure-sig-ubuntu-1804 azure-vhd-ubuntu-1804
+AZURE_BUILD_VHD_NAMES		?=	azure-vhd-ubuntu-1804 azure-vhd-centos-7
+AZURE_BUILD_SIG_NAMES		?=	azure-sig-ubuntu-1804 azure-sig-centos-7
 
 DO_BUILD_NAMES 			?=	do-default
 
@@ -163,7 +164,8 @@ HAPROXY_OVA_ESX_BUILD_TARGETS	:= $(addprefix build-,$(HAPROXY_OVA_ESX_BUILD_NAME
 HAPROXY_OVA_VSPHERE_BUILD_TARGETS	:= $(addprefix build-,$(HAPROXY_OVA_VSPHERE_BUILD_NAMES))
 AMI_BUILD_TARGETS	:= $(addprefix build-,$(AMI_BUILD_NAMES))
 GCE_BUILD_TARGETS	:= $(addprefix build-,$(GCE_BUILD_NAMES))
-AZURE_BUILD_TARGETS	:= $(addprefix build-,$(AZURE_BUILD_NAMES))
+AZURE_BUILD_VHD_TARGETS	:= $(addprefix build-,$(AZURE_BUILD_VHD_NAMES))
+AZURE_BUILD_SIG_TARGETS	:= $(addprefix build-,$(AZURE_BUILD_SIG_NAMES))
 DO_BUILD_TARGETS 	:= $(addprefix build-,$(DO_BUILD_NAMES))
 QEMU_BUILD_TARGETS	:= $(addprefix build-,$(QEMU_BUILD_NAMES))
 
@@ -199,9 +201,13 @@ $(AMI_BUILD_TARGETS):
 $(GCE_BUILD_TARGETS):
 	packer build $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/gce/$(subst build-,,$@).json)" $(PACKER_VAR_FILES) packer/gce/packer.json
 
-.PHONY: $(AZURE_BUILD_TARGETS)
-$(AZURE_BUILD_TARGETS):
-	. $(abspath packer/azure/scripts/init-$(subst build-azure-,,$@).sh) && packer build $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/azure/azure-config.json)" -var-file="$(abspath packer/azure/$(subst build-,,$@).json)" -only="$(subst build-azure-,,$@)" $(PACKER_VAR_FILES) packer/azure/packer.json
+.PHONY: $(AZURE_BUILD_VHD_TARGETS)
+$(AZURE_BUILD_VHD_TARGETS):
+	. $(abspath packer/azure/scripts/init-vhd.sh) && packer build $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/azure/azure-config.json)" -var-file="$(abspath packer/azure/azure-vhd.json)" -only="$(subst build-azure-,,$@)" $(PACKER_VAR_FILES) packer/azure/packer.json
+
+.PHONY: $(AZURE_BUILD_SIG_TARGETS)
+$(AZURE_BUILD_SIG_TARGETS):
+	. $(abspath packer/azure/scripts/init-sig.sh) && packer build $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/azure/azure-config.json)" -var-file="$(abspath packer/azure/azure-sig.json)" -only="$(subst build-azure-,,$@)" $(PACKER_VAR_FILES) packer/azure/packer.json
 
 $(DO_BUILD_TARGETS):
 	packer build $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/digitalocean/$(subst build-,,$@).json)" $(PACKER_VAR_FILES) packer/digitalocean/packer.json

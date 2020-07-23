@@ -144,6 +144,15 @@
   - { path: /var/log/kubernetes/audit.log, state: touch, mode: "0600" }
   when: kubernetes_semver != '' # Ensure audit log is not created for HA Proxy images, since this task is shared amongst build targets
 
+- name: Remove swapfile
+  file:
+    state: "{{ item.state }}"
+    path: "{{ item.path }}"
+  loop:
+  - { path: /swapfile, state: absent }
+  - { path: /mnt/resource/swapfile, state: absent }
+  when: ansible_memory_mb.swap.total != 0
+
 - name: Create a log directory for auditd in Photon OS
   file:
     path: "/var/log/audit"
