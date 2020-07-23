@@ -151,6 +151,7 @@
   loop:
   - { path: /swapfile, state: absent }
   - { path: /mnt/resource/swapfile, state: absent }
+  when: ansible_memory_mb.swap.total != 0
 
 - name: Create a log directory for auditd in Photon OS
   file:

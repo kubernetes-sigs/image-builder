@@ -19,11 +19,12 @@
 
 - import_tasks: rpm_repos.yml
 
-- name: Disable service and ensure it is masked
+- name: Disable swap service and ensure it is masked
   systemd:
     name: temp-disk-swapfile
     enabled: no
     masked: yes
+  when: ansible_memory_mb.swap.total != 0
 
 - name: Remove yum package caches
   yum:
