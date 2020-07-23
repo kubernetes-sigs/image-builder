@@ -1,6 +1,7 @@
 {
   "kubernetes_series": "v1.16",
   "kubernetes_semver": "v1.16.11",
+  "kubernetes_semver_suffix": "1.16.11",
   "kubernetes_rpm_version": "1.16.11-1",
   "kubernetes_deb_version": "1.16.11-01",
   "kubernetes_source_type": "pkg",

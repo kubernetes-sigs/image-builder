@@ -1,14 +1,55 @@
 command:
+  containerd --version | awk -F' ' '{print substr($3,2); }':
+    exit-status: 0
+    stdout: []
+    stderr: []
+    timeout: 0
   crictl ps:
     exit-status: 0
     stdout: []
     stderr: []
     timeout: 0
-  crictl images | grep -v 'IMAGE ID' | awk -F' ' '{print $1}' | awk -F'/' '{print $2}' | awk '!seen[$0]++' | sort:
+  crictl images | grep -v 'IMAGE ID' | awk -F'[ /]' '{print $2}' | sort:
     exit-status: 0
-    stdout: ["coredns", "etcd", "kube-apiserver", "kube-controller-manager", "kube-proxy", "kube-scheduler", "pause"]
     stderr: []
     timeout: 0
+{{if eq .Vars.kubernetes_source_type "pkg"}}
+{{if eq .Vars.kubernetes_cni_source_type "pkg"}}
+    stdout: ["coredns", "etcd", "kube-apiserver", "kube-controller-manager", "kube-proxy", "kube-scheduler", "pause"]
+{{end}}
+{{end}}
+{{if and (eq .Vars.kubernetes_source_type "http") (eq .Vars.kubernetes_cni_source_type "http") (not .Vars.kubernetes_load_additional_imgs)}}
+    stdout: ["kube-apiserver", "kube-controller-manager", "kube-proxy", "kube-scheduler"]
+{{end}}
+{{if and (eq .Vars.kubernetes_source_type "http") (eq .Vars.kubernetes_cni_source_type "http") (.Vars.kubernetes_load_additional_imgs)}}
+    stdout: ["coredns", "etcd", "kube-apiserver", "kube-controller-manager", "kube-proxy", "kube-scheduler", "pause"]
+{{end}}
+{{if eq .Vars.kubernetes_source_type "http"}}
+  kubectl version --short --client=true -o json | jq .clientVersion.gitVersion | awk -F'[v"]' '{print $3}':
+    exit-status: 0
+    stdout: [{{ .Vars.kubernetes_version }}]
+    stderr: []
+    timeout: 0
+  kubeadm version -o json | jq .clientVersion.gitVersion | awk -F'[v"]' '{print $3}':
+    exit-status: 0
+    stdout: [{{ .Vars.kubernetes_version }}]
+    stderr: []
+    timeout: 0
+  kubelet --version | awk -F'[ v]' '{print $3}':
+    exit-status: 0
+    stdout: [{{ .Vars.kubernetes_version }}]
+    stderr: []
+    timeout: 0
+
+{{end}}
+{{if eq .Vars.kubernetes_cni_source_type "http"}}
+  /opt/cni/bin/host-device 2>&1 | awk -F' ' '{print substr($4,2); }':
+    exit-status: 0
+    stdout: [{{ .Vars.kubernetes_cni_version }}]
+    stderr: []
+    timeout: 0
+{{end}}
+
 kernel-param:
   net.bridge.bridge-nf-call-iptables:
     value: "1"
@@ -20,17 +61,31 @@ kernel-param:
     value: "1"
   net.bridge.bridge-nf-call-ip6tables:
     value: "1"
+
 package:
   cloud-init:
     installed: true
+{{if eq .Vars.kubernetes_source_type "pkg"}}
   kubeadm:
     installed: true
+    versions:
+      - {{ .Vars.kubernetes_version }}
   kubelet:
     installed: true
+    versions:
+      - {{ .Vars.kubernetes_version }}
   kubectl:
     installed: true
+    versions:
+      - {{ .Vars.kubernetes_version }}
+{{end}}
+{{if eq .Vars.kubernetes_cni_source_type "pkg"}}
   kubernetes-cni:
     installed: true
+    versions:
+      - {{ .Vars.kubernetes_cni_version }}
+{{end}}
+
 service:
   containerd:
     enabled: true
@@ -41,14 +96,3 @@ service:
   kubelet:
     enabled: true
     running: false
-command:
-  crictl ps:
-    exit-status: 0
-    stdout: []
-    stderr: []
-    timeout: 0
-  crictl images | grep -v 'IMAGE ID' | awk -F' ' '{print $1}' | awk -F'/' '{print $2}' | awk '!seen[$0]++' | sort:
-    exit-status: 0
-    stdout: ["coredns", "etcd", "kube-apiserver", "kube-controller-manager", "kube-proxy", "kube-scheduler", "pause"]
-    stderr: []
-    timeout: 0

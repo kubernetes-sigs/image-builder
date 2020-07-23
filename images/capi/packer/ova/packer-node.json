@@ -161,9 +161,18 @@
       "format": "{{user `goss_format`}}",
       "format_options": "{{user `goss_format_options`}}",
       "goss_file": "{{user `goss_entry_file`}}",
+      "inspect": "{{user `goss_inspect_mode`}}",
       "tests": ["{{user `goss_tests_dir`}}"],
       "url": "{{user `goss_url`}}",
       "use_sudo": true,
+      "vars_inline": {
+        "kubernetes_source_type": "{{user `kubernetes_source_type`}}",
+        "kubernetes_cni_source_type": "{{user `kubernetes_cni_source_type`}}",
+        "containerd_version" : "{{user `containerd_version`}}",
+        "kubernetes_cni_version": "{{user `kubernetes_cni_semver_suffix`}}",
+        "kubernetes_version": "{{user `kubernetes_semver_suffix`}}"
+      },
+      "vars_file": "{{user `goss_vars_file`}}",
       "version": "{{user `goss_version`}}"
     }
   ],

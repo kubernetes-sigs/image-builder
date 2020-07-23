@@ -1,0 +1,8 @@
+---
+kubernetes_cni_version: ""
+containerd_version: ""
+kubernetes_version: ""
+kubernetes_source_type: ""
+kubernetes_cni_source_type: ""
+# When k8s and k8s cni source is http
+kubernetes_load_additional_imgs: false
