@@ -14,14 +14,15 @@
 ---
 - name: import the Microsoft repository key
   command: rpm --import https://packages.microsoft.com/keys/microsoft.asc
-  become: true
 
-- name: copy azure-cli gpg key file
-  template:
-    src:  azure-cli.repo
-    dest: /etc/yum.repos.d/azure-cli.repo
-    mode: 0644
-  become: true
+- name: Add the yum repository for the azure cli
+  yum_repository:
+    name: azure_cli
+    description: Azure CLI
+    baseurl: https://packages.microsoft.com/yumrepos/azure-cli
+    gpgkey: https://packages.microsoft.com/keys/microsoft.asc
+    gpgcheck: yes
+    enabled: yes
 
 - name: install Azure CLI
   package:
