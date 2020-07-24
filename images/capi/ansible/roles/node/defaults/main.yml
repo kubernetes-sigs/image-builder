@@ -17,6 +17,7 @@ common_rpms:
 - conntrack-tools
 - curl
 - ebtables
+- jq
 - ntp
 - open-vm-tools
 - python2-pip
