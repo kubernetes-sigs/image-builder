@@ -9,20 +9,29 @@ command:
     stdout: []
     stderr: []
     timeout: 0
-  # The second last pipe of awk is to take out arch from kube-apiserver-amd64 (i.e. amd64 or any other arch)
-  crictl images | grep -v 'IMAGE ID' | awk -F'[ /]' '{print $2}' | awk 'BEGIN{FS=OFS="-"}NF--' | sort:
+{{if eq .Vars.kubernetes_source_type "pkg"}}
+{{if eq .Vars.kubernetes_cni_source_type "pkg"}}
+  crictl images | grep -v 'IMAGE ID' | awk -F'[ /]' '{print $2}' | sort:
     exit-status: 0
     stderr: []
     timeout: 0
-{{if eq .Vars.kubernetes_source_type "pkg"}}
-{{if eq .Vars.kubernetes_cni_source_type "pkg"}}
     stdout: ["coredns", "etcd", "kube-apiserver", "kube-controller-manager", "kube-proxy", "kube-scheduler", "pause"]
 {{end}}
 {{end}}
 {{if and (eq .Vars.kubernetes_source_type "http") (eq .Vars.kubernetes_cni_source_type "http") (not .Vars.kubernetes_load_additional_imgs)}}
+# The second last pipe of awk is to take out arch from kube-apiserver-amd64 (i.e. amd64 or any other arch)
+  crictl images | grep -v 'IMAGE ID' | awk -F'[ /]' '{print $2}' | awk 'BEGIN{FS=OFS="-"}NF--' | sort:
+    exit-status: 0
+    stderr: []
+    timeout: 0
     stdout: ["kube-apiserver", "kube-controller-manager", "kube-proxy", "kube-scheduler"]
 {{end}}
 {{if and (eq .Vars.kubernetes_source_type "http") (eq .Vars.kubernetes_cni_source_type "http") (.Vars.kubernetes_load_additional_imgs)}}
+# The second last pipe of awk is to take out arch from kube-apiserver-amd64 (i.e. amd64 or any other arch)
+  crictl images | grep -v 'IMAGE ID' | awk -F'[ /]' '{print $2}' | awk 'BEGIN{FS=OFS="-"}NF--' | sort:
+    exit-status: 0
+    stderr: []
+    timeout: 0
     stdout: ["coredns", "etcd", "kube-apiserver", "kube-controller-manager", "kube-proxy", "kube-scheduler", "pause"]
 {{end}}
 {{if eq .Vars.kubernetes_source_type "http"}}
