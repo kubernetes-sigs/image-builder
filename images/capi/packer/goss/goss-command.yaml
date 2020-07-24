@@ -50,7 +50,6 @@ command:
     stdout: [{{ .Vars.kubernetes_version }}]
     stderr: []
     timeout: 0
-
 {{end}}
 {{if eq .Vars.kubernetes_cni_source_type "http"}}
   /opt/cni/bin/host-device 2>&1 | awk -F' ' '{print substr($4,2); }':
@@ -59,50 +58,3 @@ command:
     stderr: []
     timeout: 0
 {{end}}
-
-kernel-param:
-  net.bridge.bridge-nf-call-iptables:
-    value: "1"
-  net.ipv6.conf.all.forwarding:
-    value: "1"
-  net.ipv6.conf.all.disable_ipv6:
-    value: "0"
-  net.ipv4.ip_forward:
-    value: "1"
-  net.bridge.bridge-nf-call-ip6tables:
-    value: "1"
-
-package:
-  cloud-init:
-    installed: true
-{{if eq .Vars.kubernetes_source_type "pkg"}}
-  kubeadm:
-    installed: true
-    versions:
-      - {{ .Vars.kubernetes_version }}
-  kubelet:
-    installed: true
-    versions:
-      - {{ .Vars.kubernetes_version }}
-  kubectl:
-    installed: true
-    versions:
-      - {{ .Vars.kubernetes_version }}
-{{end}}
-{{if eq .Vars.kubernetes_cni_source_type "pkg"}}
-  kubernetes-cni:
-    installed: true
-    versions:
-      - {{ .Vars.kubernetes_cni_version }}
-{{end}}
-
-service:
-  containerd:
-    enabled: true
-    running: true
-  dockerd:
-    enabled: false
-    running: false
-  kubelet:
-    enabled: true
-    running: false

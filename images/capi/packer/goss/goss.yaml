@@ -1,2 +1,5 @@
 gossfile:
-  goss-common.yaml: {}
+  goss-command.yaml: {}
+  goss-kernel-params.yaml: {}
+  goss-service.yaml: {}
+  goss-package.yaml: {}

@@ -1,0 +1,27 @@
+package:
+  cloud-init:
+    installed: true
+{{if eq .Vars.kubernetes_source_type "pkg"}}
+  kubeadm:
+    installed: true
+    versions:
+      contain-element:
+        match-regexp: {{ .Vars.kubernetes_version }}
+  kubelet:
+    installed: true
+    versions:
+      contain-element:
+        match-regexp: {{ .Vars.kubernetes_version }}
+  kubectl:
+    installed: true
+    versions:
+      contain-element:
+        match-regexp: {{ .Vars.kubernetes_version }}
+{{end}}
+{{if eq .Vars.kubernetes_cni_source_type "pkg"}}
+  kubernetes-cni:
+    installed: true
+    versions:
+      contain-element:
+        match-regexp: {{ .Vars.kubernetes_cni_version }}
+{{end}}
