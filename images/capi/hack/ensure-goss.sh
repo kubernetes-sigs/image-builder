@@ -58,7 +58,7 @@ fi
 # download binary, verify shasum, make it executable and clean up trash files.
 _bin_dir="$(dirname "${_binfile}")"
 mkdir -p "${_bin_dir}" && cd "${_bin_dir}"
-curl -L "${_bin_url}" -o "${_binfile}"
+curl -SsL "${_bin_url}" -o "${_binfile}"
 printf "%s *${_binfile}" "${_sha256}" >"${_binfile}.sha256"
 if ! checksum_sha256 "${_binfile}.sha256"; then
   _exit_code="${?}"
