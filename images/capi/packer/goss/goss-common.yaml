@@ -9,7 +9,8 @@ command:
     stdout: []
     stderr: []
     timeout: 0
-  crictl images | grep -v 'IMAGE ID' | awk -F'[ /]' '{print $2}' | sort:
+  # The second last pipe of awk is to take out arch from kube-apiserver-amd64 (i.e. amd64 or any other arch)
+  crictl images | grep -v 'IMAGE ID' | awk -F'[ /]' '{print $2}' | awk 'BEGIN{FS=OFS="-"}NF--' | sort:
     exit-status: 0
     stderr: []
     timeout: 0

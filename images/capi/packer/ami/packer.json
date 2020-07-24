@@ -148,8 +148,8 @@
         "kubernetes_source_type": "{{user `kubernetes_source_type`}}",
         "kubernetes_cni_source_type": "{{user `kubernetes_cni_source_type`}}",
         "containerd_version" : "{{user `containerd_version`}}",
-        "kubernetes_cni_version": "{{user `kubernetes_cni_semver_suffix`}}",
-        "kubernetes_version": "{{user `kubernetes_semver_suffix`}}"
+        "kubernetes_cni_version": "{{user `kubernetes_cni_semver` | replace \"v\" \"\" 1}}",
+        "kubernetes_version": "{{user `kubernetes_semver` | replace \"v\" \"\" 1}}"
       },
       "vars_file": "{{user `goss_vars_file`}}",
       "version": "{{user `goss_version`}}"

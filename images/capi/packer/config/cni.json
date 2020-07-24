@@ -1,6 +1,5 @@
 {
     "kubernetes_cni_semver": "v0.8.6",
-    "kubernetes_cni_semver_suffix": "0.8.6",
     "kubernetes_cni_rpm_version": "0.8.6-0",
     "kubernetes_cni_deb_version": "0.8.6-00",
     "kubernetes_cni_source_type": "pkg",
