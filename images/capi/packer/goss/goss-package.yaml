@@ -1,22 +1,21 @@
+x-function: &kubernetes_version
+  versions:
+    contain-element:
+      match-regexp: {{ .Vars.kubernetes_version }}
+
 package:
   cloud-init:
     installed: true
 {{if eq .Vars.kubernetes_source_type "pkg"}}
   kubeadm:
     installed: true
-    versions:
-      contain-element:
-        match-regexp: {{ .Vars.kubernetes_version }}
+    <<: *kubernetes_version
   kubelet:
     installed: true
-    versions:
-      contain-element:
-        match-regexp: {{ .Vars.kubernetes_version }}
+    <<: *kubernetes_version
   kubectl:
     installed: true
-    versions:
-      contain-element:
-        match-regexp: {{ .Vars.kubernetes_version }}
+    <<: *kubernetes_version
 {{end}}
 {{if eq .Vars.kubernetes_cni_source_type "pkg"}}
   kubernetes-cni:
