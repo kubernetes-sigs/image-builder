@@ -76,3 +76,12 @@
     sysctl_set: yes
     reload: yes
     sysctl_file: "{{ sysctl_conf_file }}"
+
+- name: Disable swap memory
+  shell: |
+    swapoff -a
+  when: ansible_memory_mb.swap.total != 0
+
+- name: Edit fstab file to disable swap
+  shell: sed -ri '/\sswap\s/s/^#?/#/' /etc/fstab
+  when: ansible_memory_mb.swap.total != 0

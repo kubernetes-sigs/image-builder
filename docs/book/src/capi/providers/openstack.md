@@ -1,17 +1,8 @@
 # Building Images for OpenStack
 
-## Prerequisites
-
-The `make deps-qemu` target will test that Ansible and Packer are installed and available. If they are not, they will be installed to `images/capi/.bin`. This directory will need to be added to your `$PATH`.
-
-### Hypervisor
+## Hypervisor
 
 The image is built using KVM hypervisor.
-
-### Prerequisites for all images
-
-- [Packer](https://www.packer.io/intro/getting-started/install.html)
-- [Ansible](http://docs.ansible.com/ansible/latest/intro_installation.html) version >= 2.8.0
 
 ### Prerequisites for QCOW2
 
@@ -33,6 +24,13 @@ $ sudo chown root:kvm /dev/kvm
 Then exit and log back in to make the change take place.
 
 ## Building Images
+
+The build [prerequisites](../capi.md#prerequisites) for using `image-builder` for
+building qemu images are managed by running:
+
+```bash
+make deps-qemu
+```
 
 ### Building QCOW2 Image
 

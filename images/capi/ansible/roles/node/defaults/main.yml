@@ -19,7 +19,7 @@ common_rpms:
 - ebtables
 - ntp
 - open-vm-tools
-- python2-pip
+- python3-pip
 - python-netifaces
 - python-requests
 - socat

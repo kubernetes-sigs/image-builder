@@ -1,21 +1,19 @@
 # Building Images for Azure
 
-## Prerequisites
-
-The `make deps-azure` target will test that Ansible, Packer, and `jq` are installed and available. If they are not, they will be installed to `images/capi/.bin`. This directory will need to be added to your `$PATH`.
-
-### Prerequisites for all images
-
-- [Packer](https://www.packer.io/intro/getting-started/install.html)
-- [Ansible](http://docs.ansible.com/ansible/latest/intro_installation.html) version >= 2.8.0
-
-### Prerequisites for Azure
+## Prerequisites for Azure
 
 - An Azure account
 - The Azure CLI installed and configured
 - Set environment variables for `AZURE_SUBSCRIPTION_ID`, `AZURE_CLIENT_ID`, `AZURE_CLIENT_SECRET`
 
 ## Building Images
+
+The build [prerequisites](../capi.md#prerequisites) for using `image-builder` for
+building Azure images are managed by running:
+
+```bash
+make deps-azure
+```
 
 ### Building Managed Images in Shared Image Galleries
 

@@ -49,7 +49,7 @@
     "snapshot_users": "",
     "subnet_id": "",
     "vpc_id": "",
-    "volume_size": ""
+    "volume_size": "8"
   },
   "builders": [
     {
