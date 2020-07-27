@@ -1,4 +1,62 @@
 ---
+common_rpms: &common_rpms
+  ca-certificates:
+  conntrack-tools:
+  curl:
+  ebtables:
+  jq:
+  ntp:
+  open-vm-tools:
+  python-netifaces:
+  python-requests:
+  socat:
+  yum-utils:
+
+common_debs: &common_debs
+  apt-transport-https:
+  conntrack:
+  conntrackd:
+  curl:
+  ebtables:
+  jq:
+  gnupg:
+  libnetfilter-acct1:
+  libnetfilter-cttimeout1:
+  libnetfilter-log1:
+  linux-cloud-tools-virtual:
+  linux-tools-virtual:
+  ntp:
+  open-vm-tools:
+  python3-distutils:
+  python3-netifaces:
+  python3-pip:
+  socat:
+
+chrony_deb: &chrony_deb
+  chrony:
+  ntp:
+    skip: true
+    installed: false
+
+
+common_photon_rpms: &common_photon_rpms
+  audit:
+  conntrack-tools:
+  distrib-compat:
+  ebtables:
+  jq:
+  net-tools:
+  ntp:
+  openssl-c_rehash:
+  open-vm-tools:
+  python-netifaces:
+  python3-pip:
+  python-requests:
+  rng-tools:
+  socat:
+  tar:
+  unzip:
+
 arch: "amd64"
 containerd_version: ""
 kubernetes_cni_source_type: ""
@@ -11,3 +69,96 @@ kubernetes_cni_deb_version: ""
 kubernetes_cni_rpm_version: ""
 # When k8s and k8s cni source is http
 kubernetes_load_additional_imgs: false
+
+# OS Specific Packages/Command/Kernal Params etc...
+# Structured in below format
+# OS_NAME
+#   common-packages:
+#   common-kernel-params:
+#   common-commands:
+#   common-services:
+#   PROVIDER_NAME:
+#     packages:
+#     command:
+#     service:
+#  ...
+amazon linux:
+  common-packages: *common_rpms
+  amazon:
+    service:
+      amazon-ssm-agent:
+        enabled: true
+        running: true
+    packages:
+      awscli:
+      amazon-ssm-agent:
+centos:
+  common-packages: *common_rpms
+  amazon:
+    packages:
+      amazon-ssm-agent:
+    command:
+      pip3 list --format=columns | grep 'awscli' | awk -F' ' '{print $1}':
+        exit-status: 0
+        stdout: ["awscli"]
+        stderr: []
+        timeout: 0
+  azure:
+    package:
+      azure_cli:
+  ova:
+    packages:
+      open-vm-tools:
+      cloud-init:
+      cloud-utils-growpart:
+      python2-pip:
+ubuntu:
+  common-packages:
+    <<: *common_debs
+  azure:
+    command:
+      pip3 list --format=columns | grep 'azure-cli' | awk -F' ' '{print $1}':
+        exit-status: 0
+        stdout: ["azure-cli"]
+        stderr: []
+        timeout: 0
+    packages:
+      <<: *chrony_deb
+    service:
+      chrony:
+        enabled: true
+        running: true
+  amazon:
+    service:
+      snap.amazon-ssm-agent.amazon-ssm-agent.service:
+        enabled: true
+        running: true
+    packages:
+    command:
+      snap list | grep 'amazon-ssm-agent' | awk -F' ' '{print $1}':
+        exit-status: 0
+        stdout: ["amazon-ssm-agent"]
+        stderr: []
+        timeout: 0
+      pip3 list --format=columns | grep 'awscli' | awk -F' ' '{print $1}':
+        exit-status: 0
+        stdout: ["awscli"]
+        stderr: []
+        timeout: 0
+  ova:
+    packages:
+      open-vm-tools:
+      cloud-guest-utils:
+      cloud-initramfs-copymods:
+      cloud-initramfs-dyn-netconf:
+      cloud-initramfs-growroot:
+photon:
+  common-packages:
+    <<: *common_photon_rpms
+    audit:
+  ova:
+    packages:
+      open-vm-tools:
+      cloud-init:
+      cloud-utils:
+      python3-netifaces:

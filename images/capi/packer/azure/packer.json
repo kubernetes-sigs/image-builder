@@ -140,6 +140,9 @@
       "url": "{{user `goss_url`}}",
       "use_sudo": true,
       "vars_inline": {
+        "OS": "{{user `distribution` | lower}}",
+        "ARCH": "amd64",
+        "PROVIDER": "azure",
         "kubernetes_source_type": "{{user `kubernetes_source_type`}}",
         "kubernetes_cni_source_type": "{{user `kubernetes_cni_source_type`}}",
         "containerd_version" : "{{user `containerd_version`}}",

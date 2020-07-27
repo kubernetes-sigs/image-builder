@@ -8,3 +8,15 @@ service:
   kubelet:
     enabled: true
     running: false
+{{range $name, $vers := index .Vars .Vars.OS "common-service"}}
+  {{ $name }}:
+  {{range $key, $val := $vers}}
+    {{$key}}: {{$val}}
+  {{end}}
+{{end}}
+{{range $name, $vers := index .Vars .Vars.OS .Vars.PROVIDER "service"}}
+  {{ $name }}:
+  {{range $key, $val := $vers}}
+    {{$key}}: {{$val}}
+  {{end}}
+{{end}}

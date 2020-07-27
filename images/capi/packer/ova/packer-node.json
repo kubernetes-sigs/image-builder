@@ -167,6 +167,9 @@
       "url": "{{user `goss_url`}}",
       "use_sudo": true,
       "vars_inline": {
+        "OS": "{{user `distro_name` | lower}}",
+        "ARCH": "amd64",
+        "PROVIDER": "ova",
         "kubernetes_source_type": "{{user `kubernetes_source_type`}}",
         "kubernetes_cni_source_type": "{{user `kubernetes_cni_source_type`}}",
         "containerd_version" : "{{user `containerd_version`}}",
