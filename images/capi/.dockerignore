@@ -1,0 +1,6 @@
+# Ignore files that shouldn't go into the container
+.bin/
+output/
+packer_cache/
+manifest.json
+docker/

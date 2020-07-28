@@ -28,7 +28,7 @@ source hack/utils.sh
 
 if command -v packer >/dev/null 2>&1; then exit 0; fi
 
-mkdir -p .bin && cd .bin
+mkdir -p .local/bin && cd .local/bin
 
 SED="sed"
 if command -v gsed >/dev/null; then
@@ -43,8 +43,8 @@ _chkfile="packer_${_version}_SHA256SUMS"
 _chk_url="https://releases.hashicorp.com/packer/${_version}/${_chkfile}"
 _zipfile="packer_${_version}_${HOSTOS}_${HOSTARCH}.zip"
 _zip_url="https://releases.hashicorp.com/packer/${_version}/${_zipfile}"
-curl -LO "${_chk_url}"
-curl -LO "${_zip_url}"
+curl -SsLO "${_chk_url}"
+curl -SsLO "${_zip_url}"
 ${SED} -i -n "/${HOSTOS}_${HOSTARCH}/p" "${_chkfile}"
 checksum_sha256 "${_chkfile}"
 unzip "${_zipfile}"
