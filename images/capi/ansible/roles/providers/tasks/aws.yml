@@ -15,6 +15,7 @@
 - name: install aws clients
   pip:
     name: "{{ packages }}"
+    executable: pip3
   vars:
     packages:
       - awscli
