@@ -34,6 +34,7 @@
     packages:
     - cloud-init
     - cloud-utils-growpart
+    - python2-pip
   when: ansible_os_family == "RedHat"
 
 - name: Install cloud-init and tools for VMware Photon OS
