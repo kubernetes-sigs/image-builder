@@ -1,10 +1,5 @@
-package:
-  cloud-init:
-    installed: true
-service:
-  containerd:
-    enabled: true
-    running: true
-command:
-  crictl ps:
-    exit-status: 0
+gossfile:
+  goss-command.yaml: {}
+  goss-kernel-params.yaml: {}
+  goss-service.yaml: {}
+  goss-package.yaml: {}
