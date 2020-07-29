@@ -13,7 +13,7 @@ trigger: none
 pr: none
 
 jobs:
-- job: build_vhd_linux
+- job: create_sku
   container: $[ variables['CONTAINER_IMAGE'] ]
   timeoutInMinutes: 120
   strategy:

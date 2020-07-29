@@ -263,6 +263,9 @@ build-ami-all: $(AMI_BUILD_TARGETS) ## Builds all AMIs
 
 build-azure-sig-ubuntu-1804: ## Builds Ubuntu 18.04 Azure managed image in Shared Image Gallery
 build-azure-vhd-ubuntu-1804: ## Builds Ubuntu 18.04 VHD image for Azure
+build-azure-sig-centos-7: ## Builds CentOS 7 Azure managed image in Shared Image Gallery
+build-azure-vhd-centos-7: ## Builds CentOS 7 VHD image for Azure
+build-azure-all: $(AZURE_BUILD_VHD_TARGETS) ## Builds all Azure VHDs
 
 build-do-default: ## Builds the DigitalOcean snapshot default image
 
@@ -323,3 +326,11 @@ docker-build: ## Build the docker image for controller-manager
 .PHONY: docker-push
 docker-push: ## Push the docker image
 	docker push $(CONTROLLER_IMG)-$(ARCH):$(TAG)
+
+## --------------------------------------
+## Test targets
+## --------------------------------------
+##@ Testing
+.PHONY: test-azure
+test-azure: ## Run the tests for Azure builders
+	$(abspath packer/azure/scripts/ci-azure-e2e.sh)

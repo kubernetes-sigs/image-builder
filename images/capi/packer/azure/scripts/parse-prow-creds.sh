@@ -1,5 +1,4 @@
-#!/usr/bin/env bash
-
+#!/bin/bash
 # Copyright 2020 The Kubernetes Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,17 +16,18 @@
 set -o errexit
 set -o nounset
 set -o pipefail
+set +o xtrace
 
-source hack/utils.sh
+parse_cred() {
+    grep -E -o "$1[[:blank:]]*=[[:blank:]]*\"[^[:space:]\"]+\"" | cut -d '"' -f 2
+}
 
-_version="2.9.0"
 
-# Change directories to the parent directory of the one in which this
-# script is located.
-cd "$(dirname "${BASH_SOURCE[0]}")/.."
-
-if command -v az >/dev/null 2>&1; then exit 0; fi
-
-ensure_py3
-pip3 install --user "azure-cli==${_version}"
-ensure_py3_bin az azure-cli
+# for Prow we use the provided AZURE_CREDENTIALS file.
+# the file is expected to be in toml format.
+if [[ -n "${AZURE_CREDENTIALS:-}" ]]; then
+    export AZURE_SUBSCRIPTION_ID="$(cat ${AZURE_CREDENTIALS} | parse_cred SubscriptionID)"
+    export AZURE_TENANT_ID="$(cat ${AZURE_CREDENTIALS} | parse_cred TenantID)"
+    export AZURE_CLIENT_ID="$(cat ${AZURE_CREDENTIALS} | parse_cred ClientID)"
+    export AZURE_CLIENT_SECRET="$(cat ${AZURE_CREDENTIALS} | parse_cred ClientSecret)"
+fi
