@@ -60,6 +60,8 @@ deps-azure:
 	hack/ensure-packer.sh
 	hack/ensure-jq.sh
 	hack/ensure-azure-cli.sh
+	hack/ensure-goss.sh
+
 
 .PHONY: deps-do
 deps-do: ## Installs/checks dependencies for DigitalOcean builds

@@ -37,6 +37,7 @@ jobs:
       set -o pipefail
       export AZURE_CLIENT_ID=$(AZURE_CLIENT_ID)
       export AZURE_CLIENT_SECRET=$(AZURE_CLIENT_SECRET)
+      make deps-azure
       make build-azure-vhd-ubuntu-1804 | tee packer/azure/packer.out
     displayName: Building VHD
     workingDirectory: '$(system.defaultWorkingDirectory)/images/capi'
