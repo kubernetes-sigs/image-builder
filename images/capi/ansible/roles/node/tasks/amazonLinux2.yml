@@ -19,19 +19,16 @@
     state: started
     enabled: yes
 
-- name: configure auditd rules for containerd
+- name: Ensure sysstat is running and comes on at reboot
+  service:
+    name: sysstat
+    state: started
+    enabled: yes
+
+- name: Configure auditd rules for containerd
   copy:
     src: etc/audit/rules.d/containerd.rules
     dest: /etc/audit/rules.d/containerd.rules
     owner: root
     group: root
     mode: 0644
-
-- name: Ensure Bandwidth for TCP connections should 1 Mb (same as Ubuntu)
-  sysctl:
-    name: net.ipv4.tcp_limit_output_bytes
-    value: "1048576"
-    state: present
-    sysctl_set: yes
-    reload: yes
-    sysctl_file: "{{ sysctl_conf_file }}"
