@@ -6,5 +6,6 @@
   "distribution_release": "bionic",
   "distribution_version": "18.04",
   "source_ami": "",
-  "ssh_username": "ubuntu"
+  "ssh_username": "ubuntu",
+  "root_device_name": "/dev/sda1"
 }

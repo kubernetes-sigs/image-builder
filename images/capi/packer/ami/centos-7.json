@@ -6,5 +6,6 @@
   "distribution_release": "Core",
   "distribution_version": "7",
   "source_ami": "",
-  "ssh_username": "centos"
+  "ssh_username": "centos",
+  "root_device_name": "/dev/sda1"
 }
