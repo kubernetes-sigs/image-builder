@@ -1,8 +1,10 @@
 ---
-kubernetes_cni_version: ""
+arch: "amd64"
 containerd_version: ""
-kubernetes_version: ""
-kubernetes_source_type: ""
 kubernetes_cni_source_type: ""
+kubernetes_cni_version: ""
+kubernetes_source_type: ""
+kubernetes_version: ""
+
 # When k8s and k8s cni source is http
 kubernetes_load_additional_imgs: false
