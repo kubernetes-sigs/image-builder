@@ -26,3 +26,12 @@
     owner: root
     group: root
     mode: 0644
+
+- name: Ensure Bandwidth for TCP connections should 1 Mb (same as Ubuntu)
+  sysctl:
+    name: net.ipv4.tcp_limit_output_bytes
+    value: "1048576"
+    state: present
+    sysctl_set: yes
+    reload: yes
+    sysctl_file: "{{ sysctl_conf_file }}"
