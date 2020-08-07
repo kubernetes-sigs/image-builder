@@ -1,6 +1,6 @@
 # Table of Contents
 
-[A](#a) | [C](#c) | [E](#e) | [K](#k) | [O](#o) | [V](#v)
+[A](#a) | [C](#c) | [E](#e) | [G](#g) | [K](#k) | [O](#o) | [V](#v)
 
 # A
 ---
@@ -38,12 +38,20 @@ The Cluster API is a Kubernetes project to bring declarative, Kubernetes-style A
 
 [Cluster API Prover Azure](https://github.com/kubernetes-sigs/cluster-api-provider-azure)
 
+
 # E
 ---
 
 ## ESXi
 
 ESXi (formerly ESX) is an enterprise-class, type-1 hypervisor developed by VMware. ESXi provides strong separation between VMs and itself, providing strong security boundaries between the guest and host operating systems. ESXi can be used as a standalone entity, without vCenter but this is extremely uncommon and feature limited as without a higher level manager (vCenter). ESXi cannot provide its most valuable features, like High Availability, vMotion, workload balancing and vSAN (a software defined storage stack).
+
+# G
+---
+
+## GOSS
+
+[Goss](https://github.com/aelsabbahy/goss) is a YAML based serverspec alternative tool for validating a server’s configuration.  It is used in conjunction with [packer-provisioner-goss](https://github.com/YaleUniversity/packer-provisioner-goss/releases) to test if the images have all requisite components to work with cluster API.
 
 # K
 ---
