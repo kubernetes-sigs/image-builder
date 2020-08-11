@@ -44,6 +44,13 @@
     path: /etc/systemd/system/containerd.service.d
     state: directory
 
+- name: Configure containerd process start-up type to Notify
+  ini_file:
+    path: /etc/systemd/system/containerd.service
+    section: Service
+    option: Type
+    value: notify
+
 - name: Create containerd boot order drop in file
   template:
     dest: /etc/systemd/system/containerd.service.d/boot-order.conf
@@ -74,7 +81,7 @@
     name: containerd
     daemon_reload: yes
     enabled: True
-    state: started
+    state: restarted
 
 - name: delete tarball
   file:
