@@ -297,6 +297,14 @@
   ],
   "provisioners": [
     {
+      "type": "shell",
+      "environment_vars": [
+        "BUILD_NAME={{user `build_name`}}"
+      ],
+      "script": "./packer/files/bootstrap-flatcar.sh",
+      "execute_command": "sudo -S -E {{.Vars}} bash '{{.Path}}'"
+    },
+    {
       "type": "ansible",
       "except": ["vmware-iso-base", "vsphere-iso-base"],
       "playbook_file": "./ansible/firstboot.yml",

@@ -1,4 +1,5 @@
 {
+  "ansible_os_family": "RedHat",
   "build_name": "photon-3",
   "distro_name": "photon",
   "os_display_name": "VMware Photon OS 64-bit",

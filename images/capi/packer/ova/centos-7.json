@@ -1,4 +1,5 @@
 {
+  "ansible_os_family": "RedHat",
   "build_name": "centos-7",
   "distro_name": "centos",
   "os_display_name": "CentOS 7",

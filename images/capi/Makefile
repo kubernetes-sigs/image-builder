@@ -398,6 +398,7 @@ build-gce-ubuntu-2004: ## Builds the GCE ubuntu-2004 image
 build-gce-all: $(GCE_BUILD_TARGETS) ## Builds all GCE image
 
 build-node-ova-local-centos-7: ## Builds CentOS 7 Node OVA w local hypervisor
+build-node-ova-local-flatcar: ## Builds Flatcar stable Node OVA w local hypervisor
 build-node-ova-local-photon-3: ## Builds Photon 3 Node OVA w local hypervisor
 build-node-ova-local-rhel-7: ## Builds RHEL 7 Node OVA w local hypervisor
 build-node-ova-local-ubuntu-1804: ## Builds Ubuntu 18.04 Node OVA w local hypervisor
@@ -406,6 +407,7 @@ build-node-ova-local-all: $(NODE_OVA_LOCAL_BUILD_TARGETS) ## Builds all Node OVA
 build-haproxy-ova-local-photon-3: ## Builds Photon 3 HAProxy OVA w local hypervisor
 
 build-node-ova-esx-centos-7: ## Builds CentOS 7 Node OVA w remote hypervisor
+build-node-ova-esx-flatcar: ## Builds Flatcar stable Node OVA w remote hypervisor
 build-node-ova-esx-photon-3: ## Builds Photon 3 Node OVA w remote hypervisor
 build-node-ova-esx-rhel-7: ## Builds RHEL 7 Node OVA w remote hypervisor
 build-node-ova-esx-ubuntu-1804: ## Builds Ubuntu 18.04 Node OVA w remote hypervisor
@@ -414,6 +416,7 @@ build-node-ova-esx-all: $(NODE_OVA_ESX_BUILD_TARGETS) ## Builds all Node OVAs w 
 build-haproxy-ova-esx-photon-3: ## Builds Photon 3 HAProxy OVA w remote hypervisor
 
 build-node-ova-vsphere-centos-7: ## Builds CentOS 7 Node OVA and template on vSphere
+build-node-ova-vsphere-flatcar: ## Builds Flatcar stable Node OVA and template on vSphere
 build-node-ova-vsphere-photon-3: ## Builds Photon 3 Node OVA and template on vSphere
 build-node-ova-vsphere-rhel-7: ## Builds RHEL 7 Node OVA and template on vSphere
 build-node-ova-vsphere-ubuntu-1804: ## Builds Ubuntu 18.04 Node OVA and template on vSphere
