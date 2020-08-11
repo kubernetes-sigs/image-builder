@@ -14,12 +14,12 @@ If any needed binaries are not present, they can be installed to `images/capi/.b
 
 ## Providers
 
-* [AWS](./providers/aws.md)  
-* [Azure](./providers/azure.md)
-* [DigitalOcean](./providers/digitalocean.md)
-* Google *TODO*
-* [OpenStack](./providers/openstack.md)
-* [vSphere](./providers/vsphere.md)
+- [AWS](./providers/aws.md)  
+- [Azure](./providers/azure.md)
+- [DigitalOcean](./providers/digitalocean.md)
+- Google *TODO*
+- [OpenStack](./providers/openstack.md)
+- [vSphere](./providers/vsphere.md)
 
 ## Make targets
 
@@ -98,7 +98,6 @@ A common use-case within enterprise environments is to have a package repository
 
 For example, to build an image using only an internal mirror, create a file called `internal_repos.json` and populate it with the following:
 
-
 ```json
 {
   "disable_public_repos": "true",
@@ -136,6 +135,7 @@ PACKER_VAR_FILES=proxy.json make build-node-ova-local-photon-3
 ```
 
 ## Kubernetes versions
+
 | Tested Kubernetes Versions |
 |---------|
 | `1.14.x` |

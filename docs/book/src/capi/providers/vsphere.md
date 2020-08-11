@@ -6,10 +6,10 @@ The images may be built using one of the following hypervisors:
 
 | OS | Builder | Build target |
 |----|---------|--------------|
-| Linux | VMware Workstation | build-node-ova-local-<OS> |
-| macOS | VMware Fusion | build-node-ova-local-<OS> |
-| ESXi | ESXi | build-node-ova-esx-<OS> |
-| vSphere | vSphere >= 6.5 | build-node-ova-vsphere-<OS> |
+| Linux | VMware Workstation | build-node-ova-local-`<OS>` |
+| macOS | VMware Fusion | build-node-ova-local-`<OS>` |
+| ESXi | ESXi | build-node-ova-esx-`<OS>` |
+| vSphere | vSphere >= 6.5 | build-node-ova-vsphere-`<OS>` |
 
 **NOTE** If you want to build all available OS's, uses the `-all` target. If you want to build them in parallel, use `make -j`. For example, `make -j build-node-ova-local-all`.
 
@@ -20,7 +20,8 @@ The `vsphere` builder supports building against a remote VMware vSphere using st
 
 Complete the `vsphere.json` configuration file with credentials and informations specific to the remote vSphere hypervisor used to build the `ova` file.
 This file must have the following format (`cluster` can be replace by `host`):
-```
+
+```json
 {
     "vcenter_server":"FQDN of vcenter",
     "username":"vcenter_username",
@@ -58,7 +59,6 @@ In addition to the configuration found in `images/capi/packer/config`, the `ova`
 | `ubuntu-1804.json` | The settings for the Ubuntu 18.04 image |
 | `ubuntu-2004.json` | The settings for the Ubuntu 20.04 image |
 | `vsphere.json` | Additional settings needed when building on a remote vSphere |
-
 
 The images are built and located in `images/capi/output/BUILD_NAME+kube-KUBERNETES_VERSION`
 

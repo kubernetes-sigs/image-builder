@@ -17,8 +17,8 @@ This section assumes Ubuntu 18.04 LTS.
 #### Adding your user to the kvm group
 
 ```bash
-$ sudo usermod -a -G kvm <yourusername>
-$ sudo chown root:kvm /dev/kvm
+sudo usermod -a -G kvm <yourusername>
+sudo chown root:kvm /dev/kvm
 ```
 
 Then exit and log back in to make the change take place.

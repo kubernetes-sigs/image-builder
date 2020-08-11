@@ -1,7 +1,6 @@
 # image-builder CLI
 
-
-### Engines
+## Engines
 
 `image-builder` supports 3 engines for configuring images:
 
@@ -13,6 +12,7 @@
 Engines are specified and configured using the `engine` section:
 
 `packer.yaml`
+
 ```yaml
 engine:
   kind: packer
@@ -25,7 +25,7 @@ engine:
       secret_key: !!env AWS_SECRET_ACCESS_KEY
 ```
 
-### YAML Templating
+## YAML Templating
 
 `image-builder` configs can used the `!!env` and `!!template` YAML directives to replace values inline while still maintaining
 YAML compatibility.
@@ -34,7 +34,8 @@ The `!!env` directive replaces the KEY with the environment variable.
 
 The `!!template` directive templates out the value using Golang text templates combined with all the functions from the [gomplate](https://docs.gomplate.ca/) library
 
-### OS / Image Combinations
+## OS / Image Combinations
+
 To list the supported OS / Image combinations run `image-builder images`:
 The current supported combinations are:
 
@@ -47,8 +48,7 @@ debian9        debian                                                           
 ubuntu1804     ubuntu        Ubuntu         bionic           18.04     ✓     ✓            ✓       ✓        ✓
 ```
 
-
-### Configuring an image with Kubernetes
+## Configuring an image with Kubernetes
 
 ```yaml
 distroName: ubuntu1804
@@ -65,8 +65,7 @@ container_runtime:
 
 This will build an image using QEMU.
 
-
-### Customizing an image
+## Customizing an image
 
 Arbitrary konfigadm specs can be combined to further customize an image:
 
@@ -81,7 +80,7 @@ commands:
 
 ```
 
-### Transformations / Conversions
+## Transformations / Conversions
 
 `image-builder` can be used to apply arbitrary transformations to images, e.g. to convert a *qcow2* or *raw* disk image to an *ova* run
 
@@ -90,6 +89,7 @@ image-builder build -c image.yaml`
 ```
 
 `image.yaml`
+
 ```yaml
 input:
   kind: img

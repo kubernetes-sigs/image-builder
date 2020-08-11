@@ -29,7 +29,7 @@ konfigadm images upload ova --image ubuntu1804.img
 
 ## Testing images
 
-```
+```sh
 make setup
 make ubuntu1804
 ```

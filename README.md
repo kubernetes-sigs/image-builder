@@ -1,8 +1,8 @@
 # Image Builder
 
-## Please see our [Book](https://image-builder.sigs.k8s.io) for more in-depth documentation.
+## Please see our [Book](https://image-builder.sigs.k8s.io) for more in-depth documentation
 
-## What is the Image Builder?
+## What is the Image Builder
 
 The Image Builder is a collection of cross-provider Kubernetes virtual machine image building utilities.
 
@@ -17,6 +17,7 @@ Each project is independent from each other, with the goal of eventually merging
 The `konfigadm` directory contains manifests for use with the `konfigadm CLI`.
 
 ### Useful links
+
 - [Quick Start for Cluster API Image Builder](https://image-builder.sigs.k8s.io/capi/quickstart.html)
 - [konfigadm CLI](https://github.com/flanksource/konfigadm)
 

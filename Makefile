@@ -34,3 +34,11 @@ build-book:
 .PHONY: serve-book
 serve-book: ## Build and serve the book with live-reloading enabled
 	$(MAKE) -C docs/book serve
+
+.PHONY: lint
+lint: ## Run all the lint targets
+	$(MAKE) lint-markdown
+
+.PHONY: lint-markdown
+lint-markdown: ## Lint the project's markdown
+	docker run --rm -v "$$(pwd)":/build:ro gcr.io/cluster-api-provider-vsphere/extra/mdlint:0.23.2 -- /md/lint -i images/kube-deploy .
