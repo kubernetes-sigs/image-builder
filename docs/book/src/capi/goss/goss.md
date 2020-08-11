@@ -10,13 +10,14 @@ to test if the images have all requisite components to work with cluster API.
 ### Support Matrix 
 *For stock server-specs shipped with repo
 
-| OS | Builder | 
-|----|---------|
-| Amazon Linux | aws
-| PhotonOS | ova
-| Ubuntu | aws, azure, gcp, ova
-| CentOS | aws, ova 
-| Windows | aws, azure, ova
+| OS                      | Builder              |
+|-------------------------|----------------------|
+| Amazon Linux            | aws                  |
+| PhotonOS                | ova                  |
+| Ubuntu                  | aws, azure, gcp, ova |
+| CentOS                  | aws, ova             |
+| Flatcar Container Linux | aws, azure, ova      |
+| Windows                 | aws, azure, ova      |
 
 
 ### Prerequisites for Running GOSS

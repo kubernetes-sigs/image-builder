@@ -5,7 +5,7 @@
       "disable_vnc": "True",
       "format": "{{user `format`}}",
       "headless": "{{user `headless`}}",
-      "http_directory": "./packer/ova/linux/{{user `distro_name`}}/http/",
+      "http_directory": "{{user `http_directory`}}",
       "name": "vmware-vmx",
       "output_directory": "{{user `output_dir`}}",
       "remote_datastore": "{{user `remote_datastore`}}",
@@ -323,6 +323,14 @@
   ],
   "provisioners": [
     {
+      "environment_vars": [
+        "BUILD_NAME={{user `build_name`}}"
+      ],
+      "execute_command": "BUILD_NAME={{user `build_name`}}; if [[ \"${BUILD_NAME}\" == *\"flatcar\"* ]]; then sudo {{.Vars}} -S -E bash '{{.Path}}'; fi",
+      "script": "./packer/files/flatcar/scripts/bootstrap-flatcar.sh",
+      "type": "shell"
+    },
+    {
       "ansible_env_vars": [
         "ANSIBLE_SSH_ARGS='{{user `existing_ansible_ssh_args`}} -o IdentitiesOnly=yes'"
       ],
@@ -431,6 +439,7 @@
     "export_manifest": "none",
     "folder": "",
     "guest_os_type": null,
+    "http_directory": "./packer/ova/linux/{{user `distro_name`}}/http/",
     "ib_version": "{{env `IB_VERSION`}}",
     "kubernetes_cni_deb_version": null,
     "kubernetes_cni_http_source": null,
