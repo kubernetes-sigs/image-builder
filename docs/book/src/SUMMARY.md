@@ -8,4 +8,5 @@
   - [DigitalOcean](./capi/providers/digitalocean.md)
   - [OpenStack](./capi/providers/openstack.md)
   - [vSphere](./capi/providers/vsphere.md)
+  - [Testing the Images](./capi/goss/goss.md)
 - [Glossary](./glossary.md)
