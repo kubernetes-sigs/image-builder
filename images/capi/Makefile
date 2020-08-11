@@ -215,11 +215,11 @@ $(GCE_BUILD_TARGETS): deps-gce
 
 .PHONY: $(AZURE_BUILD_VHD_TARGETS)
 $(AZURE_BUILD_VHD_TARGETS): deps-azure
-	. $(abspath packer/azure/scripts/init-vhd.sh) && packer build $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/azure/azure-config.json)" -var-file="$(abspath packer/azure/azure-vhd.json)" -only="$(subst build-azure-,,$@)" $(ABSOLUTE_PACKER_VAR_FILES) packer/azure/packer.json
+	. $(abspath packer/azure/scripts/init-vhd.sh) && packer build $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/azure/azure-config.json)" -var-file="$(abspath packer/azure/azure-vhd.json)" -var-file="$(abspath packer/azure/$(subst build-azure-vhd-,,$@).json)" -only="$(subst build-azure-,,$@)" $(ABSOLUTE_PACKER_VAR_FILES) packer/azure/packer.json
 
 .PHONY: $(AZURE_BUILD_SIG_TARGETS)
 $(AZURE_BUILD_SIG_TARGETS): deps-azure
-	. $(abspath packer/azure/scripts/init-sig.sh) && packer build $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/azure/azure-config.json)" -var-file="$(abspath packer/azure/azure-sig.json)" -only="$(subst build-azure-,,$@)" $(ABSOLUTE_PACKER_VAR_FILES) packer/azure/packer.json
+	. $(abspath packer/azure/scripts/init-sig.sh) && packer build $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/azure/azure-config.json)" -var-file="$(abspath packer/azure/azure-sig.json)" -var-file="$(abspath packer/azure/$(subst build-azure-sig-,,$@).json)" -only="$(subst build-azure-,,$@)" $(ABSOLUTE_PACKER_VAR_FILES) packer/azure/packer.json
 
 $(DO_BUILD_TARGETS): deps-do
 	packer build $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/digitalocean/$(subst build-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/digitalocean/packer.json
