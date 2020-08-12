@@ -23,7 +23,10 @@
     - include_role:
         name: pki
     - include_role:
-        name: "{{ custom_role_name }}"
+        name: "{{ role }}"
+      loop: "{{ custom_role_names.split() }}"
+      loop_control:
+        loop_var: role
       when: custom_role | default(false)|bool
     - include_role:
         name: sysprep
