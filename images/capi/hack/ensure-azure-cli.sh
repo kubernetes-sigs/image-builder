@@ -26,17 +26,20 @@ cd "$(dirname "${BASH_SOURCE[0]}")/.."
 
 if command -v az >/dev/null 2>&1; then exit 0; fi
 
-if ! command -v python3 >/dev/null || command -v python >/dev/null 2>&1; then
-  echo "Python 3 or Python binary must be in \$PATH" 1>&2
+if ! command -v python3 >/dev/null 2>&1; then
+  echo "python3 binary must be in \$PATH" 1>&2
   exit 1
 fi
-if ! command -v pip3 >/dev/null 2>&1 || command -v pip >/dev/null 2>&1; then
+
+if ! command -v pip3 >/dev/null 2>&1; then
   curl -SsL https://bootstrap.pypa.io/get-pip.py -o get-pip.py
-  python get-pip.py --user
+  python3 get-pip.py --user
   rm -f get-pip.py
 fi
-pip3 install --user "azure-cli==${_version}" || python -m pip install --user "azure-cli==${_version}"
-if ! command -v ansible >/dev/null 2>&1; then
-  echo "User's Python binary directory must bin in \$PATH" 1>&2
+
+pip3 install --user "azure-cli==${_version}"
+
+if ! command -v azure-cli >/dev/null 2>&1; then
+  echo "User's Python3 binary directory must bin in \$PATH" 1>&2
   exit 1
 fi
