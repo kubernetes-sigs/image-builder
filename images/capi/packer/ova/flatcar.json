@@ -4,7 +4,7 @@
   "channel_name": "{{env `FLATCAR_CHANNEL`}}",
   "release_version": "{{env `FLATCAR_VERSION`}}",
   "os_display_name": "Flatcar Container Linux ({{env `FLATCAR_CHANNEL`}} channel release {{env `FLATCAR_VERSION`}})",
-  "guest_os_type": "otherLinux64Guest",
+  "guest_os_type": "coreos-64",
   "vsphere_guest_os_type": "coreos64Guest",
   "iso_url": "https://{{env `FLATCAR_CHANNEL`}}.release.flatcar-linux.net/amd64-usr/{{env `FLATCAR_VERSION`}}/flatcar_production_iso_image.iso",
   "iso_checksum": "https://{{env `FLATCAR_CHANNEL`}}.release.flatcar-linux.net/amd64-usr/{{env `FLATCAR_VERSION`}}/flatcar_production_iso_image.iso.DIGESTS.asc",
