@@ -101,6 +101,10 @@ ARCH ?= amd64
 ## Packer flags
 ## --------------------------------------
 
+# Set Packer color to true if not already set in env variables
+PACKER_COLOR ?= true
+PACKER_FLAGS += -color=$(PACKER_COLOR)
+
 # If FOREGROUND=1 then Packer will set headless to false, causing local builds
 # to build in the foreground, with a UI. This is very useful when debugging new
 # platforms or issues with existing ones.
