@@ -120,29 +120,16 @@
   - { path: /root/.ssh/authorized_keys }
   - { path: "/home/{{ ansible_env.SUDO_USER }}/.ssh/authorized_keys" }
 
-- name: Remove and recreate /var/log and daily log folder.
-  file:
-    state: "{{ item.state }}"
-    path: "{{ item.path }}"
-    owner: root
-    group: root
-    mode: 0755
-  loop:
-  - { path: /var/log, state: absent }
-  - { path: /var/log, state: directory }
-  - { path: /var/log/sa, state: directory }
 
-- name: Create log directories for k8s
-  file:
-    path: "{{ item.path }}"
-    state: "{{ item.state }}"
-    mode: "{{ item.mode }}"
-    owner: root
-    group: root
-  loop:
-  - { path: /var/log/kubernetes, state: directory, mode: "0755" }
-  - { path: /var/log/kubernetes/audit.log, state: touch, mode: "0600" }
-  when: kubernetes_semver != '' # Ensure audit log is not created for HA Proxy images, since this task is shared amongst build targets
+- name: Truncate all remaining log files in /var/log
+  shell:
+    cmd: |
+      find /var/log -type f -iname '*.log' | xargs truncate -s 0
+
+- name: Delete all logrotated log zips
+  shell:
+    cmd: |
+      find /var/log -type f -name '*.gz' -exec rm {} +
 
 - name: Remove swapfile
   file:
@@ -152,15 +139,6 @@
   - { path: /swapfile, state: absent }
   - { path: /mnt/resource/swapfile, state: absent }
   when: ansible_memory_mb.swap.total != 0
-
-- name: Create a log directory for auditd
-  file:
-    path: "/var/log/audit"
-    state: directory
-    mode: "0640"
-    owner: root
-    group: root
-  when: kubernetes_semver != '' # Ensure audit log is not created for HA Proxy images, since this task is shared amongst build targets
 
 - name: Truncate shell history
   file:
