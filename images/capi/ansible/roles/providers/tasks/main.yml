@@ -56,3 +56,15 @@
     owner: root
     group: root
     mode: "0755"
+
+# Some OS might disable cloud-final service on boot (rhel 7).
+# Enable all cloud-init services on boot.
+- name: Make sure all cloud init services are enabled
+  service:
+    name: "{{ item }}"
+    enabled: yes
+  with_items:
+    - cloud-final
+    - cloud-config
+    - cloud-init
+    - cloud-init-local
