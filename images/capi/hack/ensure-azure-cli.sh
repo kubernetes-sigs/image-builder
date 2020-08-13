@@ -18,6 +18,8 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
+source hack/utils.sh
+
 _version="2.9.0"
 
 # Change directories to the parent directory of the one in which this
@@ -26,20 +28,6 @@ cd "$(dirname "${BASH_SOURCE[0]}")/.."
 
 if command -v az >/dev/null 2>&1; then exit 0; fi
 
-if ! command -v python3 >/dev/null 2>&1; then
-  echo "python3 binary must be in \$PATH" 1>&2
-  exit 1
-fi
-
-if ! command -v pip3 >/dev/null 2>&1; then
-  curl -SsL https://bootstrap.pypa.io/get-pip.py -o get-pip.py
-  python3 get-pip.py --user
-  rm -f get-pip.py
-fi
-
+ensure_py3
 pip3 install --user "azure-cli==${_version}"
-
-if ! command -v azure-cli >/dev/null 2>&1; then
-  echo "User's Python3 binary directory must bin in \$PATH" 1>&2
-  exit 1
-fi
+ensure_py3_bin az
