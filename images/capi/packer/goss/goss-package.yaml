@@ -34,7 +34,7 @@ package:
     <<: *kubernetes_cni_version
 {{end}}
 # Looping over common packages for an OS
-{{range $name, $vers := index .Vars .Vars.OS "common-packages"}}
+{{range $name, $vers := index .Vars .Vars.OS "common-package"}}
   {{$name}}:
     installed: true
   {{range $key, $val := $vers}}
@@ -42,7 +42,7 @@ package:
   {{end}}
 {{end}}
 # Looping over provider specific packages for an OS
-{{range $name, $vers := index .Vars .Vars.OS .Vars.PROVIDER "packages"}}
+{{range $name, $vers := index .Vars .Vars.OS .Vars.PROVIDER "package"}}
   {{$name}}:
     installed: true
   {{range $key, $val := $vers}}

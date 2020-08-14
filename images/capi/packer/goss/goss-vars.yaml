@@ -70,32 +70,32 @@ kubernetes_cni_rpm_version: ""
 # When k8s and k8s cni source is http
 kubernetes_load_additional_imgs: false
 
-# OS Specific Packages/Command/Kernal Params etc...
+# OS Specific package/Command/Kernal Params etc...
 # Structured in below format
 # OS_NAME
-#   common-packages:
+#   common-package:
 #   common-kernel-params:
 #   common-commands:
 #   common-services:
 #   PROVIDER_NAME:
-#     packages:
+#     package:
 #     command:
 #     service:
 #  ...
 amazon linux:
-  common-packages: *common_rpms
+  common-package: *common_rpms
   amazon:
     service:
       amazon-ssm-agent:
         enabled: true
         running: true
-    packages:
+    package:
       awscli:
       amazon-ssm-agent:
 centos:
-  common-packages: *common_rpms
+  common-package: *common_rpms
   amazon:
-    packages:
+    package:
       amazon-ssm-agent:
     command:
       pip3 list --format=columns | grep 'awscli' | awk -F' ' '{print $1}':
@@ -107,13 +107,13 @@ centos:
     package:
       azure_cli:
   ova:
-    packages:
+    package:
       open-vm-tools:
       cloud-init:
       cloud-utils-growpart:
       python2-pip:
 ubuntu:
-  common-packages:
+  common-package:
     <<: *common_debs
   azure:
     command:
@@ -122,7 +122,7 @@ ubuntu:
         stdout: ["azure-cli"]
         stderr: []
         timeout: 0
-    packages:
+    package:
       <<: *chrony_deb
     service:
       chrony:
@@ -133,7 +133,7 @@ ubuntu:
       snap.amazon-ssm-agent.amazon-ssm-agent.service:
         enabled: true
         running: true
-    packages:
+    package:
     command:
       snap list | grep 'amazon-ssm-agent' | awk -F' ' '{print $1}':
         exit-status: 0
@@ -146,18 +146,21 @@ ubuntu:
         stderr: []
         timeout: 0
   ova:
-    packages:
+    package:
       open-vm-tools:
       cloud-guest-utils:
       cloud-initramfs-copymods:
       cloud-initramfs-dyn-netconf:
       cloud-initramfs-growroot:
 photon:
-  common-packages:
+  common-kernel-param:
+    net.ipv4.tcp_limit_output_bytes:
+      value: "1048576"
+  common-package:
     <<: *common_photon_rpms
     audit:
   ova:
-    packages:
+    package:
       open-vm-tools:
       cloud-init:
       cloud-utils:

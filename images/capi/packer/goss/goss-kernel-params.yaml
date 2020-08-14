@@ -9,3 +9,15 @@ kernel-param:
     value: "1"
   net.bridge.bridge-nf-call-ip6tables:
     value: "1"
+{{range $name, $vers := index .Vars .Vars.OS "common-kernel-param"}}
+  {{ $name }}:
+  {{range $key, $val := $vers}}
+    {{$key}}: "{{$val}}"
+  {{end}}
+{{end}}
+{{range $name, $vers := index .Vars .Vars.OS .Vars.PROVIDER "kernel-param"}}
+  {{ $name }}:
+  {{range $key, $val := $vers}}
+    {{$key}}: "{{$val}}"
+  {{end}}
+{{end}}
