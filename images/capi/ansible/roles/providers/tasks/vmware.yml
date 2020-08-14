@@ -48,17 +48,20 @@
     url:  '{{ guestinfo_datasource_script }}'
     dest: /tmp/cloud-init-vmware.sh
     mode: 0700
+  when: ansible_os_family != "Flatcar"
 
 - name: Execute cloud-init-vmware.sh
   shell: bash -o errexit -o pipefail /tmp/cloud-init-vmware.sh
   environment:
     REPO_SLUG: '{{ guestinfo_datasource_slug }}'
     GIT_REF:   '{{ guestinfo_datasource_ref }}'
+  when: ansible_os_family != "Flatcar"
 
 - name: Remove cloud-init-vmware.sh
   file:
     path:  /tmp/cloud-init-vmware.sh
     state: absent
+  when: ansible_os_family != "Flatcar"
 
 - name: Remove cloud-init /etc/cloud/cloud.cfg.d/99-disable-networking-config.cfg
   file:
@@ -86,3 +89,4 @@
     owner: root
     group: root
     mode: 0644
+  when: ansible_os_family != "Flatcar"
