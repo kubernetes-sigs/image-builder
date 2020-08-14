@@ -80,6 +80,51 @@
     reload: yes
     sysctl_file: "{{ sysctl_conf_file }}"
 
+- name: Ensure net.ipv4.neigh.default.gc_interval sysctl is present
+  sysctl:
+    name: net.ipv4.neigh.default.gc_interval
+    value: "30"
+    state: present
+    sysctl_set: yes
+    reload: yes
+    sysctl_file: "{{ sysctl_conf_file }}"
+
+- name: Ensure net.ipv4.neigh.default.gc_stale_time sysctl is present
+  sysctl:
+    name: net.ipv4.neigh.default.gc_stale_time
+    value: "60"
+    state: present
+    sysctl_set: yes
+    reload: yes
+    sysctl_file: "{{ sysctl_conf_file }}"
+
+- name: Ensure net.ipv4.neigh.default.gc_thresh1 sysctl is present
+  sysctl:
+    name: net.ipv4.neigh.default.gc_thresh1
+    value: "4096"
+    state: present
+    sysctl_set: yes
+    reload: yes
+    sysctl_file: "{{ sysctl_conf_file }}"
+
+- name: Ensure net.ipv4.neigh.default.gc_thresh2 sysctl is present
+  sysctl:
+    name: net.ipv4.neigh.default.gc_thresh2
+    value: "8192"
+    state: present
+    sysctl_set: yes
+    reload: yes
+    sysctl_file: "{{ sysctl_conf_file }}"
+
+- name: Ensure net.ipv4.neigh.default.gc_thresh3 sysctl is present
+  sysctl:
+    name: net.ipv4.neigh.default.gc_thresh3
+    value: "16384"
+    state: present
+    sysctl_set: yes
+    reload: yes
+    sysctl_file: "{{ sysctl_conf_file }}"
+
 - name: Disable swap memory
   shell: |
     swapoff -a
