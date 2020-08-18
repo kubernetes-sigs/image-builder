@@ -11,7 +11,7 @@ command:
     timeout: 0
 {{if eq .Vars.kubernetes_source_type "pkg"}}
 {{if eq .Vars.kubernetes_cni_source_type "pkg"}}
-  crictl images | grep -v 'IMAGE ID' | awk -F'[ /]' '{print $2}' | sort:
+  crictl images | grep -v 'IMAGE ID' | awk -F'[ /]' '{print $2}' | sed 's/-{{ .Vars.arch }}//g' | sort:
     exit-status: 0
     stderr: []
     timeout: 0
@@ -20,7 +20,7 @@ command:
 {{end}}
 {{if and (eq .Vars.kubernetes_source_type "http") (eq .Vars.kubernetes_cni_source_type "http") (not .Vars.kubernetes_load_additional_imgs)}}
 # The second last pipe of awk is to take out arch from kube-apiserver-amd64 (i.e. amd64 or any other arch)
-  crictl images | grep -v 'IMAGE ID' | awk -F'[ /]' '{print $2}' | awk 'BEGIN{FS=OFS="-"}NF--' | sort:
+  crictl images | grep -v 'IMAGE ID' | awk -F'[ /]' '{print $2}' | sed 's/-{{ .Vars.arch }}//g' | sort:
     exit-status: 0
     stderr: []
     timeout: 0
@@ -28,24 +28,24 @@ command:
 {{end}}
 {{if and (eq .Vars.kubernetes_source_type "http") (eq .Vars.kubernetes_cni_source_type "http") (.Vars.kubernetes_load_additional_imgs)}}
 # The second last pipe of awk is to take out arch from kube-apiserver-amd64 (i.e. amd64 or any other arch)
-  crictl images | grep -v 'IMAGE ID' | awk -F'[ /]' '{print $2}' | awk 'BEGIN{FS=OFS="-"}NF--' | sort:
+  crictl images | grep -v 'IMAGE ID' | awk -F'[ /]' '{print $2}' | sed 's/-{{ .Vars.arch }}//g' | sort:
     exit-status: 0
     stderr: []
     timeout: 0
     stdout: ["coredns", "etcd", "kube-apiserver", "kube-controller-manager", "kube-proxy", "kube-scheduler", "pause"]
 {{end}}
 {{if eq .Vars.kubernetes_source_type "http"}}
-  kubectl version --short --client=true -o json | jq .clientVersion.gitVersion | awk -F'[v"]' '{print $3}':
+  kubectl version --short --client=true -o json | jq .clientVersion.gitVersion | tr -d '"' | awk '{print substr($1,2); }':
     exit-status: 0
     stdout: [{{ .Vars.kubernetes_version }}]
     stderr: []
     timeout: 0
-  kubeadm version -o json | jq .clientVersion.gitVersion | awk -F'[v"]' '{print $3}':
+  kubeadm version -o json | jq .clientVersion.gitVersion | tr -d '"' | awk '{print substr($1,2); }':
     exit-status: 0
     stdout: [{{ .Vars.kubernetes_version }}]
     stderr: []
     timeout: 0
-  kubelet --version | awk -F'[ v]' '{print $3}':
+  kubelet --version | awk -F' ' '{print $2}'  | tr -d '"' | awk '{print substr($1,2); }':
     exit-status: 0
     stdout: [{{ .Vars.kubernetes_version }}]
     stderr: []
@@ -57,4 +57,16 @@ command:
     stdout: [{{ .Vars.kubernetes_cni_version }}]
     stderr: []
     timeout: 0
+{{end}}
+{{range $name, $vers := index .Vars .Vars.OS "common-command"}}
+  {{ $name }}:
+  {{range $key, $val := $vers}}
+    {{$key}}: {{$val}}
+  {{end}}
+{{end}}
+{{range $name, $vers := index .Vars .Vars.OS .Vars.PROVIDER "command"}}
+  {{ $name }}:
+  {{range $key, $val := $vers}}
+    {{$key}}: {{$val}}
+  {{end}}
 {{end}}

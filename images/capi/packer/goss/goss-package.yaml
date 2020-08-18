@@ -1,7 +1,18 @@
-x-function: &kubernetes_version
+kubernetes_version: &kubernetes_version
   versions:
-    contain-element:
-      match-regexp: {{ .Vars.kubernetes_version }}
+    or:
+     - contain-element:
+         match-regexp: "^\\Q{{ .Vars.kubernetes_deb_version }}\\E$"
+     - contain-element:
+         match-regexp: "^\\Q{{ .Vars.kubernetes_rpm_version }}\\E$"
+
+kubernetes_cni_version: &kubernetes_cni_version
+  versions:
+    or:
+      - contain-element:
+          match-regexp: "^\\Q{{ .Vars.kubernetes_cni_deb_version }}\\E$"
+      - contain-element:
+          match-regexp: "^\\Q{{ .Vars.kubernetes_cni_rpm_version }}\\E$"
 
 package:
   cloud-init:
@@ -20,7 +31,21 @@ package:
 {{if eq .Vars.kubernetes_cni_source_type "pkg"}}
   kubernetes-cni:
     installed: true
-    versions:
-      contain-element:
-        match-regexp: {{ .Vars.kubernetes_cni_version }}
+    <<: *kubernetes_cni_version
+{{end}}
+# Looping over common packages for an OS
+{{range $name, $vers := index .Vars .Vars.OS "common-package"}}
+  {{$name}}:
+    installed: true
+  {{range $key, $val := $vers}}
+    {{$key}}: {{$val}}
+  {{end}}
+{{end}}
+# Looping over provider specific packages for an OS
+{{range $name, $vers := index .Vars .Vars.OS .Vars.PROVIDER "package"}}
+  {{$name}}:
+    installed: true
+  {{range $key, $val := $vers}}
+    {{$key}}: {{$val}}
+  {{end}}
 {{end}}
