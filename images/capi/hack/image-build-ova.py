@@ -42,7 +42,7 @@ def main():
     image_type.add_argument('--haproxy', action='store_true')
     parser.add_argument('--vmx',
                         dest='vmx_version',
-                        default='13',
+                        default='15',
                         help='The virtual hardware version')
     parser.add_argument('--eula_file',
                         nargs='?',
