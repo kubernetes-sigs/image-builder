@@ -126,10 +126,12 @@ COMMON_NODE_VAR_FILES :=	packer/config/kubernetes.json \
 					packer/config/cni.json \
 					packer/config/containerd.json \
 					packer/config/ansible-args.json \
-					packer/config/goss-args.json
+					packer/config/goss-args.json \
+					packer/config/common.json
 
 COMMON_HAPROXY_VAR_FILES := packer/ova/packer-common.json \
-					packer/config/ansible-args.json
+					packer/config/ansible-args.json \
+					packer/config/common.json
 
 # Initialize a list of flags to pass to Packer. This includes any existing flags
 # specified by PACKER_FLAGS, as well as prefixing the list with the variable
@@ -322,7 +324,7 @@ clean-packer-cache:
 .PHONY: docker-build
 docker-build: ## Build the docker image for controller-manager
 	docker build --pull --build-arg PASSED_IB_VERSION=$(IB_VERSION) --build-arg ARCH=$(ARCH) . -t $(CONTROLLER_IMG)-$(ARCH):$(TAG)
-	
+
 .PHONY: docker-push
 docker-push: ## Push the docker image
 	docker push $(CONTROLLER_IMG)-$(ARCH):$(TAG)

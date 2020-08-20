@@ -8,9 +8,6 @@
     "containerd_sha256": null,
     "containerd_url": "https://storage.googleapis.com/cri-containerd-release/cri-containerd-{{user `containerd_version`}}.linux-amd64.tar.gz",
     "existing_ansible_ssh_args": "{{env `ANSIBLE_SSH_ARGS`}}",
-    "extra_debs": "",
-    "extra_repos": "",
-    "extra_rpms": "",
     "accelerator": "kvm",
     "cpus": "1",
     "disk_size": "20480",
@@ -35,8 +32,6 @@
     "kubernetes_rpm_gpg_check": null,
     "kubernetes_container_registry": null,
     "output_directory": "./output/{{user `build_name`}}-kube-{{user `kubernetes_semver`}}",
-    "reenable_public_repos": "true",
-    "remove_extra_repos": "false",
     "qemu_binary": "qemu-system-x86_64",
     "ssh_password": "builder",
     "ssh_username": "builder"
