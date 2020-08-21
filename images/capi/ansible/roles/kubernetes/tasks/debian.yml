@@ -22,6 +22,7 @@
     repo: "{{ 'deb ' ~ kubernetes_deb_repo ~ ' main' }}"
     update_cache: True
     state: present
+    mode: 0644
 
 - name: Install Kubernetes
   apt:

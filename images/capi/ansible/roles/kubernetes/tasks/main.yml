@@ -33,6 +33,7 @@
   template:
     dest: /etc/kubernetes-version
     src: etc/kubernetes-version
+    mode: 0644
 
 # TODO: This section will be deprecated once https://github.com/containerd/cri/issues/1131 is fixed. It is used to support ECR with containerd.
 - name: Check if Kubernetes container registry is using Amazon ECR

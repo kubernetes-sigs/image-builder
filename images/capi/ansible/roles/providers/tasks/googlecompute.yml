@@ -16,6 +16,7 @@
   get_url:
     url:  https://sdk.cloud.google.com/
     dest: /tmp/install-gcloud.sh
+    mode: 0700
 
 - name: Execute install-gcloud.sh
   shell: bash -o errexit -o pipefail /tmp/install-gcloud.sh --disable-prompts --install-dir=/

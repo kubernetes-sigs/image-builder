@@ -28,6 +28,7 @@
     url: "{{ containerd_url }}"
     checksum: "sha256:{{ containerd_sha256 }}"
     dest: /tmp/containerd.tar.gz
+    mode: 0600
 
 # TODO(vincepri): This unpacks the entire tar in the root directory
 # we should find a better way to check what's being unpacked and where.
@@ -50,21 +51,25 @@
     section: Service
     option: Type
     value: notify
+    mode: 0644
 
 - name: Create containerd boot order drop in file
   template:
     dest: /etc/systemd/system/containerd.service.d/boot-order.conf
     src: etc/systemd/system/containerd.service.d/boot-order.conf
+    mode: 0644
 
 - name: Create containerd memory pressure drop in file
   template:
     dest: /etc/systemd/system/containerd.service.d/memory-pressure.conf
     src: etc/systemd/system/containerd.service.d/memory-pressure.conf
+    mode: 0644
 
 - name: Create containerd max tasks drop in file
   template:
     dest: /etc/systemd/system/containerd.service.d/max-tasks.conf
     src: etc/systemd/system/containerd.service.d/max-tasks.conf
+    mode: 0644
 
 - name: Creates containerd config directory
   file:
@@ -75,6 +80,7 @@
   template:
     dest: /etc/containerd/config.toml
     src: etc/containerd/config.toml
+    mode: 0644
 
 - name: start containerd service
   systemd:

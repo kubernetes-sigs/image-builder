@@ -16,6 +16,7 @@
   template:
     src: etc/apt/sources.list.j2
     dest: /etc/apt/sources.list
+    mode: 0644
 
 - name: Find existing repo files
   find:
@@ -36,6 +37,7 @@
   copy:
     src: "{{ item }}"
     dest: "/etc/apt/sources.list.d/{{ item | basename }}"
+    mode: 0644
   loop: "{{ extra_repos.split() }}"
   when: extra_repos != ""
 

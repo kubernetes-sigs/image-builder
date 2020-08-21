@@ -16,6 +16,7 @@
   template:
     dest: /etc/yum.repos.d/kubernetes.repo
     src: etc/yum.repos.d/kubernetes.repo
+    mode: 0644
 
 - name: Install Kubernetes
   command: tdnf install {{ packages }} --nogpgcheck -y

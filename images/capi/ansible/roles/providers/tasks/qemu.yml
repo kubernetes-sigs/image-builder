@@ -46,6 +46,7 @@
   file:
     src:   /usr/libexec/cloud-init
     dest:  /usr/lib/cloud-init
+    mode: 0777
     state: link
   when: ansible_os_family == "RedHat"
 

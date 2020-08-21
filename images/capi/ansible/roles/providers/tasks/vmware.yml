@@ -47,6 +47,7 @@
   get_url:
     url:  '{{ guestinfo_datasource_script }}'
     dest: /tmp/cloud-init-vmware.sh
+    mode: 0700
 
 - name: Execute cloud-init-vmware.sh
   shell: bash -o errexit -o pipefail /tmp/cloud-init-vmware.sh

@@ -34,6 +34,7 @@
       overlay
       br_netfilter
     dest: /etc/modules-load.d/kubernetes.conf
+    mode: 0644
 
 - name: Ensure net.ipv4.ip_forward sysctl is present
   sysctl:

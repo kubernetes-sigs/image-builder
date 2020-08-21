@@ -2,6 +2,7 @@
   template:
     dest: /etc/kubeadm.yml
     src: "{{ kubeadm_template }}"
+    mode: 0600
 
 - name: Kubeadm pull images
   shell: 'kubeadm config images pull --config /etc/kubeadm.yml'
