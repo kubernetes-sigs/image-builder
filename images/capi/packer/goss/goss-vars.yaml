@@ -155,7 +155,7 @@ ubuntu:
 photon:
   common-kernel-param:
     net.ipv4.tcp_limit_output_bytes:
-      value: "1048576"
+      value: "524288"
   common-package:
     <<: *common_photon_rpms
     audit:
