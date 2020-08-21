@@ -30,7 +30,7 @@
 - name: Ensure Bandwidth for TCP connections should 1 Mb (same as Ubuntu)
   sysctl:
     name: net.ipv4.tcp_limit_output_bytes
-    value: "1048576"
+    value: "524288"
     state: present
     sysctl_set: yes
     reload: yes
