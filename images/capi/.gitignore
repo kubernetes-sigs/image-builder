@@ -4,4 +4,5 @@
 /output-*/
 /output/
 /.bin/
+/.local/bin/
 manifest.json

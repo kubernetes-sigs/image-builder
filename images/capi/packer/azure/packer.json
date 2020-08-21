@@ -39,6 +39,7 @@
     "kubernetes_deb_gpg_key": null,
     "kubernetes_rpm_gpg_check": null,
     "kubernetes_container_registry": null,
+    "manifest_output": "manifest.json",
     "reenable_public_repos": "true",
     "remove_extra_repos": "false",
     "subscription_id": null,
@@ -156,6 +157,27 @@
       },
       "vars_file": "{{user `goss_vars_file`}}",
       "version": "{{user `goss_version`}}"
+    }
+  ],
+  "post-processors": [
+    {
+      "type": "manifest",
+      "output": "{{user `manifest_output`}}",
+      "strip_path": true,
+      "custom_data": {
+        "build_name": "{{user `build_name`}}",
+        "build_timestamp": "{{user `build_timestamp`}}",
+        "build_date": "{{isotime}}",
+        "build_type": "node",
+        "containerd_version": "{{user `containerd_version`}}",
+        "custom_role": "{{user `custom_role`}}",
+        "kubernetes_cni_semver": "{{user `kubernetes_cni_semver`}}",
+        "kubernetes_semver": "{{user `kubernetes_semver`}}",
+        "kubernetes_source_type": "{{user `kubernetes_source_type`}}",
+        "os_name": "{{user `distro_name`}}",
+        "resource_group_name": "{{user `resource_group_name`}}",
+        "storage_account": "{{user `storage_account_name`}}"
+      }
     }
   ]
 }
