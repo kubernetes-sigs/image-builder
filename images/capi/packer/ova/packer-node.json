@@ -83,58 +83,49 @@
     {
       "type": "vsphere-iso",
       "name": "vsphere",
-
-      "vcenter_server":      "{{user `vcenter_server`}}",
-      "username":            "{{user `username`}}",
-      "password":            "{{user `password`}}",
+      "vcenter_server": "{{user `vcenter_server`}}",
+      "username": "{{user `username`}}",
+      "password": "{{user `password`}}",
       "insecure_connection": "{{user `insecure_connection`}}",
-
       "vm_name": "{{user `build_version`}}",
       "datastore": "{{user `datastore`}}",
       "datacenter": "{{user `datacenter`}}",
       "folder": "{{user `folder`}}",
-      "host":     "{{user `host`}}",
+      "host": "{{user `host`}}",
       "convert_to_template": "{{user `convert_to_template`}}",
       "cluster": "{{user `cluster`}}",
-
       "network_adapters": [
         {
           "network": "{{user `network`}}",
           "network_card": "{{user `network_card`}}"
         }
       ],
-
       "vm_version": "{{user `vmx_version`}}",
       "CPUs": 1,
       "cpu_cores": 1,
       "RAM": 2048,
       "disk_controller_type": "{{user `disk_controller_type`}}",
       "guest_os_type": "{{user `vsphere_guest_os_type`}}",
-
       "boot_wait": "{{user `boot_wait`}}",
       "http_directory": "./packer/ova/linux/{{user `distro_name`}}/http/",
       "iso_urls": "{{user `iso_url`}}",
       "iso_checksum": "{{user `iso_checksum_type`}}:{{user `iso_checksum`}}",
-
       "communicator": "ssh",
       "ssh_username": "{{user `ssh_username`}}",
       "ssh_password": "{{user `ssh_password`}}",
       "ssh_timeout": "4h",
-
       "storage": [
         {
           "disk_size": 20480,
           "disk_thin_provisioned": "{{user `disk_thin_provisioned`}}"
         }
       ],
-
       "boot_command": [
         "{{user `boot_command_prefix`}}",
         "http://{{ .HTTPIP }}:{{ .HTTPPort }}",
         "{{user `boot_command_suffix`}}"
       ],
       "shutdown_command": "echo '{{user `ssh_password`}}' | sudo -S -E sh -c 'usermod -L {{user `ssh_username`}} && {{user `shutdown_command`}}'",
-
       "export": {
         "force": true,
         "output_directory": "{{user `output_dir`}}"
@@ -156,14 +147,17 @@
         "--extra-vars",
         "{{user `ansible_extra_vars`}}"
       ]
-   },{
+    },
+    {
       "type": "goss",
       "arch": "{{user `goss_arch`}}",
       "format": "{{user `goss_format`}}",
       "format_options": "{{user `goss_format_options`}}",
       "goss_file": "{{user `goss_entry_file`}}",
       "inspect": "{{user `goss_inspect_mode`}}",
-      "tests": ["{{user `goss_tests_dir`}}"],
+      "tests": [
+        "{{user `goss_tests_dir`}}"
+      ],
       "url": "{{user `goss_url`}}",
       "use_sudo": true,
       "vars_inline": {
@@ -172,7 +166,7 @@
         "PROVIDER": "ova",
         "kubernetes_source_type": "{{user `kubernetes_source_type`}}",
         "kubernetes_cni_source_type": "{{user `kubernetes_cni_source_type`}}",
-        "containerd_version" : "{{user `containerd_version`}}",
+        "containerd_version": "{{user `containerd_version`}}",
         "kubernetes_cni_version": "{{user `kubernetes_cni_semver` | replace \"v\" \"\" 1}}",
         "kubernetes_version": "{{user `kubernetes_semver` | replace \"v\" \"\" 1}}",
         "kubernetes_rpm_version": "{{ split (user `kubernetes_rpm_version`) \"-\" 0  }}",
