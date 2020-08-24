@@ -6,14 +6,11 @@
     "build_timestamp": "{{timestamp}}",
     "source_image_family": "ubuntu-1804-lts",
     "machine_type": "n1-standard-1",
-    "disable_public_repos": "false",
     "encrypted": "false",
     "zone": null,
     "containerd_version": null,
     "containerd_sha256": null,
     "containerd_url": "https://storage.googleapis.com/cri-containerd-release/cri-containerd-{{user `containerd_version`}}.linux-amd64.tar.gz",
-    "extra_debs": "",
-    "extra_repos": "",
     "kubernetes_cni_rpm_version": null,
     "kubernetes_cni_deb_version": null,
     "kubernetes_cni_semver": null,
@@ -32,9 +29,7 @@
     "kubernetes_deb_gpg_key": null,
     "kubernetes_rpm_gpg_check": null,
     "kubernetes_container_registry": null,
-    "existing_ansible_ssh_args": "{{env `ANSIBLE_SSH_ARGS`}}",
-    "reenable_public_repos": "true",
-    "remove_extra_repos": "false"
+    "existing_ansible_ssh_args": "{{env `ANSIBLE_SSH_ARGS`}}"
   },
   "builders": [
     {

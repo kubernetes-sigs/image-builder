@@ -1,0 +1,11 @@
+{
+  "disable_public_repos": "false",
+  "extra_debs": "",
+  "extra_repos": "",
+  "extra_rpms": "",
+  "http_proxy": "",
+  "https_proxy": "",
+  "no_proxy": "",
+  "reenable_public_repos": "true",
+  "remove_extra_repos": "false"
+}
