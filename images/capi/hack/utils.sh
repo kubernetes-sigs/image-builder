@@ -60,7 +60,7 @@ get_shasum() {
   if command -v shasum >/dev/null 2>&1; then
     present_shasum=$(shasum -a 256 "${1}"| awk -F' ' '{print $1}')
   elif command -v sha256sum >/dev/null 2>&1; then
-    present_shasum=$(sha256sum -c "${1}" | awk -F' ' '{print $1}')
+    present_shasum=$(sha256sum "${1}" | awk -F' ' '{print $1}')
   else
     echo "missing shasum tool" 1>&2
     return 1
