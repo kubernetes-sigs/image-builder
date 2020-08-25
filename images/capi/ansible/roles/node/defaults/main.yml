@@ -31,7 +31,6 @@ common_rpms:
 common_debs:
 - apt-transport-https
 - conntrack
-- conntrackd
 - curl
 - ebtables
 - jq
