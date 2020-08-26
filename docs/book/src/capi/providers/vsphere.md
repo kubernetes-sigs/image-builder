@@ -55,10 +55,22 @@ In addition to the configuration found in `images/capi/packer/config`, the `ova`
 | `esx.json` | Additional settings needed when building on a remote ESXi host |
 | `centos-7.json` | The settings for the CentOS 7 image |
 | `photon-3.json` | The settings for the Photon 3 image |
+| `rhel-7.json` | The settings for the RHEL 7 image |
 | `ubuntu-1804.json` | The settings for the Ubuntu 18.04 image |
 | `ubuntu-2004.json` | The settings for the Ubuntu 20.04 image |
 | `vsphere.json` | Additional settings needed when building on a remote vSphere |
 
+### RHEL
+
+When building the RHEL image, the OS must register itself with the Red Hat Subscription Manager (RHSM). To do this, the current supported method is to supply a username and password via environment variables. The two environment variables are `RHSM_USER` and `RHSM_PASS`. Although building RHEL images has been tested via this method, if an error is encountered during the build, the VM is deleted without the machine being unregistered with RHSM. To prevent this, it is recommended to build with the following command:
+
+```shell
+PACKER_FLAGS=-on-error=ask RHSM_USER=user RHSM_PASS=pass make build-node-ova-<hypervisor>-rhel-7
+```
+
+The addition of `PACKER_FLAGS=-on-error=ask` means that if an error is encountered, the build will pause, allowing you to SSH into the machine and unregister manually.
+
+### Output
 
 The images are built and located in `images/capi/output/BUILD_NAME+kube-KUBERNETES_VERSION`
 

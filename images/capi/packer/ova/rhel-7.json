@@ -1,0 +1,14 @@
+{
+  "build_name": "rhel-7",
+  "distro_name": "rhel",
+  "os_display_name": "RHEL 7",
+  "guest_os_type": "rhel7-64",
+  "vsphere_guest_os_type": "rhel7_64Guest",
+  "iso_url": "file:///rhel-server-7.7-x86_64-dvd.iso",
+  "iso_checksum": "88b42e934c24af65e78e09f0993e4dded128d74ec0af30b89b3cdc02ec48f028",
+  "iso_checksum_type": "sha256",
+  "boot_command_prefix": "<tab><wait><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>quiet text inst.ks=",
+  "boot_command_suffix": "/7/ks.cfg<enter><wait>",
+  "redhat_epel_rpm": "https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm",
+  "shutdown_command": "sys-unconfig"
+}
