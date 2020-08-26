@@ -35,50 +35,20 @@
       br_netfilter
     dest: /etc/modules-load.d/kubernetes.conf
 
-- name: Ensure net.ipv4.ip_forward sysctl is present
+- name: Set and persist kernel params
   sysctl:
-    name: net.ipv4.ip_forward
-    value: "1"
+    name: "{{ item.param }}"
+    value: "{{ item.val }}"
     state: present
     sysctl_set: yes
-    reload: yes
     sysctl_file: "{{ sysctl_conf_file }}"
-
-- name: Ensure net.bridge.bridge-nf-call-iptables sysctl is present
-  sysctl:
-    name: net.bridge.bridge-nf-call-iptables
-    value: "1"
-    state: present
-    sysctl_set: yes
     reload: yes
-    sysctl_file: "{{ sysctl_conf_file }}"
-
-- name: Ensure net.ipv6.conf.all.forwarding sysctl is present
-  sysctl:
-    name: net.ipv6.conf.all.forwarding
-    value: "1"
-    state: present
-    sysctl_set: yes
-    reload: yes
-    sysctl_file: "{{ sysctl_conf_file }}"
-
-- name: Ensure IPv6 is enable
-  sysctl:
-    name: net.ipv6.conf.all.disable_ipv6
-    value: "0"
-    state: present
-    sysctl_set: yes
-    reload: yes
-    sysctl_file: "{{ sysctl_conf_file }}"
-
-- name: Ensure net.bridge.bridge-nf-call-ip6tables sysctl is present
-  sysctl:
-    name: net.bridge.bridge-nf-call-ip6tables
-    value: "1"
-    state: present
-    sysctl_set: yes
-    reload: yes
-    sysctl_file: "{{ sysctl_conf_file }}"
+  loop:
+    - { param: net.bridge.bridge-nf-call-iptables, val: 1 }
+    - { param: net.bridge.bridge-nf-call-ip6tables, val: 1 }
+    - { param: net.ipv4.ip_forward, val: 1 }
+    - { param: net.ipv6.conf.all.forwarding, val: 1 }
+    - { param: net.ipv6.conf.all.disable_ipv6, val: 0 }
 
 - name: Disable swap memory
   shell: |
