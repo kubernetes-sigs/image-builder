@@ -8,6 +8,9 @@ service:
   kubelet:
     enabled: true
     running: false
+  conntrackd:
+    enabled: false
+    running: false
 {{range $name, $vers := index .Vars .Vars.OS "common-service"}}
   {{ $name }}:
   {{range $key, $val := $vers}}
