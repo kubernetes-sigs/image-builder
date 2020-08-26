@@ -1,7 +1,6 @@
 {
   "build_name": "centos-7",
   "distro_name": "centos",
-  "redhat_epel_rpm": "https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm",
   "os_display_name": "CentOS 7",
   "guest_os_type": "centos7-64",
   "vsphere_guest_os_type": "centos7_64Guest",
