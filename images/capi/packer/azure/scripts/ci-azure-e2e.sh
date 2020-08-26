@@ -58,7 +58,4 @@ cleanup() {
 trap cleanup EXIT
 
 make deps-azure
-# TODO: fix the centos build and enable
-#make -j build-azure-all
-make build-azure-vhd-ubuntu-1804
-
+make -j build-azure-all

@@ -6,6 +6,7 @@
   "http_proxy": "",
   "https_proxy": "",
   "no_proxy": "",
+  "redhat_epel_rpm": "https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm",
   "reenable_public_repos": "true",
   "remove_extra_repos": "false"
 }
