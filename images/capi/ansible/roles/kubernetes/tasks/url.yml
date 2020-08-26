@@ -16,6 +16,7 @@
   file:
     src:   "/usr/local/bin/{{ item }}"
     dest:  "/usr/bin/{{ item }}"
+    mode: 0777
     state: link
     force: yes
   loop:
@@ -72,6 +73,7 @@
     #             checksum file format
     #checksum: "sha1:{{ kubernetes_http_source }}/bin/linux/amd64/{{ item }}.sha1"
     dest: "/tmp/{{ item }}"
+    mode: 0600
   loop: "{{ kubernetes_imgs }}"
 
 - name: Load Kubernetes images

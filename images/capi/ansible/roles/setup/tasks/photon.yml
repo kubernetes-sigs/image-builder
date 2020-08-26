@@ -16,6 +16,7 @@
   template:
     dest: /home/builder/.bash_profile
     src: photon_bash_profile
+    mode: 0600
     owner: builder
     group: builder
 
