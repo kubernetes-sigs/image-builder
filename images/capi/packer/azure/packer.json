@@ -170,7 +170,7 @@
         "kubernetes_source_type": "{{user `kubernetes_source_type`}}",
         "os_name": "{{user `distro_name`}}",
         "resource_group_name": "{{user `resource_group_name`}}",
-        "storage_account": "{{user `storage_account_name`}}"
+        "storage_account_name": "{{user `storage_account_name`}}"
       }
     }
   ]
