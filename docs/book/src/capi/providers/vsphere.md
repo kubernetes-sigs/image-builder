@@ -6,15 +6,22 @@ The images may be built using one of the following hypervisors:
 
 | OS | Builder | Build target |
 |----|---------|--------------|
-| Linux | VMware Workstation | build-node-ova-local-<OS> |
-| macOS | VMware Fusion | build-node-ova-local-<OS> |
+| Linux | VMware Workstation (vmware-iso) | build-node-ova-local-<OS> |
+| macOS | VMware Fusion (vmware-iso)| build-node-ova-local-<OS> |
 | ESXi | ESXi | build-node-ova-esx-<OS> |
 | vSphere | vSphere >= 6.5 | build-node-ova-vsphere-<OS> |
+| Linux | VMware Workstation (vmware-vmx) | build-node-ova-local-vmx-<OS> |
+| macOS | VMware Fusion (vmware-vmx) | build-node-ova-local-vmx-<OS> |
 
 **NOTE** If you want to build all available OS's, uses the `-all` target. If you want to build them in parallel, use `make -j`. For example, `make -j build-node-ova-local-all`.
 
 The `esxi` builder supports building against a remote VMware ESX server with [specific configuration](https://packer.io/docs/builders/vmware-iso.html#building-on-a-remote-vsphere-hypervisor) (ssh access), but is untested with this project.
 The `vsphere` builder supports building against a remote VMware vSphere using standard API.
+
+### vmware-vmx builder
+During the dev process it's uncommon for the base OS image to change, but the image building process builds the base image from the ISO every time and thus adding a significant amount of time to the build process. 
+
+To reduce the image building times during development, one can use the `build-node-ova-local-base-<OS>` target to build the base image from the ISO. By setting `source_path` variable in `vmx.json` to the `*.vmx` file from the output, it can then be re-used with the `build-node-ova-local-vmx-<OS>` build target to speed up the process. 
 
 ### Prerequisites for vSphere builder
 
