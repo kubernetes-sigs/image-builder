@@ -19,3 +19,11 @@ az sig image-definition create \
    --offer capz-demo \
    --sku 18.04-LTS \
    --os-type Linux
+az sig image-definition create \
+   --resource-group ${RESOURCE_GROUP_NAME} \
+   --gallery-name ClusterAPI \
+   --gallery-image-definition capi-ubuntu-2004 \
+   --publisher capz \
+   --offer capz-demo \
+   --sku 20_04-lts \
+   --os-type Linux

@@ -41,19 +41,16 @@
   loop: "{{ extra_repos.split() }}"
   when: extra_repos != ""
 
-- name: update apt cache
-  apt:
-    force_apt_get: True
-    update_cache: True
-
 - name: perform a dist-upgrade
   apt:
     force_apt_get: True
+    update_cache: True
     upgrade: dist
 
 - name: install baseline dependencies
   apt:
     force_apt_get: True
+    update_cache: True
     name: "{{ debs }}"
     state: latest
 

@@ -104,7 +104,7 @@ centos:
         timeout: 0
   azure:
     package:
-      azure_cli:
+      azure-cli:
   ova:
     package:
       open-vm-tools:
