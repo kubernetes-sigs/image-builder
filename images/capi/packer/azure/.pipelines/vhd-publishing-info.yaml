@@ -1,0 +1,11 @@
+steps:
+- script: |
+      VHD_URL="$(cat packer/azure/vhd-url.out)"
+      cat <<EOF > packer/azure/vhd-publishing-info.json
+      {
+          "vhd_url" : "$VHD_URL"
+      }
+      EOF
+  displayName: Generating publishing info for VHD
+  workingDirectory: '$(system.defaultWorkingDirectory)/images/capi'
+  condition: eq(variables.CLEANUP, 'False')

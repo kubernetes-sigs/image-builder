@@ -1,0 +1,18 @@
+steps:
+- script: |
+      set -o pipefail
+      RESOURCE_GROUP_NAME=$(jq -r '.builds[-1].custom_data.resource_group_name' manifest.json | cut -d ":" -f2)
+      STORAGE_ACCOUNT_NAME=$(jq -r '.builds[-1].custom_data.storage_account_name' manifest.json | cut -d ":" -f2)
+      OS_DISK_URI=$(cat packer/azure/packer.out | grep "OSDiskUri:" | cut -d " " -f 2)
+      printf "${OS_DISK_URI}?" | tee packer/azure/vhd-url.out
+      az login --service-principal -u ${AZURE_CLIENT_ID} -p ${AZURE_CLIENT_SECRET} --tenant ${AZURE_TENANT_ID}
+      az account set -s ${AZURE_SUBSCRIPTION_ID}
+      ACCOUNT_KEY=$(az storage account keys list -g ${RESOURCE_GROUP_NAME} --subscription ${AZURE_SUBSCRIPTION_ID} --account-name ${STORAGE_ACCOUNT_NAME} --query '[0].value')
+      start_date=$(date +"%Y-%m-%dT00:00Z" -d "-1 day")
+      expiry_date=$(date +"%Y-%m-%dT00:00Z" -d "+1 year")
+      az storage container generate-sas --name system --permissions lr --account-name ${STORAGE_ACCOUNT_NAME} --account-key ${ACCOUNT_KEY} --start $start_date --expiry $expiry_date | tr -d '\"' | tee -a packer/azure/vhd-url.out
+  displayName: Getting OS VHD URL
+  workingDirectory: '$(system.defaultWorkingDirectory)/images/capi'
+  condition: eq(variables.CLEANUP, 'False')
+  env:
+    AZURE_CLIENT_SECRET: $(AZURE_CLIENT_SECRET)

@@ -9,9 +9,6 @@
 # - OFFER - the name of the offer to create the sku for
 # - SKU_TEMPLATE_FILE - the base template file to use for the sku
 
-trigger: none
-pr: none
-
 jobs:
 - job: create_sku
   container: $[ variables['CONTAINER_IMAGE'] ]
@@ -22,10 +19,11 @@ jobs:
     name: $(BUILD_POOL)
   steps:
   - script: |
-      export AZURE_CLIENT_SECRET=$(AZURE_CLIENT_SECRET)
       ./scripts/new-sku.sh
     displayName: Create a new marketplace SKU
     workingDirectory: '$(system.defaultWorkingDirectory)/images/capi/packer/azure'
+    env:
+      AZURE_CLIENT_SECRET: $(AZURE_CLIENT_SECRET)
   - task: PublishPipelineArtifact@1
     inputs:
       artifact: 'sku-info'

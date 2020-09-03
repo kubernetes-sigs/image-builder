@@ -1,0 +1,13 @@
+steps:
+- script: |
+      set -o pipefail
+      RESOURCE_GROUP_NAME=$(jq -r '.builds[-1].custom_data.resource_group_name' manifest.json | cut -d ":" -f2)
+      STORAGE_ACCOUNT_NAME=$(jq -r '.builds[-1].custom_data.storage_account_name' manifest.json | cut -d ":" -f2)
+      az login --service-principal -u ${AZURE_CLIENT_ID} -p ${AZURE_CLIENT_SECRET} --tenant ${AZURE_TENANT_ID}
+      az account set -s ${AZURE_SUBSCRIPTION_ID}
+      az storage account delete -n ${STORAGE_ACCOUNT_NAME} -g ${RESOURCE_GROUP_NAME} --yes
+  displayName: cleanup - delete storage account
+  workingDirectory: '$(system.defaultWorkingDirectory)/images/capi'
+  condition: eq(variables.CLEANUP, 'True')
+  env:
+    AZURE_CLIENT_SECRET: $(AZURE_CLIENT_SECRET)
