@@ -1,71 +1,37 @@
 {
-  "variables": {
-    "ansible_common_vars": "",
-    "ansible_extra_vars": "",
-    "project_id": "{{env `GCP_PROJECT_ID`}}",
-    "build_timestamp": "{{timestamp}}",
-    "source_image_family": "ubuntu-1804-lts",
-    "machine_type": "n1-standard-1",
-    "encrypted": "false",
-    "zone": null,
-    "containerd_version": null,
-    "containerd_sha256": null,
-    "containerd_url": "https://storage.googleapis.com/cri-containerd-release/cri-containerd-{{user `containerd_version`}}.linux-amd64.tar.gz",
-    "kubernetes_cni_rpm_version": null,
-    "kubernetes_cni_deb_version": null,
-    "kubernetes_cni_semver": null,
-    "kubernetes_cni_source_type": null,
-    "kubernetes_cni_http_source": null,
-    "kubernetes_series": null,
-    "kubernetes_semver": null,
-    "kubernetes_source_type": null,
-    "kubernetes_load_additional_imgs": null,
-    "kubernetes_http_source": null,
-    "kubernetes_rpm_version": null,
-    "kubernetes_deb_version": null,
-    "kubernetes_rpm_repo": null,
-    "kubernetes_rpm_gpg_key": null,
-    "kubernetes_deb_repo": null,
-    "kubernetes_deb_gpg_key": null,
-    "kubernetes_rpm_gpg_check": null,
-    "kubernetes_container_registry": null,
-    "existing_ansible_ssh_args": "{{env `ANSIBLE_SSH_ARGS`}}"
-  },
   "builders": [
     {
-      "name": "ubuntu-1804",
-      "type": "googlecompute",
-      "project_id": "{{ user `project_id` }}",
-      "machine_type": "{{ user `machine_type` }}",
-      "source_image_family": "{{ user `source_image_family` }}",
-      "image_name": "cluster-api-ubuntu-1804-{{user `kubernetes_semver` | clean_resource_name}}-{{user `build_timestamp`}}",
       "image_family": "capi-ubuntu-1804-k8s-{{user `kubernetes_series` | clean_resource_name}}",
-      "zone": "{{ user `zone` }}",
-      "ssh_username": "ubuntu",
+      "image_name": "cluster-api-ubuntu-1804-{{user `kubernetes_semver` | clean_resource_name}}-{{user `build_timestamp`}}",
       "labels": {
         "build_timestamp": "{{user `build_timestamp`}}",
-        "source_ami": "{{user `ubuntu_18_04_ami`}}",
         "distribution": "ubuntu",
         "distribution_release": "bionic",
         "distribution_version": "1804",
-        "kubernetes_version": "{{user `kubernetes_semver` | clean_resource_name}}"
-      }
+        "kubernetes_version": "{{user `kubernetes_semver` | clean_resource_name}}",
+        "source_ami": "{{user `ubuntu_18_04_ami`}}"
+      },
+      "machine_type": "{{ user `machine_type` }}",
+      "name": "ubuntu-1804",
+      "project_id": "{{ user `project_id` }}",
+      "source_image_family": "{{ user `source_image_family` }}",
+      "ssh_username": "ubuntu",
+      "type": "googlecompute",
+      "zone": "{{ user `zone` }}"
     }
   ],
   "provisioners": [
     {
-      "type": "shell",
       "inline": [
         "while [ ! -f /var/lib/cloud/instance/boot-finished ]; do echo 'Waiting for cloud-init...'; sleep 1; done",
         "sudo apt-get -qq update && sudo DEBIAN_FRONTEND=noninteractive apt-get -qqy install python python-pip"
       ],
       "only": [
         "ubuntu-1804"
-      ]
+      ],
+      "type": "shell"
     },
     {
-      "type": "ansible",
-      "playbook_file": "./ansible/node.yml",
       "ansible_env_vars": [
         "ANSIBLE_SSH_ARGS='{{user `existing_ansible_ssh_args`}} -o IdentitiesOnly=yes'",
         "ANSIBLE_REMOTE_TEMP='/tmp/.ansible/'"
@@ -75,7 +41,41 @@
         "{{user `ansible_common_vars`}}",
         "--extra-vars",
         "{{user `ansible_extra_vars`}}"
-      ]
+      ],
+      "playbook_file": "./ansible/node.yml",
+      "type": "ansible"
     }
-  ]
+  ],
+  "variables": {
+    "ansible_common_vars": "",
+    "ansible_extra_vars": "",
+    "build_timestamp": "{{timestamp}}",
+    "containerd_sha256": null,
+    "containerd_url": "https://storage.googleapis.com/cri-containerd-release/cri-containerd-{{user `containerd_version`}}.linux-amd64.tar.gz",
+    "containerd_version": null,
+    "encrypted": "false",
+    "existing_ansible_ssh_args": "{{env `ANSIBLE_SSH_ARGS`}}",
+    "kubernetes_cni_deb_version": null,
+    "kubernetes_cni_http_source": null,
+    "kubernetes_cni_rpm_version": null,
+    "kubernetes_cni_semver": null,
+    "kubernetes_cni_source_type": null,
+    "kubernetes_container_registry": null,
+    "kubernetes_deb_gpg_key": null,
+    "kubernetes_deb_repo": null,
+    "kubernetes_deb_version": null,
+    "kubernetes_http_source": null,
+    "kubernetes_load_additional_imgs": null,
+    "kubernetes_rpm_gpg_check": null,
+    "kubernetes_rpm_gpg_key": null,
+    "kubernetes_rpm_repo": null,
+    "kubernetes_rpm_version": null,
+    "kubernetes_semver": null,
+    "kubernetes_series": null,
+    "kubernetes_source_type": null,
+    "machine_type": "n1-standard-1",
+    "project_id": "{{env `GCP_PROJECT_ID`}}",
+    "source_image_family": "ubuntu-1804-lts",
+    "zone": null
+  }
 }

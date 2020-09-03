@@ -1,12 +1,12 @@
 {
-    "vcenter_server":"",
-    "username":"",
-    "password":"",
-    "datastore":"",
-    "datacenter":"",
-    "folder": "",
-    "cluster": "",
-    "network": "",
-    "convert_to_template": "false",
-    "insecure_connection": "false"
+  "cluster": "",
+  "convert_to_template": "false",
+  "datacenter": "",
+  "datastore": "",
+  "folder": "",
+  "insecure_connection": "false",
+  "network": "",
+  "password": "",
+  "username": "",
+  "vcenter_server": ""
 }
