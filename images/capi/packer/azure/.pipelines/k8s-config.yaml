@@ -1,0 +1,15 @@
+steps:
+- script: |
+      KUBERNETES_RELEASE=$(echo ${KUBERNETES_VERSION} | cut -d "." -f -2)
+      sed -i "s/.*kubernetes_series.*/  \"kubernetes_series\": \"v${KUBERNETES_RELEASE}\",/g" kubernetes.json
+      sed -i "s/.*kubernetes_semver.*/  \"kubernetes_semver\": \"v${KUBERNETES_VERSION}\",/g" kubernetes.json
+      if [[ "${KUBERNETES_VERSION:-}" == "1.16.11" || "${KUBERNETES_VERSION:-}" == "1.17.7" || "${KUBERNETES_VERSION:-}" == "1.18.4" ]]; then
+        sed -i "s/.*kubernetes_rpm_version.*/  \"kubernetes_rpm_version\": \"${KUBERNETES_VERSION}-1\",/g" kubernetes.json
+        sed -i "s/.*kubernetes_deb_version.*/  \"kubernetes_deb_version\": \"${KUBERNETES_VERSION}-01\",/g" kubernetes.json
+      else
+        sed -i "s/.*kubernetes_rpm_version.*/  \"kubernetes_rpm_version\": \"${KUBERNETES_VERSION}-0\",/g" kubernetes.json
+        sed -i "s/.*kubernetes_deb_version.*/  \"kubernetes_deb_version\": \"${KUBERNETES_VERSION}-00\",/g" kubernetes.json
+      fi
+      cat kubernetes.json
+  displayName: Write configuration files
+  workingDirectory: '$(system.defaultWorkingDirectory)/images/capi/packer/config'
