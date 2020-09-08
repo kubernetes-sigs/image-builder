@@ -1,8 +1,8 @@
 {
     "planId": "{{ID}}",
-    "microsoft-azure-corevm.skuTitle": "Kubernetes {{K8S_VERSION}} Ubuntu 18.04",
-    "microsoft-azure-corevm.skuSummary": "Cluster API Kubernetes {{K8S_VERSION}} Ubuntu 18.04 Base Image",
-    "microsoft-azure-corevm.skuLongSummary": "Cluster API Kubernetes {{K8S_VERSION}} Ubuntu 18.04 Base Image",
+    "microsoft-azure-corevm.skuTitle": "Kubernetes {{KUBERNETES_VERSION}} Ubuntu 18.04",
+    "microsoft-azure-corevm.skuSummary": "Cluster API Kubernetes {{KUBERNETES_VERSION}} Ubuntu 18.04 Base Image",
+    "microsoft-azure-corevm.skuLongSummary": "Cluster API Kubernetes {{KUBERNETES_VERSION}} Ubuntu 18.04 Base Image",
     "microsoft-azure-corevm.hideSKUForSolutionTemplate": true,
     "microsoft-azure-corevm.hardened": false,
     "microsoft-azure-corevm.deploymentModels": [

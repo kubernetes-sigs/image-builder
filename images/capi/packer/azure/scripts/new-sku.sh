@@ -1,7 +1,7 @@
 #!/bin/bash -e
 
 required_env_vars=(
-    "K8S_VERSION"
+    "KUBERNETES_VERSION"
     "SKU_TEMPLATE_FILE"
     "AZURE_TENANT_ID"
     "AZURE_CLIENT_ID"
@@ -24,7 +24,7 @@ if [ ! -f "$SKU_TEMPLATE_FILE" ]; then
 fi
 
 IFS='.' # set period (.) as delimiter
-read -ra ADDR <<< "${K8S_VERSION}" # str is read into an array as tokens separated by IFS
+read -ra ADDR <<< "${KUBERNETES_VERSION}" # str is read into an array as tokens separated by IFS
 IFS=' ' # reset to default value after usage
 
 major=${ADDR[0]}
@@ -33,7 +33,7 @@ patch=${ADDR[2]}
 
 sku_id="k8s-${major}dot${minor}dot${patch}-ubuntu-1804"
 
-< $SKU_TEMPLATE_FILE sed s/{{ID}}/"$sku_id"/ | sed s/{{K8S_VERSION}}/"$K8S_VERSION/" > sku.json
+< $SKU_TEMPLATE_FILE sed s/{{ID}}/"$sku_id"/ | sed s/{{KUBERNETES_VERSION}}/"$KUBERNETES_VERSION/" > sku.json
 cat sku.json
 
 echo
@@ -49,7 +49,7 @@ cat <<EOF > sku-publishing-info.json
     "publisher" : "$PUBLISHER",
     "offer" : "$OFFER",
     "sku_id" : "$sku_id",
-    "k8s_version" : "$K8S_VERSION"
+    "k8s_version" : "$KUBERNETES_VERSION"
 }
 EOF
 
