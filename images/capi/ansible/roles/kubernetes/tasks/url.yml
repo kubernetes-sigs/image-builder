@@ -78,7 +78,7 @@
   loop: "{{ kubernetes_imgs }}"
 
 - name: Load Kubernetes images
-  shell: 'CONTAINERD_NAMESPACE="k8s.io" {{ sysusr_prefix }}/bin/ctr --address={{ containerd_cri_socket }} images import /tmp/{{ item }}'
+  shell: 'CONTAINERD_NAMESPACE="k8s.io" /usr/bin/ctr --address={{ containerd_cri_socket }} images import /tmp/{{ item }}'
   loop: "{{ kubernetes_imgs }}"
 
 - name: Remove Kubernetes images

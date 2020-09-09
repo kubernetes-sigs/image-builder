@@ -29,6 +29,7 @@
     checksum: "sha256:{{ containerd_sha256 }}"
     dest: /tmp/containerd.tar.gz
     mode: 0600
+  when: ansible_os_family != "Flatcar"
 
 # TODO(vincepri): This unpacks the entire tar in the root directory
 # we should find a better way to check what's being unpacked and where.
@@ -41,35 +42,18 @@
       - --no-overwrite-dir
   when: ansible_os_family != "Flatcar"
 
-- name: unpack containerd for Flatcar into /opt
-  unarchive:
-    remote_src: True
-    src: /tmp/containerd.tar.gz
-    dest: /opt
-    exclude:
-      - ./usr/local/bin/containerd
-      - ./usr/local/bin/containerd-stress
-      - ./usr/local/bin/critest
-      - ./usr/local/sbin/runc
-      - ./etc
-      - ./opt
-    extra_opts:
-      - --no-overwrite-dir
-      - --strip=3
-  when: ansible_os_family == "Flatcar"
+- name: Create a directory if it does not exist
+  file:
+    path: "{{ sysusr_prefix }}/bin"
+    state: directory
+    mode: 0755
 
-- name: unpack containerd for Flatcar into /etc
-  unarchive:
-    remote_src: True
-    src: /tmp/containerd.tar.gz
-    dest: /
-    exclude:
-      - ./etc/systemd/system/containerd.service
-      - ./etc/containerd/config.toml
-      - ./usr
-      - ./opt
-    extra_opts:
-      - --no-overwrite-dir
+- name: Create symlinks for containerd for Flatcar
+  file:
+    src: /usr/bin/{{ item }}
+    dest: "{{ sysusr_prefix }}/bin/{{ item }}"
+    state: link
+  loop: "{{ containerd_flatcar_bins }}"
   when: ansible_os_family == "Flatcar"
 
 - name: Create systemd unit file for containerd
