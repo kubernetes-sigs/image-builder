@@ -27,8 +27,7 @@ stages:
       AZURE_SUBSCRIPTION_ID: $(AZURE_SUBSCRIPTION_ID_VHD)
 
   - stage: sku
-    dependsOn: vhd
-    condition: eq(variables.CLEANUP, 'False')
+    condition: and(succeeded(), eq(variables.CLEANUP, 'False'))
     jobs:
     - template: create-sku.yaml
     variables:
