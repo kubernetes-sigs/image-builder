@@ -33,7 +33,8 @@
     "kubernetes_container_registry": null,
     "output_dir": "./output/{{user `build_version`}}",
     "username": "",
-    "vcenter_server": ""
+    "vcenter_server": "",
+    "hack_directory": "../../hack"
   },
   "builders": [
     {
@@ -212,7 +213,7 @@
         "cd {{user `output_dir`}}",
         "tar xf {{user `build_version`}}.ova",
         "rm {{user `build_version`}}.ova",
-        "../../hack/image-build-ova.py --stream_vmdk --node --vmx {{user `vmx_version`}} --eula ../../hack/ovf_eula.txt --vmdk_file {{user `build_version`}}-disk1.vmdk"
+        "{{user `hack_directory`}}/image-build-ova.py --stream_vmdk --node --vmx {{user `vmx_version`}} --eula {{user `hack_directory`}}/ovf_eula.txt --vmdk_file {{user `build_version`}}-disk1.vmdk"
       ]
     },
     {
@@ -220,7 +221,7 @@
       "type": "shell-local",
       "inline": [
         "cd {{user `output_dir`}}",
-        "../../hack/image-build-ova.py --node --vmx {{user `vmx_version`}} --eula ../../hack/ovf_eula.txt --vmdk_file {{user `build_version`}}-disk-0.vmdk"
+        "{{user `hack_directory`}}/image-build-ova.py --node --vmx {{user `vmx_version`}} --eula {{user `hack_directory`}}/ovf_eula.txt --vmdk_file {{user `build_version`}}-disk-0.vmdk"
       ]
     },
     {
