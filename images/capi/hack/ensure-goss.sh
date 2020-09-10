@@ -21,11 +21,11 @@ set -o pipefail
 source hack/utils.sh
 
 # SHA are for amd64 arch.
-_version="1.3.0"
-darwin_sha256="391ec4f7b99cc54883f7c1eb765cde77aad2b2cbcada9cb79983afa2ece2fe2f"
-linux_sha256="ee98b1ce0b71121701fc9fd0cb6024ffcc047c59b0ee23b7fca7d0a1825866d9"
-_bin_url="https://github.com/YaleUniversity/packer-provisioner-goss/releases/download/v${_version}/packer-provisioner-goss-v${_version}-${HOSTOS}-${HOSTARCH}"
-
+_version="2.0.0"
+darwin_sha256="be09a793cb63e898895e9d371eb9015ab2ca7c8b5e929c1d79bafc7e23e871e0"
+linux_sha256="97ed6de22ba8f1f7d9cefa6234e771121c2918563057c44a0615c47de98391e4"
+_bin_url="https://github.com/YaleUniversity/packer-provisioner-goss/releases/download/v${_version}/packer-provisioner-goss-v${_version}-${HOSTOS}-${HOSTARCH}.tar.gz"
+_tarfile="${HOME}/.packer.d/plugins/packer-provisioner-goss.tar.gz"
 _binfile="${HOME}/.packer.d/plugins/packer-provisioner-goss"
 
 # Get a shasum for right OS's binary
@@ -56,9 +56,11 @@ if [ -f "${_binfile}" ]; then
 fi
 
 # download binary, verify shasum, make it executable and clean up trash files.
-_bin_dir="$(dirname "${_binfile}")"
+_bin_dir="$(dirname "${_tarfile}")"
 mkdir -p "${_bin_dir}" && cd "${_bin_dir}"
-curl -SsL "${_bin_url}" -o "${_binfile}"
+curl -SsL "${_bin_url}" -o "${_tarfile}"
+tar -C "${_bin_dir}" -xzf "${_tarfile}"
+rm "${_tarfile}"
 printf "%s *${_binfile}" "${_sha256}" >"${_binfile}.sha256"
 if ! checksum_sha256 "${_binfile}.sha256"; then
   _exit_code="${?}"
