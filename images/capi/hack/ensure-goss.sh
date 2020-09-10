@@ -46,18 +46,19 @@ esac
 if [ -f "${_binfile}" ]; then
   current_shasum=$(get_shasum "${_binfile}")
   if [ "$current_shasum" != "$_sha256" ]; then
-    echo "Wrong version of binary present."
+    warn "  Wrong version of goss-provisioner binary present."
   else
-    echo "Right version of binary present"
+    info "  Right version of goss-provisioner binary present. Nothing to do."
     # Check if binary is executable.
     # If not, delete it and proceed. If it is executable, exit 0
     { [ -x "${_binfile}" ] && exit 0; } || rm -f "${_binfile}"
   fi
 fi
 
-# download binary, verify shasum, make it executable and clean up trash files.
+# download tar, get binary, verify shasum, make it executable and clean up trash files.
 _bin_dir="$(dirname "${_tarfile}")"
 mkdir -p "${_bin_dir}" && cd "${_bin_dir}"
+info "  Downloading goss provisioner version: ${_version}"
 curl -SsL "${_bin_url}" -o "${_tarfile}"
 tar -C "${_bin_dir}" -xzf "${_tarfile}"
 rm "${_tarfile}"
@@ -69,3 +70,4 @@ if ! checksum_sha256 "${_binfile}.sha256"; then
 fi
 rm -f "${_binfile}.sha256"
 chmod 0755 "${_binfile}"
+info " GOSS packer provisioner downloaded at ${_bin_dir}"

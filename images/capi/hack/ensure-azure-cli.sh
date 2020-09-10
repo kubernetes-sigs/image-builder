@@ -28,6 +28,8 @@ cd "$(dirname "${BASH_SOURCE[0]}")/.."
 
 if command -v az >/dev/null 2>&1; then exit 0; fi
 
+warn "  Azure CLI missing"
+info "  Downloading version: ${_version}"
 ensure_py3
 pip3 install --user "azure-cli==${_version}"
 ensure_py3_bin az azure-cli

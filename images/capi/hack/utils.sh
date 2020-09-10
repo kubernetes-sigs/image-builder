@@ -14,6 +14,27 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# Echoes either its arguments or STDIN (if called without arguments) to STDERR.
+# If STDERR is a TTY then the echoed output will be colored.
+fail() {
+  [ -t 2 ] && printf "\e[31;01m" 1>&2
+  [ $# -eq 0 ] && cat 1>&2 || echo "$@" 1>&2
+  [ -t 2 ] && printf "\e[0m" 1>&2
+  exit 1
+}
+
+warn() {
+  [ -t 2 ] && printf "\e[33m" 1>&2
+  [ $# -eq 0 ] && cat 1>&2 || echo "$@" 1>&2
+  [ -t 2 ] && printf "\e[0m" 1>&2
+}
+
+info() {
+  [ -t 2 ] && printf "\e[32;01m" 1>&2
+  [ $# -eq 0 ] && cat 1>&2 || echo "$@" 1>&2
+  [ -t 2 ] && printf "\e[0m" 1>&2
+}
+
 case "${OSTYPE}" in
 linux*)
   HOSTOS=linux
@@ -22,8 +43,7 @@ darwin*)
   HOSTOS=darwin
   ;;
 *)
-  echo "unsupported HOSTOS=${OSTYPE}" 1>&2
-  exit 1
+  fail "unsupported HOSTOS=${OSTYPE}" 1>&2
   ;;
 esac
 
@@ -39,8 +59,7 @@ case "${_hostarch}" in
   HOSTARCH=386
   ;;
 *)
-  echo "unsupported HOSTARCH=${_hostarch}" 1>&2
-  exit 1
+  fail "unsupported HOSTARCH=${_hostarch}" 1>&2
   ;;
 esac
 
@@ -50,7 +69,7 @@ checksum_sha256() {
   elif command -v sha256sum >/dev/null 2>&1; then
     sha256sum -c "${1}"
   else
-    echo "missing shasum tool" 1>&2
+    warn "  missing shasum tool" 1>&2
     return 1
   fi
 }
@@ -62,7 +81,7 @@ get_shasum() {
   elif command -v sha256sum >/dev/null 2>&1; then
     present_shasum=$(sha256sum "${1}" | awk -F' ' '{print $1}')
   else
-    echo "missing shasum tool" 1>&2
+    warn "missing shasum tool" 1>&2
     return 1
   fi
   echo "$present_shasum"
@@ -73,19 +92,18 @@ ensure_py3_bin() {
   # This function assumes the executable to be checked was installed with
   # pip3 install --user ...
   if ! command -v "${1}" >/dev/null 2>&1; then
-    echo "User's Python3 binary directory must be in \$PATH" 1>&2
-    echo "Location of package is:" 1>&2
+    warn "User's Python3 binary directory must be in \$PATH"
+    warn "Location of package is:"
     pip3 show ${2:-$1} | grep "Location"
-    echo "\$PATH is currently: $PATH" 1>&2
-    exit 1
+    fail "\$PATH is currently: $PATH"
   fi
 }
 
 ensure_py3() {
   if ! command -v python3 >/dev/null 2>&1; then
-    echo "python3 binary must be in \$PATH" 1>&2
-    exit 1
+    fail "python3 binary must be in \$PATH"
   fi
+
   if ! command -v pip3 >/dev/null 2>&1; then
     curl -SsL https://bootstrap.pypa.io/get-pip.py -o get-pip.py
     python3 get-pip.py --user

@@ -28,6 +28,9 @@ source hack/utils.sh
 
 if command -v jq >/dev/null 2>&1; then exit 0; fi
 
+warn "  jq tool is missing"
+info "  Downloading version: ${_version}"
+
 mkdir -p .local/bin && cd .local/bin
 
 if [[ ${HOSTOS} == "linux" ]]; then
@@ -38,4 +41,4 @@ fi
 _bin_url="https://github.com/stedolan/jq/releases/download/jq-${_version}/${_binfile}"
 curl -SsL "${_bin_url}" -o jq
 chmod 0755 jq
-echo "'jq' has been installed to $(pwd), make sure this directory is in your \$PATH"
+info "  'jq' has been installed to $(pwd), make sure this directory is in your \$PATH"

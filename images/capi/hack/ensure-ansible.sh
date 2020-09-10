@@ -28,6 +28,8 @@ cd "$(dirname "${BASH_SOURCE[0]}")/.."
 
 if command -v ansible >/dev/null 2>&1; then exit 0; fi
 
+warn "  Ansible missing"
+info "  Downloading version: ${_version}"
 ensure_py3
 pip3 install --user "ansible==${_version}"
 ensure_py3_bin ansible

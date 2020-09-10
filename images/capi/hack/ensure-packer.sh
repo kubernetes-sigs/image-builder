@@ -28,6 +28,9 @@ source hack/utils.sh
 
 if command -v packer >/dev/null 2>&1; then exit 0; fi
 
+warn "  Packer missing"
+info "  Downloading version: ${_version}"
+
 mkdir -p .local/bin && cd .local/bin
 
 SED="sed"
@@ -35,8 +38,7 @@ if command -v gsed >/dev/null; then
   SED="gsed"
 fi
 if ! (${SED} --version 2>&1 | grep -q GNU); then
-  echo "!!! GNU sed is required.  If on OS X, use 'brew install gnu-sed'." >&2
-  exit 1
+  fail "!!! GNU sed is required.  If on OS X, use 'brew install gnu-sed'."
 fi
 
 _chkfile="packer_${_version}_SHA256SUMS"
@@ -49,4 +51,4 @@ ${SED} -i -n "/${HOSTOS}_${HOSTARCH}/p" "${_chkfile}"
 checksum_sha256 "${_chkfile}"
 unzip -o "${_zipfile}"
 rm -f "${_chkfile}" "${_zipfile}"
-echo "'packer' has been installed to $(pwd), make sure this directory is in your \$PATH"
+info "  'packer' has been installed to $(pwd), make sure this directory is in your \$PATH"
