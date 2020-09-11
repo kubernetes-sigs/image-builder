@@ -21,6 +21,11 @@
 - import_tasks: photon.yml
   when: ansible_os_family == "VMware Photon OS"
 
+- name: Fail if containerd version does not match for Flatcar
+  shell: containerd --version | cut -d\  -f 3
+  register: command_result
+  failed_when: "ansible_os_family == 'Flatcar' and containerd_version not in command_result.stdout"
+
 # TODO(vincepri): Use deb/rpm packages once available.
 # See https://github.com/containerd/containerd/issues/1508 for context.
 - name: download containerd
