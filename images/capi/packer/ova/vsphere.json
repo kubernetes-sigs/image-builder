@@ -1,12 +1,12 @@
 {
-    "vcenter_server":"10.92.183.180",
-    "username":"administrator@vsphere.local",
-    "password":"Admin!23",
-    "datastore":"sharedVmfs-0",
-    "datacenter":"dc0",
-    "folder": "capv",
-    "cluster": "cluster0",
-    "network": "VM Network",
-    "convert_to_template": "true",
-    "insecure_connection": "true"
+    "vcenter_server":"",
+    "username":"",
+    "password":"",
+    "datastore":"",
+    "datacenter":"",
+    "folder": "",
+    "cluster": "",
+    "network": "",
+    "convert_to_template": "false",
+    "insecure_connection": "false"
 }
