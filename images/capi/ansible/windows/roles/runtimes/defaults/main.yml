@@ -1,0 +1,26 @@
+# Copyright 2020 The Kubernetes Authors.
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+
+# http://www.apache.org/licenses/LICENSE-2.0
+
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+---
+containerd_url: https://github.com/containerd/containerd/releases/download/v1.4.1/containerd-1.4.1-windows-amd64.tar.gz
+containerd_sha256: 757e0e2cd47881a7d5d252c72aab78b19564220df9b8f9b35740932219994288
+pause_image: mcr.microsoft.com/oss/kubernetes/pause:1.4.0
+containerd_additional_settings: ""
+
+prepull: false
+prepull_images:
+- mcr.microsoft.com/windows/servercore:ltsc2019
+- mcr.microsoft.com/windows/nanoserver:1809
+- mcr.microsoft.com/oss/kubernetes/pause:1.4.0
+
+additional_prepull_images_list: "{{ additional_prepull_images.split(',') if (additional_prepull_images is defined) and (additional_prepull_images|length > 0) else [] }}"

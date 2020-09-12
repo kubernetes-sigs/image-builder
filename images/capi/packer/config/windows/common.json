@@ -1,0 +1,11 @@
+{
+  "http_proxy": "",
+  "https_proxy": "",
+  "no_proxy": "",
+  "prepull": "true",
+  "wins_version": "0.0.4",
+  "windows_service_manager": "nssm",
+  "nssm_url": "https://azurek8scishared.blob.core.windows.net/nssm/nssm.exe",
+  "runtime": "docker_ee",
+  "pause_image": "mcr.microsoft.com/oss/kubernetes/pause:1.4.0"
+}

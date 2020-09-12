@@ -1,0 +1,84 @@
+# Copyright 2020 The Kubernetes Authors.
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+
+# http://www.apache.org/licenses/LICENSE-2.0
+
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+---
+- name: Download containerd
+  win_get_url:
+    url: '{{ containerd_url }}'
+    dest: '%TEMP%\containerd.tar.gz'
+    checksum: '{{ containerd_sha256 }}'
+    checksum_algorithm: "sha256"
+  register: containerd
+
+- name: Create containerd directory structure
+  win_file:
+    path:  "{{ item }}"
+    state: directory
+  loop: 
+    - '%programfiles%\containerd'
+    - '%ALLUSERSPROFILE%\containerd\state'
+    - '%ALLUSERSPROFILE%\containerd\root'
+
+- name: Check if containerd exists
+  win_stat:
+    path: '%programfiles%\containerd\containerd.exe'
+  register: containerd_file
+
+- name: Unpack containerd binaries
+  win_command: cmd /c tar -zxvf {{ containerd.dest }} -C "%programfiles%\containerd" --strip-components 1
+  when: not containerd_file.stat.exists
+
+- name: Add containerd to path
+  win_path:
+    elements:
+    - '%programfiles%\containerd'
+    scope: machine
+
+- name: Get All Users profile path
+  win_shell: $env:ALLUSERSPROFILE.Replace("\", "\\")
+  register: profile
+
+- name: Copy containerd config overrides
+  win_template:
+    dest: '%programfiles%\containerd\config.toml'
+    src: config.toml
+  vars:
+    allusersprofile: "{{ profile.stdout | trim }}"
+
+- name: Check if a Containerd service is installed
+  win_service:
+    name: containerd
+  register: containerd_service
+
+- name: Register Containerd
+  win_shell: containerd.exe --register-service
+  when: containerd_service.exists == false
+
+- name: Ensure Containerd Service is running
+  win_service:
+    name: containerd
+
+- name: Pre-pull images
+  win_command: ctr.exe -n k8s.io images pull {{ item }}
+  loop: "{{ prepull_images }}"
+  async: 1800
+  poll: 60
+  when: prepull
+
+- name: Pre-pull additional images
+  win_command: ctr.exe -n k8s.io images pull {{ item }}
+  loop: "{{ additional_prepull_images_list }}"
+  async: 1800
+  poll: 60
+  when: additional_prepull_images_list|length > 0
+  

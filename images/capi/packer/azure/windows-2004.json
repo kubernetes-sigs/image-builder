@@ -1,0 +1,7 @@
+{
+  "build_name": "windows-2004",
+  "image_offer": "WindowsServer",
+  "image_publisher": "MicrosoftWindowsServer",
+  "image_sku": "Datacenter-Core-2004-with-Containers-smalldisk",
+  "vm_size": "Standard_D2s_v3"
+}

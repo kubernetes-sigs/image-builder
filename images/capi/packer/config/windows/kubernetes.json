@@ -1,0 +1,5 @@
+{
+  "kubernetes_semver": "v1.19.3",
+  "kubernetes_goarch": "amd64",
+  "kubernetes_install_path": "c:\\k"
+}

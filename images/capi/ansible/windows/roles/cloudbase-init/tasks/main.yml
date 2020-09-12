@@ -1,0 +1,50 @@
+# Copyright 2020 The Kubernetes Authors.
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+
+# http://www.apache.org/licenses/LICENSE-2.0
+
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+---
+- name: Download Cloudbase-init
+  win_get_url:
+    url: "{{ cloudbase_init_url }}"
+    dest: '%TEMP%\CloudbaseInitSetup.msi'
+  register: installer
+
+- name: Ensure log directory
+  win_file:
+    path:  '%SystemDrive%\logs'
+    state: directory
+
+- name: Install Cloudbase-init
+  win_package:
+    path: '{{ installer.dest }}'
+    log_path: '%SystemDrive%\logs\cloudbase-install-log-{{lookup("pipe", "date +%Y%m%dT%H%M%S")}}.log'
+
+# configuration modified from https://github.com/cloudbase/windows-openstack-imaging-tools/tree/master/Examples/config/azure
+- name: Set up cloudbase-init unattend configuration 
+  win_template:
+    src: templates/cloudbase-init-unattend.conf
+    dest: '%programfiles%\Cloudbase Solutions\Cloudbase-Init\conf\cloudbase-init-unattend.conf'
+
+# configuration modified from https://github.com/cloudbase/windows-openstack-imaging-tools/tree/master/Examples/config/azure
+- name: Set up cloudbase-init configuration 
+  win_template:
+    src: templates/cloudbase-init.conf
+    dest: '%programfiles%\Cloudbase Solutions\Cloudbase-Init\conf\cloudbase-init.conf'
+
+- name: Configure set up complete
+  win_shell: |
+    # If this file already exists then the following command fails
+    Remove-Item -Force C:\Windows\Setup\Scripts\SetupComplete.cmd
+    & "$ENV:ProgramFiles\Cloudbase Solutions\Cloudbase-Init\bin\SetSetupComplete.cmd"
+  become: yes
+  become_method: runas
+  become_user: System

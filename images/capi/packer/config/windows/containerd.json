@@ -1,0 +1,5 @@
+{
+    "containerd_version": "1.4.1",
+    "containerd_sha256": "757e0e2cd47881a7d5d252c72aab78b19564220df9b8f9b35740932219994288",
+    "containerd_additional_settings": null
+}

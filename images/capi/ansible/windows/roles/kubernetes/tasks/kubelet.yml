@@ -1,0 +1,55 @@
+# Copyright 2020 The Kubernetes Authors.
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+
+# http://www.apache.org/licenses/LICENSE-2.0
+
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+---
+- name: Create kubelet directory structure
+  win_file:
+    path:  "{{ item }}"
+    state: directory
+  loop: 
+    - '%SystemDrive%\var\log\kubelet'
+    - '%SystemDrive%\var\lib\kubelet\etc\kubernetes'
+    - '%SystemDrive%\var\lib\kubelet\etc\kubernetes\manifests'
+    - '%SystemDrive%\etc\kubernetes\pki'
+
+- name: Symlink kubelet pki folder
+  win_shell: New-Item -path $env:SystemDrive\var\lib\kubelet\etc\kubernetes\pki -type SymbolicLink -value  $env:SystemDrive\etc\kubernetes\pki\ -Force
+
+- import_tasks: nssm.yml
+  when: windows_service_manager == "nssm"
+
+- import_tasks: sc.yml
+  when: windows_service_manager == "windows_service"
+
+# Dependency selection: https://www.reddit.com/r/ansible/comments/imfdgn/setting_a_variable_conditionally/g41anaf/?utm_source=reddit&utm_medium=web2x&context=3
+- name: Ensure kubelet is installed
+  win_service:
+    name: kubelet
+    dependencies: [ "{{ runtime_service }}" ]
+    start_mode: manual
+  vars:
+    dependencies:
+      containerd: containerd
+      docker_ee: docker
+      default: docker
+    runtime_service: "{{ dependencies[runtime] | default(dependencies['docker']) }}"
+
+- name: Add firewall rule for kubelet
+  win_firewall_rule:
+    name: kubelet
+    localport: 10250
+    action: allow
+    direction: in
+    protocol: tcp
+    state: present
+    enabled: yes
