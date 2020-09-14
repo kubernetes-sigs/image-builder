@@ -13,20 +13,6 @@
 # limitations under the License.
 
 ---
-- name: Ensure auditd is running and comes on at reboot
-  service:
-    name: auditd
-    state: started
-    enabled: yes
-
-- name: configure auditd rules for containerd
-  copy:
-    src: etc/audit/rules.d/containerd.rules
-    dest: /etc/audit/rules.d/containerd.rules
-    owner: root
-    group: root
-    mode: 0644
-
 - name: Ensure Bandwidth for TCP connections should 1 Mb (same as Ubuntu)
   sysctl:
     name: net.ipv4.tcp_limit_output_bytes

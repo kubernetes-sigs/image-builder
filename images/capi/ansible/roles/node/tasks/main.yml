@@ -66,3 +66,17 @@
     state: stopped
     enabled: false
   when: ansible_os_family != "Debian"
+
+- name: Ensure auditd is running and comes on at reboot
+  service:
+    name: auditd
+    state: started
+    enabled: yes
+
+- name: configure auditd rules for containerd
+  copy:
+    src: etc/audit/rules.d/containerd.rules
+    dest: /etc/audit/rules.d/containerd.rules
+    owner: root
+    group: root
+    mode: 0644
