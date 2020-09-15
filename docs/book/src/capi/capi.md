@@ -134,11 +134,3 @@ Then, execute the build (using a Photon OVA as an example) with the following:
 ```sh
 PACKER_VAR_FILES=proxy.json make build-node-ova-local-photon-3
 ```
-
-## Kubernetes versions
-| Tested Kubernetes Versions |
-|---------|
-| `1.14.x` |
-| `1.15.x` |
-| `1.16.x` |
-| `1.17.x` |
