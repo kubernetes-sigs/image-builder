@@ -24,6 +24,11 @@
 - import_tasks: url.yml
   when: kubernetes_source_type == "http" and kubernetes_cni_source_type == "http"
 
+# must include crictl-url.yml after installing containerd,
+# as the cri-containerd tarball also includes crictl.
+- import_tasks: crictl-url.yml
+  when: crictl_source_type == "http"
+
 - name: Ensure that the kubelet is running
   service:
     name: kubelet

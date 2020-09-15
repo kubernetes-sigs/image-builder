@@ -12,5 +12,8 @@
   "kubernetes_deb_gpg_key": "https://packages.cloud.google.com/apt/doc/apt-key.gpg",
   "kubernetes_container_registry": "k8s.gcr.io",
   "kubernetes_load_additional_imgs": "false",
-  "kubeadm_template": "etc/kubeadm.yml"
+  "kubeadm_template": "etc/kubeadm.yml",
+  "crictl_version": "1.16.1",
+  "crictl_sha256": "19fed421710fccfe58f5573383bb137c19438a9056355556f1a15da8d23b3ad1",
+  "crictl_source_type": "pkg"
 }
