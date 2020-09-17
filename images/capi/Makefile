@@ -116,6 +116,13 @@ ifeq (1,$(strip $(FOREGROUND)))
 PACKER_FLAGS += -var="headless=false"
 endif
 
+# If ON_ERROR_ASK=1 then Packer will set -on-error to ask, causing the Packer
+# build to pause when any error happens, instead of simply exiting. This is
+# useful when debugging unknown issues logging into the remote machine via ssh.
+ifeq (1,$(strip $(ON_ERROR_ASK)))
+PACKER_FLAGS += -on-error=ask
+endif
+
 # We want the var files passed to Packer to have a specific order, because the
 # precenence of the variables they contain depends on the order. Files listed
 # later on the CLI have higher precedence. We want the common var files found in
