@@ -36,6 +36,14 @@
     dest: /etc/modules-load.d/kubernetes.conf
     mode: 0644
 
+- name: Disable HW offload for encapsulated devices
+  copy:
+    src: etc/udev/rules.d/90-netif-disable-hw-offload.rules
+    dest: /etc/udev/rules.d/90-netif-disable-hw-offload.rules
+    owner: root
+    group: root
+    mode: 0644
+
 - name: Set and persist kernel params
   sysctl:
     name: "{{ item.param }}"
