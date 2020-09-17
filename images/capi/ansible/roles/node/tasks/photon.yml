@@ -13,7 +13,17 @@
 # limitations under the License.
 
 ---
-- name: Ensure Bandwidth for TCP connections should 1 Mb (same as Ubuntu)
+# Due to https://github.com/vmware/photon/issues/1047
+# We disable tx offload for ethernet devices
+- name: Disable transmission HW offload
+  copy:
+    src: etc/udev/rules.d/90-netif-disable-hw-offload.rules
+    dest: /etc/udev/rules.d/90-netif-disable-hw-offload.rules
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Double TCP small queue limit to be the same as Ubuntu 
   sysctl:
     name: net.ipv4.tcp_limit_output_bytes
     value: "524288"
