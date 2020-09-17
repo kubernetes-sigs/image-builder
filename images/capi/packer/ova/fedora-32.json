@@ -1,0 +1,16 @@
+{
+  "build_name": "fedora-32",
+  "ssh_password": "builder",
+  "distro_name": "fedora",
+  "os_display_name": "Fedora 32",
+  "guest_os_type": "centos7-64",
+  "vsphere_guest_os_type": "centos7_64Guest",
+  "iso_url": "https://download.fedoraproject.org/pub/fedora/linux/releases/32/Server/x86_64/iso/Fedora-Server-netinst-x86_64-32-1.6.iso",
+  "iso_checksum": "7f4afd2a26c718f9f15e4bbfd9c2e8849f81036d2a82a4e81fa4a313a833da9c",
+  "iso_checksum_type": "sha256",
+  "boot_command_prefix": "<up>e<down><down><end> text ks=",
+  "boot_command_suffix": "/32/ks.cfg<leftCtrlOn>x<leftCtrlOff><wait>",
+  "shutdown_command": "shutdown -P now",
+  "vmware_firmware": "efi-secure",
+  "redhat_epel_rpm": ""
+}

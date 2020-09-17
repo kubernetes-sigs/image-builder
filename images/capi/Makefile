@@ -152,11 +152,13 @@ ABSOLUTE_PACKER_VAR_FILES := $(foreach f,$(abspath $(PACKER_VAR_FILES)),-var-fil
 ## Platform and version combinations
 ## --------------------------------------
 CENTOS_VERSIONS			:=	centos-7
+FEDORA_VERSIONS			:=	fedora-32
 PHOTON_VERSIONS			:=	photon-3
 RHEL_VERSIONS				:=	rhel-7
 UBUNTU_VERSIONS			:=	ubuntu-1804 ubuntu-2004
 
 PLATFORMS_AND_VERSIONS	:=	$(CENTOS_VERSIONS) \
+							$(FEDORA_VERSIONS) \
 							$(PHOTON_VERSIONS) \
 							$(RHEL_VERSIONS) \
 							$(UBUNTU_VERSIONS)
@@ -332,12 +334,14 @@ build-haproxy-ova-local-photon-3: ## Builds Photon 3 HAProxy OVA w local hypervi
 build-node-ova-esx-centos-7: ## Builds CentOS 7 Node OVA w remote hypervisor
 build-node-ova-esx-photon-3: ## Builds Photon 3 Node OVA w remote hypervisor
 build-node-ova-esx-rhel-7: ## Builds RHEL 7 Node OVA w remote hypervisor
+build-node-ova-esx-fedora-32: ## Builds Fedora 32 Node OVA w remote hypervisor
 build-node-ova-esx-ubuntu-1804: ## Builds Ubuntu 18.04 Node OVA w remote hypervisor
 build-node-ova-esx-ubuntu-2004: ## Builds Ubuntu 20.04 Node OVA w remote hypervisor
 build-node-ova-esx-all: $(NODE_OVA_ESX_BUILD_TARGETS) ## Builds all Node OVAs w remote hypervisor
 build-haproxy-ova-esx-photon-3: ## Builds Photon 3 HAProxy OVA w remote hypervisor
 
 build-node-ova-vsphere-centos-7: ## Builds CentOS 7 Node OVA and template on vSphere
+build-node-ova-vsphere-fedora-32: ## Builds Fedora 32 Node OVA and template on vSphere
 build-node-ova-vsphere-photon-3: ## Builds Photon 3 Node OVA and template on vSphere
 build-node-ova-vsphere-rhel-7: ## Builds RHEL 7 Node OVA and template on vSphere
 build-node-ova-vsphere-ubuntu-1804: ## Builds Ubuntu 18.04 Node OVA and template on vSphere

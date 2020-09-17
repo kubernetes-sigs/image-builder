@@ -25,5 +25,6 @@
   "vnc_bind_address": "127.0.0.1",
   "vnc_disable_password": "false",
   "vnc_port_min": "5900",
-  "vnc_port_max": "6000"
+  "vnc_port_max": "6000",
+  "vmware_firmware": "bios"
 }
