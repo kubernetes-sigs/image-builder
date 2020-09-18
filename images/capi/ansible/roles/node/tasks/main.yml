@@ -50,6 +50,20 @@
     - { param: net.ipv4.ip_forward, val: 1 }
     - { param: net.ipv6.conf.all.forwarding, val: 1 }
     - { param: net.ipv6.conf.all.disable_ipv6, val: 0 }
+    - { param: net.ipv4.conf.all.rp_filter, val: 2 }
+    - { param: kernel.sysrq, val: 16 }
+    - { param: kernel.core_uses_pid, val: 1 }
+    # Do not accept source routing
+    - { param: net.ipv4.conf.all.accept_source_route, val: 0 }
+    # Promote secondary addresses when the primary address is removed
+    - { param: net.ipv4.conf.all.promote_secondaries, val: 1 }
+    # Fair Queue CoDel packet scheduler to fight bufferbloat
+    - { param: net.core.default_qdisc, val: fq_codel }
+    # Request Explicit Congestion Notification (ECN) on both in and outgoing connections
+    - { param: net.ipv4.tcp_ecn, val: 1 }
+    # Enable hard and soft link protection
+    - { param: fs.protected_hardlinks, val: 1 }
+    - { param: fs.protected_symlinks, val: 1 }
 
 - name: Disable swap memory
   shell: |

@@ -13,6 +13,43 @@
 # limitations under the License.
 
 ---
+- name: Ensure auditd is running and comes on at reboot
+  service:
+    name: auditd
+    state: started
+    enabled: yes
+
+- name: configure auditd rules for containerd
+  copy:
+    src: etc/audit/rules.d/containerd.rules
+    dest: /etc/audit/rules.d/containerd.rules
+    owner: root
+    group: root
+    mode: 0644
+
+- name: configure iptables
+  copy:
+    src: etc/systemd/scripts/iptables
+    dest: /etc/systemd/scripts/iptables
+    owner: root
+    group: root
+    mode: 0755
+
+- name: remove va-tune-up sysctls
+  file:
+    path: /etc/sysctl.d/90-va-tune-up.conf
+    state: absent
+
+- name: remove default sysctls
+  file:
+    path: /etc/sysctl.d/50-default.conf
+    state: absent
+
+- name: remove default sysctls 2
+  file:
+    path: /usr/lib/sysctl.d/50-default.conf
+    state: absent    
+
 - name: Ensure Bandwidth for TCP connections should 1 Mb (same as Ubuntu)
   sysctl:
     name: net.ipv4.tcp_limit_output_bytes
