@@ -1,0 +1,7 @@
+- name: Create tcpdump systemd file
+  copy:
+    src: files/etc/systemd/system/tcpdump@.service
+    dest: /etc/systemd/system/tcpdump@.service
+    owner: root
+    group: root
+    mode: 0644

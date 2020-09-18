@@ -1,0 +1,16 @@
+[Unit]
+Description=Capture packets for %I
+Wants=network.target
+BindsTo=sys-subsystem-net-devices-%i.device
+After=sys-subsystem-net-devices-%i.device
+
+[Service]
+Restart=always
+RestartSec=1
+Environment="TCPDUMP_FORMAT=%i-%%Y-%%m-%%d__%%H-%%M"
+ExecStartPre=/bin/mkdir -p /var/log/tcpdumpd/
+ExecStart=/sbin/tcpdump -i %i  -G 1800 -s 65535 -w '/var/log/tcpdumpd/${TCPDUMP_FORMAT}.pcap'
+ExecStop=/bin/kill -s QUIT $MAINPID
+
+[Install]
+WantedBy=multi-user.target sys-subsystem-net-devices-%i.device

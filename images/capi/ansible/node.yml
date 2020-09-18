@@ -25,6 +25,8 @@
     - include_role:
         name: kubernetes
     - include_role:
+        name: debug-tools
+    - include_role:
         name: "{{ role }}"
       loop: "{{ custom_role_names.split() }}"
       loop_control:
