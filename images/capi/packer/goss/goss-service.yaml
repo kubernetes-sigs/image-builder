@@ -11,6 +11,9 @@ service:
   conntrackd:
     enabled: false
     running: false
+  auditd:
+    enabled: true
+    running: true
 {{range $name, $vers := index .Vars .Vars.OS "common-service"}}
   {{ $name }}:
   {{range $key, $val := $vers}}

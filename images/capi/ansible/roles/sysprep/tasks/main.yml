@@ -153,14 +153,14 @@
   - { path: /mnt/resource/swapfile, state: absent }
   when: ansible_memory_mb.swap.total != 0
 
-- name: Create a log directory for auditd in Photon OS and Amazon Linux 2
+- name: Create a log directory for auditd
   file:
     path: "/var/log/audit"
     state: directory
     mode: "0640"
     owner: root
     group: root
-  when: kubernetes_semver != '' and (ansible_os_family == "VMware Photon OS" or ansible_distribution == "Amazon") # Ensure audit log is not created for HA Proxy images, since this task is shared amongst build targets
+  when: kubernetes_semver != '' # Ensure audit log is not created for HA Proxy images, since this task is shared amongst build targets
 
 - name: Truncate shell history
   file:

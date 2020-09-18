@@ -29,6 +29,7 @@ common_rpms:
 - yum-utils
 
 common_debs:
+- auditd
 - apt-transport-https
 - conntrack
 - curl

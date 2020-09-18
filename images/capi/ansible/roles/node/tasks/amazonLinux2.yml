@@ -13,22 +13,8 @@
 # limitations under the License.
 
 ---
-- name: Ensure auditd is running and comes on at reboot
-  service:
-    name: auditd
-    state: started
-    enabled: yes
-
 - name: Ensure sysstat is running and comes on at reboot
   service:
     name: sysstat
     state: started
     enabled: yes
-
-- name: Configure auditd rules for containerd
-  copy:
-    src: etc/audit/rules.d/containerd.rules
-    dest: /etc/audit/rules.d/containerd.rules
-    owner: root
-    group: root
-    mode: 0644
