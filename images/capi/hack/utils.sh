@@ -14,6 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+set -x
+
 # Echoes either its arguments or STDIN (if called without arguments) to STDERR.
 # If STDERR is a TTY then the echoed output will be colored.
 fail() {
