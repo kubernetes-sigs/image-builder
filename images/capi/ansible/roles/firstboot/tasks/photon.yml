@@ -1,4 +1,4 @@
-# Copyright 2019 The Kubernetes Authors.
+# Copyright 2020 The Kubernetes Authors.
 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,29 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
----
-- name: add bash_profile
-  template:
-    dest: /home/builder/.bash_profile
-    src: photon_bash_profile
-    mode: 0600
-    owner: builder
-    group: builder
-
-- import_tasks: rpm_repos.yml
 
 - name: Perform a tdnf distro-sync
   command: tdnf distro-sync -y --refresh
   register: distro
   changed_when: '"Nothing to do" not in distro.stderr'
-
-- name: Concatenate the Photon RPMs
-  set_fact:
-    photon_rpms: "{{ rpms | join(' ') }}"
-
-- name: install baseline dependencies
-  command: tdnf install {{ photon_rpms }} -y
-
-- name: install extra RPMs
-  command: tdnf install {{ extra_rpms }} -y
-  when: extra_rpms != ""
