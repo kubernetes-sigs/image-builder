@@ -180,7 +180,7 @@ GCE_BUILD_NAMES			?=	gce-default
 AZURE_BUILD_VHD_NAMES		?=	azure-vhd-ubuntu-1804 azure-vhd-ubuntu-2004 azure-vhd-centos-7
 AZURE_BUILD_SIG_NAMES		?=	azure-sig-ubuntu-1804 azure-sig-ubuntu-2004 azure-sig-centos-7
 
-DO_BUILD_NAMES 			?=	do-default
+DO_BUILD_NAMES 			?=	do-centos-7 do-ubuntu-1804 do-ubuntu-2004
 
 QEMU_BUILD_NAMES			?=	qemu-ubuntu-1804 qemu-ubuntu-2004
 
@@ -274,11 +274,11 @@ $(AZURE_VALIDATE_SIG_TARGETS): deps-azure
 
 .PHONY: $(DO_BUILD_TARGETS)
 $(DO_BUILD_TARGETS): deps-do
-	packer build $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/digitalocean/$(subst build-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/digitalocean/packer.json
+	packer build $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/digitalocean/$(subst build-do-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/digitalocean/packer.json
 
 .PHONY: $(DO_VALIDATE_TARGETS)
 $(DO_VALIDATE_TARGETS): deps-do
-	packer validate $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/digitalocean/$(subst validate-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/digitalocean/packer.json
+	packer validate $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/digitalocean/$(subst validate-do-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/digitalocean/packer.json
 
 .PHONY: $(QEMU_BUILD_TARGETS)
 $(QEMU_BUILD_TARGETS): deps-qemu
@@ -324,7 +324,10 @@ build-azure-sig-centos-7: ## Builds CentOS 7 Azure managed image in Shared Image
 build-azure-vhd-centos-7: ## Builds CentOS 7 VHD image for Azure
 build-azure-all: $(AZURE_BUILD_VHD_TARGETS) ## Builds all Azure VHDs
 
-build-do-default: ## Builds the DigitalOcean snapshot default image
+build-do-ubuntu-1804: ## Builds Ubuntu 18.04 DigitalOcean Snapshot
+build-do-ubuntu-2004: ## Builds Ubuntu 20.04 DigitalOcean Snapshot
+build-do-centos-7: ## Builds Centos 7 DigitalOcean Snapshot
+build-do-all: $(DO_BUILD_TARGETS) ## Builds all DigitalOcean Snapshot
 
 build-gce-default: ## Builds the GCE default image
 
@@ -374,7 +377,10 @@ validate-azure-vhd-ubuntu-1804: ## Validates Ubuntu 18.04 VHD image Azure Packer
 validate-azure-vhd-ubuntu-2004: ## Validates Ubuntu 20.04 VHD image Azure Packer config
 validate-azure-all: $(AZURE_VALIDATE_SIG_TARGETS) $(AZURE_VALIDATE_VHD_TARGETS) ## Validates all VHD images Azure Packer config
 
-validate-do-default: ## Valdiates the DigitalOcean snapshot default image Packer config
+validate-do-ubuntu-1804: ## Valdiates Ubuntu 18.04 DigitalOcean Snapshot Packer config
+validate-do-ubuntu-2004: ## Valdiates Ubuntu 20.04 DigitalOcean Snapshot Packer config
+validate-do-centos-7: ## Valdiates Centos 7 DigitalOcean Snapshot Packer config
+validate-do-all: $(DO_VALIDATE_TARGETS) ## Valdiates all DigitalOcean Snapshot Packer config
 
 validate-gce-default: ## Validates the GCE default image packer config
 
@@ -392,7 +398,7 @@ validate-qemu-all: $(QEMU_VALIDATE_TARGETS) ## Validates all Qemu Packer config
 
 validate-all: validate-ami-all \
 	validate-azure-all \
-	validate-do-default \
+	validate-do-all \
 	validate-gce-default \
 	validate-node-ova-local-all \
 	validate-haproxy-ova-local-photon-3 \
