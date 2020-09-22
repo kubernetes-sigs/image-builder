@@ -5,8 +5,7 @@
     "ansible_extra_vars": "",
     "build_timestamp": "{{timestamp}}",
     "size": "s-1vcpu-1gb",
-    "region": null,
-    "image_name": "cluster-api-ubuntu-1804",
+    "region": "nyc1",
     "containerd_version": null,
     "containerd_sha256": null,
     "containerd_url": "https://github.com/containerd/containerd/releases/download/v{{user `containerd_version`}}/cri-containerd-cni-{{user `containerd_version`}}-linux-amd64.tar.gz",
@@ -32,39 +31,32 @@
   },
   "builders": [
     {
-      "name": "ubuntu-1804",
+      "name": "{{user `build_name`}}",
       "type": "digitalocean",
       "api_token": "{{ user `access_token` }}",
       "size": "{{ user `size` }}",
-      "image": "ubuntu-18-04-x64",
+      "image": "{{ user `source_image` }}",
       "region": "{{ user `region` }}",
-      "snapshot_name": "{{ user `image_name` }}-{{user `kubernetes_semver`}}-{{user `build_timestamp`}}",
+      "snapshot_name": "Cluster API Kubernetes {{ user `kubernetes_semver` }} {{ user `snapshot_name_suffix` }}",
       "snapshot_regions": [
-        "nyc1",
-        "sgp1",
-        "lon1",
-        "nyc3",
-        "ams3",
-        "fra1",
-        "tor1",
-        "sfo2",
-        "blr1"
+        "nyc1"
       ],
       "ssh_username": "root",
       "tags": [
-        "{{ user `image_name` }}:{{ user `kubernetes_semver` | replace_all `.` `-` }}"
+        "cluster-api-{{ user `build_name` }}:{{ user `kubernetes_semver` | replace_all `.` `-` }}"
       ]
     }
   ],
   "provisioners": [
     {
       "type": "shell",
+      "environment_vars": [
+        "BUILD_NAME={{user `build_name`}}"
+      ],
       "inline": [
+        "if [ $BUILD_NAME != \"ubuntu-1804\" ]; then exit 0; fi",
         "while [ ! -f /var/lib/cloud/instance/boot-finished ]; do echo 'Waiting for cloud-init...'; sleep 1; done",
         "sudo apt-get -qq update && sudo DEBIAN_FRONTEND=noninteractive apt-get -qqy install python python-pip"
-      ],
-      "only": [
-        "ubuntu-1804"
       ]
     },
     {

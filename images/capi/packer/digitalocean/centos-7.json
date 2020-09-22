@@ -1,0 +1,5 @@
+{
+  "build_name": "centos-7",
+  "source_image": "centos-7-x64",
+  "snapshot_name_suffix": "on CentOS 7"
+}
