@@ -17,3 +17,15 @@
 
 - import_tasks: debian.yml
   when: ansible_os_family == "Debian"
+
+- name: Configure PTP
+  lineinfile:
+    path: /etc/chrony/chrony.conf
+    create: yes
+    line: refclock PHC /dev/ptp0 poll 3 dpoll -2 offset 0
+
+- name: Ensure makestep parameter set as per Azure recommendation
+  lineinfile:
+    path: /etc/chrony/chrony.conf
+    regexp: '^makestep'
+    line: makestep 1.0 -1

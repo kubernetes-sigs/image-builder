@@ -17,6 +17,8 @@ kubernetes_cni_version: &kubernetes_cni_version
 package:
   cloud-init:
     installed: true
+  ntp:
+    installed: false
 {{if eq .Vars.kubernetes_source_type "pkg"}}
   kubeadm:
     installed: true
