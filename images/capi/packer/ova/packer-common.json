@@ -6,7 +6,7 @@
   "disk_type_id": "0",
   "format": "",
   "guestinfo_datasource_slug": "https://raw.githubusercontent.com/vmware/cloud-init-vmware-guestinfo",
-  "guestinfo_datasource_ref": "v1.3.1",
+  "guestinfo_datasource_ref": "v1.4.0",
   "guestinfo_datasource_script": "{{user `guestinfo_datasource_slug`}}/{{user `guestinfo_datasource_ref`}}/install.sh",
   "headless": "true",
   "insecure_connection": "false",
