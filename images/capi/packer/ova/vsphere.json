@@ -8,5 +8,8 @@
     "cluster": "",
     "network": "",
     "convert_to_template": "false",
+    "linked_clone": "true",
+    "create_snapshot": "true",
+    "template": "",
     "insecure_connection": "false"
 }
