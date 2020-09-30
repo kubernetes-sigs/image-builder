@@ -10,6 +10,8 @@ The images may be built using one of the following hypervisors:
 | macOS | VMware Fusion (vmware-iso)| build-node-ova-local-<OS> |
 | ESXi | ESXi | build-node-ova-esx-<OS> |
 | vSphere | vSphere >= 6.5 | build-node-ova-vsphere-<OS> |
+| vSphere | vSphere >= 6.5 | build-node-ova-vsphere-base-<OS> |
+| vSphere Clone | vSphere >= 6.5 | build-node-ova-vsphere-clone-<OS> |
 | Linux | VMware Workstation (vmware-vmx) | build-node-ova-local-vmx-<OS> |
 | macOS | VMware Fusion (vmware-vmx) | build-node-ova-local-vmx-<OS> |
 
@@ -22,6 +24,11 @@ The `vsphere` builder supports building against a remote VMware vSphere using st
 During the dev process it's uncommon for the base OS image to change, but the image building process builds the base image from the ISO every time and thus adding a significant amount of time to the build process. 
 
 To reduce the image building times during development, one can use the `build-node-ova-local-base-<OS>` target to build the base image from the ISO. By setting `source_path` variable in `vmx.json` to the `*.vmx` file from the output, it can then be re-used with the `build-node-ova-local-vmx-<OS>` build target to speed up the process. 
+
+
+### vsphere-clone builder
+`vsphere-base` builder allows you to build one time base OVAs from iso images using the kickstart process. It leaves the user `builder` intact in base OVA to be used by clone builder later. `vSphere-clone` builder builds on top of base OVA by cloning it and ansiblizing it.
+This saves time by allowing repeated iteration on base OVA without installing OS from scratch again and again. Also, it uses link cloning and `create_snapshot` feature to clone faster.
 
 ### Prerequisites for vSphere builder
 
@@ -37,6 +44,9 @@ This file must have the following format (`cluster` can be replace by `host`):
     "cluster": "esxi_cluster_used_for_template_creation",
     "network": "network_attached_to_template",
     "insecure_connection": "false"
+    "template": "base_template_used_by_clone_builder",
+    "create_snbapshot": "creates a snaphot on base OVA after building",
+    "linked_clone": "Uses link cloning in vsphere-clone builder: true, by default"
 }
 ```
 
