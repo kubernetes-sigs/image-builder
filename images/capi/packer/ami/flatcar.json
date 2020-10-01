@@ -1,8 +1,8 @@
 {
-  "ami_filter_name": "Flatcar*stable*",
+  "ami_filter_name": "Flatcar*{{env `FLATCAR_CHANNEL`}}*",
   "ami_filter_owners": "075585003325",
   "ansible_extra_vars": "ansible_python_interpreter=/opt/bin/python",
-  "build_name": "flatcar-stable",
+  "build_name": "flatcar-{{env `FLATCAR_CHANNEL`}}",
   "containerd_cri_socket": "/run/docker/libcontainerd/docker-containerd.sock",
   "crictl_source_type": "http",
   "containerd_version": "1.4.3",

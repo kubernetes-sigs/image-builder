@@ -42,7 +42,7 @@
   },
   "builders": [
     {
-      "name": "flatcar-stable",
+      "name": "flatcar-{{user `channel_name`}}",
       "vm_name": "{{user `build_name`}}-kube-{{user `kubernetes_semver`}}",
       "output_directory": "{{user `output_directory`}}",
       "type": "qemu",
@@ -79,7 +79,7 @@
       ],
       "script": "./packer/files/bootstrap-flatcar.sh",
       "execute_command": "sudo -S -E {{.Vars}} bash '{{.Path}}'",
-      "only": ["flatcar-stable"]
+      "only": ["flatcar-{{user `channel_name`}}"]
     },
     {
       "type": "ansible",
@@ -100,7 +100,7 @@
   "post-processors": [
     {
       "type": "vagrant",
-      "only": ["flatcar-stable"]
+      "only": ["flatcar-{{user `channel_name`}}"]
     }
   ]
 }
