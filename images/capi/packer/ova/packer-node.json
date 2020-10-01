@@ -4,6 +4,7 @@
     "ansible_extra_vars": "guestinfo_datasource_slug={{user `guestinfo_datasource_slug`}} guestinfo_datasource_ref={{user `guestinfo_datasource_ref`}} guestinfo_datasource_script={{user `guestinfo_datasource_script`}}",
     "build_timestamp": "{{timestamp}}",
     "build_version": "{{user `build_name`}}-kube-{{user `kubernetes_semver`}}",
+    "base_build_version": "base-{{user `build_name`}}-kube-{{user `kubernetes_semver`}}",
     "cluster": "",
     "containerd_version": null,
     "containerd_sha256": null,
@@ -32,6 +33,7 @@
     "kubernetes_rpm_gpg_check": null,
     "kubernetes_container_registry": null,
     "output_dir": "./output/{{user `build_version`}}",
+    "base_output_dir": "./output/{{user `base_build_version`}}",
     "username": "",
     "vcenter_server": ""
   },
@@ -67,9 +69,9 @@
     },
     {
       "name": "vmware-iso-base",
-      "vm_name": "{{user `build_version`}}",
-      "vmdk_name": "{{user `build_version`}}",
-      "output_directory": "{{user `output_dir`}}",
+      "vm_name": "{{user `base_build_version`}}",
+      "vmdk_name": "{{user `base_build_version`}}",
+      "output_directory": "{{user `base_output_dir`}}",
       "type": "vmware-iso",
       "version": "{{user `vmx_version`}}",
       "cpus": 1,
@@ -152,7 +154,60 @@
       "vmx_data": {
         "ethernet0.networkName": "{{user `network`}}"
       }
+    },{
+      "type": "vsphere-iso",
+      "name": "vsphere-iso-base",
+      "vcenter_server": "{{user `vcenter_server`}}",
+      "username": "{{user `username`}}",
+      "password": "{{user `password`}}",
+      "insecure_connection": "{{user `insecure_connection`}}",
+      "vm_name": "{{user `base_build_version`}}",
+      "datastore": "{{user `datastore`}}",
+      "datacenter": "{{user `datacenter`}}",
+      "folder": "{{user `folder`}}",
+      "host": "{{user `host`}}",
+      "convert_to_template": "{{user `convert_to_template`}}",
+      "cluster": "{{user `cluster`}}",
+      "create_snapshot": "{{user `create_snapshot`}}",
+      "network_adapters": [
+        {
+          "network": "{{user `network`}}",
+          "network_card": "{{user `network_card`}}"
+        }
+      ],
+      "vm_version": "{{user `vmx_version`}}",
+      "CPUs": 1,
+      "cpu_cores": 1,
+      "RAM": 2048,
+      "disk_controller_type": "{{user `disk_controller_type`}}",
+      "guest_os_type": "{{user `vsphere_guest_os_type`}}",
+      "boot_wait": "{{user `boot_wait`}}",
+      "http_directory": "./packer/ova/linux/{{user `distro_name`}}/http/",
+      "iso_urls": "{{user `iso_url`}}",
+      "iso_checksum": "{{user `iso_checksum_type`}}:{{user `iso_checksum`}}",
+      "communicator": "ssh",
+      "ssh_username": "{{user `ssh_username`}}",
+      "ssh_password": "{{user `ssh_password`}}",
+      "ssh_timeout": "4h",
+      "ssh_clear_authorized_keys": "false",
+      "storage": [
+        {
+          "disk_size": 20480,
+          "disk_thin_provisioned": "{{user `disk_thin_provisioned`}}"
+        }
+      ],
+      "boot_command": [
+        "{{user `boot_command_prefix`}}",
+        "http://{{ .HTTPIP }}:{{ .HTTPPort }}",
+        "{{user `boot_command_suffix`}}"
+      ],
+      "shutdown_command": "echo '{{user `ssh_password`}}' | sudo -S -E sh -c '{{user `shutdown_command`}}'",
+      "export": {
+        "force": true,
+        "output_directory": "{{user `base_output_dir`}}"
+      }
     },
+
     {
       "type": "vsphere-iso",
       "name": "vsphere",
@@ -203,11 +258,44 @@
         "force": true,
         "output_directory": "{{user `output_dir`}}"
       }
+    },
+    {
+      "type": "vsphere-clone",
+      "name": "vsphere-clone",
+      "vcenter_server": "{{user `vcenter_server`}}",
+      "create_snapshot": "{{user `create_snapshot`}}",
+      "username": "{{user `username`}}",
+      "password": "{{user `password`}}",
+      "insecure_connection": "{{user `insecure_connection`}}",
+      "vm_name": "{{user `build_version`}}",
+      "datastore": "{{user `datastore`}}",
+      "datacenter": "{{user `datacenter`}}",
+      "folder": "{{user `folder`}}",
+      "host": "{{user `host`}}",
+      "convert_to_template": "{{user `convert_to_template`}}",
+      "cluster": "{{user `cluster`}}",
+      "network": "{{user `network`}}",
+      "template": "{{user `template`}}",
+      "CPUs": 4,
+      "cpu_cores": 12,
+      "RAM": 16384,
+      "linked_clone": "{{user `linked_clone`}}",
+      "communicator": "ssh",
+      "ssh_username": "{{user `ssh_username`}}",
+      "ssh_password": "{{user `ssh_password`}}",
+      "ssh_timeout": "4h",
+      "shutdown_command": "echo '{{user `ssh_password`}}' | sudo -S -E sh -c 'usermod -L {{user `ssh_username`}} && {{user `shutdown_command`}}'",
+      "export": {
+        "force": true,
+        "output_directory": "{{user `output_dir`}}"
+      }
     }
+
   ],
   "provisioners": [
     {
       "type": "ansible",
+      "except": ["vmware-iso-base", "vsphere-iso-base"],
       "playbook_file": "./ansible/firstboot.yml",
       "user": "{{user `ssh_username`}}",
       "ansible_env_vars": [
@@ -234,7 +322,7 @@
     },
     {
       "type": "ansible",
-      "except": ["vmware-iso-base"],
+      "except": ["vmware-iso-base", "vsphere-iso-base"],
       "playbook_file": "./ansible/node.yml",
       "user": "{{user `ssh_username`}}",
       "ansible_env_vars": [
@@ -250,7 +338,7 @@
     },
     {
       "type": "goss",
-      "except": ["vmware-iso-base"],
+      "except": ["vmware-iso-base", "vsphere-iso-base"],
       "arch": "{{user `goss_arch`}}",
       "format": "{{user `goss_format`}}",
       "format_options": "{{user `goss_format_options`}}",
