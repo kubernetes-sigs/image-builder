@@ -15,7 +15,7 @@ $ sudo -i
 # apt install qemu-kvm libvirt-bin qemu-utils
 ```
 
-If you're on Ubuntu 20.04 LTS, then execute the following command to install qemu-kvm packages. The command above doesn't work for Ubuntu 20.04 LTS.
+If you're on Ubuntu 20.04 LTS, then execute the following command to install qemu-kvm packages.
 
 ```bash
 $ sudo -i
@@ -42,13 +42,12 @@ make deps-qemu
 
 ### Building QCOW2 Image
 
-From the images/capi directory, run make build-qemu-ubuntu-xxxx. The image is built and located in images/capi/output/BUILD_NAME+kube-KUBERNETES_VERSION. Please replace xxxx with 1804 or 2004 the version you want to build.
+From the `images/capi` directory, run `make build-qemu-ubuntu-xxxx`. The image is built and located in images/capi/output/BUILD_NAME+kube-KUBERNETES_VERSION. Please replace xxxx with `1804` or `2004` depending on the version you want to build the image for.
 
-For building a ubuntu-2004 image, run the following commands -
+For building a ubuntu-2004 based capi image, run the following commands -
 
 ```bash
 $ git clone https://github.com/kubernetes-sigs/image-builder.git
 $ cd image-builder/images/capi/
 $ make build-qemu-ubuntu-2004
 ```
-
