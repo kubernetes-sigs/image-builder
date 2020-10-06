@@ -11,6 +11,7 @@ Execute the following command to install qemu-kvm and other packages if you are 
 #### Installing packages to use qemu-img
 
 ```bash
+$ sudo -i
 # apt install qemu-kvm libvirt-bin qemu-utils
 ```
 
@@ -41,7 +42,7 @@ make deps-qemu
 
 ### Building QCOW2 Image
 
-From the `images/capi` directory, run `make build-qemu-ubuntu-1804`. The image is built and located in `images/capi/output/BUILD_NAME+kube-KUBERNETES_VERSION`.
+From the images/capi directory, run make build-qemu-ubuntu-xxxx. The image is built and located in images/capi/output/BUILD_NAME+kube-KUBERNETES_VERSION. Please replace xxxx with 1804 or 2004 the version you want to build.
 
 For building a ubuntu-2004 image, run the following commands -
 
@@ -50,4 +51,4 @@ $ git clone https://github.com/kubernetes-sigs/image-builder.git
 $ cd image-builder/images/capi/
 $ make build-qemu-ubuntu-2004
 ```
-The image is built and available in `images/capi/output/BUILD_NAME+kube-KUBERNETES_VERSION`.
+
