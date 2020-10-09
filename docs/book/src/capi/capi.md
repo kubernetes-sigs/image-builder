@@ -17,7 +17,7 @@ If any needed binaries are not present, they can be installed to `images/capi/.b
 * [AWS](./providers/aws.md)  
 * [Azure](./providers/azure.md)
 * [DigitalOcean](./providers/digitalocean.md)
-* Google *TODO*
+* [GCP](./providers/gcp.md)
 * [OpenStack](./providers/openstack.md)
 * [vSphere](./providers/vsphere.md)
 
