@@ -35,7 +35,8 @@
     "output_dir": "./output/{{user `build_version`}}",
     "base_output_dir": "./output/{{user `base_build_version`}}",
     "username": "",
-    "vcenter_server": ""
+    "vcenter_server": "",
+    "vmware_imgs": "['docker.io/plndr/kube-vip:0.1.7','docker.io/plndr/kube-vip:0.1.8']"
   },
   "builders": [
     {

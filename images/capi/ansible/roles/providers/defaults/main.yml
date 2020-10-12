@@ -1,2 +1,0 @@
-vmware_imgs:
-  - "docker.io/plndr/kube-vip:0.1.8"
