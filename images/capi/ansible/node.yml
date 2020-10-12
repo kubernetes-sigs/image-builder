@@ -19,9 +19,9 @@
     - include_role:
         name: node
     - include_role:
-        name: providers
-    - include_role:
         name: containerd
+    - include_role:
+        name: providers
     - include_role:
         name: kubernetes
     - include_role:
