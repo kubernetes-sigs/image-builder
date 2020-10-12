@@ -81,12 +81,3 @@
     owner: root
     group: root
     mode: 0644
-
-- name: set cloudinit feature flags
-  copy:
-    src: usr/lib/python3/dist-packages/cloudinit/feature_overrides.py
-    dest: /usr/lib/python3/dist-packages/cloudinit/feature_overrides.py
-    owner: root
-    group: root
-    mode: 0644
-  when: ansible_os_family == "Debian"
