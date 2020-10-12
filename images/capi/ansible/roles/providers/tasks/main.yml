@@ -13,13 +13,13 @@
 # limitations under the License.
 ---
 - include_tasks: aws.yml
-  when: packer_builder_type.startswith('amazon') 
+  when: packer_builder_type.startswith('amazon')
 
 - include_tasks: azure.yml
-  when: packer_builder_type.startswith('azure') 
+  when: packer_builder_type.startswith('azure')
 
 - include_tasks: vmware.yml
-  when: packer_builder_type is search('vmware') or 
+  when: packer_builder_type is search('vmware') or
         packer_builder_type is search('vsphere')
 
 - include_tasks: googlecompute.yml
@@ -76,3 +76,12 @@
     owner: root
     group: root
     mode: 0644
+
+- name: set cloudinit feature flags
+  copy:
+    src: usr/lib/python3/dist-packages/cloudinit/feature_overrides.py
+    dest: /usr/lib/python3/dist-packages/cloudinit/feature_overrides.py
+    owner: root
+    group: root
+    mode: 0644
+  when: ansible_os_family == "Debian"
