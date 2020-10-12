@@ -66,6 +66,13 @@
     state: absent
   when: ansible_os_family == "VMware Photon OS"
 
+- name: Pull vmware-specific images
+  shell: 'crictl pull {{ item }}'
+  loop: "{{ vmware_imgs }}"
+  when: 
+    - vmware_imgs is defined
+    - vmware_imgs is iterable
+
 #- name: Unlock password
 #  replace:
 #    path: /etc/cloud/cloud.cfg
