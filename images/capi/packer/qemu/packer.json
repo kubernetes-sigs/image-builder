@@ -78,7 +78,7 @@
         "BUILD_NAME={{user `build_name`}}"
       ],
       "script": "./packer/files/bootstrap-flatcar.sh",
-      "execute_command": "sudo -S -E {{.Vars}} bash '{{.Path}}'"
+      "execute_command": "BUILD_NAME={{user `build_name`}}; if [[ \"${BUILD_NAME}\" == *\"flatcar\"* ]]; then sudo {{.Vars}} -S -E bash '{{.Path}}'; fi"
     },
     {
       "type": "ansible",
