@@ -1,3 +1,0 @@
-ACTION=="add", SUBSYSTEM=="net", KERNEL=="eth*", TAG+="netif_hw_tx_offload_disable"
-ACTION=="add", SUBSYSTEM=="net", KERNEL=="en*", TAG+="netif_hw_tx_offload_disable"
-TAG=="netif_hw_tx_offload_disable", RUN+="/usr/sbin/ethtool -K $name tx off"
