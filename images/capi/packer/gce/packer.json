@@ -11,6 +11,8 @@
     "containerd_version": null,
     "containerd_sha256": null,
     "containerd_url": "https://github.com/containerd/containerd/releases/download/v{{user `containerd_version`}}/cri-containerd-cni-{{user `containerd_version`}}-linux-amd64.tar.gz",
+    "crictl_version": null,
+    "crictl_url": "https://github.com/kubernetes-sigs/cri-tools/releases/download/v{{user `crictl_version`}}/crictl-v{{user `crictl_version`}}-linux-amd64.tar.gz",
     "kubernetes_cni_rpm_version": null,
     "kubernetes_cni_deb_version": null,
     "kubernetes_cni_semver": null,
