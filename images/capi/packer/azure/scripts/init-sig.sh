@@ -13,7 +13,7 @@ export GALLERY_NAME="${GALLERY_NAME:-ClusterAPI}"
 az sig create --resource-group ${RESOURCE_GROUP_NAME} --gallery-name ${GALLERY_NAME}
 az sig image-definition create \
    --resource-group ${RESOURCE_GROUP_NAME} \
-   --gallery-name ClusterAPI \
+   --gallery-name ${GALLERY_NAME} \
    --gallery-image-definition capi-ubuntu-1804 \
    --publisher capz \
    --offer capz-demo \
@@ -21,7 +21,7 @@ az sig image-definition create \
    --os-type Linux
 az sig image-definition create \
    --resource-group ${RESOURCE_GROUP_NAME} \
-   --gallery-name ClusterAPI \
+   --gallery-name ${GALLERY_NAME} \
    --gallery-image-definition capi-ubuntu-2004 \
    --publisher capz \
    --offer capz-demo \
