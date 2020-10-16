@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+[[ -n ${DEBUG:-} ]] && set -o xtrace
+
 [[ "$BUILD_NAME" != *"flatcar"* ]] && exit 0
 
 BINDIR="/opt/bin"

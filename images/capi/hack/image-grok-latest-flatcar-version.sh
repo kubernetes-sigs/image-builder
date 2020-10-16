@@ -1,5 +1,7 @@
 #!/bin/sh -ue
 
+[[ -n ${DEBUG:-} ]] && set -o xtrace
+
 channel="$1"
 
 curl -s \

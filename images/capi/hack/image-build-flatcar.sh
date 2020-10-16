@@ -1,5 +1,7 @@
 #!/bin/sh -e
 
+[[ -n ${DEBUG:-} ]] && set -o xtrace
+
 export VAGRANT_VAGRANTFILE=${VAGRANT_VAGRANTFILE:-/tmp/Vagrantfile.builder-flatcar}
 export VAGRANT_SSH_PRIVATE_KEY=${VAGRANT_SSH_PRIVATE_KEY:-/tmp/vagrant-insecure-key}
 export VAGRANT_SSH_PUBLIC_KEY=${VAGRANT_SSH_PUBLIC_KEY:-/tmp/vagrant-insecure-key.pub}

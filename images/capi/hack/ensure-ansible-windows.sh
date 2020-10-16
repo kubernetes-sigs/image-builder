@@ -18,6 +18,8 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
+[[ -n ${DEBUG:-} ]] && set -o xtrace
+
 source hack/utils.sh
 
 _version="0.4.1"

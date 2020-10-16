@@ -1,5 +1,7 @@
 #!/bin/bash -e
 
+[[ -n ${DEBUG:-} ]] && set -o xtrace
+
 echo "PWD: $PWD"
 
 OS=${OS:-"Ubuntu"}

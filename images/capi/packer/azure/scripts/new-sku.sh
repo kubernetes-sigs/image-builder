@@ -2,6 +2,7 @@
 
 OS=${OS:-"Ubuntu"}
 OS_VERSION=${OS_VERSION:-"18.04"}
+[[ -n ${DEBUG:-} ]] && set -o xtrace
 
 required_env_vars=(
     "KUBERNETES_VERSION"

@@ -18,6 +18,8 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
+[[ -n ${DEBUG:-} ]] && set -o xtrace
+
 _version="1.6" # earlier versions don't follow the same OS/ARCH patterns
 
 # Change directories to the parent directory of the one in which this
