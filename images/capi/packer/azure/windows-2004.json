@@ -3,5 +3,7 @@
   "image_offer": "WindowsServer",
   "image_publisher": "MicrosoftWindowsServer",
   "image_sku": "Datacenter-Core-2004-with-Containers-smalldisk",
-  "vm_size": "Standard_D2s_v3"
+  "vm_size": "Standard_D2s_v3",
+  "distribution": "windows",
+  "distribution_version": "2004"
 }

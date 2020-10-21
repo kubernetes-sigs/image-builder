@@ -5,5 +5,7 @@
   "image_sku": "2019-Datacenter-Core-smalldisk",
   "image_version": "17763.1518.2010132039",
   "windows_updates_kbs": "KB4580390",
-  "vm_size": "Standard_D4s_v3"
+  "vm_size": "Standard_D4s_v3",
+  "distribution": "windows",
+  "distribution_version": "2019"
 }
