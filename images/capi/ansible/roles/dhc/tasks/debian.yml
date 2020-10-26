@@ -7,18 +7,23 @@
     install_recommends: yes
   vars:
     packages:
+    # we use xfs as our default filesystem
     - xfsprogs
-    - etcd-client
     - screen
     - tmux
     - mc
     - inetutils-traceroute
     - tcptraceroute
+    # some top-commands to make everyone in the team happy
     - htop
     - ctop
     - iotop
     - iftop
     - nmap
+    # an instance without vim isn't an instance
+    - vim
+    # nfs-common is required to make the mount of nfs-shares possible
+    - nfs-common
 
 - name: disable apparmor
   systemd:
