@@ -23,6 +23,7 @@ ARG ARCH
 ARG PASSED_IB_VERSION
 
 COPY . /home/imagebuilder
+RUN chown -R imagebuilder:imagebuilder /home/imagebuilder
 
 USER imagebuilder
 
