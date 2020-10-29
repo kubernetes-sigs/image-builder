@@ -54,7 +54,7 @@
       "shared_image_gallery_destination": {
         "gallery_name": "{{user `shared_image_gallery_name`}}",
         "image_name": "{{user `image_name`}}",
-        "image_version": "{{user `image_version`}}",
+        "image_version": "{{user `sig_image_version`}}",
         "replication_regions": [
           "{{user `replication_regions`}}"
         ],

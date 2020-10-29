@@ -27,6 +27,20 @@ From the `images/capi` directory, run `make build-azure-vhd-ubuntu-1804`
 
 > If building the windows images from a Mac there is a known issue with connectivity. Please see details on running [MacOS with ansible](../windows/windows.md#macos-with-ansible).
 
+### Hyper-V Generation 2 VHDs
+
+Most of the images built from the `images/capi` directory for Azure will be Hyper-V Generation 1 images. There are also a few available configurations to build Generation 2 VMs. The naming pattern is identical to Generation 1 images, with `-gen2` appended to the end of the image name. For example:
+
+```bash
+# Generation 1 image
+make build-azure-sig-ubuntu-1804
+
+# Generation 2 image
+make build-azure-sig-ubuntu-1804-gen2
+```
+
+Generation 2 images may only be used with Shared Image Gallery, not VHD.
+
 ## Developer
 
 If you are adding features to image builder than it is sometimes useful to work with the images directly. This section gives some tips.

@@ -1,5 +1,5 @@
 {
-  "image_name": "capi-{{user `distribution`}}-{{user `distribution_version`}}",
+  "image_name": "capi-{{user `distribution`}}-{{user `distribution_version`}}-gen2",
   "replication_regions": "{{env `AZURE_LOCATION`}}",
   "resource_group_name": "{{env `RESOURCE_GROUP_NAME`}}",
   "shared_image_gallery_name": "{{env `GALLERY_NAME`}}",
