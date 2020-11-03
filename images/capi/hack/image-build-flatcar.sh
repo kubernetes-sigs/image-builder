@@ -1,6 +1,8 @@
 #!/bin/sh -e
 
 export VAGRANT_VAGRANTFILE=${VAGRANT_VAGRANTFILE:-/tmp/Vagrantfile.builder-flatcar}
+export VAGRANT_SSH_PRIVATE_KEY=${VAGRANT_SSH_PRIVATE_KEY:-/tmp/vagrant-insecure-key}
+export VAGRANT_SSH_PUBLIC_KEY=${VAGRANT_SSH_PUBLIC_KEY:-/tmp/vagrant-insecure-key.pub}
 
 usage() {
     echo "Usage: $0 [<channel>] [<version>]"
@@ -18,6 +20,14 @@ check_for_release() {
          "https://www.flatcar-linux.org/releases-json/releases-$channel.json" \
         | jq -r 'to_entries[] | "\(.key)"' \
         | grep -q "$release"
+}
+# --
+
+fetch_vagrant_ssh_keys() {
+    curl -sSL -o ${VAGRANT_SSH_PRIVATE_KEY} \
+        https://raw.githubusercontent.com/hashicorp/vagrant/master/keys/vagrant
+    curl -sSL -o ${VAGRANT_SSH_PUBLIC_KEY} \
+        https://raw.githubusercontent.com/hashicorp/vagrant/master/keys/vagrant.pub
 }
 # --
 
@@ -114,7 +124,10 @@ export FLATCAR_CHANNEL FLATCAR_VERSION
 rm -rf ./output/flatcar-"${channel}-${release}"-kube-*
 
 if [[ ${CAPI_PROVIDER} = "qemu" ]]; then
+    fetch_vagrant_ssh_keys
     make FLATCAR_CHANNEL="$channel" FLATCAR_VERSION="$release" \
+        SSH_PRIVATE_KEY_FILE="${VAGRANT_SSH_PRIVATE_KEY}" \
+        SSH_PUBLIC_KEY_FILE="${VAGRANT_SSH_PUBLIC_KEY}" \
         build-${CAPI_PROVIDER}-flatcar
     run_vagrant
 elif [[ ${CAPI_PROVIDER} = "aws" ]] || [[ ${CAPI_PROVIDER} = "ami" ]]; then

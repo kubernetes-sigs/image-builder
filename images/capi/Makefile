@@ -124,6 +124,19 @@ ifeq (1,$(strip $(ON_ERROR_ASK)))
 PACKER_FLAGS += -on-error=ask
 endif
 
+# ssh_private_key_file and ssh_public_key are needed to pass ssh keypair
+# from its host to the packer guest machine, so boot managers like ignition
+# could make use of the key in its config.
+# SSH_PRIVATE_KEY_FILE is name of the file that contains the private key.
+# SSH_PUBLIC_KEY_FILE is name of the file that contains the public key.
+ifneq (,$(strip $(SSH_PRIVATE_KEY_FILE)))
+PACKER_FLAGS += -var ssh_private_key_file="$(SSH_PRIVATE_KEY_FILE)"
+endif
+
+ifneq (,$(strip $(SSH_PUBLIC_KEY_FILE)))
+PACKER_FLAGS += -var ssh_public_key="$(shell cat ${SSH_PUBLIC_KEY_FILE})"
+endif
+
 # We want the var files passed to Packer to have a specific order, because the
 # precenence of the variables they contain depends on the order. Files listed
 # later on the CLI have higher precedence. We want the common var files found in

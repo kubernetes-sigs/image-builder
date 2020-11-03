@@ -67,7 +67,6 @@
       "shutdown_command": "echo '{{user `ssh_password`}}' | sudo -S -E sh -c 'usermod -L {{user `ssh_username`}} && {{user `shutdown_command`}}'",
       "ssh_password": "{{user `ssh_password`}}",
       "ssh_username": "{{user `ssh_username`}}",
-      "ssh_private_key_file": "vagrant-insecure-key",
       "ssh_timeout": "2h"
     }
   ],
