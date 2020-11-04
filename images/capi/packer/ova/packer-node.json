@@ -284,6 +284,7 @@
         "vmware-iso-base",
         "vsphere-iso-base"
       ],
+      "name": "packer-manifest",
       "output": "{{user `output_dir`}}/packer-manifest.json",
       "strip_path": true,
       "type": "manifest"
