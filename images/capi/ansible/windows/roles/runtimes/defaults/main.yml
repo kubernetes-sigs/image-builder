@@ -19,8 +19,13 @@ containerd_additional_settings: ""
 
 prepull: false
 prepull_images:
-- mcr.microsoft.com/windows/servercore:ltsc2019
-- mcr.microsoft.com/windows/nanoserver:1809
-- mcr.microsoft.com/oss/kubernetes/pause:1.4.0
+  2019:
+    - mcr.microsoft.com/windows/servercore:ltsc2019
+    - mcr.microsoft.com/windows/nanoserver:1809
+    - mcr.microsoft.com/oss/kubernetes/pause:1.4.0
+  2004:
+    - mcr.microsoft.com/windows/servercore:2004
+    - mcr.microsoft.com/windows/nanoserver:2004
+    - mcr.microsoft.com/oss/kubernetes/pause:1.4.0
 
 additional_prepull_images_list: "{{ additional_prepull_images.split(',') if (additional_prepull_images is defined) and (additional_prepull_images|length > 0) else [] }}"

@@ -7,5 +7,6 @@
   "windows_updates_kbs": "KB4580390",
   "vm_size": "Standard_D4s_v3",
   "distribution": "windows",
-  "distribution_version": "2019"
+  "distribution_version": "2019",
+  "additional_prepull_images": "docker.io/sigwindowstools/flannel:0.12.0, docker.io/sigwindowstools/kube-proxy:{{user `kubernetes_semver`}}"
 }

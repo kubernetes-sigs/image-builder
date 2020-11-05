@@ -70,10 +70,12 @@
 
 - name: Pre-pull images
   win_command: ctr.exe -n k8s.io images pull {{ item }}
-  loop: "{{ prepull_images }}"
+  loop: "{{ images }}"
   async: 1800
   poll: 60
   when: prepull
+  vars:
+    images: "{{ prepull_images[distribution_version] | default([]) }}"
 
 - name: Pre-pull additional images
   win_command: ctr.exe -n k8s.io images pull {{ item }}

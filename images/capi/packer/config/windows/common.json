@@ -7,5 +7,6 @@
   "windows_service_manager": "nssm",
   "nssm_url": "https://azurek8scishared.blob.core.windows.net/nssm/nssm.exe",
   "runtime": "docker_ee",
-  "pause_image": "mcr.microsoft.com/oss/kubernetes/pause:1.4.0"
+  "pause_image": "mcr.microsoft.com/oss/kubernetes/pause:1.4.0",
+  "additional_prepull_images": ""
 }

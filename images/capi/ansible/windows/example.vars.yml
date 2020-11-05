@@ -24,6 +24,7 @@ windows_service_manager: 'nssm'
 pause_image: mcr.microsoft.com/oss/kubernetes/pause:1.4.0
 additional_prepull_images: "docker.io/sigwindowstools/flannel:0.12.0, docker.io/sigwindowstools/kube-proxy:v1.19.2"
 prepull: false
+distribution_version: 2019
 
 cloudbase_metadata_services: "cloudbaseinit.metadata.services.azureservice.AzureService, cloudbaseinit.metadata.services.ovfservice.OvfService"
 cloudbase_plugins: "cloudbaseinit.plugins.common.ephemeraldisk.EphemeralDiskPlugin, cloudbaseinit.plugins.common.userdata.UserDataPlugin, cloudbaseinit.plugins.common.localscripts.LocalScriptsPlugin"
