@@ -2,13 +2,18 @@
 
 ## Hypervisor
 
-The image is built using KVM hypervisor.
+The image is built using the following environments:
 
-### Prerequisites for QCOW2
+| Environment | Builder   | Build target       |
+|-------------|-----------|--------------------|
+| KVM         | QEMU      | build-qemu-ubuntu- |
+| OpenStack   | OpenStack | build-openstack    |
 
-Execute the following command to install qemu-kvm and other packages if you are running Ubuntu 18.04 LTS.
+### Prerequisites for QEMU Builder
 
 #### Installing packages to use qemu-img
+
+Execute the following command to install qemu-kvm and other packages if you are running Ubuntu 18.04 LTS.
 
 ```bash
 $ sudo -i
@@ -31,23 +36,29 @@ $ sudo chown root:kvm /dev/kvm
 
 Then exit and log back in to make the change take place.
 
+### Prerequisites for OpenStack Builder
+
+Complete the `images/capi/packer/qemu/openstack.json` configuration file with credentials and informations specific to the remote OpenStack environment.
+Please refer to the [Packer documentation for the OpenStack Builder](https://www.packer.io/docs/builders/openstack) for each variables.
+
 ## Building Images
 
-The build [prerequisites](../capi.md#prerequisites) for using `image-builder` for
-building qemu images are managed by running:
+### Building Images using QEMU Builder
+
+The build [prerequisites](../capi.md#prerequisites) for using `image-builder` for building images are managed by running:
 
 ```bash
 make deps-qemu
 ```
 
-### Building QCOW2 Image
+From the `images/capi` directory, run `make build-qemu-ubuntu-xxxx`. The image is built and located in `images/capi/output/BUILD_NAME+kube-KUBERNETES_VERSION`. Please replace xxxx with `1804` or `2004` depending on the version you want to build the image for.
 
-From the `images/capi` directory, run `make build-qemu-ubuntu-xxxx`. The image is built and located in images/capi/output/BUILD_NAME+kube-KUBERNETES_VERSION. Please replace xxxx with `1804` or `2004` depending on the version you want to build the image for.
+### Building Images using OpenStack Builder
 
-For building a ubuntu-2004 based capi image, run the following commands -
+The build [prerequisites](../capi.md#prerequisites) for using `image-builder` for building images are managed by running:
 
 ```bash
-$ git clone https://github.com/kubernetes-sigs/image-builder.git
-$ cd image-builder/images/capi/
-$ make build-qemu-ubuntu-2004
+make deps-openstack
 ```
+
+From the `images/capi` directory, run `make build-openstack`. The images is built in the remote OpenStack environment with the name `BUILD_NAME+kube-KUBERNETES_VERSION`.

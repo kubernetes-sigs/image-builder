@@ -1,0 +1,15 @@
+{
+  "build_name": "",
+  "identity_endpoint": "",
+  "tenant_name": "",
+  "domain_name": "",
+  "username": "",
+  "password": "",
+  "region": "",
+  "insecure": "",
+  "flavor": "",
+  "networks": "",
+  "floating_ip_network": "",
+  "source_image": "",
+  "ssh_username": ""
+} 
