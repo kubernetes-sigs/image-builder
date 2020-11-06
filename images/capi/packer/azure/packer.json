@@ -78,7 +78,7 @@
       "client_id": "{{user `client_id`}}",
       "client_secret": "{{user `client_secret`}}",
       "vm_size": "{{user `vm_size`}}",
-      "managed_image_name": "capi-{{user `build_timestamp`}}",
+      "managed_image_name": "{{user `image_name`}}-{{user `build_timestamp`}}",
       "managed_image_resource_group_name": "{{user `resource_group_name`}}",
       "shared_image_gallery_destination": {
         "resource_group": "{{user `resource_group_name`}}",
@@ -93,6 +93,7 @@
       "ssh_username": "packer",
       "azure_tags": {
         "build_timestamp": "{{user `build_timestamp`}}",
+        "creationTimestamp": "{{user `build_timestamp`}}",
         "distribution": "{{user `distribution`}}",
         "distribution_release": "{{user `distribution_release`}}",
         "distribution_version": "{{user `distribution_version`}}",
