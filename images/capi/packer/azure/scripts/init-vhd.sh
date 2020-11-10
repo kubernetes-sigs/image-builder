@@ -8,7 +8,7 @@ eval "$tracestate"
 
 export RESOURCE_GROUP_NAME="${RESOURCE_GROUP_NAME:-cluster-api-images}"
 export AZURE_LOCATION="${AZURE_LOCATION:-southcentralus}"
-az group create -n ${RESOURCE_GROUP_NAME} -l ${AZURE_LOCATION} --tags ${TAGS}
+az group create -n ${RESOURCE_GROUP_NAME} -l ${AZURE_LOCATION} --tags ${TAGS:-}
 CREATE_TIME="$(date +%s)"
 RANDOM_SUFFIX="$(head /dev/urandom | LC_ALL=C tr -dc a-z | head -c 4 ; echo '')"
 export STORAGE_ACCOUNT_NAME="capi${CREATE_TIME}${RANDOM_SUFFIX}"

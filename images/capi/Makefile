@@ -346,7 +346,8 @@ build-azure-vhd-ubuntu-1804: ## Builds Ubuntu 18.04 VHD image for Azure
 build-azure-vhd-ubuntu-2004: ## Builds Ubuntu 20.04 VHD image for Azure
 build-azure-sig-centos-7: ## Builds CentOS 7 Azure managed image in Shared Image Gallery
 build-azure-vhd-centos-7: ## Builds CentOS 7 VHD image for Azure
-build-azure-all: $(AZURE_BUILD_VHD_TARGETS) ## Builds all Azure VHDs
+build-azure-vhds: $(AZURE_BUILD_VHD_TARGETS) ## Builds all Azure VHDs
+build-azure-sigs: $(AZURE_BUILD_SIG_TARGETS) ## Builds all Azure Shared Image Gallery images
 
 build-do-ubuntu-1804: ## Builds Ubuntu 18.04 DigitalOcean Snapshot
 build-do-ubuntu-2004: ## Builds Ubuntu 20.04 DigitalOcean Snapshot

@@ -58,4 +58,9 @@ cleanup() {
 trap cleanup EXIT
 
 make deps-azure
-make -j build-azure-all
+
+if [[ "${AZURE_BUILD_FORMAT:-vhd}" == "sig" ]]; then
+    make -j build-azure-sigs
+else
+    make -j build-azure-vhds
+fi
