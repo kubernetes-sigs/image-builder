@@ -145,7 +145,8 @@ COMMON_HAPROXY_VAR_FILES := packer/ova/packer-common.json \
 					packer/config/ansible-args.json \
 					packer/config/common.json
 
-COMMON_WINDOWS_VAR_FILES :=	packer/config/windows/kubernetes.json \
+COMMON_WINDOWS_VAR_FILES :=	packer/config/kubernetes.json \
+					packer/config/windows/kubernetes.json \
 					packer/config/windows/containerd.json \
 					packer/config/windows/docker.json \
 					packer/config/windows/ansible-args-windows.json \
