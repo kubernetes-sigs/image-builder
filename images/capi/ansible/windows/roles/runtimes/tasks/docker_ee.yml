@@ -31,19 +31,19 @@
     $exists=docker network ls -f name=host -q
     if (-not $exists) { docker network create -d nat host }
 
-- name: Pre-pull images
+- name: Pre-pull docker images
   win_command: docker pull {{ item }}
   loop: "{{ images }}"
   async: 1800
   poll: 60
-  when: prepull
+  when: (prepull | bool)
   vars:
     images: "{{ prepull_images[distribution_version] | default([]) }}"
 
-- name: Pre-pull additional images
+- name: Pre-pull docker additional images
   win_command: docker pull {{ item }}
   loop: "{{ additional_prepull_images_list }}"
   async: 1800
   poll: 60
-  when: additional_prepull_images_list|length > 0
+  when: (prepull | bool) and (additional_prepull_images_list|length > 0) 
   

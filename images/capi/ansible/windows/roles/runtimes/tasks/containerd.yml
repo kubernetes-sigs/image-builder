@@ -68,19 +68,20 @@
   win_service:
     name: containerd
 
-- name: Pre-pull images
+- name: Pre-pull containerd images
   win_command: ctr.exe -n k8s.io images pull {{ item }}
   loop: "{{ images }}"
   async: 1800
   poll: 60
-  when: prepull
+  when: (prepull | bool)
   vars:
     images: "{{ prepull_images[distribution_version] | default([]) }}"
 
-- name: Pre-pull additional images
+- name: Pre-pull containerd additional images
   win_command: ctr.exe -n k8s.io images pull {{ item }}
   loop: "{{ additional_prepull_images_list }}"
   async: 1800
   poll: 60
-  when: additional_prepull_images_list|length > 0
+  when: (prepull | bool) and (additional_prepull_images_list|length > 0) 
+  
   
