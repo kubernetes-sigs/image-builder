@@ -34,7 +34,6 @@
         name: kubernetes
     - include_role:
         name: debug
-      when: debug_tools | default(true)|bool
     - include_role:
         name: "{{ role }}"
       loop: "{{ custom_role_names.split() }}"

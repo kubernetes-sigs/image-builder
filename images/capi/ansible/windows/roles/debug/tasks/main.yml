@@ -16,19 +16,18 @@
   win_file:
     path:  '{{ kubernetes_install_path }}\debug'
     state: directory
+  when: (debug_tools | default(true) | bool) or (additional_debug_files_list|length > 0) 
     
 - name: Get debug files
   win_get_url:
     url:  '{{ item }}'
     dest: '{{ kubernetes_install_path }}\debug\'
-  loop: 
-    - "https://github.com/Microsoft/SDN/raw/master/Kubernetes/flannel/l2bridge/cni/win-bridge.exe"
-    - "https://github.com/microsoft/SDN/raw/master/Kubernetes/windows/debug/collectlogs.ps1"
-    - "https://github.com/microsoft/SDN/raw/master/Kubernetes/windows/debug/dumpVfpPolicies.ps1"
-    - "https://github.com/microsoft/SDN/raw/master/Kubernetes/windows/debug/portReservationTest.ps1"
-    - "https://github.com/microsoft/SDN/raw/master/Kubernetes/windows/debug/starthnstrace.cmd"
-    - "https://github.com/microsoft/SDN/raw/master/Kubernetes/windows/debug/startpacketcapture.cmd"
-    - "https://github.com/microsoft/SDN/raw/master/Kubernetes/windows/debug/stoppacketcapture.cmd"
-    - "https://github.com/Microsoft/SDN/raw/master/Kubernetes/windows/debug/VFP.psm1"
-    - "https://github.com/microsoft/SDN/raw/master/Kubernetes/windows/helper.psm1"
-    - "https://github.com/Microsoft/SDN/raw/master/Kubernetes/windows/hns.psm1"
+  loop: '{{ debug_files }}'
+  when: debug_tools | default(true)|bool
+
+- name: Get additional debug files
+  win_get_url:
+    url:  '{{ item }}'
+    dest: '{{ kubernetes_install_path }}\debug\'
+  loop: "{{ additional_debug_files_list }}"
+  when: additional_debug_files_list|length > 0
