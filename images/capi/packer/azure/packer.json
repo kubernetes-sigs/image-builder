@@ -61,6 +61,7 @@
       "ssh_username": "packer",
       "azure_tags": {
         "build_timestamp": "{{user `build_timestamp`}}",
+        "creationTimestamp": "{{user `build_timestamp`}}",
         "distribution": "{{user `distribution`}}",
         "distribution_release": "{{user `distribution_release`}}",
         "distribution_version": "{{user `distribution_version`}}",
