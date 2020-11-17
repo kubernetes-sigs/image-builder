@@ -85,3 +85,14 @@
     group: root
     mode: 0644
   when: ansible_os_family == "Debian"
+
+- name: Ensure chrony is running
+  systemd:
+    enabled: yes
+    state: started
+    daemon_reload: yes
+    name: chronyd
+  when: packer_builder_type.startswith('amazon') or
+        packer_builder_type.startswith('azure') or
+        packer_builder_type is search('vmware') or
+        packer_builder_type is search('vsphere')

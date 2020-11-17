@@ -2,10 +2,10 @@
 common_rpms: &common_rpms
   ca-certificates:
   conntrack-tools:
+  chrony:
   curl:
   ebtables:
   jq:
-  ntp:
   open-vm-tools:
   python-netifaces:
   python-requests:
@@ -16,6 +16,7 @@ common_debs: &common_debs
   auditd:
   apt-transport-https:
   conntrack:
+  chrony:
   curl:
   ebtables:
   jq:
@@ -25,7 +26,6 @@ common_debs: &common_debs
   libnetfilter-log1:
   linux-cloud-tools-virtual:
   linux-tools-virtual:
-  ntp:
   open-vm-tools:
   python3-distutils:
   python3-netifaces:
@@ -42,11 +42,11 @@ chrony_deb: &chrony_deb
 common_photon_rpms: &common_photon_rpms
   audit:
   conntrack-tools:
+  chrony:
   distrib-compat:
   ebtables:
   jq:
   net-tools:
-  ntp:
   openssl-c_rehash:
   open-vm-tools:
   python-netifaces:
