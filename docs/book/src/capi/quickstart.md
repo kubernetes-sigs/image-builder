@@ -6,11 +6,22 @@ In this tutorial we will cover the basics of how to download and execute the Ima
 
 As a set of scripts and Makefiles that rely on Packer and Ansible, there is image builder binary/application to install. Rather we need to download the tooling from the GitHub repo and make sure that the Packer and Ansible are installed.
 
-To get the latest image-builder source on your machine, execute the following:
+To get the latest image-builder source on your machine, choose one of the following methods:
+
+Tarball download:
 
 ```sh
 curl -L https://github.com/kubernetes-sigs/image-builder/tarball/master -o image-builder.tgz
-tar xzf image-builder.tgz
+mkdir image-builder
+tar xzf image-builder.tgz --strip-components 1 -C image-builder
+rm image-builder.tgz
+cd image-builder/images/capi
+```
+
+Or, if you'd like to keep tracking the repo updates (requires git):
+
+```sh
+git clone git@github.com:kubernetes-sigs/image-builder.git
 cd image-builder/images/capi
 ```
 
