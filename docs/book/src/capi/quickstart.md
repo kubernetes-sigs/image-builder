@@ -12,9 +12,13 @@ Tarball download:
 
 ```sh
 curl -L https://github.com/kubernetes-sigs/image-builder/tarball/master -o image-builder.tgz
+<<<<<<< HEAD
 mkdir image-builder
 tar xzf image-builder.tgz --strip-components 1 -C image-builder
 rm image-builder.tgz
+=======
+tar xzf image-builder.tgz --one-top-level=image-builder --strip-components 1
+>>>>>>> 7f59f55946c81e4a728863b1c746a40a99c432ad
 cd image-builder/images/capi
 ```
 
