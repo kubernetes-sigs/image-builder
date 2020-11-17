@@ -19,7 +19,7 @@ set -o pipefail
 set +o xtrace
 
 parse_cred() {
-    grep -E -o "$1[[:blank:]]*=[[:blank:]]*\"[^[:space:]\"]+\"" | cut -d '"' -f 2
+    grep -E -o "\b$1[[:blank:]]*=[[:blank:]]*\"[^[:space:]\"]+\"" | cut -d '"' -f 2
 }
 
 
