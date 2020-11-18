@@ -37,7 +37,7 @@ func (c *Config) InitDefaults() {
 	setupCommands := []string{
 		"sudo apt-get update",
 		"sudo apt-get install --yes git python debootstrap python-pip kpartx parted",
-		"sudo pip install --upgrade requests termcolor jsonschema fysom docopt pyyaml boto boto3",
+		"sudo pip install --upgrade requests termcolor jsonschema fysom docopt pyyaml boto boto3 pyrsistent==0.16.0",
 	}
 	for _, cmd := range setupCommands {
 		c.SetupCommands = append(c.SetupCommands, strings.Split(cmd, " "))
