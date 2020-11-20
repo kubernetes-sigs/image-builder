@@ -180,7 +180,7 @@ HAPROXY_OVA_ESX_BUILD_NAMES			:=	$(addprefix haproxy-ova-esx-,$(PHOTON_VERSIONS)
 HAPROXY_OVA_VSPHERE_BUILD_NAMES		:=	$(addprefix haproxy-ova-vsphere-,$(PHOTON_VERSIONS))
 
 AMI_BUILD_NAMES			?=	ami-centos-7 ami-ubuntu-1804 ami-ubuntu-2004 ami-amazon-2
-GCE_BUILD_NAMES			?=	gce-default
+GCE_BUILD_NAMES			?=	gce-ubuntu-1804 ## gce-ubuntu-2004
 AZURE_BUILD_VHD_NAMES		?=	azure-vhd-ubuntu-1804 azure-vhd-centos-7 ## azure-vhd-ubuntu-2004
 AZURE_BUILD_SIG_NAMES		?=	azure-sig-ubuntu-1804 azure-sig-centos-7 ## azure-sig-ubuntu-2004
 
@@ -274,11 +274,11 @@ $(AMI_VALIDATE_TARGETS): deps-ami
 
 .PHONY: $(GCE_BUILD_TARGETS)
 $(GCE_BUILD_TARGETS): deps-gce
-	packer build $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/gce/$(subst build-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/gce/packer.json
+	packer build $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/gce/$(subst build-gce-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/gce/packer.json
 
 .PHONY: $(GCE_VALIDATE_TARGETS)
 $(GCE_VALIDATE_TARGETS): deps-gce
-	packer validate $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/gce/$(subst validate-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/gce/packer.json
+	packer validate $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/gce/$(subst validate-gce-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/gce/packer.json
 
 .PHONY: $(AZURE_BUILD_VHD_TARGETS)
 $(AZURE_BUILD_VHD_TARGETS): deps-azure
@@ -354,7 +354,9 @@ build-do-ubuntu-2004: ## Builds Ubuntu 20.04 DigitalOcean Snapshot
 build-do-centos-7: ## Builds Centos 7 DigitalOcean Snapshot
 build-do-all: $(DO_BUILD_TARGETS) ## Builds all DigitalOcean Snapshot
 
-build-gce-default: ## Builds the GCE default image
+build-gce-ubuntu-1804: ## Builds the GCE ubuntu-1804 image
+build-gce-ubuntu-2004: ## Builds the GCE ubuntu-2004 image
+build-gce-all: $(GCE_BUILD_TARGETS) ## Builds all GCE image
 
 build-node-ova-local-centos-7: ## Builds CentOS 7 Node OVA w local hypervisor
 build-node-ova-local-photon-3: ## Builds Photon 3 Node OVA w local hypervisor
@@ -434,7 +436,9 @@ validate-do-ubuntu-2004: ## Valdiates Ubuntu 20.04 DigitalOcean Snapshot Packer 
 validate-do-centos-7: ## Valdiates Centos 7 DigitalOcean Snapshot Packer config
 validate-do-all: $(DO_VALIDATE_TARGETS) ## Valdiates all DigitalOcean Snapshot Packer config
 
-validate-gce-default: ## Validates the GCE default image packer config
+validate-gce-ubuntu-1804: ## Valdiates Ubuntu 18.04 GCE Snapshot Packer config
+validate-gce-ubuntu-2004: ## Valdiates Ubuntu 20.04 GCE Snapshot Packer config
+validate-gce-all: $(GCE_VALIDATE_TARGETS) ## Valdiates all GCE Snapshot Packer config
 
 validate-node-ova-local-centos-7: ## Validates CentOS 7 Node OVA Packer config w local hypervisor
 validate-node-ova-local-photon-3: ## Validates Photon 3 Node OVA Packer config w local hypervisor
@@ -463,7 +467,7 @@ validate-qemu-all: $(QEMU_VALIDATE_TARGETS) ## Validates all Qemu Packer config
 validate-all: validate-ami-all \
 	validate-azure-all \
 	validate-do-all \
-	validate-gce-default \
+	validate-gce-all \
 	validate-node-ova-local-all \
 	validate-haproxy-ova-local-photon-3 \
 	validate-qemu-all
