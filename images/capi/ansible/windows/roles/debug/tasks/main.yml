@@ -1,0 +1,33 @@
+# Copyright 2020 The Kubernetes Authors.
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+
+# http://www.apache.org/licenses/LICENSE-2.0
+
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+---
+- name: Add debug tools directory
+  win_file:
+    path:  '{{ kubernetes_install_path }}\debug'
+    state: directory
+  when: (debug_tools | default(true) | bool) or (additional_debug_files_list|length > 0) 
+    
+- name: Get debug files
+  win_get_url:
+    url:  '{{ item }}'
+    dest: '{{ kubernetes_install_path }}\debug\'
+  loop: '{{ debug_files }}'
+  when: debug_tools | default(true)|bool
+
+- name: Get additional debug files
+  win_get_url:
+    url:  '{{ item }}'
+    dest: '{{ kubernetes_install_path }}\debug\'
+  loop: "{{ additional_debug_files_list }}"
+  when: additional_debug_files_list|length > 0

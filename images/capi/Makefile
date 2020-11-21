@@ -57,6 +57,7 @@ deps-ami:
 deps-azure: ## Installs/checks dependencies for Azure builds
 deps-azure:
 	hack/ensure-ansible.sh
+	hack/ensure-ansible-windows.sh
 	hack/ensure-packer.sh
 	hack/ensure-jq.sh
 	hack/ensure-azure-cli.sh
@@ -144,6 +145,14 @@ COMMON_HAPROXY_VAR_FILES := packer/ova/packer-common.json \
 					packer/config/ansible-args.json \
 					packer/config/common.json
 
+COMMON_WINDOWS_VAR_FILES :=	packer/config/kubernetes.json \
+					packer/config/windows/kubernetes.json \
+					packer/config/windows/containerd.json \
+					packer/config/windows/docker.json \
+					packer/config/windows/ansible-args-windows.json \
+					packer/config/windows/common.json \
+					packer/config/windows/cloudbase-init.json
+
 # Initialize a list of flags to pass to Packer. This includes any existing flags
 # specified by PACKER_FLAGS, as well as prefixing the list with the variable
 # files from COMMON_VAR_FILES, with each file prefixed by -var-file=.
@@ -154,6 +163,8 @@ PACKER_NODE_FLAGS := $(foreach f,$(abspath $(COMMON_NODE_VAR_FILES)),-var-file="
 PACKER_HAPROXY_FLAGS := $(foreach f,$(abspath $(COMMON_HAPROXY_VAR_FILES)),-var-file="$(f)" ) \
 				$(PACKER_FLAGS)
 ABSOLUTE_PACKER_VAR_FILES := $(foreach f,$(abspath $(PACKER_VAR_FILES)),-var-file="$(f)" )
+PACKER_WINDOWS_NODE_FLAGS := $(foreach f,$(abspath $(COMMON_WINDOWS_VAR_FILES)),-var-file="$(f)" ) \
+				$(PACKER_FLAGS)
 
 ## --------------------------------------
 ## Platform and version combinations
@@ -181,8 +192,8 @@ HAPROXY_OVA_VSPHERE_BUILD_NAMES		:=	$(addprefix haproxy-ova-vsphere-,$(PHOTON_VE
 
 AMI_BUILD_NAMES			?=	ami-centos-7 ami-ubuntu-1804 ami-ubuntu-2004 ami-amazon-2
 GCE_BUILD_NAMES			?=	gce-ubuntu-1804 ## gce-ubuntu-2004
-AZURE_BUILD_VHD_NAMES		?=	azure-vhd-ubuntu-1804 azure-vhd-centos-7 ## azure-vhd-ubuntu-2004
-AZURE_BUILD_SIG_NAMES		?=	azure-sig-ubuntu-1804 azure-sig-centos-7 ## azure-sig-ubuntu-2004
+AZURE_BUILD_VHD_NAMES	?=	azure-vhd-ubuntu-1804 azure-vhd-centos-7 azure-vhd-windows-2019 azure-vhd-windows-2004 ## azure-vhd-ubuntu-2004 
+AZURE_BUILD_SIG_NAMES	?=	azure-sig-ubuntu-1804 azure-sig-centos-7 azure-sig-windows-2019 azure-sig-windows-2004 ## azure-sig-ubuntu-2004
 
 DO_BUILD_NAMES 			?=	do-centos-7 do-ubuntu-1804 do-ubuntu-2004
 
@@ -282,19 +293,19 @@ $(GCE_VALIDATE_TARGETS): deps-gce
 
 .PHONY: $(AZURE_BUILD_VHD_TARGETS)
 $(AZURE_BUILD_VHD_TARGETS): deps-azure
-	. $(abspath packer/azure/scripts/init-vhd.sh) && packer build $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/azure/azure-config.json)" -var-file="$(abspath packer/azure/azure-vhd.json)" -var-file="$(abspath packer/azure/$(subst build-azure-vhd-,,$@).json)" -only="$(subst build-azure-,,$@)" $(ABSOLUTE_PACKER_VAR_FILES) packer/azure/packer.json
+	. $(abspath packer/azure/scripts/init-vhd.sh) && packer build $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="$(abspath packer/azure/azure-config.json)" -var-file="$(abspath packer/azure/azure-vhd.json)" -var-file="$(abspath packer/azure/$(subst build-azure-vhd-,,$@).json)" -only="$(subst build-azure-,,$@)" $(ABSOLUTE_PACKER_VAR_FILES) packer/azure/packer$(findstring -windows,$@).json
 
 .PHONY: $(AZURE_VALIDATE_VHD_TARGETS)
 $(AZURE_VALIDATE_VHD_TARGETS): deps-azure
-	packer validate $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/azure/azure-config.json)" -var-file="$(abspath packer/azure/azure-vhd.json)" -var-file="$(abspath packer/azure/$(subst validate-azure-vhd-,,$@).json)" -only="$(subst validate-azure-,,$@)" $(ABSOLUTE_PACKER_VAR_FILES) packer/azure/packer.json
+	packer validate $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="$(abspath packer/azure/azure-config.json)" -var-file="$(abspath packer/azure/azure-vhd.json)" -var-file="$(abspath packer/azure/$(subst validate-azure-vhd-,,$@).json)" -only="$(subst validate-azure-,,$@)" $(ABSOLUTE_PACKER_VAR_FILES) packer/azure/packer$(findstring -windows,$@).json
 
 .PHONY: $(AZURE_BUILD_SIG_TARGETS)
 $(AZURE_BUILD_SIG_TARGETS): deps-azure
-	. $(abspath packer/azure/scripts/init-sig.sh) && packer build $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/azure/azure-config.json)" -var-file="$(abspath packer/azure/azure-sig.json)" -var-file="$(abspath packer/azure/$(subst build-azure-sig-,,$@).json)" -only="$(subst build-azure-,,$@)" $(ABSOLUTE_PACKER_VAR_FILES) packer/azure/packer.json
+	. $(abspath packer/azure/scripts/init-sig.sh) && packer build $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="$(abspath packer/azure/azure-config.json)" -var-file="$(abspath packer/azure/azure-sig.json)" -var-file="$(abspath packer/azure/$(subst build-azure-sig-,,$@).json)" -only="$(subst build-azure-,,$@)" $(ABSOLUTE_PACKER_VAR_FILES) packer/azure/packer$(findstring -windows,$@).json
 
 .PHONY: $(AZURE_VALIDATE_SIG_TARGETS)
 $(AZURE_VALIDATE_SIG_TARGETS): deps-azure
-	packer validate $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/azure/azure-config.json)" -var-file="$(abspath packer/azure/azure-sig.json)" -var-file="$(abspath packer/azure/$(subst validate-azure-sig-,,$@).json)" -only="$(subst validate-azure-,,$@)" $(ABSOLUTE_PACKER_VAR_FILES) packer/azure/packer.json
+	packer validate $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="$(abspath packer/azure/azure-config.json)" -var-file="$(abspath packer/azure/azure-sig.json)" -var-file="$(abspath packer/azure/$(subst validate-azure-sig-,,$@).json)" -only="$(subst validate-azure-,,$@)" $(ABSOLUTE_PACKER_VAR_FILES) packer/azure/packer$(findstring windows,$@).json
 
 .PHONY: $(DO_BUILD_TARGETS)
 $(DO_BUILD_TARGETS): deps-do
@@ -342,12 +353,17 @@ build-ami-all: $(AMI_BUILD_TARGETS) ## Builds all AMIs
 
 build-azure-sig-ubuntu-1804: ## Builds Ubuntu 18.04 Azure managed image in Shared Image Gallery
 build-azure-sig-ubuntu-2004: ## Builds Ubuntu 20.04 Azure managed image in Shared Image Gallery
+build-azure-sig-centos-7: ## Builds CentOS 7 Azure managed image in Shared Image Gallery
+build-azure-sig-windows-2019: ## Builds Windows Server 2019 Azure managed image in Shared Image Gallery
+build-azure-sig-windows-2004: ## Builds Windows Server 2004 SAC Azure managed image in Shared Image Gallery
 build-azure-vhd-ubuntu-1804: ## Builds Ubuntu 18.04 VHD image for Azure
 build-azure-vhd-ubuntu-2004: ## Builds Ubuntu 20.04 VHD image for Azure
-build-azure-sig-centos-7: ## Builds CentOS 7 Azure managed image in Shared Image Gallery
 build-azure-vhd-centos-7: ## Builds CentOS 7 VHD image for Azure
+build-azure-vhd-windows-2019: ## Builds for Windows Server 2019
+build-azure-vhd-windows-2004: ## Builds for Windows Server 2004 SAC
 build-azure-vhds: $(AZURE_BUILD_VHD_TARGETS) ## Builds all Azure VHDs
 build-azure-sigs: $(AZURE_BUILD_SIG_TARGETS) ## Builds all Azure Shared Image Gallery images
+
 
 build-do-ubuntu-1804: ## Builds Ubuntu 18.04 DigitalOcean Snapshot
 build-do-ubuntu-2004: ## Builds Ubuntu 20.04 DigitalOcean Snapshot
@@ -426,9 +442,13 @@ validate-ami-all: $(AMI_VALIDATE_TARGETS) ## Validates all AMIs Packer config
 validate-azure-sig-centos-7: ## Validates CentOS 7 Azure managed image in Shared Image Gallery Packer config
 validate-azure-sig-ubuntu-1804: ## Validates Ubuntu 18.04 Azure managed image in Shared Image Gallery Packer config
 validate-azure-sig-ubuntu-2004: ## Validates Ubuntu 20.04 Azure managed image in Shared Image Gallery Packer config
+validate-azure-sig-windows-2019: ## Validate Windows Server 2019 Azure managed image in Shared Image Gallery Packer config
+validate-azure-sig-windows-2004: ## Validate Windows Server 2004 SAC Azure managed image in Shared Image Gallery Packer config
 validate-azure-vhd-centos-7: ## Validates CentOS 7 VHD image Azure Packer config
 validate-azure-vhd-ubuntu-1804: ## Validates Ubuntu 18.04 VHD image Azure Packer config
 validate-azure-vhd-ubuntu-2004: ## Validates Ubuntu 20.04 VHD image Azure Packer config
+validate-azure-vhd-windows-2019: ## Validate Windows Server 2019 VHD image Azure Packer config
+validate-azure-vhd-windows-2004: ## Validate Windows Server 2004 SAC VHD image Azure Packer config
 validate-azure-all: $(AZURE_VALIDATE_SIG_TARGETS) $(AZURE_VALIDATE_VHD_TARGETS) ## Validates all VHD images Azure Packer config
 
 validate-do-ubuntu-1804: ## Valdiates Ubuntu 18.04 DigitalOcean Snapshot Packer config

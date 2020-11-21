@@ -1,0 +1,22 @@
+# Copyright 2020 The Kubernetes Authors.
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+
+# http://www.apache.org/licenses/LICENSE-2.0
+
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+---
+# Install kubelet as a windows service
+# Requires --windows-service flag: https://github.com/kubernetes/kubernetes/blob/7f23a743e8c23ac6489340bbb34fa6f1d392db9d/cmd/kubelet/app/options/osflags_windows.go#L26
+# Does not support kubeadm KUBELET_KUBEADM_ARGS which is used by Cluster API to pass extra user args
+- name: Install kubelet as service
+  win_service:
+    name: kubelet
+    start_mode: manual
+    path: '{{ kubernetes_install_path }}\kubelet.exe --windows-service --cert-dir=%SYSTEMDRIVE%/var/lib/kubelet/pki --config=%SYSTEMDRIVE%/var/lib/kubelet/config.yaml --bootstrap-kubeconfig=%SYSTEMDRIVE%/etc/kubernetes/bootstrap-kubelet.conf --kubeconfig=%SYSTEMDRIVE%/etc/kubernetes/kubelet.conf --hostname-override=$(hostname) --pod-infra-container-image=`"{{ pause_image }}`" --enable-debugging-handlers --cgroups-per-qos=false --enforce-node-allocatable=`"`" --network-plugin=cni --resolv-conf=`"`" --log-dir=%SYSTEMDRIVE%/var/log/kubelet --logtostderr=false --image-pull-progress-deadline=20m'

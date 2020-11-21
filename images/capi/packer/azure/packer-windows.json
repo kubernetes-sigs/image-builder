@@ -1,0 +1,152 @@
+{
+  "variables": {
+    "additional_prepull_images": null,
+    "additional_debug_files": null,
+    "ansible_common_vars": "",
+    "ansible_extra_vars": "",
+    "azure_location": null,
+    "build_name": null,
+    "build_timestamp": "{{timestamp}}",
+    "client_id": null,
+    "client_secret": null,
+    "cloudbase_init_url": "https://github.com/cloudbase/cloudbase-init/releases/download/{{user `cloudbase_init_version`}}/CloudbaseInitSetup_{{user `cloudbase_init_version` | replace_all `.` `_` }}_x64.msi",
+    "cloudbase_metadata_services": "cloudbaseinit.metadata.services.azureservice.AzureService",
+    "cloudbase_metadata_services_unattend": "cloudbaseinit.metadata.services.base.EmptyMetadataService",
+    "cloudbase_plugins": "cloudbaseinit.plugins.common.ephemeraldisk.EphemeralDiskPlugin, cloudbaseinit.plugins.windows.azureguestagent.AzureGuestAgentPlugin, cloudbaseinit.plugins.common.mtu.MTUPlugin, cloudbaseinit.plugins.common.sethostname.SetHostNamePlugin",
+    "cloudbase_plugins_unattend": "cloudbaseinit.plugins.common.mtu.MTUPlugin",
+    "containerd_version": null,
+    "containerd_sha256": null,
+    "containerd_url": "",
+    "image_offer": null,
+    "image_publisher": null,
+    "image_sku": null,
+    "image_version": "latest",
+    "kubernetes_base_url": "https://kubernetesreleases.blob.core.windows.net/kubernetes/{{user `kubernetes_semver`}}/binaries/node/windows/{{user `kubernetes_goarch`}}",
+    "manifest_output": "manifest.json",
+    "nssm_url": null,
+    "prepull": null,
+    "subscription_id": null,
+    "vm_size": "", 
+    "windows_updates_kbs": null,
+    "windows_service_manager": null,
+    "wins_url": "https://github.com/rancher/wins/releases/download/v{{user `wins_version`}}/wins.exe"
+  },
+  "builders": [
+    {
+      "name": "vhd-{{user `build_name`}}",
+      "type": "azure-arm",
+      "os_type": "Windows",
+      "image_publisher": "{{user `image_publisher` }}",
+      "image_offer": "{{user `image_offer` }}",
+      "image_sku": "{{user `image_sku`}}",
+      "image_version": "{{user `image_version`}}",
+      "subscription_id": "{{user `subscription_id`}}",
+      "client_id": "{{user `client_id`}}",
+      "client_secret": "{{user `client_secret`}}",
+      "vm_size": "{{user `vm_size`}}",
+      "resource_group_name": "{{user `resource_group_name`}}",
+      "capture_container_name": "{{user `capture_container_name`}}",
+      "capture_name_prefix": "capi-{{user `build_timestamp`}}",
+      "storage_account": "{{user `storage_account_name`}}",
+      "location": "{{user `azure_location`}}",
+      "communicator": "winrm",
+      "winrm_use_ssl": true,
+      "winrm_insecure": true,
+      "winrm_timeout": "10m",
+      "winrm_username": "packer",
+      "azure_tags": {
+        "build_timestamp": "{{user `build_timestamp`}}",
+        "creationTimestamp": "{{user `build_timestamp`}}",
+        "os_version": "{{user `image_sku`}}",
+        "kubernetes_version": "{{user `kubernetes_semver`}}"
+      }
+    },
+    {
+      "name": "sig-{{user `build_name`}}",
+      "type": "azure-arm",
+      "os_type": "Windows",
+      "image_publisher": "{{user `image_publisher` }}",
+      "image_offer": "{{user `image_offer` }}",
+      "image_sku": "{{user `image_sku`}}",
+      "subscription_id": "{{user `subscription_id`}}",
+      "client_id": "{{user `client_id`}}",
+      "client_secret": "{{user `client_secret`}}",
+      "vm_size": "{{user `vm_size`}}",
+      "managed_image_name": "{{user `image_name`}}-{{user `build_timestamp`}}",
+      "managed_image_resource_group_name": "{{user `resource_group_name`}}",
+      "shared_image_gallery_destination": {
+        "resource_group": "{{user `resource_group_name`}}",
+        "gallery_name": "{{user `shared_image_gallery_name`}}",
+        "image_name": "{{user `image_name`}}",
+        "image_version": "0.3.{{user `build_timestamp`}}",
+        "replication_regions": [
+          "{{user `replication_regions`}}"
+        ]
+      },
+      "location": "{{user `azure_location`}}",
+      "communicator": "winrm",
+      "winrm_use_ssl": true,
+      "winrm_insecure": true,
+      "winrm_timeout": "10m",
+      "winrm_username": "packer",
+      "azure_tags": {
+        "build_timestamp": "{{user `build_timestamp`}}",
+        "creationTimestamp": "{{user `build_timestamp`}}",
+        "os_version": "{{user `image_sku`}}",
+        "kubernetes_version": "{{user `kubernetes_semver`}}"
+      }
+    }
+  ],
+  "provisioners": [
+    {
+      "elevated_user": "packer",
+      "elevated_password": "{{.WinRMPassword}}",
+      "type": "powershell",
+      "script": "ansible/windows/ansible_winrm.ps1"
+    },
+    {
+      "type": "ansible",
+      "playbook_file": "ansible/windows/node_windows.yml",
+      "user": "packer",
+      "ansible_env_vars": [
+        "ANSIBLE_REMOTE_TEMP='/tmp/.ansible/'"
+      ],
+      "use_proxy": false,
+      "extra_arguments": [
+        "-e", "ansible_winrm_server_cert_validation=ignore",
+        "--extra-vars","{{user `ansible_common_vars`}}",
+        "--extra-vars", "{{user `ansible_extra_vars`}}"
+      ]
+    },
+    {
+      "type": "windows-restart"
+    },
+    {
+      "elevated_user": "packer",
+      "elevated_password": "{{.WinRMPassword}}",
+      "type": "powershell",
+      "script": "packer/azure/scripts/sysprep.ps1"
+    }
+  ],
+  "post-processors": [
+    {
+      "type": "manifest",
+      "output": "{{user `manifest_output`}}",
+      "strip_path": true,
+      "custom_data": {
+        "build_name": "{{user `build_name`}}",
+        "build_timestamp": "{{user `build_timestamp`}}",
+        "build_date": "{{isotime}}",
+        "build_type": "node",
+        "containerd_version": "{{user `containerd_version`}}",
+        "custom_role": "{{user `custom_role`}}",
+        "kubernetes_cni_semver": "{{user `kubernetes_cni_semver`}}",
+        "kubernetes_semver": "{{user `kubernetes_semver`}}",
+        "kubernetes_source_type": "{{user `kubernetes_source_type`}}",
+        "os_name": "{{user `distro_name`}}",
+        "resource_group_name": "{{user `resource_group_name`}}",
+        "storage_account_name": "{{user `storage_account_name`}}"
+      }
+    }
+  ]
+}

@@ -38,6 +38,8 @@ The `images/capi/packer/config` directory includes several JSON files that defin
 | `packer/config/containerd.json` | The version of containerd to install and customizations specific to the containerd runtime |
 | `packer/config/kubernetes.json` | The version of Kubernetes to install |
 
+Due to OS differences, Windows images has additional configuration in the `packer/config/windows` folder.  See [Windows documentation](windows/windows.md) for more details.
+
 ### Customization
 
 Several variables can be used to customize the image build.

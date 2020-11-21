@@ -1,0 +1,69 @@
+# Copyright 2020 The Kubernetes Authors.
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+
+# http://www.apache.org/licenses/LICENSE-2.0
+
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+---
+# This file was adapted from https://github.com/Azure/aks-engine/blob/master/vhd/packer/configure-windows-vhd.ps1 for ansible
+- name: Disable automatic windows updates
+  win_regedit:
+    path: HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU
+    state: present
+    name: NoAutoUpdate
+    data: 1
+
+# Hyper-V messes with networking components on startup after the feature is enabled
+# causing issues with communication over winrm and setting winrm to delayed start
+# gives Hyper-V enough time to finish configuration before having packer continue.
+- name: Set WinRm Service to delayed start
+  win_command: sc.exe config winrm start=delayed-auto
+
+# Find KB Article numbers:
+#  - WS 2019 https://support.microsoft.com/en-us/help/4464619
+#  - WS 2004 https://support.microsoft.com/en-us/help/4555932
+- name: Install Windows updates based on KB numbers
+  win_updates:
+    whitelist: "{{ windows_updates_kbs_numbers }}"
+  when: windows_updates_kbs_numbers|length > 0
+
+- name: Update Windows Defender signatures
+  win_shell: |
+    # https://github.com/microsoft/azure-pipelines-image-generation/pull/1259/files
+    $service = Get-Service "Windefend"
+    $service.WaitForStatus("Running","00:5:00")
+    Update-MpSignature
+
+# Requires admin rights to install 
+# https://docs.ansible.com/ansible/latest/user_guide/become.html#become-and-windows
+- name: Install OpenSSH
+  win_shell: Add-WindowsCapability -Online -Name OpenSSH.Server~~~~0.0.1.0
+  become: yes
+  become_method: runas
+  become_user: SYSTEM
+
+- name: Start ssh service 
+  win_service:
+    name: sshd
+    start_mode: auto
+    state: started
+
+- name: Add required Windows Features
+  win_feature:
+    name:
+    - Containers
+    - Hyper-V
+    - Hyper-V-PowerShell
+    state: present
+  register: win_feature
+
+- name: Reboot if required
+  win_reboot:
+  when: win_feature.reboot_required
