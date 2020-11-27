@@ -29,3 +29,30 @@ export PATH=$PWD/.bin:$PATH
 ## Builds
 
 With the CAPI image builder installed and dependencies satisfied, you are now ready to build an image. In general, this is done via `make` targets, and each provider (e.g. AWS, GCE, etc.) will have different requirements for what information needs to be provided (such as cloud provider authentication credentials). Certain providers may have dependencies that are not satisfied by `make deps`, for example the vSphere provider needs access to a hypervisor (VMware Fusion on macOS, VMware Workstation on Linux). See the [specific documentation](./capi.md#providers) for your desired provider for more details.
+
+## Environment Variables
+
+To assist with automation, there is also the option of overriding any variable with a corresponding environment variable prefixed with `PKR_OVR_`. A useful example of this is providing logon credentials for the vsphere.json or the kubernetes version you would like to build.  
+
+``` sh
+#Override vsphere.json
+export PKR_OVR_vcenter_server=vsphere
+export PKR_OVR_username=administrator@vsphere.local
+export PKR_OVR_password=myPassword
+export PKR_OVR_cluster=myCluster
+export PKR_OVR_datastore=myDatastore
+export PKR_OVR_datacenter=myDatacenter
+export PKR_OVR_folder=myFolder
+export PKR_OVR_resource_pool=myResourcePool
+export PKR_OVR_convert_to_template=true
+export PKR_OVR_linked_clone=false
+export PKR_OVR_create_snapshot=false
+export PKR_OVR_template=
+export PKR_OVR_insecure_connection=true
+
+#Spaces are accepted but single quotes will not work.
+export PKR_OVR_network=VM Network
+
+### Any user variable can be set
+export PKR_OVR_kubernetes_semver=v1.19.4
+```

@@ -153,6 +153,14 @@ COMMON_WINDOWS_VAR_FILES :=	packer/config/kubernetes.json \
 					packer/config/windows/common.json \
 					packer/config/windows/cloudbase-init.json
 
+
+##Accept override environment variables with prefix PKR_OVR_ to assist with automation
+OVERRIDES := $(shell env | grep '^PKR_OVR_.*$$'| sed 's/ /~space~/g')
+
+#strip the prefix and add a add quote after =
+OVERRIDE_VARS := $(foreach v,$(OVERRIDES),$(v:PKR_OVR_%=%))
+OVERRIDE_VARS := $(foreach v,$(OVERRIDE_VARS),$(subst =,=',$(v)))
+
 # Initialize a list of flags to pass to Packer. This includes any existing flags
 # specified by PACKER_FLAGS, as well as prefixing the list with the variable
 # files from COMMON_VAR_FILES, with each file prefixed by -var-file=.
@@ -162,7 +170,8 @@ PACKER_NODE_FLAGS := $(foreach f,$(abspath $(COMMON_NODE_VAR_FILES)),-var-file="
 				$(PACKER_FLAGS)
 PACKER_HAPROXY_FLAGS := $(foreach f,$(abspath $(COMMON_HAPROXY_VAR_FILES)),-var-file="$(f)" ) \
 				$(PACKER_FLAGS)
-ABSOLUTE_PACKER_VAR_FILES := $(foreach f,$(abspath $(PACKER_VAR_FILES)),-var-file="$(f)" )
+ABSOLUTE_PACKER_VAR_FILES := $(foreach f,$(abspath $(PACKER_VAR_FILES)),-var-file="$(f)" ) \
+				$(foreach v,$(OVERRIDE_VARS), -var=$(subst ~space~, ,$(v))')
 PACKER_WINDOWS_NODE_FLAGS := $(foreach f,$(abspath $(COMMON_WINDOWS_VAR_FILES)),-var-file="$(f)" ) \
 				$(PACKER_FLAGS)
 
