@@ -21,6 +21,7 @@
   "ssh_password": "builder",
   "ssh_timeout": "60m",
   "ssh_username": "builder",
+  "vmware_firmware": "bios",
   "vmx_version": "15",
   "vnc_bind_address": "127.0.0.1",
   "vnc_disable_password": "false",

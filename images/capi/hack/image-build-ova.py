@@ -53,6 +53,10 @@ def main():
                         metavar='OVF_TEMPLATE',
                         default='./ovf_template.xml',
                         help='XML template to build OVF')
+    parser.add_argument('--fw-type',
+                        dest='fw_type',
+                        default='bios',
+                        help='Type of the VM (e.g. bios, efi)')
     parser.add_argument('--vmdk_file',
                         nargs='?',
                         metavar='FILE',
@@ -140,7 +144,8 @@ def main():
         'DISTRO_NAME': build_data['distro_name'],
         'DISTRO_VERSION': build_data['distro_version'],
         'DISTRO_ARCH': build_data['distro_arch'],
-        'NESTEDHV': "false"
+        'NESTEDHV': "false",
+        'FW_TYPE': args.fw_type
     }
 
     capv_url = "https://github.com/kubernetes-sigs/cluster-api-provider-vsphere"
