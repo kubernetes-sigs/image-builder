@@ -1,8 +1,8 @@
 {
     "planId": "{{ID}}",
-    "microsoft-azure-corevm.skuTitle": "Kubernetes {{KUBERNETES_VERSION}} Ubuntu 18.04",
-    "microsoft-azure-corevm.skuSummary": "Cluster API Kubernetes {{KUBERNETES_VERSION}} Ubuntu 18.04 Base Image",
-    "microsoft-azure-corevm.skuLongSummary": "Cluster API Kubernetes {{KUBERNETES_VERSION}} Ubuntu 18.04 Base Image",
+    "microsoft-azure-corevm.skuTitle": "Kubernetes {{KUBERNETES_VERSION}} {{OS}} {{OS_VERSION}}",
+    "microsoft-azure-corevm.skuSummary": "Cluster API Kubernetes {{KUBERNETES_VERSION}} {{OS}} {{OS_VERSION}} Base Image",
+    "microsoft-azure-corevm.skuLongSummary": "Cluster API Kubernetes {{KUBERNETES_VERSION}} {{OS}} {{OS_VERSION}} Base Image",
     "microsoft-azure-corevm.hideSKUForSolutionTemplate": true,
     "microsoft-azure-corevm.hardened": false,
     "microsoft-azure-corevm.deploymentModels": [
@@ -16,8 +16,8 @@
     "microsoft-azure-corevm.imageType": "VmImage",
     "microsoft-azure-corevm.imageVisibility": true,
     "microsoft-azure-corevm.generation": "1",
-    "microsoft-azure-corevm.operatingSystemFamily": "Linux",
-    "microsoft-azure-corevm.osType": "Ubuntu",
+    "microsoft-azure-corevm.operatingSystemFamily": "{{OS_FAMILY}}",
+    "microsoft-azure-corevm.osType": "{{OS_TYPE}}",
     "microsoft-azure-corevm.supportsHubOnOffSwitch": false,
     "microsoft-azure-corevm.supportsClientHub": false,
     "microsoft-azure-corevm.isPremiumThirdParty": false,

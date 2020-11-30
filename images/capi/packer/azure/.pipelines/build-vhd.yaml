@@ -6,9 +6,11 @@
 # - AZURE_CLIENT_SECRET - Service principal secret
 # - AZURE_SUBSCRIPTION_ID - Subscription ID used by the pipeline
 # - KUBERNETES_VERSION - version of Kubernetes to build the image with, e.g. `1.16.2`
+# - OS - target of build e.g. `Ubuntu/Windows`
+# - OS_VERSION - target of build e.g. `18.04/2004/2019`
 
 jobs:
-- job: build_vhd_linux
+- job: build_vhd
   container: $[ variables['CONTAINER_IMAGE'] ]
   timeoutInMinutes: 120
   strategy:
@@ -20,7 +22,9 @@ jobs:
   - script: |
       set -o pipefail
       make deps-azure
-      make build-azure-vhd-ubuntu-1804 | tee packer/azure/packer.out
+      os=$(echo "$OS" | tr '[:upper:]' '[:lower:]') 
+      version=$(echo "$OS_VERSION" | tr '[:upper:]' '[:lower:]' | tr -d .)
+      make build-azure-vhd-$os-$version | tee packer/azure/packer.out
     displayName: Building VHD
     workingDirectory: '$(system.defaultWorkingDirectory)/images/capi'
     env:

@@ -12,6 +12,8 @@
 # - PUBLISHER - the name of the publisher to create the sku for
 # - OFFER - the name of the offer to create the sku for
 # - SKU_TEMPLATE_FILE - the base template file to use for the sku
+# - OS - target of build e.g. `Ubuntu/Windows`
+# - OS_VERSION - target of build e.g. `18.04/2004/2019`
 
 trigger: none
 pr: none

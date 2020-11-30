@@ -1,5 +1,8 @@
 #!/bin/bash -e
 
+OS=${OS:-"Ubuntu"}
+OS_VERSION=${OS_VERSION:-"18.04"}
+
 required_env_vars=(
     "KUBERNETES_VERSION"
     "SKU_TEMPLATE_FILE"
@@ -8,6 +11,8 @@ required_env_vars=(
     "AZURE_CLIENT_SECRET"
     "PUBLISHER"
     "OFFER"
+    "OS"
+    "OS_VERSION"
 )
 
 for v in "${required_env_vars[@]}"
@@ -31,9 +36,28 @@ major=${ADDR[0]}
 minor=${ADDR[1]}
 patch=${ADDR[2]}
 
-sku_id="k8s-${major}dot${minor}dot${patch}-ubuntu-1804"
+os=$(echo "$OS" | tr '[:upper:]' '[:lower:]')
+version=$(echo "$OS_VERSION" | tr '[:upper:]' '[:lower:]' | tr -d .)
+sku_id="k8s-${major}dot${minor}dot${patch}-${os}-${version}"
 
-< $SKU_TEMPLATE_FILE sed s/{{ID}}/"$sku_id"/ | sed s/{{KUBERNETES_VERSION}}/"$KUBERNETES_VERSION/" > sku.json
+if [ "$OS" == "Ubuntu" ]; then
+    os_type="Ubuntu"
+    os_family="Linux"
+elif [ "$OS" == "Windows" ]; then
+    os_type="Other"
+    os_family="Windows"
+else
+    echo "Cannot configure unknown OS: ${OS}!"
+    exit 1
+fi
+
+< $SKU_TEMPLATE_FILE sed s/{{ID}}/"$sku_id"/ \
+    | sed s/{{KUBERNETES_VERSION}}/"$KUBERNETES_VERSION/" \
+    | sed s/{{OS}}/"$OS/" \
+    | sed s/{{OS_VERSION}}/"$OS_VERSION/" \
+    | sed s/{{OS_TYPE}}/"$os_type/" \
+    | sed s/{{OS_FAMILY}}/"$os_family/" \
+    > sku.json
 cat sku.json
 
 echo
