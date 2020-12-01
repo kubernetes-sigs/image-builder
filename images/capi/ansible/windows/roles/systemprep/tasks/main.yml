@@ -29,12 +29,31 @@
 # Find KB Article numbers:
 #  - WS 2019 https://support.microsoft.com/en-us/help/4464619
 #  - WS 2004 https://support.microsoft.com/en-us/help/4555932
+# Task to install specific updates by KB. All categories are specified as the module
+# won't install the update unless the category matches. Setting windows_updates_kbs_numbers to []
+# will skip this task.
 - name: Install Windows updates based on KB numbers
   win_updates:
     whitelist: "{{ windows_updates_kbs_numbers }}"
     reboot: yes
+    category_names:
+      - Application
+      - Connectors
+      - CriticalUpdates
+      - DefinitionUpdates
+      - DeveloperKits
+      - Drivers
+      - FeaturePacks
+      - Guidance
+      - SecurityUpdates
+      - ServicePacks
+      - Tools
+      - UpdateRollups
+      - Updates
   when: windows_updates_kbs_numbers|length > 0
 
+# Task to install any outstanding updates that belong to specific categories. Setting
+# windows_updates_category_names to [] will skip this task.
 - name: Install Windows updates based on Categories
   win_updates:
     category_names: "{{ windows_updates_category_names }}"

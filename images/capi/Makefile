@@ -50,6 +50,7 @@ deps: deps-ami deps-azure deps-do deps-gce deps-ova deps-qemu
 deps-ami: ## Installs/checks dependencies for AMI builds
 deps-ami:
 	hack/ensure-ansible.sh
+	hack/ensure-ansible-windows.sh
 	hack/ensure-packer.sh
 	hack/ensure-goss.sh
 
@@ -221,7 +222,7 @@ HAPROXY_OVA_LOCAL_BUILD_NAMES			:=	$(addprefix haproxy-ova-local-,$(PHOTON_VERSI
 HAPROXY_OVA_ESX_BUILD_NAMES			:=	$(addprefix haproxy-ova-esx-,$(PHOTON_VERSIONS))
 HAPROXY_OVA_VSPHERE_BUILD_NAMES		:=	$(addprefix haproxy-ova-vsphere-,$(PHOTON_VERSIONS))
 
-AMI_BUILD_NAMES			?=	ami-centos-7 ami-ubuntu-1804 ami-ubuntu-2004 ami-amazon-2 ami-flatcar
+AMI_BUILD_NAMES			?=	ami-centos-7 ami-ubuntu-1804 ami-ubuntu-2004 ami-amazon-2 ami-flatcar ami-windows-2019 ami-windows-2004
 GCE_BUILD_NAMES			?=	gce-ubuntu-1804 ## gce-ubuntu-2004
 AZURE_BUILD_VHD_NAMES	?=	azure-vhd-ubuntu-1804 azure-vhd-ubuntu-2004 azure-vhd-centos-7 azure-vhd-windows-2019 azure-vhd-windows-2004
 AZURE_BUILD_SIG_NAMES	?=	azure-sig-ubuntu-1804 azure-sig-ubuntu-2004 azure-sig-centos-7 azure-sig-windows-2019 azure-sig-windows-2004
@@ -311,11 +312,11 @@ $(HAPROXY_OVA_VSPHERE_BUILD_TARGETS): deps-ova
 
 .PHONY: $(AMI_BUILD_TARGETS)
 $(AMI_BUILD_TARGETS): deps-ami
-	packer build $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/ami/$(subst build-ami-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/ami/packer.json
+	packer build $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="$(abspath packer/ami/$(subst build-ami-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/ami/packer$(if $(findstring windows,$@),-windows,).json
 
 .PHONY: $(AMI_VALIDATE_TARGETS)
 $(AMI_VALIDATE_TARGETS): deps-ami
-	packer validate $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/ami/$(subst validate-ami-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/ami/packer.json
+	packer validate $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="$(abspath packer/ami/$(subst validate-ami-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/ami/packer$(if $(findstring windows,$@),-windows,).json
 
 .PHONY: $(GCE_BUILD_TARGETS)
 $(GCE_BUILD_TARGETS): deps-gce
@@ -392,6 +393,8 @@ build-ami-centos-7: ## Builds CentOS 7 AMI
 build-ami-ubuntu-1804: ## Builds Ubuntu 18.04 AMI
 build-ami-ubuntu-2004: ## Builds Ubuntu 20.04 AMI
 build-ami-flatcar: ## Builds Flatcar
+build-ami-windows-2019: ## Build Windows Server 2019 AMI Packer config
+build-ami-windows-2004: ## Build Windows Server 2004 SAC AMI Packer config
 build-ami-all: $(AMI_BUILD_TARGETS) ## Builds all AMIs
 
 build-azure-sig-ubuntu-1804: ## Builds Ubuntu 18.04 Azure managed image in Shared Image Gallery
@@ -485,6 +488,8 @@ validate-ami-amazon-2: ## Validates Amazon-2 Linux AMI Packer config
 validate-ami-centos-7: ## Validates CentOS 7 AMI Packer config
 validate-ami-ubuntu-1804: ## Validates Ubuntu 18.04 AMI Packer config
 validate-ami-ubuntu-2004: ## Validates Ubuntu 20.04 AMI Packer config
+validate-ami-windows-2019: ## Validates Windows Server 2019 AMI Packer config
+validate-ami-windows-2004: ## Validates Windows Server 2004 SAC AMI Packer config
 validate-ami-all: $(AMI_VALIDATE_TARGETS) ## Validates all AMIs Packer config
 
 validate-azure-sig-centos-7: ## Validates CentOS 7 Azure managed image in Shared Image Gallery Packer config
