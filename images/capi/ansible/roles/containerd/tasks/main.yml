@@ -86,6 +86,11 @@
     src: etc/containerd/config.toml
     mode: 0644
 
+- name: Copy in crictl config
+  template:
+    dest: /etc/crictl.yaml
+    src: etc/crictl.yaml
+
 - name: start containerd service
   systemd:
     name: containerd

@@ -5,7 +5,7 @@
     mode: 0600
 
 - name: Kubeadm pull images
-  shell: 'kubeadm config images pull --config /etc/kubeadm.yml'
+  shell: 'kubeadm config images pull --config /etc/kubeadm.yml --cri-socket {{ containerd_cri_socket }}'
 
 - name: delete kubeadm config
   file:
