@@ -173,7 +173,7 @@ PACKER_HAPROXY_FLAGS := $(foreach f,$(abspath $(COMMON_HAPROXY_VAR_FILES)),-var-
 				$(PACKER_FLAGS)
 				
 # Append all the var files and concatenate the additional overrides variables onto 
-# the end, overrides get -var= and spaces are converted back. There variables override everything
+# the end, overrides get -var= and spaces are converted back. These variables override values
 # in files
 ABSOLUTE_PACKER_VAR_FILES := $(foreach f,$(abspath $(PACKER_VAR_FILES)),-var-file="$(f)" ) \
 				$(foreach v,$(OVERRIDE_VARS), -var=$(subst ~space~, ,$(v))')
