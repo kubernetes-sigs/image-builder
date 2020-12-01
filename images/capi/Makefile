@@ -154,10 +154,11 @@ COMMON_WINDOWS_VAR_FILES :=	packer/config/kubernetes.json \
 					packer/config/windows/cloudbase-init.json
 
 
-##Accept override environment variables with prefix PKR_OVR_ to assist with automation
+# Accept override environment variables with prefix PKR_OVR_ to assist with automation
+# Spaces are replaced with ~space~ as spaces break foreach in makefile syntax
 OVERRIDES := $(shell env | grep '^PKR_OVR_.*$$'| sed 's/ /~space~/g')
 
-#strip the prefix and add a add quote after =
+# Strip the prefix and add a add quote after the =
 OVERRIDE_VARS := $(foreach v,$(OVERRIDES),$(v:PKR_OVR_%=%))
 OVERRIDE_VARS := $(foreach v,$(OVERRIDE_VARS),$(subst =,=',$(v)))
 
@@ -170,6 +171,10 @@ PACKER_NODE_FLAGS := $(foreach f,$(abspath $(COMMON_NODE_VAR_FILES)),-var-file="
 				$(PACKER_FLAGS)
 PACKER_HAPROXY_FLAGS := $(foreach f,$(abspath $(COMMON_HAPROXY_VAR_FILES)),-var-file="$(f)" ) \
 				$(PACKER_FLAGS)
+				
+# Append all the var files and concatenate the additional overrides variables onto 
+# the end, overrides get -var= and spaces are converted back. There variables override everything
+# in files
 ABSOLUTE_PACKER_VAR_FILES := $(foreach f,$(abspath $(PACKER_VAR_FILES)),-var-file="$(f)" ) \
 				$(foreach v,$(OVERRIDE_VARS), -var=$(subst ~space~, ,$(v))')
 PACKER_WINDOWS_NODE_FLAGS := $(foreach f,$(abspath $(COMMON_WINDOWS_VAR_FILES)),-var-file="$(f)" ) \
