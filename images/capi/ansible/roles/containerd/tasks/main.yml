@@ -75,6 +75,13 @@
     src: etc/systemd/system/containerd.service.d/max-tasks.conf
     mode: 0644
 
+- name: Create containerd http proxy conf file if needed
+  template:
+    dest: /etc/systemd/system/containerd.service.d/http-proxy.conf
+    src: etc/systemd/system/containerd.service.d/http-proxy.conf
+    mode: 0644
+  when: http_proxy is defined or https_proxy is defined
+
 - name: Creates containerd config directory
   file:
     path: /etc/containerd
