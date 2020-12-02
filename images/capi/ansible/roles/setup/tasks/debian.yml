@@ -18,6 +18,13 @@
     dest: /etc/apt/sources.list
     mode: 0644
 
+- name: Put templated apt.conf.d/90proxy in place when defined
+  template:
+    src: etc/apt/apt.conf.d/90proxy
+    dest: /etc/apt/apt.conf.d/90proxy
+    mode: 0644
+  when: http_proxy is defined or https_proxy is defined
+
 - name: Find existing repo files
   find:
     depth: 1

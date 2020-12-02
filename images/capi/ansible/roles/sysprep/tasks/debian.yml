@@ -39,6 +39,12 @@
   loop: "{{ repo_files.files }}"
   when: disable_public_repos|default(false)|bool and reenable_public_repos|default(true)|bool
 
+- name: Remove templated apt.conf.d/90proxy used for http(s)_proxy support
+  file:
+    path: etc/apt/apt.conf.d/90proxy
+    state: absent
+  when: http_proxy is defined or https_proxy is defined
+
 - name: Stop auditing
   service:
     name: rsyslog
