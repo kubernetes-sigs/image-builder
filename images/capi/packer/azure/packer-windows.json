@@ -15,7 +15,6 @@
     "cloudbase_plugins": "cloudbaseinit.plugins.common.ephemeraldisk.EphemeralDiskPlugin, cloudbaseinit.plugins.windows.azureguestagent.AzureGuestAgentPlugin, cloudbaseinit.plugins.common.mtu.MTUPlugin, cloudbaseinit.plugins.common.sethostname.SetHostNamePlugin",
     "cloudbase_plugins_unattend": "cloudbaseinit.plugins.common.mtu.MTUPlugin",
     "containerd_version": null,
-    "containerd_sha256": null,
     "containerd_url": "",
     "image_offer": null,
     "image_publisher": null,

@@ -61,7 +61,9 @@
   register: containerd_service
 
 - name: Register Containerd
-  win_shell: containerd.exe --register-service
+  win_shell: |
+    $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine")
+    containerd.exe --register-service
   when: containerd_service.exists == false
 
 - name: Ensure Containerd Service is running
