@@ -12,8 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-containerd_url: https://github.com/containerd/containerd/releases/download/v1.4.1/containerd-1.4.1-windows-amd64.tar.gz
-containerd_sha256: 757e0e2cd47881a7d5d252c72aab78b19564220df9b8f9b35740932219994288
 pause_image: mcr.microsoft.com/oss/kubernetes/pause:1.4.0
 containerd_additional_settings: ""
 
