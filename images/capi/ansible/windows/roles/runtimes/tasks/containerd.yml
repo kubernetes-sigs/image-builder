@@ -61,15 +61,23 @@
   register: containerd_service
 
 - name: Register Containerd
-  win_shell: containerd.exe --register-service
+  win_shell: |
+    #refresh the path to ensure ansible sees update
+    $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine")
+    containerd.exe --register-service
   when: containerd_service.exists == false
 
 - name: Ensure Containerd Service is running
   win_service:
     name: containerd
+    start_mode: auto
+    state: started
 
 - name: Pre-pull containerd images
-  win_command: ctr.exe -n k8s.io images pull {{ item }}
+  win_shell: |
+    #refresh the path to ensure ansible sees update
+    $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine")
+    ctr.exe -n k8s.io images pull {{ item }}
   loop: "{{ images }}"
   async: 1800
   poll: 60
@@ -78,7 +86,10 @@
     images: "{{ prepull_images[distribution_version] | default([]) }}"
 
 - name: Pre-pull containerd additional images
-  win_command: ctr.exe -n k8s.io images pull {{ item }}
+  win_shell: |
+    #refresh the path to ensure ansible sees update
+    $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine")
+    ctr.exe -n k8s.io images pull {{ item }}
   loop: "{{ additional_prepull_images_list }}"
   async: 1800
   poll: 60

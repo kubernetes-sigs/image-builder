@@ -1,6 +1,4 @@
 {
-    "containerd_version": "1.4.3",
-    "containerd_sha256": "4464dc16978b6e984c442e17cfcc0826e1aebd8e12cb64a3ce2bdb89affa2138",
     "containerd_additional_settings": null,
     "containerd_url": "https://github.com/containerd/containerd/releases/download/v{{user `containerd_version`}}/containerd-{{user `containerd_version`}}-windows-amd64.tar.gz"
 }
