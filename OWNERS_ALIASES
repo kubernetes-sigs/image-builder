@@ -1,9 +1,66 @@
 # See the OWNERS docs at https://go.k8s.io/owners
 
 aliases:
-  cluster-api-admins:
+  image-builder-maintainers:
+    - akutz
+    - CecileRobertMichon
+    - codenrhoden
+    - detiber
+    - figo
+    - justinsb
+    - luxas
+    - moshloop
+    - timothysc
+  image-builder-reviewers:
+    - EleanorRigby
+    - randomvariable
+  image-builder-azure-reviewers:
+    - jsturtevant
+  image-builder-openstack-reviewers:
+    - hidekazuna
+  cluster-api-maintainers:
     - justinsb
     - detiber
-    - davidewatson
-    - vincepri
     - ncdc
+    - vincepri
+    - CecileRobertMichon
+  cluster-api-aws-maintainers:
+    - detiber
+    - ncdc
+    - randomvariable
+    - richardcase
+    - rudoi
+    - vincepri
+  cluster-api-azure-maintainers:
+    - awesomenix
+    - CecileRobertMichon
+    - devigned
+    - justaugustus
+    - nader-ziada
+  cluster-api-gcp-maintainers:
+    - cpanato
+    - detiber
+    - gab-satchi
+    - justinsb
+    - krousey
+    - maisem
+    - rsmitty
+    - vincepri
+  cluster-api-digitalocean-maintainers:
+    - cpanato
+    - MorrisLaw
+    - prksu
+    - xmudrii
+  cluster-api-openstack-maintainers:
+    - chaosaffe
+    - chrigl
+    - dims
+    - gyliu513
+    - jichenjc
+    - Lion-Wei
+    - m1093782566
+    - sbueringer
+  cluster-api-vsphere-maintainers:
+    - frapposelli
+    - yastij
+    - randomvariable
