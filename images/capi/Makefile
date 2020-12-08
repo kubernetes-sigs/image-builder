@@ -20,6 +20,9 @@ SHELL := /usr/bin/env bash
 
 .DEFAULT_GOAL := help
 
+# This option is for running docker manifest command
+export DOCKER_CLI_EXPERIMENTAL := enabled
+
 export IB_VERSION ?= $(shell git describe --dirty)
 
 ## --------------------------------------
@@ -94,6 +97,7 @@ deps-qemu:
 ## Container variables
 ## --------------------------------------
 REGISTRY ?= gcr.io/$(shell gcloud config get-value project)
+STAGING_REGISTRY := gcr.io/k8s-staging-scl-image-builder
 IMAGE_NAME ?= cluster-node-image-builder
 CONTROLLER_IMG ?= $(REGISTRY)/$(IMAGE_NAME)
 TAG ?= dev
@@ -570,9 +574,14 @@ clean-packer-cache:
 ## Docker targets
 ## --------------------------------------
 ##@ Docker
+
+.PHONY: docker-pull-prerequisites
+docker-pull-prerequisites:
+	docker pull docker/dockerfile:1.1-experimental
+
 .PHONY: docker-build
-docker-build: ## Build the docker image for controller-manager
-	docker build --pull --build-arg PASSED_IB_VERSION=$(IB_VERSION) --build-arg ARCH=$(ARCH) . -t $(CONTROLLER_IMG)-$(ARCH):$(TAG)
+docker-build: docker-pull-prerequisites ## Build the docker image for controller-manager
+	DOCKER_BUILDKIT=1 docker build --build-arg PASSED_IB_VERSION=$(IB_VERSION) --build-arg ARCH=$(ARCH) . -t $(CONTROLLER_IMG)-$(ARCH):$(TAG)
 
 .PHONY: docker-push
 docker-push: ## Push the docker image
@@ -585,3 +594,13 @@ docker-push: ## Push the docker image
 .PHONY: test-azure
 test-azure: ## Run the tests for Azure builders
 	$(abspath packer/azure/scripts/ci-azure-e2e.sh)
+
+## --------------------------------------
+## Release targets
+## --------------------------------------
+##@ Release
+
+.PHONY: release-staging
+release-staging: ## Builds and push container images to the staging bucket.
+	TAG=$(IB_VERSION) REGISTRY=$(STAGING_REGISTRY) $(MAKE) docker-build docker-push
+
