@@ -83,3 +83,15 @@
   patch:
     src: files/debian/DataSourceOpenStack.patch
     dest: /usr/lib/python3/dist-packages/cloudinit/sources/DataSourceOpenStack.py
+
+- name: Ensure makestep parameter set
+  lineinfile:
+    path: /etc/chrony/chrony.conf
+    regexp: '^makestep'
+    line: makestep 1.0 -1
+
+- name: Ensure makestep parameter set in template for cloud-init
+  lineinfile:
+    path: /etc/cloud/templates/chrony.conf.ubuntu.tmpl
+    regexp: '^makestep'
+    line: makestep 1.0 -1
