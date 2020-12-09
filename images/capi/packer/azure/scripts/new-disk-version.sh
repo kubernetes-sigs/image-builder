@@ -1,6 +1,5 @@
 #!/bin/bash -e
 
-cd '/build' || exit
 echo "PWD: $PWD"
 
 OS=${OS:-"Ubuntu"}
@@ -22,8 +21,8 @@ do
     fi
 done
 
-SKU_INFO="sku/sku-info/sku-publishing-info.json"
-VHD_INFO="vhd/publishing-info/vhd-publishing-info.json"
+SKU_INFO="sku/sku-publishing-info.json"
+VHD_INFO="vhd/vhd-publishing-info.json"
 
 required_files=(
     "SKU_INFO"

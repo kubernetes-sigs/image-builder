@@ -36,3 +36,12 @@ stages:
       AZURE_TENANT_ID: $(AZURE_TENANT_ID_SKU)
       AZURE_CLIENT_ID: $(AZURE_CLIENT_ID_SKU)
       AZURE_CLIENT_SECRET: $(AZURE_CLIENT_SECRET_SKU)
+
+  - stage: disk_version
+    condition: and(succeeded(), eq(variables.CLEANUP, 'False'))
+    jobs:
+    - template: create-disk-version.yaml
+    variables:
+      AZURE_TENANT_ID: $(AZURE_TENANT_ID_SKU)
+      AZURE_CLIENT_ID: $(AZURE_CLIENT_ID_SKU)
+      AZURE_CLIENT_SECRET: $(AZURE_CLIENT_SECRET_SKU)

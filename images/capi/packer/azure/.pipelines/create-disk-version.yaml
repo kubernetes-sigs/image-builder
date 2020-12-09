@@ -1,0 +1,38 @@
+# Required pipeline variables:
+# - BUILD_POOL - Azure DevOps build pool to use
+# - CONTAINER_IMAGE - Dev container image URL to use. Should have Azure CLI, Packer and Ansible.
+# - AZURE_TENANT_ID - tenant ID
+# - AZURE_CLIENT_ID - Service principal ID
+# - AZURE_CLIENT_SECRET - Service principal secret
+# - OS - target of build e.g. `Ubuntu/Windows`
+# - OS_VERSION - target of build e.g. `18.04/2004/2019`
+
+jobs:
+- job: create_disk_version
+  container: $[ variables['CONTAINER_IMAGE'] ]
+  timeoutInMinutes: 120
+  strategy:
+    maxParallel: 0
+  pool:
+    name: $(BUILD_POOL)
+  steps:
+  - task: DownloadPipelineArtifact@2
+    inputs:
+      source: current
+      artifact: publishing-info
+      path: $(system.defaultWorkingDirectory)/images/capi/packer/azure/vhd/
+  - task: DownloadPipelineArtifact@2
+    inputs:
+      source: current
+      artifact: sku-info
+      path: $(system.defaultWorkingDirectory)/images/capi/packer/azure/sku/
+  - script: |
+      ./scripts/new-disk-version.sh
+    displayName: Create a new marketplace SKU
+    workingDirectory: '$(system.defaultWorkingDirectory)/images/capi/packer/azure'
+    env:
+      AZURE_CLIENT_SECRET: $(AZURE_CLIENT_SECRET)
+  - task: PublishPipelineArtifact@1
+    inputs:
+      artifact: 'version_info'
+      path: '$(system.defaultWorkingDirectory)/images/capi/packer/azure/version.json'
