@@ -7,7 +7,8 @@
 - name: Kubeadm pull images
   shell: 'kubeadm config images pull --config /etc/kubeadm.yml --cri-socket {{ containerd_cri_socket }}'
 
-- name: delete kubeadm config
+- name: Delete kubeadm config
   file:
     path: /etc/kubeadm.yml
     state: absent
+  when: ansible_os_family != "Flatcar"

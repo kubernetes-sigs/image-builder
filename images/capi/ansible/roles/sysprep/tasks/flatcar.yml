@@ -12,14 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- import_tasks: debian.yml
-  when: ansible_os_family == "Debian"
-
-- import_tasks: flatcar.yml
-  when: ansible_os_family == "Flatcar"
-
-- import_tasks: redhat.yml
-  when: ansible_os_family == "RedHat"
-
-- import_tasks: photon.yml
-  when: ansible_os_family == "VMware Photon OS"
+- name: Define file modes
+  set_fact:
+    last_log_mode:   "0644"
+    machine_id_mode: "0444"

@@ -46,7 +46,7 @@
     ecr: '{{ kubernetes_container_registry is regex("^[0-9]{12}.dkr.ecr.[^.]+.amazonaws.com$") }}'
 
 - import_tasks: kubeadmpull.yml
-  when: kubernetes_source_type == "pkg" and ecr != true
+  when: (kubernetes_source_type == "pkg" and ecr != true) or ansible_os_family == "Flatcar"
 
 - import_tasks: ecrpull.yml
   when: kubernetes_source_type != "http" and ecr == true

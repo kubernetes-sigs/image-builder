@@ -15,5 +15,8 @@
   "kubeadm_template": "etc/kubeadm.yml",
   "crictl_version": "1.16.1",
   "crictl_sha256": "19fed421710fccfe58f5573383bb137c19438a9056355556f1a15da8d23b3ad1",
-  "crictl_source_type": "pkg"
+  "crictl_source_type": "pkg",
+  "systemd_prefix": "/usr/lib/systemd",
+  "sysusr_prefix": "/usr",
+  "sysusrlocal_prefix": "/usr/local"
 }

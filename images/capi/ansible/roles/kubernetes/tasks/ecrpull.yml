@@ -26,3 +26,4 @@
   file:
     path: /etc/kubeadm.yml
     state: absent
+  when: ansible_os_family != "Flatcar"
