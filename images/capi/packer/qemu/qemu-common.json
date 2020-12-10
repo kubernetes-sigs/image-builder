@@ -1,0 +1,13 @@
+{
+  "boot_wait": "10s",
+  "build_timestamp": "{{timestamp}}",
+  "accelerator": "kvm",
+  "cpus": "1",
+  "disk_size": "20480",
+  "memory": "4096",
+  "format": "qcow2",
+  "headless": "true",
+  "qemu_binary": "qemu-system-x86_64",
+  "ssh_password": "builder",
+  "ssh_username": "builder"
+}

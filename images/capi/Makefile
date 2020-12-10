@@ -89,6 +89,12 @@ deps-qemu:
 	hack/ensure-ansible.sh
 	hack/ensure-packer.sh
 
+.PHONY: deps-openstack
+deps-openstack: ## Installs/checks dependencies for QEMU builds
+deps-openstack:
+	hack/ensure-ansible.sh
+	hack/ensure-packer.sh
+
 ## --------------------------------------
 ## Container variables
 ## --------------------------------------
@@ -199,6 +205,7 @@ AZURE_BUILD_SIG_NAMES	?=	azure-sig-ubuntu-1804 azure-sig-ubuntu-2004 azure-sig-c
 DO_BUILD_NAMES 			?=	do-centos-7 do-ubuntu-1804 do-ubuntu-2004
 
 QEMU_BUILD_NAMES			?=	qemu-ubuntu-1804 qemu-ubuntu-2004
+OPENSTACK_BUILD_NAMES			?=	openstack
 
 ## --------------------------------------
 ## Dynamic build targets
@@ -227,6 +234,8 @@ DO_BUILD_TARGETS 	:= $(addprefix build-,$(DO_BUILD_NAMES))
 DO_VALIDATE_TARGETS 	:= $(addprefix validate-,$(DO_BUILD_NAMES))
 QEMU_BUILD_TARGETS	:= $(addprefix build-,$(QEMU_BUILD_NAMES))
 QEMU_VALIDATE_TARGETS	:= $(addprefix validate-,$(QEMU_BUILD_NAMES))
+OPENSTACK_BUILD_TARGETS	:= $(addprefix build-,$(OPENSTACK_BUILD_NAMES))
+OPENSTACK_VALIDATE_TARGETS	:= $(addprefix validate-,$(OPENSTACK_BUILD_NAMES))
 
 .PHONY: $(NODE_OVA_LOCAL_BUILD_TARGETS)
 $(NODE_OVA_LOCAL_BUILD_TARGETS): deps-ova
@@ -318,11 +327,19 @@ $(DO_VALIDATE_TARGETS): deps-do
 
 .PHONY: $(QEMU_BUILD_TARGETS)
 $(QEMU_BUILD_TARGETS): deps-qemu
-	packer build $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/qemu/$(subst build-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/qemu/packer.json
+	packer build $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/qemu/qemu-common.json)" -var-file="$(abspath packer/qemu/$(subst build-,,$@).json)" -only="local" $(ABSOLUTE_PACKER_VAR_FILES) packer/qemu/packer.json
 
 .PHONY: $(QEMU_VALIDATE_TARGETS)
 $(QEMU_VALIDATE_TARGETS): deps-qemu
-	packer validate $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/qemu/$(subst validate-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/qemu/packer.json
+	packer validate $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/qemu/qemu-common.json)" -var-file="$(abspath packer/qemu/$(subst validate-,,$@).json)" -only="local" $(ABSOLUTE_PACKER_VAR_FILES) packer/qemu/packer.json
+
+.PHONY: $(OPENSTACK_BUILD_TARGETS)
+$(OPENSTACK_BUILD_TARGETS): deps-openstack
+	packer build $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/qemu/openstack.json)" -only="openstack" $(ABSOLUTE_PACKER_VAR_FILES) packer/qemu/packer.json
+
+.PHONY: $(OPENSTACK_VALIDATE_TARGETS)
+$(OPENSTACK_VALIDATE_TARGETS): deps-openstack
+	packer validate $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/qemu/openstack.json)" -only="openstack" $(ABSOLUTE_PACKER_VAR_FILES) packer/qemu/packer.json
 
 ## --------------------------------------
 ## Dynamic clean targets
@@ -430,6 +447,8 @@ build-qemu-ubuntu-1804: ## Builds Ubuntu 18.04 QEMU image
 build-qemu-ubuntu-2004: ## Builds Ubuntu 20.04 QEMU image
 build-qemu-all: $(QEMU_BUILD_TARGETS) ## Builds all Qemu images
 
+build-openstack: ## Builds QEMU image
+
 ## --------------------------------------
 ## Document dynamic validate targets
 ## --------------------------------------
@@ -485,13 +504,16 @@ validate-qemu-ubuntu-1804: ## Validates Ubuntu 18.04 QEMU image packer config
 validate-qemu-ubuntu-2004: ## Validates Ubuntu 20.04 QEMU image packer config
 validate-qemu-all: $(QEMU_VALIDATE_TARGETS) ## Validates all Qemu Packer config
 
+validate-openstack: ## Validates QEMU image packer config
+
 validate-all: validate-ami-all \
 	validate-azure-all \
 	validate-do-all \
 	validate-gce-all \
 	validate-node-ova-local-all \
 	validate-haproxy-ova-local-photon-3 \
-	validate-qemu-all
+	validate-qemu-all \
+	validate-openstack
 validate-all: ## Validates the Packer config for all build targets
 
 ## --------------------------------------
