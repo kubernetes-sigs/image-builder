@@ -21,12 +21,10 @@ aliases:
   cluster-api-maintainers:
     - justinsb
     - detiber
-    - ncdc
     - vincepri
     - CecileRobertMichon
   cluster-api-aws-maintainers:
     - detiber
-    - ncdc
     - randomvariable
     - richardcase
     - rudoi
