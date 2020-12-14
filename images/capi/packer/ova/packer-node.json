@@ -418,6 +418,17 @@
         "./hack/image-build-ova.py --stream_vmdk --node --vmx {{user `vmx_version`}} --eula ./hack/ovf_eula.txt {{user `output_dir`}}",
         "./hack/image-post-create-config.sh {{user `output_dir`}}"
       ]
+    },
+    {
+      "type": "shell-local",
+      "name": "custom-post-processor",
+      "environment_vars": [
+        "CUSTOM_POST_PROCESSOR={{user `custom_post_processor`}}"
+      ],
+      "inline": [
+        "if [[ $CUSTOM_POST_PROCESSOR != \"true\" ]]; then exit 0; fi",
+        "{{user `custom_post_processor_command`}}"
+      ]
     }
   ]
 }
