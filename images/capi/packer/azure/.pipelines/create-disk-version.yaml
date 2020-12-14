@@ -4,15 +4,11 @@
 # - AZURE_TENANT_ID - tenant ID
 # - AZURE_CLIENT_ID - Service principal ID
 # - AZURE_CLIENT_SECRET - Service principal secret
-# - KUBERNETES_VERSION - version of Kubernetes to create the sku for, e.g. `1.16.2`
-# - PUBLISHER - the name of the publisher to create the sku for
-# - OFFER - the name of the offer to create the sku for
-# - SKU_TEMPLATE_FILE - the base template file to use for the sku
 # - OS - target of build e.g. `Ubuntu/Windows`
 # - OS_VERSION - target of build e.g. `18.04/2004/2019`
 
 jobs:
-- job: create_sku
+- job: create_disk_version
   container: $[ variables['CONTAINER_IMAGE'] ]
   timeoutInMinutes: 120
   strategy:
@@ -20,14 +16,23 @@ jobs:
   pool:
     name: $(BUILD_POOL)
   steps:
+  - task: DownloadPipelineArtifact@2
+    inputs:
+      source: current
+      artifact: publishing-info
+      path: $(system.defaultWorkingDirectory)/images/capi/packer/azure/vhd/
+  - task: DownloadPipelineArtifact@2
+    inputs:
+      source: current
+      artifact: sku-info
+      path: $(system.defaultWorkingDirectory)/images/capi/packer/azure/sku/
   - script: |
-      ./scripts/new-sku.sh
+      ./scripts/new-disk-version.sh
     displayName: Create a new marketplace SKU
     workingDirectory: '$(system.defaultWorkingDirectory)/images/capi/packer/azure'
     env:
       AZURE_CLIENT_SECRET: $(AZURE_CLIENT_SECRET)
   - task: PublishPipelineArtifact@1
     inputs:
-      artifact: 'sku-info'
-      path: '$(system.defaultWorkingDirectory)/images/capi/packer/azure/sku-publishing-info.json'
-      
+      artifact: 'version_info'
+      path: '$(system.defaultWorkingDirectory)/images/capi/packer/azure/version.json'

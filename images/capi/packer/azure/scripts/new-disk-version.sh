@@ -1,12 +1,16 @@
 #!/bin/bash -e
 
-cd '/build' || exit
 echo "PWD: $PWD"
+
+OS=${OS:-"Ubuntu"}
+OS_VERSION=${OS_VERSION:-"18.04"}
 
 required_env_vars=(
     "AZURE_CLIENT_ID"
     "AZURE_CLIENT_SECRET"
     "AZURE_TENANT_ID"
+    "OS"
+    "OS_VERSION"
 )
 
 for v in "${required_env_vars[@]}"
@@ -17,8 +21,8 @@ do
     fi
 done
 
-SKU_INFO="sku/sku-info/sku-publishing-info.json"
-VHD_INFO="vhd/publishing-info/vhd-publishing-info.json"
+SKU_INFO="sku/sku-publishing-info.json"
+VHD_INFO="vhd/vhd-publishing-info.json"
 
 required_files=(
     "SKU_INFO"
@@ -59,8 +63,8 @@ vhd_url=$(< $VHD_INFO jq -r ".vhd_url")
 
 # get Kubernetes version
 k8s_version=$(< $SKU_INFO jq -r ".k8s_version")
-label="Kubernetes $k8s_version Ubuntu 18.04"
-description="Kubernetes $k8s_version Ubuntu 18.04"
+label="Kubernetes $k8s_version $OS $OS_VERSION"
+description="Kubernetes $k8s_version $OS $OS_VERSION"
 
 # create version.json
 cat <<EOF > version.json
