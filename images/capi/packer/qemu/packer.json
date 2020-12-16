@@ -42,7 +42,34 @@
   },
   "builders": [
     {
-      "name": "{{ user `build_name`}}",
+      "vm_name": "{{user `build_name`}}-kube-{{user `kubernetes_semver`}}",
+      "output_directory": "{{user `output_directory`}}",
+      "type": "qemu",
+      "accelerator": "{{user `accelerator`}}",
+      "cpus": "{{user `cpus`}}",
+      "disk_size": "{{user `disk_size`}}",
+      "memory": "{{user `memory`}}",
+      "boot_wait": "{{user `boot_wait`}}",
+      "disk_interface": "virtio-scsi",
+      "format": "{{user `format`}}",
+      "headless": "{{user `headless`}}",
+      "http_directory": "./packer/qemu/linux/{{user `distro_name`}}/http/",
+      "iso_checksum": "{{user `iso_checksum_type`}}:{{user `iso_checksum`}}",
+      "iso_url": "{{user `iso_url`}}",
+      "boot_command": [
+        "{{user `boot_command_prefix`}}",
+        "http://{{ .HTTPIP }}:{{ .HTTPPort }}",
+        "{{user `boot_command_suffix`}}"
+      ],
+      "net_device": "virtio-net",
+      "qemu_binary": "{{user `qemu_binary`}}",
+      "shutdown_command": "echo '{{user `ssh_password`}}' | sudo -S -E sh -c 'usermod -L {{user `ssh_username`}} && {{user `shutdown_command`}}'",
+      "ssh_password": "{{user `ssh_password`}}",
+      "ssh_username": "{{user `ssh_username`}}",
+      "ssh_timeout": "2h"
+    },
+    {
+      "name": "flatcar",
       "vm_name": "{{user `build_name`}}-kube-{{user `kubernetes_semver`}}",
       "output_directory": "{{user `output_directory`}}",
       "type": "qemu",
@@ -69,9 +96,11 @@
       "ssh_username": "{{user `ssh_username`}}",
       "ssh_timeout": "2h"
     }
+
   ],
   "provisioners": [
     {
+      "only": ["flatcar"],
       "type": "shell",
       "environment_vars": [
         "BUILD_NAME={{user `build_name`}}"
@@ -97,6 +126,7 @@
   ],
   "post-processors": [
     {
+      "only": ["flatcar"],
       "type": "vagrant"
     }
   ]

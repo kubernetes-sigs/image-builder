@@ -219,7 +219,8 @@ AZURE_BUILD_SIG_NAMES	?=	azure-sig-ubuntu-1804 azure-sig-ubuntu-2004 azure-sig-c
 
 DO_BUILD_NAMES 			?=	do-centos-7 do-ubuntu-1804 do-ubuntu-2004
 
-QEMU_BUILD_NAMES			?=	qemu-flatcar qemu-ubuntu-1804 qemu-ubuntu-2004
+QEMU_FLATCAR_BUILD_NAMES	?=	qemu-flatcar
+QEMU_BUILD_NAMES			?=	qemu-ubuntu-1804 qemu-ubuntu-2004
 
 ## --------------------------------------
 ## Dynamic build targets
@@ -246,6 +247,8 @@ AZURE_BUILD_SIG_TARGETS	:= $(addprefix build-,$(AZURE_BUILD_SIG_NAMES))
 AZURE_VALIDATE_SIG_TARGETS	:= $(addprefix validate-,$(AZURE_BUILD_SIG_NAMES))
 DO_BUILD_TARGETS 	:= $(addprefix build-,$(DO_BUILD_NAMES))
 DO_VALIDATE_TARGETS 	:= $(addprefix validate-,$(DO_BUILD_NAMES))
+QEMU_FLATCAR_BUILD_TARGETS	:= $(addprefix build-,$(QEMU_FLATCAR_BUILD_NAMES))
+QEMU_FLATCAR_VALIDATE_TARGETS	:= $(addprefix validate-,$(QEMU_FLATCAR_BUILD_NAMES))
 QEMU_BUILD_TARGETS	:= $(addprefix build-,$(QEMU_BUILD_NAMES))
 QEMU_VALIDATE_TARGETS	:= $(addprefix validate-,$(QEMU_BUILD_NAMES))
 
@@ -337,13 +340,21 @@ $(DO_BUILD_TARGETS): deps-do
 $(DO_VALIDATE_TARGETS): deps-do
 	packer validate $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/digitalocean/$(subst validate-do-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/digitalocean/packer.json
 
+.PHONY: $(QEMU_FLATCAR_BUILD_TARGETS)
+$(QEMU_FLATCAR_BUILD_TARGETS): deps-qemu
+	packer build $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/qemu/$(subst build-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) -only=flatcar packer/qemu/packer.json
+
+.PHONY: $(QEMU_FLATCAR_VALIDATE_TARGETS)
+$(QEMU_FLATCAR_VALIDATE_TARGETS): deps-qemu
+	packer validate $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/qemu/$(subst validate-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) -only=flatcar packer/qemu/packer.json
+
 .PHONY: $(QEMU_BUILD_TARGETS)
 $(QEMU_BUILD_TARGETS): deps-qemu
-	packer build $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/qemu/$(subst build-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/qemu/packer.json
+	packer build $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/qemu/$(subst build-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) -except=flatcar packer/qemu/packer.json
 
 .PHONY: $(QEMU_VALIDATE_TARGETS)
 $(QEMU_VALIDATE_TARGETS): deps-qemu
-	packer validate $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/qemu/$(subst validate-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/qemu/packer.json
+	packer validate $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/qemu/$(subst validate-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) -except=flatcar packer/qemu/packer.json
 
 ## --------------------------------------
 ## Dynamic clean targets
@@ -504,6 +515,7 @@ validate-node-ova-local-base-rhel-7: ## Validates RHEL 7 Base Node OVA w local h
 validate-node-ova-local-base-ubuntu-1804: ## Validates Ubuntu 18.04 Base Node OVA w local hypervisor
 validate-node-ova-local-base-ubuntu-2004: ## Validates Ubuntu 20.04 Base Node OVA w local hypervisor
 
+validate-qemu-flatcar: ## Validates Flatcar QEMU image packer config
 validate-qemu-ubuntu-1804: ## Validates Ubuntu 18.04 QEMU image packer config
 validate-qemu-ubuntu-2004: ## Validates Ubuntu 20.04 QEMU image packer config
 validate-qemu-all: $(QEMU_VALIDATE_TARGETS) ## Validates all Qemu Packer config
@@ -514,6 +526,7 @@ validate-all: validate-ami-all \
 	validate-gce-all \
 	validate-node-ova-local-all \
 	validate-haproxy-ova-local-photon-3 \
+	validate-qemu-flatcar \
 	validate-qemu-all
 validate-all: ## Validates the Packer config for all build targets
 
