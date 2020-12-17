@@ -190,8 +190,8 @@ RHEL_VERSIONS				:=	rhel-7
 UBUNTU_VERSIONS			:=	ubuntu-1804 ubuntu-2004
 
 # Set Flatcar Container Linux channel and version if not supplied
-FLATCAR_CHANNEL ?= beta
-FLATCAR_VERSION ?= 2643.1.0
+FLATCAR_CHANNEL ?= stable
+FLATCAR_VERSION ?= 2605.10.0
 
 export FLATCAR_CHANNEL FLATCAR_VERSION
 
