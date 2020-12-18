@@ -88,4 +88,8 @@ offer=$(< $SKU_INFO jq -r ".offer")
 sku=$(< $SKU_INFO jq -r ".sku_id")
 
 # TODO: Update pub versions put to take in version.json as a file
-(set -x ; ./pub_linux_amd64 versions put corevm -p $publisher -o $offer -s $sku --version $image_version --vhd-uri $vhd_url --media-name $media_name --label "$label" --desc "$description" --published-date "$published_date")
+echo "Create new disk version"
+set -x  
+./pub_linux_amd64 versions put corevm -p $publisher -o $offer -s $sku --version $image_version --vhd-uri $vhd_url --media-name $media_name --label "$label" --desc "$description" --published-date "$published_date"
+set +x
+echo -e "\nCreated disk version"
