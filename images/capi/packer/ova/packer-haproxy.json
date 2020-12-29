@@ -162,7 +162,7 @@
         "cd {{user `output_dir`}}",
         "tar xf {{user `build_version`}}.ova",
         "rm {{user `build_version`}}.ova",
-        "../../hack/image-build-ova.py --stream_vmdk --haproxy --vmx {{user `vmx_version`}} --eula ../../hack/ovf_eula.txt --vmdk_file {{user `build_version`}}-disk1.vmdk"
+        "../../hack/image-build-ova.py --stream_vmdk --haproxy --vmx {{user `vmx_version`}} --eula ../../hack/ovf_eula.txt --ovf_template ../../hack/ovf_template.xml --vmdk_file {{user `build_version`}}-disk1.vmdk"
       ]
     },
     {
@@ -170,14 +170,14 @@
       "type": "shell-local",
       "inline": [
         "cd {{user `output_dir`}}",
-        "../../hack/image-build-ova.py --haproxy --vmx {{user `vmx_version`}} --eula ../../hack/ovf_eula.txt --vmdk_file {{user `build_version`}}-disk-0.vmdk"
+        "../../hack/image-build-ova.py --haproxy --vmx {{user `vmx_version`}} --eula ../../hack/ovf_eula.txt --ovf_template ../../hack/ovf_template.xml --vmdk_file {{user `build_version`}}-disk-0.vmdk"
       ]
     },
     {
       "name": "local",
       "type": "shell-local",
       "inline": [
-        "./hack/image-build-ova.py --stream_vmdk --haproxy --vmx {{user `vmx_version`}} --eula ./hack/ovf_eula.txt {{user `output_dir`}}",
+        "./hack/image-build-ova.py --stream_vmdk --haproxy --vmx {{user `vmx_version`}} --eula ./hack/ovf_eula.txt --ovf_template ./hack/ovf_template.xml {{user `output_dir`}}",
         "./hack/image-post-create-config.sh {{user `output_dir`}}"
       ]
     }
