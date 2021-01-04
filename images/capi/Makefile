@@ -137,6 +137,12 @@ ifneq (,$(strip $(SSH_PUBLIC_KEY_FILE)))
 PACKER_FLAGS += -var ssh_public_key="$(shell cat ${SSH_PUBLIC_KEY_FILE})"
 endif
 
+# If DEBUG=1 then Packer will set -debug, enabling debug mode for builds, providing
+# more verbose logging
+ifeq (1,$(strip $(DEBUG)))
+PACKER_FLAGS += -debug
+endif
+
 # We want the var files passed to Packer to have a specific order, because the
 # precenence of the variables they contain depends on the order. Files listed
 # later on the CLI have higher precedence. We want the common var files found in

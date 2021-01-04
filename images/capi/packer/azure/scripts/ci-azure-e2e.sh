@@ -23,6 +23,8 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
+[[ -n ${DEBUG:-} ]] && set -o xtrace
+
 CAPI_ROOT=$(dirname "${BASH_SOURCE[0]}")/../../..
 cd "${CAPI_ROOT}" || exit 1
 

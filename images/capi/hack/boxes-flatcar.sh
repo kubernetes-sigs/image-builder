@@ -1,5 +1,7 @@
 #!/bin/sh
 
+[[ -n ${DEBUG:-} ]] && set -o xtrace
+
 export VAGRANT_VAGRANTFILE=${VAGRANT_VAGRANTFILE:-/tmp/Vagrantfile.builder-flatcar}
 
 fetch_vagrantfile() {

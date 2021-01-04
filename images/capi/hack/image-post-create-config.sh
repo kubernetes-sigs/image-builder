@@ -27,6 +27,8 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
+[[ -n ${DEBUG:-} ]] && set -o xtrace
+
 if [ "${#}" -ne "1" ]; then
   echo "usage: ${0} BUILD_DIR" 1>&2
   exit 1

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+[[ -n ${DEBUG:-} ]] && set -o xtrace
+
 echo "Sign into Azure"
 tracestate="$(shopt -po xtrace)"
 set +o xtrace
