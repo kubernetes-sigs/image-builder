@@ -32,27 +32,14 @@ With the CAPI image builder installed and dependencies satisfied, you are now re
 
 ## Environment Variables
 
-To assist with automation, there is also the option of overriding any variable with a corresponding environment variable prefixed with `PKR_OVR_`. A useful example of this is providing logon credentials for the vsphere.json or the kubernetes version you would like to build.  
+To assist with automation, there is also the option of overriding any variable with a corresponding environment variable prefixed with `PKR_OVR_`.
 
 ``` sh
-#Override vsphere.json
-export PKR_OVR_vcenter_server=vsphere
-export PKR_OVR_username=administrator@vsphere.local
-export PKR_OVR_password=myPassword
-export PKR_OVR_cluster=myCluster
-export PKR_OVR_datastore=myDatastore
-export PKR_OVR_datacenter=myDatacenter
-export PKR_OVR_folder=myFolder
-export PKR_OVR_resource_pool=myResourcePool
-export PKR_OVR_convert_to_template=true
-export PKR_OVR_linked_clone=false
-export PKR_OVR_create_snapshot=false
-export PKR_OVR_template=
-export PKR_OVR_insecure_connection=true
+### Any user variable can be set
+export PKR_OVR_crictl_version=v1.16.1
+export PKR_OVR_crictl_sha256=19fed421710fccfe58f5573383bb137c19438a9056355556f1a15da8d23b3ad1
+export PKR_OVR_kubernetes_semver=v1.19.4
 
 #Spaces are accepted but single quotes will not work.
-export PKR_OVR_network=VM Network
-
-### Any user variable can be set
-export PKR_OVR_kubernetes_semver=v1.19.4
+export PKR_OVR_additional_prepull_images=docker.io/sigwindowstools/flannel:0.12.0, docker.io/sigwindowstools/kube-proxy:v1.19.4
 ```
