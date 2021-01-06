@@ -48,7 +48,7 @@ run_vagrant() {
 
     vagrant_name="flatcar-${channel}-${release}"
     img_name="flatcar-${channel}-${release}_vagrant_box_image_0.img"
-    box_name="packer_flatcar-${channel}-${release}_libvirt.box"
+    box_name="packer_flatcar_libvirt.box"
 
     export VAGRANT_VAGRANTFILE="${VAGRANT_VAGRANTFILE:-hack/Vagrantfile.flatcar}"
     export VAGRANT_DEFAULT_PROVIDER="libvirt"
