@@ -1,6 +1,8 @@
 {
   "build_name": "photon-3",
   "distro_name": "photon",
+  "distro_version": "3",
+  "distro_arch": "amd64",
   "os_display_name": "VMware Photon OS 64-bit",
   "guest_os_type": "vmware-photon-64",
   "vsphere_guest_os_type": "vmwarePhoton64Guest",

@@ -124,6 +124,9 @@ def main():
         'POPULATED_DISK_SIZE': vmdk['size'],
         'STREAM_DISK_SIZE': vmdk['stream_size'],
         'VMX_VERSION': args.vmx_version,
+        'DISTRO_NAME': build_data['distro_name'],
+        'DISTRO_VERSION': build_data['distro_version'],
+        'DISTRO_ARCH': build_data['distro_arch']
     }
 
     if args.node:
@@ -379,6 +382,9 @@ ${EULA}
       <FullVersion>kube-${KUBERNETES_SEMVER}</FullVersion>
       <VendorUrl>https://vmware.com</VendorUrl>
       <Category>Cluster API Provider (CAPI)</Category>
+      <Property ovf:userConfigurable="false" ovf:value="${DISTRO_NAME}" ovf:type="string" ovf:key="DISTRO_NAME"/>
+      <Property ovf:userConfigurable="false" ovf:value="${DISTRO_VERSION}" ovf:type="string" ovf:key="DISTRO_VERSION"/>
+      <Property ovf:userConfigurable="false" ovf:value="${DISTRO_ARCH}" ovf:type="string" ovf:key="DISTRO_ARCH"/>
       <Property ovf:userConfigurable="false" ovf:value="${BUILD_TIMESTAMP}" ovf:type="string" ovf:key="BUILD_TIMESTAMP"/>
       <Property ovf:userConfigurable="false" ovf:value="${BUILD_DATE}" ovf:type="string" ovf:key="BUILD_DATE"/>
       <Property ovf:userConfigurable="false" ovf:value="${CNI_VERSION}" ovf:type="string" ovf:key="CNI_VERSION"/>

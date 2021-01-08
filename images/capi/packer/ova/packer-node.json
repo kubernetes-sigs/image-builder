@@ -378,6 +378,9 @@
       "strip_path": true,
       "custom_data": {
         "build_name": "{{user `build_name`}}",
+        "distro_name": "{{ user `distro_name` }}",
+        "distro_version": "{{ user `distro_version` }}",
+        "distro_arch": "{{ user `distro_arch` }}",
         "build_timestamp": "{{user `build_timestamp`}}",
         "build_date": "{{isotime}}",
         "build_type": "node",
