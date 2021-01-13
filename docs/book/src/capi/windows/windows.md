@@ -12,6 +12,23 @@ The `images/capi/packer/config/windows` directory includes several JSON files th
 | `packer/config/windows/kubernetes.json` | The version of Kubernetes to install and it's install path |
 | `packer/config/windows/containerd.json` | The version of containerd to install |
 
+## Windows Updates
+
+When building Windows images it is necessary to install OS and Security updates.  Image Builder provides two variables to allow choosing which updates get installed which can be used together or seperately (with individual KBs installed first).
+
+To specify the update categories to check, provide a value for `windows_updates_categories` in `packer/config/windows/common.json`.
+
+Example:
+Install all available updates from *all categories*.    
+`"windows_updates_categories": "CriticalUpdates SecurityUpdates UpdateRollups"` 
+
+Published Cloud Provider images such as Azure or AWS are regularly updated so it may be preferable to specify individual patches to install.  This can be achieved by specifying the KB numbers of required updates.
+
+To choose individual updates, provide a value for `windows_updates_kbs` in `packer/config/windows/common.json`. 
+
+Example: 
+`"windows_updates_kbs": "KB4580390 KB4471332"`.  
+
 ## Using the Ansible Scripts directly
 
 Ansible doesn't run on directly on Windows (wsl works) but can used to configure a remote Windows host.  For faster development you can create a VM and run Ansible against the Windows VM directly with out using packer. This document gives the high level steps to use Ansible from Linux machine.

@@ -4,10 +4,14 @@
   "no_proxy": "",
   "prepull": "true",
   "wins_version": "0.0.4",
+  "windows_updates_kbs": "",
+  "windows_updates_categories": "",
   "windows_service_manager": "nssm",
   "nssm_url": "https://azurek8scishared.blob.core.windows.net/nssm/nssm.exe",
   "runtime": "docker_ee",
   "pause_image": "mcr.microsoft.com/oss/kubernetes/pause:1.4.0",
   "additional_prepull_images": "",
-  "additional_debug_files": ""
+  "additional_debug_files": "",
+  "netbios_host_name_compatibility": "true",
+  "disable_hypervisor" : "false"
 }

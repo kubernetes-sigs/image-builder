@@ -13,3 +13,4 @@
 # limitations under the License.
 ---
 windows_updates_kbs_numbers: "{{ windows_updates_kbs.split() if (windows_updates_kbs is defined) and (windows_updates_kbs|length > 0) else [] }}"
+windows_updates_category_names: "{{ windows_updates_categories.split() if (windows_updates_categories is defined) and (windows_updates_categories|length > 0) else [] }}"

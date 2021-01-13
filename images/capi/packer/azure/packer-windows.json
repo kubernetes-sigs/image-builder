@@ -112,7 +112,7 @@
       ],
       "use_proxy": false,
       "extra_arguments": [
-        "-e", "ansible_winrm_server_cert_validation=ignore",
+        "-e", "ansible_winrm_server_cert_validation=ignore ansible_winrm_operation_timeout_sec=120 ansible_winrm_read_timeout_sec=150",
         "--extra-vars","{{user `ansible_common_vars`}}",
         "--extra-vars", "{{user `ansible_extra_vars`}}"
       ]

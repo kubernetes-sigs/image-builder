@@ -32,8 +32,15 @@
 - name: Install Windows updates based on KB numbers
   win_updates:
     whitelist: "{{ windows_updates_kbs_numbers }}"
+    reboot: yes
   when: windows_updates_kbs_numbers|length > 0
 
+- name: Install Windows updates based on Categories
+  win_updates:
+    category_names: "{{ windows_updates_category_names }}"
+    reboot: yes
+  when: windows_updates_category_names|length > 0
+  
 - name: Update Windows Defender signatures
   win_shell: |
     # https://github.com/microsoft/azure-pipelines-image-generation/pull/1259/files
@@ -49,7 +56,22 @@
   become_method: runas
   become_user: SYSTEM
 
-- name: Start ssh service 
+- name: Get Install Drive
+  win_shell: $env:SYSTEMDRIVE
+  register: systemdrive
+
+- name: Set default SSH shell to Powershell
+  win_regedit:
+    path: HKLM:\SOFTWARE\OpenSSH
+    state: present
+    name: DefaultShell
+    data: '{{ systemdrive.stdout | trim }}\Windows\System32\WindowsPowerShell\v1.0\powershell.exe'
+    type: string
+
+- name: Enable ssh login without a password
+  win_shell: Add-Content -Path "$env:ProgramData\ssh\sshd_config" -Value "PasswordAuthentication no`nPubkeyAuthentication yes"
+
+- name: Set SSH service startup mode to auto and ensure it is started
   win_service:
     name: sshd
     start_mode: auto
@@ -59,11 +81,30 @@
   win_feature:
     name:
     - Containers
-    - Hyper-V
     - Hyper-V-PowerShell
     state: present
   register: win_feature
 
-- name: Reboot if required
+# Due to a limitation in some CNI plugins the Hyper-V role needs to be installed in order
+# to use the VMSwitch Powershell Cmdlets.  
+# An issue has been logged to have the networking components to be split out but until
+# that is complete, environments that do not support running a hypervisor require the 
+# below which skips the CPU check for Hypervisor support and still installs the VMSwitch Cmlets
+# when disable_hypervisor is set to true
+# https://github.com/microsoft/Windows-Containers/issues/80
+
+- name: Add Hyper-V
+  win_shell: |
+    dism /online /enable-feature /featurename:Microsoft-Hyper-V /all /NoRestart
+  register: hyperv_installed
+  failed_when: hyperv_installed.rc != 1 and hyperv_installed.rc != 0
+
+- name: Disable Hypervisor
+  win_shell: |
+    dism /online /disable-feature /featurename:Microsoft-Hyper-V-Online /NoRestart
+  when: (disable_hypervisor | default(false) | bool)
+  register: hypervisor_disabled
+  failed_when: hypervisor_disabled.rc != 1 and hypervisor_disabled.rc != 0
+
+- name: Reboot
   win_reboot:
-  when: win_feature.reboot_required

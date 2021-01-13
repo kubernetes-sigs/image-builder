@@ -1,0 +1,209 @@
+{
+  "variables": {
+    "additional_prepull_images": null,
+    "additional_debug_files": null,
+    "ansible_common_vars": "",
+    "ansible_extra_vars": "",
+    "build_name": null,
+    "build_version": "{{user `build_name`}}-kube-{{user `kubernetes_semver`}}",
+    "build_timestamp": "{{timestamp}}",
+    "cloudbase_init_url": "https://github.com/cloudbase/cloudbase-init/releases/download/{{user `cloudbase_init_version`}}/CloudbaseInitSetup_{{user `cloudbase_init_version` | replace_all `.` `_` }}_x64.msi",
+    "cloudbase_metadata_services": "cloudbaseinit.metadata.services.vmwareguestinfoservice.VMwareGuestInfoService",
+    "cloudbase_metadata_services_unattend": "cloudbaseinit.metadata.services.vmwareguestinfoservice.VMwareGuestInfoService",
+    "cloudbase_plugins": "cloudbaseinit.plugins.common.ephemeraldisk.EphemeralDiskPlugin, cloudbaseinit.plugins.common.mtu.MTUPlugin, cloudbaseinit.plugins.common.sethostname.SetHostNamePlugin,  cloudbaseinit.plugins.common.sshpublickeys.SetUserSSHPublicKeysPlugin, cloudbaseinit.plugins.common.userdata.UserDataPlugin, cloudbaseinit.plugins.common.localscripts.LocalScriptsPlugin, cloudbaseinit.plugins.windows.createuser.CreateUserPlugin, cloudbaseinit.plugins.windows.extendvolumes.ExtendVolumesPlugin",
+    "cloudbase_plugins_unattend": "cloudbaseinit.plugins.common.mtu.MTUPlugin",
+    "containerd_version": null,
+    "containerd_sha256": null,
+    "containerd_url": "",
+    "kubernetes_base_url": "https://kubernetesreleases.blob.core.windows.net/kubernetes/{{user `kubernetes_semver`}}/binaries/node/windows/{{user `kubernetes_goarch`}}",
+    "kubernetes_http_package_url": "",
+    "manifest_output": "manifest.json",
+    "nssm_url": null,
+    "output_dir": "./output/{{user `build_version`}}",
+    "prepull": null,
+    "windows_service_manager": null,
+    "windows_updates_kbs": null,
+    "windows_updates_categories": null,
+    "wins_url": "https://github.com/rancher/wins/releases/download/v{{user `wins_version`}}/wins.exe",
+    "disable_hypervisor" : null,
+    "netbios_host_name_compatibility": null
+  },
+  "builders": [
+    {
+      "name": "vmware-iso",
+      "vm_name": "{{user `build_version`}}",
+      "vmdk_name": "{{user `build_version`}}",
+      "output_directory": "{{user `output_dir`}}",
+      "guest_os_type": "{{user `local_guest_os_type`}}",
+      "type": "vmware-iso",
+      "version": "{{user `vmx_version`}}",
+      "cpus": 2,
+      "memory": 4096,
+      "disk_size": 81920,
+      "disk_type_id": "{{user `disk_type_id`}}",
+      "disk_adapter_type": "scsi",
+      "boot_wait": "{{user `boot_wait`}}",
+      "iso_urls": [
+        "{{user `os_iso_url`}}"
+      ],
+      "iso_checksum": "{{user `iso_checksum` }}",  
+      "floppy_files": [
+        "./packer/ova/windows/{{user `distro_name`}}/autounattend.xml",
+        "./packer/ova/windows/disable-network-discovery.cmd",
+        "./packer/ova/windows/disable-winrm.ps1",
+        "./packer/ova/windows/enable-winrm.ps1",
+        "./packer/ova/windows/sysprep.ps1"
+      ],
+      "floppy_dirs": [
+        "./packer/ova/windows/pvscsi"
+      ],
+      "communicator": "winrm",
+      "winrm_username": "Administrator",
+      "winrm_password": "S3cr3t0!",
+      "winrm_timeout": "4h",
+      "shutdown_command": "powershell A:/sysprep.ps1",
+      "shutdown_timeout": "1h",
+      "vmx_data": {
+        "numvcpus": "2",
+        "scsi0.virtualDev": "pvscsi"
+      } 
+    },
+    {
+      "type": "vsphere-iso",
+      "name": "vsphere",
+
+      "vcenter_server":      "{{user `vcenter_server`}}",
+      "username":            "{{user `username`}}",
+      "password":            "{{user `password`}}",
+      "insecure_connection": "{{user `insecure_connection`}}",
+
+      "vm_name": "{{user `build_version`}}",
+      "datastore": "{{user `datastore`}}",
+      "datacenter": "{{user `datacenter`}}",
+      "folder": "{{user `folder`}}",
+      "host":     "{{user `host`}}",
+      "resource_pool":     "{{user `resource_pool`}}",
+      "convert_to_template": "{{user `convert_to_template`}}",
+      "cluster": "{{user `cluster`}}",
+      "network_adapters": [
+        {
+          "network": "{{user `network`}}",
+          "network_card": "{{user `network_card`}}"
+        }
+      ],
+      "vm_version": "{{user `vmx_version`}}",
+      "CPUs": 4,
+      "RAM": 8192,
+      "disk_controller_type": "{{user `disk_controller_type`}}",
+      "guest_os_type": "{{user `vsphere_guest_os_type`}}",
+      "firmware": "bios",  
+      "boot_wait": "{{user `boot_wait`}}",
+      "iso_paths": [
+        "{{user `os_iso_path`}}",
+        "{{user `vmtools_iso_path`}}"
+      ],
+
+      "communicator": "winrm",
+      "winrm_username": "Administrator",
+      "winrm_password": "S3cr3t0!",
+      "winrm_insecure": true,
+      "winrm_timeout": "4h",
+      "shutdown_command": "powershell A:/sysprep.ps1",
+      "shutdown_timeout": "1h",
+      "export": {
+        "force": true,
+        "output_directory": "{{user `output_dir`}}"
+      },
+
+      "storage": [
+        {
+          "disk_size": 81920,
+          "disk_thin_provisioned": "{{user `disk_thin_provisioned`}}"
+        }
+      ],
+
+
+      "floppy_files": [
+        "./packer/ova/windows/{{user `distro_name`}}/autounattend.xml",
+        "./packer/ova/windows/disable-network-discovery.cmd",
+        "./packer/ova/windows/disable-winrm.ps1",
+        "./packer/ova/windows/enable-winrm.ps1",
+        "./packer/ova/windows/install-vm-tools.cmd",
+        "./packer/ova/windows/sysprep.ps1"  
+      ],
+      "floppy_dirs": [
+        "./packer/ova/windows/pvscsi"
+      ]
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "ansible",
+      "playbook_file": "ansible/windows/node_windows.yml",
+      "user": "Administrator",
+      "ansible_env_vars": [
+        "ANSIBLE_REMOTE_TEMP='/tmp/.ansible/'"
+      ],
+      "use_proxy": false,
+      "extra_arguments": [
+        "-e", "ansible_winrm_server_cert_validation=ignore",
+        "--extra-vars","{{user `ansible_common_vars`}}",
+        "--extra-vars", "{{user `ansible_extra_vars`}}"
+      ]
+    },
+    {
+      "type": "windows-restart",
+      "restart_command": "powershell \"& {(Get-WmiObject win32_operatingsystem).LastBootUpTime > C:\\ProgramData\\lastboot.txt; Restart-Computer -force}\"",
+      "restart_check_command": "powershell -command \"& {if ((get-content C:\\ProgramData\\lastboot.txt) -eq (Get-WmiObject win32_operatingsystem).LastBootUpTime) {Write-Output 'Sleeping for 600 seconds to wait for reboot'; start-sleep 600} else {Write-Output 'Reboot complete'}}\""
+    }
+  ],
+  "post-processors": [
+    {
+      "type": "manifest",
+      "output": "{{user `output_dir`}}/packer-manifest.json",
+      "strip_path": true,
+      "custom_data": {
+        "build_name": "{{user `build_name`}}",
+        "build_timestamp": "{{user `build_timestamp`}}",
+        "build_date": "{{isotime}}",
+        "build_type": "node",
+        "containerd_version": "{{user `containerd_version`}}",
+        "custom_role": "{{user `custom_role`}}",
+        "guest_os_type": "{{user `guest_os_type`}}",
+        "ib_version": "{{user `ib_version`}}",
+        "vsphere_guest_os_type": "{{user `vsphere_guest_os_type`}}",
+        "kubernetes_cni_semver": "{{user `kubernetes_cni_semver`}}",
+        "kubernetes_semver": "{{user `kubernetes_semver`}}",
+        "kubernetes_source_type": "{{user `kubernetes_source_type`}}",
+        "os_name": "{{user `os_display_name`}}",
+        "disable_hypervisor": "{{user `disable_hypervisor`}}"
+      }
+    },
+    {
+      "name": "esx",
+      "type": "shell-local",
+      "inline": [
+        "cd {{user `output_dir`}}",
+        "tar xf {{user `build_version`}}.ova",
+        "rm {{user `build_version`}}.ova",
+        "../../hack/image-build-ova.py --stream_vmdk --node --vmx {{user `vmx_version`}} --eula ../../hack/ovf_eula.txt --vmdk_file {{user `build_version`}}-disk1.vmdk"
+      ]
+    },
+    {
+      "name": "vsphere",
+      "type": "shell-local",
+      "inline": [
+        "cd {{user `output_dir`}}",
+        "../../hack/image-build-ova.py --node --vmx {{user `vmx_version`}} --eula ../../hack/ovf_eula.txt --vmdk_file {{user `build_version`}}-disk-0.vmdk"
+      ]
+    },
+    {
+      "name": "local",
+      "type": "shell-local",
+      "inline": [
+        "./hack/image-build-ova.py --stream_vmdk --node --vmx {{user `vmx_version`}} --eula ./hack/ovf_eula.txt {{user `output_dir`}}",
+        "./hack/image-post-create-config.sh {{user `output_dir`}}"
+      ]
+    }
+  ]
+}
