@@ -1,6 +1,8 @@
 {
   "build_name": "rhel-7",
   "distro_name": "rhel",
+  "distro_version": "7",
+  "distro_arch": "amd64",
   "os_display_name": "RHEL 7",
   "guest_os_type": "rhel7-64",
   "vsphere_guest_os_type": "rhel7_64Guest",
