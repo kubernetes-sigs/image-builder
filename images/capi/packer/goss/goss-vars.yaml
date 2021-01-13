@@ -70,7 +70,7 @@ kubernetes_cni_rpm_version: ""
 # When k8s and k8s cni source is http
 kubernetes_load_additional_imgs: false
 
-# OS Specific package/Command/Kernal Params etc...
+# OS Specific package/Command/Kernel Params etc...
 # Structured in below format
 # OS_NAME
 #   common-package:
@@ -84,6 +84,12 @@ kubernetes_load_additional_imgs: false
 #  ...
 amazon linux:
   common-package: *common_rpms
+  common-kernel-param:
+    kernel.osrelease:
+      command:
+        uname -r | awk '{vers=match($0,/(4\.19\.138\-(4[0-9]*|[5-9]))|(4\.19\.(139|1[4-9][0-9]|[2-9][0-9][0-9]))|(4\.[2-9][0-9])|(5\.)/); print vers}':
+          exit-status: 0
+          stdout: 1
   amazon:
     service:
       amazon-ssm-agent:
@@ -123,6 +129,12 @@ rhel:
 ubuntu:
   common-package:
     <<: *common_debs
+  common-kernel-param:
+    kernel.osrelease:
+      command:
+        uname -r | awk '{vers=match($0,/(5\.4\.0\-1025\.(2[5-9]|[3-9][0-9]))|(5\.4\.0\-(102[6-9]|10[3-9][0-9]|1[1-9][0-9][0-9]|[2-9][0-9][0-9][0-9]))|(5\.4\.[1-9]\-)|(5\.[5-9]\.)|([6-9]\.\d*\.)/); print vers}':
+          exit-status: 0
+          stdout: 1
   azure:
     command:
       pip3 list --format=columns | grep 'azure-cli' | awk -F' ' '{print $1}':
@@ -163,6 +175,11 @@ photon:
   common-kernel-param:
     net.ipv4.tcp_limit_output_bytes:
       value: "524288"
+    kernel.osrelease:
+      command:
+        uname -r | awk '{vers=match($0,/(4\.19\.138\-(4[0-9]*|[5-9]))|(4\.19\.(139|1[4-9][0-9]|[2-9][0-9][0-9]))|(4\.[2-9][0-9])|(5\.)/); print vers}':
+          exit-status: 0
+          stdout: 1
   common-package:
     <<: *common_photon_rpms
     audit:
