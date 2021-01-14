@@ -21,8 +21,8 @@
         install_cloudbase_init: '{{ true if (cloudbase_init_url is defined) and (cloudbase_init_url|length > 0) else false }}'
     - name: Check if wins url is set
       set_fact:
-        use_wins: '{{ true if (wins_url is defined) and (wins_url|length > 0) else false }}'
-
+        use_wins: '{{ true if (wins_url is defined) and (wins_url|length > 0) else false }}'  
+        
     - include_role:
         name: systemprep
     - include_role:

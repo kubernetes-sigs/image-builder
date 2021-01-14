@@ -80,6 +80,7 @@ deps-gce:
 deps-ova: ## Installs/checks dependencies for OVA builds
 deps-ova:
 	hack/ensure-ansible.sh
+	hack/ensure-ansible-windows.sh
 	hack/ensure-packer.sh
 	hack/ensure-goss.sh
 
@@ -190,10 +191,11 @@ PACKER_WINDOWS_NODE_FLAGS := $(foreach f,$(abspath $(COMMON_WINDOWS_VAR_FILES)),
 ## Platform and version combinations
 ## --------------------------------------
 CENTOS_VERSIONS			:=	centos-7
-FLATCAR_VERSIONS			:=	flatcar
+FLATCAR_VERSIONS		:=	flatcar
 PHOTON_VERSIONS			:=	photon-3
-RHEL_VERSIONS				:=	rhel-7
+RHEL_VERSIONS			:=	rhel-7
 UBUNTU_VERSIONS			:=	ubuntu-1804 ubuntu-2004
+WINDOWS_VERSIONS		:=	windows-2019 windows-2004
 
 # Set Flatcar Container Linux channel and version if not supplied
 FLATCAR_CHANNEL ?= stable
@@ -205,7 +207,8 @@ PLATFORMS_AND_VERSIONS	:=	$(CENTOS_VERSIONS) \
 							$(FLATCAR_VERSIONS) \
 							$(PHOTON_VERSIONS) \
 							$(RHEL_VERSIONS) \
-							$(UBUNTU_VERSIONS)
+							$(UBUNTU_VERSIONS) \
+							$(WINDOWS_VERSIONS)
 
 NODE_OVA_LOCAL_BUILD_NAMES			:=	$(addprefix node-ova-local-,$(PLATFORMS_AND_VERSIONS))
 NODE_OVA_LOCAL_VMX_BUILD_NAMES		:=	$(addprefix node-ova-local-vmx-,$(PLATFORMS_AND_VERSIONS))
@@ -260,11 +263,11 @@ QEMU_VALIDATE_TARGETS	:= $(addprefix validate-,$(QEMU_BUILD_NAMES))
 
 .PHONY: $(NODE_OVA_LOCAL_BUILD_TARGETS)
 $(NODE_OVA_LOCAL_BUILD_TARGETS): deps-ova
-	packer build $(PACKER_NODE_FLAGS) -var-file="packer/ova/packer-common.json" -var-file="$(abspath packer/ova/$(subst build-node-ova-local-,,$@).json)" -except=esx -except=vsphere -only=vmware-iso $(ABSOLUTE_PACKER_VAR_FILES) packer/ova/packer-node.json
+	packer build $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="packer/ova/packer-common.json" -var-file="$(abspath packer/ova/$(subst build-node-ova-local-,,$@).json)" -except=esx -except=vsphere -only=vmware-iso $(ABSOLUTE_PACKER_VAR_FILES) packer/ova/packer-$(if $(findstring windows,$@),windows,node).json
 
 .PHONY: $(NODE_OVA_LOCAL_VALIDATE_TARGETS)
 $(NODE_OVA_LOCAL_VALIDATE_TARGETS): deps-ova
-	packer validate $(PACKER_NODE_FLAGS) -var-file="packer/ova/packer-common.json" -var-file="$(abspath packer/ova/$(subst validate-node-ova-local-,,$@).json)" -except=esx -except=vsphere -only=vmware-iso $(ABSOLUTE_PACKER_VAR_FILES) packer/ova/packer-node.json
+	packer validate $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="packer/ova/packer-common.json" -var-file="$(abspath packer/ova/$(subst validate-node-ova-local-,,$@).json)" -except=esx -except=vsphere -only=vmware-iso $(ABSOLUTE_PACKER_VAR_FILES) packer/ova/packer-$(if $(findstring windows,$@),windows,node).json
 
 .PHONY: $(NODE_OVA_LOCAL_VMX_BUILD_TARGETS)
 $(NODE_OVA_LOCAL_VMX_BUILD_TARGETS): deps-ova
@@ -280,7 +283,7 @@ $(NODE_OVA_ESX_BUILD_TARGETS): deps-ova
 
 .PHONY: $(NODE_OVA_VSPHERE_BUILD_TARGETS)
 $(NODE_OVA_VSPHERE_BUILD_TARGETS): deps-ova
-	packer build $(PACKER_NODE_FLAGS) -var-file="packer/ova/packer-common.json" -var-file="$(abspath packer/ova/$(subst build-node-ova-vsphere-,,$@).json)" -var-file="packer/ova/vsphere.json" -except=esx -except=local -only=vsphere-iso $(ABSOLUTE_PACKER_VAR_FILES) -only=vsphere packer/ova/packer-node.json
+	packer build $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS))  -var-file="packer/ova/packer-common.json" -var-file="$(abspath packer/ova/$(subst build-node-ova-vsphere-,,$@).json)" -var-file="packer/ova/vsphere.json" -except=esx -except=local -only=vsphere-iso $(ABSOLUTE_PACKER_VAR_FILES) -only=vsphere packer/ova/packer-$(if $(findstring windows,$@),windows,node).json
 
 .PHONY: $(NODE_OVA_VSPHERE_BASE_BUILD_TARGETS)
 $(NODE_OVA_VSPHERE_BASE_BUILD_TARGETS): deps-ova
@@ -419,6 +422,8 @@ build-node-ova-local-photon-3: ## Builds Photon 3 Node OVA w local hypervisor
 build-node-ova-local-rhel-7: ## Builds RHEL 7 Node OVA w local hypervisor
 build-node-ova-local-ubuntu-1804: ## Builds Ubuntu 18.04 Node OVA w local hypervisor
 build-node-ova-local-ubuntu-2004: ## Builds Ubuntu 20.04 Node OVA w local hypervisor
+build-node-ova-local-windows-2019: ## Builds for Windows Server 2019 Node OVA w local hypervisor
+build-node-ova-local-windows-2004: ## Builds for Windows Server 2004 SAC Node OVA w local hypervisor
 build-node-ova-local-all: $(NODE_OVA_LOCAL_BUILD_TARGETS) ## Builds all Node OVAs w local hypervisor
 build-haproxy-ova-local-photon-3: ## Builds Photon 3 HAProxy OVA w local hypervisor
 
@@ -435,6 +440,8 @@ build-node-ova-vsphere-photon-3: ## Builds Photon 3 Node OVA and template on vSp
 build-node-ova-vsphere-rhel-7: ## Builds RHEL 7 Node OVA and template on vSphere
 build-node-ova-vsphere-ubuntu-1804: ## Builds Ubuntu 18.04 Node OVA and template on vSphere
 build-node-ova-vsphere-ubuntu-2004: ## Builds Ubuntu 20.04 Node OVA and template on vSphere
+build-node-ova-vsphere-windows-2019: ## Builds for Windows Server 2019 and template on vSphere
+build-node-ova-vsphere-windows-2004: ## Builds for Windows Server 2004 SAC and template on vSphere
 build-node-ova-vsphere-all: $(NODE_OVA_VSPHERE_BUILD_TARGETS) ## Builds all Node OVAs and templates on vSphere
 build-haproxy-ova-vsphere-photon-3: ## Builds Photon 3 HAProxy OVA and template on vSphere
 
@@ -506,6 +513,8 @@ validate-node-ova-local-photon-3: ## Validates Photon 3 Node OVA Packer config w
 validate-node-ova-local-rhel-7: ## Validates RHEL 7 Node OVA Packer config w local hypervisor
 validate-node-ova-local-ubuntu-1804: ## Validates Ubuntu 18.04 Node OVA Packer config w local hypervisor
 validate-node-ova-local-ubuntu-2004: ## Validates Ubuntu 20.04 Node OVA Packer config w local hypervisor
+validate-node-ova-local-windows-2019: ## Validates Windows Server 2019 Node OVA Packer config w local hypervisor
+validate-node-ova-local-windows-2004: ## Validates Windows Server 2004 SAC Node OVA Packer config w local hypervisor
 validate-node-ova-local-all: $(NODE_OVA_LOCAL_VALIDATE_TARGETS) ## Validates all Node OVAs Packer config w local hypervisor
 validate-haproxy-ova-local-photon-3: ## Validates Photon 3 HAProxy OVA Packer config w local hypervisor
 

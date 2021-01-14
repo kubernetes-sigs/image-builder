@@ -106,7 +106,9 @@ def main():
     OS_id_map = {"vmware-photon-64": {"id": "36", "version": "", "type": "vmwarePhoton64Guest"},
                  "centos7-64": {"id": "107", "version": "7", "type": "centos7-64"},
                  "rhel7-64": {"id": "80", "version": "7", "type": "rhel7_64guest"},
-                 "ubuntu-64": {"id": "94", "version": "", "type": "ubuntu-64"}}
+                 "ubuntu-64": {"id": "94", "version": "", "type": "ubuntu-64"},
+                 "Windows2019Server-64": {"id": "112", "version": "", "type": "windows9srv-64"},
+                 "Windows2004Server-64": {"id": "112", "version": "", "type": "windows9srv-64"}}
 
     # Create the OVF file.
     data = {
@@ -121,12 +123,14 @@ def main():
         'OS_VERSION': OS_id_map[build_data['guest_os_type']]['version'],
         'IB_VERSION': build_data['ib_version'],
         'DISK_NAME': vmdk['stream_name'],
+        'DISK_SIZE': "20",
         'POPULATED_DISK_SIZE': vmdk['size'],
         'STREAM_DISK_SIZE': vmdk['stream_size'],
         'VMX_VERSION': args.vmx_version,
         'DISTRO_NAME': build_data['distro_name'],
         'DISTRO_VERSION': build_data['distro_version'],
         'DISTRO_ARCH': build_data['distro_arch']
+        'NESTEDHV': "false"
     }
 
     if args.node:
@@ -137,6 +141,12 @@ def main():
         data['CONTAINERD_VERSION'] = build_data['containerd_version']
         data['KUBERNETES_SEMVER'] = build_data['kubernetes_semver']
         data['KUBERNETES_SOURCE_TYPE'] = build_data['kubernetes_source_type']
+
+        #windows nodes use nested virtualisation and require a larger hard drive
+        if "windows" in OS_id_map[build_data['guest_os_type']]['type']:
+          data['DISK_SIZE'] = "80"
+          if build_data['disable_hypervisor'] != "true":
+            data['NESTEDHV'] = "true"
     elif args.haproxy:
         ovf = "%s-haproxy-%s.ovf" % (build_data['build_name'], build_data['dataplaneapi_version'])
         ova_manifest = "%s-haproxy-%s.mf" % (build_data['build_name'], build_data['dataplaneapi_version'])
@@ -226,7 +236,7 @@ _NODE_OVF_TEMPLATE = '''<?xml version="1.0" encoding="UTF-8"?>
   </References>
   <DiskSection>
     <Info>Virtual disk information</Info>
-    <Disk ovf:capacity="20" ovf:capacityAllocationUnits="byte * 2^30" ovf:diskId="vmdisk1" ovf:fileRef="file1" ovf:format="http://www.vmware.com/interfaces/specifications/vmdk.html#streamOptimized" ovf:populatedSize="${POPULATED_DISK_SIZE}"/>
+    <Disk ovf:capacity="${DISK_SIZE}" ovf:capacityAllocationUnits="byte * 2^30" ovf:diskId="vmdisk1" ovf:fileRef="file1" ovf:format="http://www.vmware.com/interfaces/specifications/vmdk.html#streamOptimized" ovf:populatedSize="${POPULATED_DISK_SIZE}"/>
   </DiskSection>
   <NetworkSection>
     <Info>The list of logical networks</Info>
@@ -357,7 +367,7 @@ _NODE_OVF_TEMPLATE = '''<?xml version="1.0" encoding="UTF-8"?>
       <vmw:Config ovf:required="false" vmw:key="powerOpInfo.powerOffType" vmw:value="soft"/>
       <vmw:Config ovf:required="false" vmw:key="powerOpInfo.resetType" vmw:value="soft"/>
       <vmw:Config ovf:required="false" vmw:key="powerOpInfo.suspendType" vmw:value="hard"/>
-      <vmw:Config ovf:required="false" vmw:key="nestedHVEnabled" vmw:value="false"/>
+      <vmw:Config ovf:required="false" vmw:key="nestedHVEnabled" vmw:value="${NESTEDHV}"/>
       <vmw:Config ovf:required="false" vmw:key="virtualICH7MPresent" vmw:value="false"/>
       <vmw:Config ovf:required="false" vmw:key="virtualSMCPresent" vmw:value="false"/>
       <vmw:Config ovf:required="false" vmw:key="flags.vvtdEnabled" vmw:value="false"/>
@@ -536,7 +546,7 @@ _HAPROXY_OVF_TEMPLATE = '''<?xml version="1.0" encoding="UTF-8"?>
       <vmw:Config ovf:required="false" vmw:key="powerOpInfo.powerOffType" vmw:value="soft"/>
       <vmw:Config ovf:required="false" vmw:key="powerOpInfo.resetType" vmw:value="soft"/>
       <vmw:Config ovf:required="false" vmw:key="powerOpInfo.suspendType" vmw:value="hard"/>
-      <vmw:Config ovf:required="false" vmw:key="nestedHVEnabled" vmw:value="false"/>
+      <vmw:Config ovf:required="false" vmw:key="nestedHVEnabled" vmw:value="${NESTEDHV}"/>
       <vmw:Config ovf:required="false" vmw:key="virtualICH7MPresent" vmw:value="false"/>
       <vmw:Config ovf:required="false" vmw:key="virtualSMCPresent" vmw:value="false"/>
       <vmw:Config ovf:required="false" vmw:key="flags.vvtdEnabled" vmw:value="false"/>

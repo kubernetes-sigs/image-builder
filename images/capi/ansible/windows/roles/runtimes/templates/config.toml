@@ -21,5 +21,8 @@ state = "{{ allusersprofile }}\\state"
 [plugins]
   [plugins.cri]
     sandbox_image = "{{ pause_image }}"
+  [plugins.cri.cni]
+      bin_dir = "{{ plugin_bin_dir }}"
+      conf_dir = "{{ plugin_conf_dir }}"
 
 {{containerd_additional_settings | b64decode}}

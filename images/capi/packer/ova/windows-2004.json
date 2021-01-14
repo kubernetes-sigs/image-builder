@@ -1,0 +1,13 @@
+{
+  "build_name": "windows-2004",
+  "distro_name": "windows-2004",
+  "os_display_name": "Windows Server 2004",
+  "guest_os_type": "Windows2004Server-64",
+  "vsphere_guest_os_type": "windows9Server64Guest",
+  "local_guest_os_type": "windows9srv-64",
+  "os_iso_path" : "[datastore] ISO/en_windows_server_version_2004_x64_dvd_765aeb22.iso",
+  "vmtools_iso_path" : "[datastore] ISO/vmtools/windows-11.1.5.iso",
+  "os_iso_url": "file:/path/en_windows_server_version_2004_x64_dvd_765aeb22.iso",
+  "disk_controller_type": "pvscsi",
+  "iso_checksum": "none"
+}

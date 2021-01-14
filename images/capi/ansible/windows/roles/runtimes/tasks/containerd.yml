@@ -28,6 +28,8 @@
     - '%programfiles%\containerd'
     - '%ALLUSERSPROFILE%\containerd\state'
     - '%ALLUSERSPROFILE%\containerd\root'
+    - '%SystemDrive%/opt/cni/bin'
+    - '%SystemDrive%/etc/cni/net.d'
 
 - name: Check if containerd exists
   win_stat:
@@ -48,12 +50,18 @@
   win_shell: $env:ALLUSERSPROFILE.Replace("\", "\\")
   register: profile
 
+- name: Get Install Drive
+  win_shell: $env:SYSTEMDRIVE
+  register: systemdrive
+
 - name: Copy containerd config overrides
   win_template:
     dest: '%programfiles%\containerd\config.toml'
     src: config.toml
   vars:
     allusersprofile: "{{ profile.stdout | trim }}"
+    plugin_bin_dir: "{{ systemdrive.stdout | trim }}/opt/cni/bin"
+    plugin_conf_dir: "{{ systemdrive.stdout | trim }}/etc/cni/net.d"
 
 - name: Check if a Containerd service is installed
   win_service:
