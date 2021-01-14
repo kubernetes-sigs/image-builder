@@ -37,6 +37,14 @@ version = 2
 [plugins]
   [plugins."io.containerd.grpc.v1.cri"]
     sandbox_image = "{{ containerd_pause_image }}"
+    {% if containerd_registry_mirrors is defined and registry_mirrors is defined %}
+    [plugins."io.containerd.grpc.v1.cri".registry]
+      [plugins."io.containerd.grpc.v1.cri".registry.mirrors]
+      {% for containerd_registry_mirror in containerd_registry_mirrors %}
+        [plugins."io.containerd.grpc.v1.cri".registry.mirrors."{{ containerd_registry_mirror.name }}"]
+          endpoint = [{% for mirror_config in containerd_registry_mirror.mirrors %}{% for registry_mirror in registry_mirrors[mirror_config.type] %}"https://{{ registry_mirror }}/{{ mirror_config.path }}"{{ '' if loop.last else ',' }}{% endfor %}{{ '' if loop.last else ',' }}{% endfor %}]
+      {% endfor %}
+      {% endif %}
 
 {% endif %}
     
