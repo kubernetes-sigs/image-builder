@@ -129,7 +129,7 @@ def main():
         'VMX_VERSION': args.vmx_version,
         'DISTRO_NAME': build_data['distro_name'],
         'DISTRO_VERSION': build_data['distro_version'],
-        'DISTRO_ARCH': build_data['distro_arch']
+        'DISTRO_ARCH': build_data['distro_arch'],
         'NESTEDHV': "false"
     }
 
