@@ -54,8 +54,9 @@
       "winrm_timeout": "10m",
       "winrm_username": "packer",
       "azure_tags": {
+        "build_date": "{{isotime}}",
         "build_timestamp": "{{user `build_timestamp`}}",
-        "creationTimestamp": "{{user `build_timestamp`}}",
+        "creationTimestamp": "{{isotime \"2006-01-02T15:04:05Z\"}}",
         "os_version": "{{user `image_sku`}}",
         "kubernetes_version": "{{user `kubernetes_semver`}}"
       }
@@ -89,8 +90,9 @@
       "winrm_timeout": "10m",
       "winrm_username": "packer",
       "azure_tags": {
+        "build_date": "{{isotime}}",
         "build_timestamp": "{{user `build_timestamp`}}",
-        "creationTimestamp": "{{user `build_timestamp`}}",
+        "creationTimestamp": "{{isotime \"2006-01-02T15:04:05Z\"}}",
         "os_version": "{{user `image_sku`}}",
         "kubernetes_version": "{{user `kubernetes_semver`}}"
       }

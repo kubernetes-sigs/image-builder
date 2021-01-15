@@ -60,8 +60,9 @@
       "location": "{{user `azure_location`}}",
       "ssh_username": "packer",
       "azure_tags": {
+        "build_date": "{{isotime}}",
         "build_timestamp": "{{user `build_timestamp`}}",
-        "creationTimestamp": "{{user `build_timestamp`}}",
+        "creationTimestamp": "{{isotime \"2006-01-02T15:04:05Z\"}}",
         "distribution": "{{user `distribution`}}",
         "distribution_release": "{{user `distribution_release`}}",
         "distribution_version": "{{user `distribution_version`}}",
@@ -93,8 +94,9 @@
       "location": "{{user `azure_location`}}",
       "ssh_username": "packer",
       "azure_tags": {
+        "build_date": "{{isotime}}",
         "build_timestamp": "{{user `build_timestamp`}}",
-        "creationTimestamp": "{{user `build_timestamp`}}",
+        "creationTimestamp": "{{isotime \"2006-01-02T15:04:05Z\"}}",
         "distribution": "{{user `distribution`}}",
         "distribution_release": "{{user `distribution_release`}}",
         "distribution_version": "{{user `distribution_version`}}",
