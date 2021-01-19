@@ -1,0 +1,18 @@
+# See https://cloud.google.com/cloud-build/docs/build-config
+timeout: 3000s
+options:
+  substitution_option: ALLOW_LOOSE
+steps:
+  # 'gcr.io/k8s-testimages/gcb-docker-gcloud:v20201130-750d12f'
+  - name: 'gcr.io/k8s-testimages/gcb-docker-gcloud@sha256:0ef22100e63c0f7cdf4758d4732008c99d51ec149baca736f8cf94d7cf9b7a1b'
+    entrypoint: make
+    env:
+      - DOCKER_CLI_EXPERIMENTAL=enabled
+      - TAG=$_GIT_TAG
+      - DOCKER_BUILDKIT=1
+    args:
+      - release-staging
+substitutions:
+  # _GIT_TAG will be filled with a git-based tag for the image, of the form vYYYYMMDD-hash, and
+  # can be used as a substitution
+  _GIT_TAG: '12345'
