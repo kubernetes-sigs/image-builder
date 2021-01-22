@@ -24,6 +24,8 @@ cd "${KUBE_ROOT}" || exit 1
 os=$(go env GOOS)
 arch=$(go env GOARCH)
 
+MDBOOK_VERSION="0.4.6"
+
 # translate arch to rust's conventions (if we can)
 if [[ ${arch} == "amd64" ]]; then
     arch="x86_64"
@@ -54,9 +56,9 @@ esac
 
 # grab mdbook
 # we hardcode linux/amd64 since rust uses a different naming scheme and it's a pain to tran
-echo "downloading mdBook-v0.3.1-${arch}-${target}.${ext}"
+echo "downloading mdBook-v${MDBOOK_VERSION}-${arch}-${target}.${ext}"
 set -x
-curl -sL -o /tmp/mdbook.${ext} "https://github.com/rust-lang-nursery/mdBook/releases/download/v0.3.1/mdBook-v0.3.1-${arch}-${target}.${ext}"
+curl -sL -o /tmp/mdbook.${ext} "https://github.com/rust-lang-nursery/mdBook/releases/download/v${MDBOOK_VERSION}/mdBook-v${MDBOOK_VERSION}-${arch}-${target}.${ext}"
 ${cmd} /tmp/mdbook.${ext}
 chmod +x /tmp/mdbook
 
