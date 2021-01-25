@@ -49,6 +49,11 @@ def main():
                         metavar='EULA',
                         default='./ovf_eula.txt',
                         help='Text file containing EULA')
+    parser.add_argument('--ovf_template',
+                        nargs='?',
+                        metavar='OVF_TEMPLATE',
+                        default='./ovf_template.xml',
+                        help='XML template to build OVF')
     parser.add_argument('--vmdk_file',
                         nargs='?',
                         metavar='FILE',
@@ -66,6 +71,11 @@ def main():
     eula = ""
     with io.open(args.eula_file, 'r', encoding='utf-8') as f:
         eula = f.read()
+
+    # Read in the OVF template
+    ovf_template = ""
+    with io.open(args.ovf_template, 'r', encoding='utf-8') as f:
+        ovf_template = f.read()
 
     # Change the working directory if one is specified.
     os.chdir(args.build_dir)
@@ -133,28 +143,47 @@ def main():
         'NESTEDHV': "false"
     }
 
+    capv_url = "https://github.com/kubernetes-sigs/cluster-api-provider-vsphere"
+
     if args.node:
-        ovf = "%s-kube-%s.ovf" % (build_data['build_name'], build_data['kubernetes_semver'])
-        ova_manifest = "%s-kube-%s.mf" % (build_data['build_name'], build_data['kubernetes_semver'])
-        ova = "%s-kube-%s.ova" % (build_data['build_name'], build_data['kubernetes_semver'])
         data['CNI_VERSION'] = build_data['kubernetes_cni_semver']
         data['CONTAINERD_VERSION'] = build_data['containerd_version']
         data['KUBERNETES_SEMVER'] = build_data['kubernetes_semver']
         data['KUBERNETES_SOURCE_TYPE'] = build_data['kubernetes_source_type']
-
+        data['PRODUCT'] = "%s and Kubernetes %s" % (build_data['os_name'], build_data['kubernetes_semver'])
+        data['ANNOTATION'] = "Cluster API vSphere image - %s - %s" % (data['PRODUCT'], capv_url)
+        data['WAKEONLANENABLED'] = "false"
+        data['TYPED_VERSION'] = "kube-%s" % (build_data['kubernetes_semver'])
+        data['PROPERTIES'] = Template('''
+      <Property ovf:userConfigurable="false" ovf:value="${DISTRO_NAME}" ovf:type="string" ovf:key="DISTRO_NAME"/>
+      <Property ovf:userConfigurable="false" ovf:value="${DISTRO_VERSION}" ovf:type="string" ovf:key="DISTRO_VERSION"/>
+      <Property ovf:userConfigurable="false" ovf:value="${DISTRO_ARCH}" ovf:type="string" ovf:key="DISTRO_ARCH"/>
+      <Property ovf:userConfigurable="false" ovf:value="${CNI_VERSION}" ovf:type="string" ovf:key="CNI_VERSION"/>
+      <Property ovf:userConfigurable="false" ovf:value="${CONTAINERD_VERSION}" ovf:type="string" ovf:key="CONTAINERD_VERSION"/>
+      <Property ovf:userConfigurable="false" ovf:value="${KUBERNETES_SEMVER}" ovf:type="string" ovf:key="KUBERNETES_SEMVER"/>
+      <Property ovf:userConfigurable="false" ovf:value="${KUBERNETES_SOURCE_TYPE}" ovf:type="string" ovf:key="KUBERNETES_SOURCE_TYPE"/>
+        ''').substitute(data)
         #windows nodes use nested virtualisation and require a larger hard drive
         if "windows" in OS_id_map[build_data['guest_os_type']]['type']:
-          data['DISK_SIZE'] = "80"
-          if build_data['disable_hypervisor'] != "true":
-            data['NESTEDHV'] = "true"
+            data['DISK_SIZE'] = "80"
+            if build_data['disable_hypervisor'] != "true":
+                data['NESTEDHV'] = "true"
     elif args.haproxy:
-        ovf = "%s-haproxy-%s.ovf" % (build_data['build_name'], build_data['dataplaneapi_version'])
-        ova_manifest = "%s-haproxy-%s.mf" % (build_data['build_name'], build_data['dataplaneapi_version'])
-        ova = "%s-haproxy-%s.ova" % (build_data['build_name'], build_data['dataplaneapi_version'])
         data['DATAPLANEAPI_VERSION'] = build_data['dataplaneapi_version']
+        data['PRODUCT'] = "CAPV HAProxy Load Balancer"
+        data['ANNOTATION'] = "Cluster API vSphere HAProxy Load Balancer - %s and HAProxy dataplane API %s - %s" % (build_data['os_name'], build_data['dataplaneapi_version'], capv_url)
+        data['WAKEONLANENABLED'] = "true"
+        data['TYPED_VERSION'] = "haproxy-%s" % (build_data['dataplaneapi_version'])
+        data['PROPERTIES'] = Template('''
+      <Property ovf:userConfigurable="false" ovf:value="${DATAPLANEAPI_VERSION}" ovf:type="string" ovf:key="DATAPLANEAPI_VERSION"/>
+        ''').substitute(data)
+
+    ovf = "%s-%s.ovf" % (build_data['build_name'], data['TYPED_VERSION'])
+    ova_manifest = "%s-%s.mf" % (build_data['build_name'], data['TYPED_VERSION'])
+    ova = "%s-%s.ova" % (build_data['build_name'], data['TYPED_VERSION'])
 
     # Create OVF
-    create_ovf(ovf, data, "node" if args.node else "haproxy")
+    create_ovf(ovf, data, ovf_template)
 
     # Create the OVA manifest.
     create_ova_manifest(ova_manifest, [ovf, vmdk['stream_name']])
@@ -187,13 +216,10 @@ def create_ova(path, infile_paths):
         f.write(sha256(path))
 
 
-def create_ovf(path, data, type):
-    print("image-build-ova: create ovf %s" % path)
+def create_ovf(path, data, ovf_template):
+    print("image-build-ova: create ovf %s" % path)      
     with io.open(path, 'w', encoding='utf-8') as f:
-        if type == "node":
-            f.write(Template(_NODE_OVF_TEMPLATE).substitute(data))
-        elif type == "haproxy":
-            f.write(Template(_HAPROXY_OVF_TEMPLATE).substitute(data))
+      f.write(Template(ovf_template).substitute(data))
 
 
 def create_ova_manifest(path, infile_paths):
@@ -228,358 +254,6 @@ def stream_optimize_vmdk_files(inlist):
         subprocess.check_call(args)
         f['stream_name'] = outfile
         f['stream_size'] = os.path.getsize(outfile)
-
-_NODE_OVF_TEMPLATE = '''<?xml version="1.0" encoding="UTF-8"?>
-<Envelope xmlns="http://schemas.dmtf.org/ovf/envelope/1" xmlns:cim="http://schemas.dmtf.org/wbem/wscim/1/common" xmlns:ovf="http://schemas.dmtf.org/ovf/envelope/1" xmlns:rasd="http://schemas.dmtf.org/wbem/wscim/1/cim-schema/2/CIM_ResourceAllocationSettingData" xmlns:vmw="http://www.vmware.com/schema/ovf" xmlns:vssd="http://schemas.dmtf.org/wbem/wscim/1/cim-schema/2/CIM_VirtualSystemSettingData" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <References>
-    <File ovf:id="file1" ovf:href="${DISK_NAME}" ovf:size="${STREAM_DISK_SIZE}"/>
-  </References>
-  <DiskSection>
-    <Info>Virtual disk information</Info>
-    <Disk ovf:capacity="${DISK_SIZE}" ovf:capacityAllocationUnits="byte * 2^30" ovf:diskId="vmdisk1" ovf:fileRef="file1" ovf:format="http://www.vmware.com/interfaces/specifications/vmdk.html#streamOptimized" ovf:populatedSize="${POPULATED_DISK_SIZE}"/>
-  </DiskSection>
-  <NetworkSection>
-    <Info>The list of logical networks</Info>
-    <Network ovf:name="nic0">
-      <Description>Please select a network</Description>
-    </Network>
-  </NetworkSection>
-  <VirtualSystem ovf:id="${ARTIFACT_ID}">
-    <Info>A virtual machine</Info>
-    <Name>${ARTIFACT_ID}</Name>
-    <AnnotationSection>
-      <Info>A human-readable annotation</Info>
-      <Annotation>Cluster API vSphere image - ${OS_NAME} and Kubernetes ${KUBERNETES_SEMVER} - https://github.com/kubernetes-sigs/cluster-api-provider-vsphere</Annotation>
-    </AnnotationSection>
-    <OperatingSystemSection ovf:id="${OS_ID}" ovf:version="${OS_VERSION}" vmw:osType="${OS_TYPE}">
-      <Info>The operating system installed</Info>
-    </OperatingSystemSection>
-    <VirtualHardwareSection>
-      <Info>Virtual hardware requirements</Info>
-      <System>
-        <vssd:ElementName>Virtual Hardware Family</vssd:ElementName>
-        <vssd:InstanceID>0</vssd:InstanceID>
-        <vssd:VirtualSystemIdentifier>${ARTIFACT_ID}</vssd:VirtualSystemIdentifier>
-        <vssd:VirtualSystemType>vmx-${VMX_VERSION}</vssd:VirtualSystemType>
-      </System>
-      <Item>
-        <rasd:AllocationUnits>hertz * 10^6</rasd:AllocationUnits>
-        <rasd:Description>Number of Virtual CPUs</rasd:Description>
-        <rasd:ElementName>2 virtual CPU(s)</rasd:ElementName>
-        <rasd:InstanceID>1</rasd:InstanceID>
-        <rasd:ResourceType>3</rasd:ResourceType>
-        <rasd:VirtualQuantity>2</rasd:VirtualQuantity>
-        <vmw:CoresPerSocket ovf:required="false">2</vmw:CoresPerSocket>
-      </Item>
-      <Item>
-        <rasd:AllocationUnits>byte * 2^20</rasd:AllocationUnits>
-        <rasd:Description>Memory Size</rasd:Description>
-        <rasd:ElementName>2048MB of memory</rasd:ElementName>
-        <rasd:InstanceID>2</rasd:InstanceID>
-        <rasd:ResourceType>4</rasd:ResourceType>
-        <rasd:VirtualQuantity>2048</rasd:VirtualQuantity>
-      </Item>
-      <Item>
-        <rasd:Address>0</rasd:Address>
-        <rasd:Description>SCSI Controller</rasd:Description>
-        <rasd:ElementName>SCSI controller 0</rasd:ElementName>
-        <rasd:InstanceID>3</rasd:InstanceID>
-        <rasd:ResourceSubType>VirtualSCSI</rasd:ResourceSubType>
-        <rasd:ResourceType>6</rasd:ResourceType>
-        <vmw:Config ovf:required="false" vmw:key="slotInfo.pciSlotNumber" vmw:value="160"/>
-      </Item>
-      <Item>
-        <rasd:Address>1</rasd:Address>
-        <rasd:Description>IDE Controller</rasd:Description>
-        <rasd:ElementName>IDE 1</rasd:ElementName>
-        <rasd:InstanceID>4</rasd:InstanceID>
-        <rasd:ResourceType>5</rasd:ResourceType>
-      </Item>
-      <Item>
-        <rasd:Address>0</rasd:Address>
-        <rasd:Description>IDE Controller</rasd:Description>
-        <rasd:ElementName>IDE 0</rasd:ElementName>
-        <rasd:InstanceID>5</rasd:InstanceID>
-        <rasd:ResourceType>5</rasd:ResourceType>
-      </Item>
-      <Item ovf:required="false">
-        <rasd:AutomaticAllocation>false</rasd:AutomaticAllocation>
-        <rasd:ElementName>Video card</rasd:ElementName>
-        <rasd:InstanceID>6</rasd:InstanceID>
-        <rasd:ResourceType>24</rasd:ResourceType>
-        <vmw:Config ovf:required="false" vmw:key="useAutoDetect" vmw:value="false"/>
-        <vmw:Config ovf:required="false" vmw:key="videoRamSizeInKB" vmw:value="4096"/>
-        <vmw:Config ovf:required="false" vmw:key="enable3DSupport" vmw:value="false"/>
-        <vmw:Config ovf:required="false" vmw:key="use3dRenderer" vmw:value="automatic"/>
-        <vmw:Config ovf:required="false" vmw:key="graphicsMemorySizeInKB" vmw:value="262144"/>
-      </Item>
-      <Item ovf:required="false">
-        <rasd:AutomaticAllocation>false</rasd:AutomaticAllocation>
-        <rasd:ElementName>VMCI device</rasd:ElementName>
-        <rasd:InstanceID>7</rasd:InstanceID>
-        <rasd:ResourceSubType>vmware.vmci</rasd:ResourceSubType>
-        <rasd:ResourceType>1</rasd:ResourceType>
-        <vmw:Config ovf:required="false" vmw:key="slotInfo.pciSlotNumber" vmw:value="32"/>
-        <vmw:Config ovf:required="false" vmw:key="allowUnrestrictedCommunication" vmw:value="false"/>
-      </Item>
-      <Item>
-        <rasd:AddressOnParent>0</rasd:AddressOnParent>
-        <rasd:ElementName>Hard disk 1</rasd:ElementName>
-        <rasd:HostResource>ovf:/disk/vmdisk1</rasd:HostResource>
-        <rasd:InstanceID>8</rasd:InstanceID>
-        <rasd:Parent>3</rasd:Parent>
-        <rasd:ResourceType>17</rasd:ResourceType>
-        <vmw:Config ovf:required="false" vmw:key="backing.writeThrough" vmw:value="false"/>
-      </Item>
-      <Item>
-        <rasd:AddressOnParent>7</rasd:AddressOnParent>
-        <rasd:AutomaticAllocation>true</rasd:AutomaticAllocation>
-        <rasd:Connection>nic0</rasd:Connection>
-        <rasd:Description>VmxNet3 ethernet adapter</rasd:Description>
-        <rasd:ElementName>Network adapter 1</rasd:ElementName>
-        <rasd:InstanceID>9</rasd:InstanceID>
-        <rasd:ResourceSubType>VmxNet3</rasd:ResourceSubType>
-        <rasd:ResourceType>10</rasd:ResourceType>
-        <vmw:Config ovf:required="false" vmw:key="slotInfo.pciSlotNumber" vmw:value="192"/>
-        <vmw:Config ovf:required="false" vmw:key="wakeOnLanEnabled" vmw:value="false"/>
-        <vmw:Config ovf:required="false" vmw:key="connectable.allowGuestControl" vmw:value="true"/>
-      </Item>
-      <Item ovf:required="false">
-        <rasd:AddressOnParent>0</rasd:AddressOnParent>
-        <rasd:AutomaticAllocation>false</rasd:AutomaticAllocation>
-        <rasd:ElementName>CD/DVD drive 1</rasd:ElementName>
-        <rasd:InstanceID>10</rasd:InstanceID>
-        <rasd:Parent>5</rasd:Parent>
-        <rasd:ResourceSubType>vmware.cdrom.remotepassthrough</rasd:ResourceSubType>
-        <rasd:ResourceType>15</rasd:ResourceType>
-        <vmw:Config ovf:required="false" vmw:key="backing.exclusive" vmw:value="false"/>
-        <vmw:Config ovf:required="false" vmw:key="connectable.allowGuestControl" vmw:value="false"/>
-      </Item>
-      <vmw:Config ovf:required="false" vmw:key="cpuHotAddEnabled" vmw:value="false"/>
-      <vmw:Config ovf:required="false" vmw:key="cpuHotRemoveEnabled" vmw:value="false"/>
-      <vmw:Config ovf:required="false" vmw:key="memoryHotAddEnabled" vmw:value="false"/>
-      <vmw:Config ovf:required="false" vmw:key="firmware" vmw:value="bios"/>
-      <vmw:Config ovf:required="false" vmw:key="tools.syncTimeWithHost" vmw:value="false"/>
-      <vmw:Config ovf:required="false" vmw:key="tools.afterPowerOn" vmw:value="true"/>
-      <vmw:Config ovf:required="false" vmw:key="tools.afterResume" vmw:value="true"/>
-      <vmw:Config ovf:required="false" vmw:key="tools.beforeGuestShutdown" vmw:value="true"/>
-      <vmw:Config ovf:required="false" vmw:key="tools.beforeGuestStandby" vmw:value="true"/>
-      <vmw:Config ovf:required="false" vmw:key="powerOpInfo.powerOffType" vmw:value="soft"/>
-      <vmw:Config ovf:required="false" vmw:key="powerOpInfo.resetType" vmw:value="soft"/>
-      <vmw:Config ovf:required="false" vmw:key="powerOpInfo.suspendType" vmw:value="hard"/>
-      <vmw:Config ovf:required="false" vmw:key="nestedHVEnabled" vmw:value="${NESTEDHV}"/>
-      <vmw:Config ovf:required="false" vmw:key="virtualICH7MPresent" vmw:value="false"/>
-      <vmw:Config ovf:required="false" vmw:key="virtualSMCPresent" vmw:value="false"/>
-      <vmw:Config ovf:required="false" vmw:key="flags.vvtdEnabled" vmw:value="false"/>
-      <vmw:Config ovf:required="false" vmw:key="flags.vbsEnabled" vmw:value="false"/>
-      <vmw:Config ovf:required="false" vmw:key="bootOptions.efiSecureBootEnabled" vmw:value="false"/>
-      <vmw:Config ovf:required="false" vmw:key="powerOpInfo.standbyAction" vmw:value="checkpoint"/>
-    </VirtualHardwareSection>
-    <vmw:BootOrderSection vmw:instanceId="8" vmw:type="disk">
-      <Info>Virtual hardware device boot order</Info>
-    </vmw:BootOrderSection>
-    <EulaSection>
-      <Info>An end-user license agreement</Info>
-      <License>
-${EULA}
-      </License>
-    </EulaSection>
-    <ProductSection>
-      <Info>Information about the installed software</Info>
-      <Product>${OS_NAME} and Kubernetes ${KUBERNETES_SEMVER}</Product>
-      <Vendor>VMware Inc.</Vendor>
-      <Version>kube-${KUBERNETES_SEMVER}</Version>
-      <FullVersion>kube-${KUBERNETES_SEMVER}</FullVersion>
-      <VendorUrl>https://vmware.com</VendorUrl>
-      <Category>Cluster API Provider (CAPI)</Category>
-      <Property ovf:userConfigurable="false" ovf:value="${DISTRO_NAME}" ovf:type="string" ovf:key="DISTRO_NAME"/>
-      <Property ovf:userConfigurable="false" ovf:value="${DISTRO_VERSION}" ovf:type="string" ovf:key="DISTRO_VERSION"/>
-      <Property ovf:userConfigurable="false" ovf:value="${DISTRO_ARCH}" ovf:type="string" ovf:key="DISTRO_ARCH"/>
-      <Property ovf:userConfigurable="false" ovf:value="${BUILD_TIMESTAMP}" ovf:type="string" ovf:key="BUILD_TIMESTAMP"/>
-      <Property ovf:userConfigurable="false" ovf:value="${BUILD_DATE}" ovf:type="string" ovf:key="BUILD_DATE"/>
-      <Property ovf:userConfigurable="false" ovf:value="${CNI_VERSION}" ovf:type="string" ovf:key="CNI_VERSION"/>
-      <Property ovf:userConfigurable="false" ovf:value="${CONTAINERD_VERSION}" ovf:type="string" ovf:key="CONTAINERD_VERSION"/>
-      <Property ovf:userConfigurable="false" ovf:value="${CUSTOM_ROLE}" ovf:type="string" ovf:key="CUSTOM_ROLE"/>
-      <Property ovf:userConfigurable="false" ovf:value="${IB_VERSION}" ovf:type="string" ovf:key="IMAGE_BUILDER_VERSION"/>
-      <Property ovf:userConfigurable="false" ovf:value="${KUBERNETES_SEMVER}" ovf:type="string" ovf:key="KUBERNETES_SEMVER"/>
-      <Property ovf:userConfigurable="false" ovf:value="${KUBERNETES_SOURCE_TYPE}" ovf:type="string" ovf:key="KUBERNETES_SOURCE_TYPE"/>
-    </ProductSection>
-  </VirtualSystem>
-</Envelope>
-'''
-
-_HAPROXY_OVF_TEMPLATE = '''<?xml version="1.0" encoding="UTF-8"?>
-<Envelope xmlns="http://schemas.dmtf.org/ovf/envelope/1" xmlns:cim="http://schemas.dmtf.org/wbem/wscim/1/common" xmlns:ovf="http://schemas.dmtf.org/ovf/envelope/1" xmlns:rasd="http://schemas.dmtf.org/wbem/wscim/1/cim-schema/2/CIM_ResourceAllocationSettingData" xmlns:vmw="http://www.vmware.com/schema/ovf" xmlns:vssd="http://schemas.dmtf.org/wbem/wscim/1/cim-schema/2/CIM_VirtualSystemSettingData" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <References>
-    <File ovf:id="file1" ovf:href="${DISK_NAME}" ovf:size="${STREAM_DISK_SIZE}"/>
-  </References>
-  <DiskSection>
-    <Info>Virtual disk information</Info>
-    <Disk ovf:capacity="20" ovf:capacityAllocationUnits="byte * 2^30" ovf:format="http://www.vmware.com/interfaces/specifications/vmdk.html#streamOptimized" ovf:diskId="vmdisk1" ovf:fileRef="file1" ovf:populatedSize="${POPULATED_DISK_SIZE}"/>
-  </DiskSection>
-  <NetworkSection>
-    <Info>The list of logical networks</Info>
-    <Network ovf:name="nic0">
-      <Description>Please select a network</Description>
-    </Network>
-  </NetworkSection>
-  <VirtualSystem ovf:id="${ARTIFACT_ID}">
-    <Info>A virtual machine</Info>
-    <Name>${ARTIFACT_ID}</Name>
-    <AnnotationSection>
-      <Info>A human-readable annotation</Info>
-      <Annotation>Cluster API vSphere HAProxy Load Balancer - ${OS_NAME} and HAProxy dataplane API ${DATAPLANEAPI_VERSION} - https://github.com/kubernetes-sigs/cluster-api-provider-vsphere</Annotation>
-    </AnnotationSection>
-    <OperatingSystemSection ovf:id="${OS_ID}" ovf:version="${OS_VERSION}" vmw:osType="${OS_TYPE}">
-      <Info>The operating system installed</Info>
-    </OperatingSystemSection>
-    <VirtualHardwareSection>
-      <Info>Virtual hardware requirements</Info>
-      <System>
-        <vssd:ElementName>Virtual Hardware Family</vssd:ElementName>
-        <vssd:InstanceID>0</vssd:InstanceID>
-        <vssd:VirtualSystemIdentifier>${ARTIFACT_ID}</vssd:VirtualSystemIdentifier>
-        <vssd:VirtualSystemType>vmx-${VMX_VERSION}</vssd:VirtualSystemType>
-      </System>
-      <Item>
-        <rasd:AllocationUnits>hertz * 10^6</rasd:AllocationUnits>
-        <rasd:Description>Number of Virtual CPUs</rasd:Description>
-        <rasd:ElementName>2 virtual CPU(s)</rasd:ElementName>
-        <rasd:InstanceID>1</rasd:InstanceID>
-        <rasd:ResourceType>3</rasd:ResourceType>
-        <rasd:VirtualQuantity>2</rasd:VirtualQuantity>
-        <vmw:CoresPerSocket ovf:required="false">2</vmw:CoresPerSocket>
-      </Item>
-      <Item>
-        <rasd:AllocationUnits>byte * 2^20</rasd:AllocationUnits>
-        <rasd:Description>Memory Size</rasd:Description>
-        <rasd:ElementName>2048MB of memory</rasd:ElementName>
-        <rasd:InstanceID>2</rasd:InstanceID>
-        <rasd:ResourceType>4</rasd:ResourceType>
-        <rasd:VirtualQuantity>2048</rasd:VirtualQuantity>
-      </Item>
-      <Item>
-        <rasd:Address>0</rasd:Address>
-        <rasd:Description>SCSI Controller</rasd:Description>
-        <rasd:ElementName>SCSI controller 0</rasd:ElementName>
-        <rasd:InstanceID>3</rasd:InstanceID>
-        <rasd:ResourceSubType>VirtualSCSI</rasd:ResourceSubType>
-        <rasd:ResourceType>6</rasd:ResourceType>
-        <vmw:Config ovf:required="false" vmw:key="slotInfo.pciSlotNumber" vmw:value="160"/>
-      </Item>
-      <Item>
-        <rasd:Address>1</rasd:Address>
-        <rasd:Description>IDE Controller</rasd:Description>
-        <rasd:ElementName>IDE 1</rasd:ElementName>
-        <rasd:InstanceID>4</rasd:InstanceID>
-        <rasd:ResourceType>5</rasd:ResourceType>
-      </Item>
-      <Item>
-        <rasd:Address>0</rasd:Address>
-        <rasd:Description>IDE Controller</rasd:Description>
-        <rasd:ElementName>IDE 0</rasd:ElementName>
-        <rasd:InstanceID>5</rasd:InstanceID>
-        <rasd:ResourceType>5</rasd:ResourceType>
-      </Item>
-      <Item ovf:required="false">
-        <rasd:AutomaticAllocation>false</rasd:AutomaticAllocation>
-        <rasd:ElementName>Video card</rasd:ElementName>
-        <rasd:InstanceID>6</rasd:InstanceID>
-        <rasd:ResourceType>24</rasd:ResourceType>
-        <vmw:Config ovf:required="false" vmw:key="useAutoDetect" vmw:value="false"/>
-        <vmw:Config ovf:required="false" vmw:key="videoRamSizeInKB" vmw:value="4096"/>
-        <vmw:Config ovf:required="false" vmw:key="enable3DSupport" vmw:value="false"/>
-        <vmw:Config ovf:required="false" vmw:key="use3dRenderer" vmw:value="automatic"/>
-        <vmw:Config ovf:required="false" vmw:key="graphicsMemorySizeInKB" vmw:value="262144"/>
-      </Item>
-      <Item ovf:required="false">
-        <rasd:AutomaticAllocation>false</rasd:AutomaticAllocation>
-        <rasd:ElementName>VMCI device</rasd:ElementName>
-        <rasd:InstanceID>7</rasd:InstanceID>
-        <rasd:ResourceSubType>vmware.vmci</rasd:ResourceSubType>
-        <rasd:ResourceType>1</rasd:ResourceType>
-        <vmw:Config ovf:required="false" vmw:key="slotInfo.pciSlotNumber" vmw:value="32"/>
-        <vmw:Config ovf:required="false" vmw:key="allowUnrestrictedCommunication" vmw:value="false"/>
-      </Item>
-      <Item>
-        <rasd:AddressOnParent>0</rasd:AddressOnParent>
-        <rasd:ElementName>Hard disk 1</rasd:ElementName>
-        <rasd:HostResource>ovf:/disk/vmdisk1</rasd:HostResource>
-        <rasd:InstanceID>8</rasd:InstanceID>
-        <rasd:Parent>3</rasd:Parent>
-        <rasd:ResourceType>17</rasd:ResourceType>
-        <vmw:Config ovf:required="false" vmw:key="backing.writeThrough" vmw:value="false"/>
-      </Item>
-      <Item>
-        <rasd:AddressOnParent>7</rasd:AddressOnParent>
-        <rasd:AutomaticAllocation>true</rasd:AutomaticAllocation>
-        <rasd:Connection>nic0</rasd:Connection>
-        <rasd:Description>VmxNet3 ethernet adapter</rasd:Description>
-        <rasd:ElementName>Network adapter 1</rasd:ElementName>
-        <rasd:InstanceID>9</rasd:InstanceID>
-        <rasd:ResourceSubType>VmxNet3</rasd:ResourceSubType>
-        <rasd:ResourceType>10</rasd:ResourceType>
-        <vmw:Config ovf:required="false" vmw:key="slotInfo.pciSlotNumber" vmw:value="192"/>
-        <vmw:Config ovf:required="false" vmw:key="wakeOnLanEnabled" vmw:value="true"/>
-        <vmw:Config ovf:required="false" vmw:key="connectable.allowGuestControl" vmw:value="true"/>
-      </Item>
-      <Item ovf:required="false">
-        <rasd:AddressOnParent>0</rasd:AddressOnParent>
-        <rasd:AutomaticAllocation>false</rasd:AutomaticAllocation>
-        <rasd:ElementName>CD/DVD drive 1</rasd:ElementName>
-        <rasd:InstanceID>10</rasd:InstanceID>
-        <rasd:Parent>5</rasd:Parent>
-        <rasd:ResourceSubType>vmware.cdrom.remotepassthrough</rasd:ResourceSubType>
-        <rasd:ResourceType>15</rasd:ResourceType>
-        <vmw:Config ovf:required="false" vmw:key="backing.exclusive" vmw:value="false"/>
-        <vmw:Config ovf:required="false" vmw:key="connectable.allowGuestControl" vmw:value="false"/>
-      </Item>
-      <vmw:Config ovf:required="false" vmw:key="cpuHotAddEnabled" vmw:value="false"/>
-      <vmw:Config ovf:required="false" vmw:key="cpuHotRemoveEnabled" vmw:value="false"/>
-      <vmw:Config ovf:required="false" vmw:key="memoryHotAddEnabled" vmw:value="false"/>
-      <vmw:Config ovf:required="false" vmw:key="firmware" vmw:value="bios"/>
-      <vmw:Config ovf:required="false" vmw:key="tools.syncTimeWithHost" vmw:value="false"/>
-      <vmw:Config ovf:required="false" vmw:key="tools.afterPowerOn" vmw:value="true"/>
-      <vmw:Config ovf:required="false" vmw:key="tools.afterResume" vmw:value="true"/>
-      <vmw:Config ovf:required="false" vmw:key="tools.beforeGuestShutdown" vmw:value="true"/>
-      <vmw:Config ovf:required="false" vmw:key="tools.beforeGuestStandby" vmw:value="true"/>
-      <vmw:Config ovf:required="false" vmw:key="powerOpInfo.powerOffType" vmw:value="soft"/>
-      <vmw:Config ovf:required="false" vmw:key="powerOpInfo.resetType" vmw:value="soft"/>
-      <vmw:Config ovf:required="false" vmw:key="powerOpInfo.suspendType" vmw:value="hard"/>
-      <vmw:Config ovf:required="false" vmw:key="nestedHVEnabled" vmw:value="${NESTEDHV}"/>
-      <vmw:Config ovf:required="false" vmw:key="virtualICH7MPresent" vmw:value="false"/>
-      <vmw:Config ovf:required="false" vmw:key="virtualSMCPresent" vmw:value="false"/>
-      <vmw:Config ovf:required="false" vmw:key="flags.vvtdEnabled" vmw:value="false"/>
-      <vmw:Config ovf:required="false" vmw:key="flags.vbsEnabled" vmw:value="false"/>
-      <vmw:Config ovf:required="false" vmw:key="bootOptions.efiSecureBootEnabled" vmw:value="false"/>
-      <vmw:Config ovf:required="false" vmw:key="powerOpInfo.standbyAction" vmw:value="checkpoint"/>
-    </VirtualHardwareSection>
-    <vmw:BootOrderSection vmw:instanceId="8" vmw:type="disk">
-      <Info>Virtual hardware device boot order</Info>
-    </vmw:BootOrderSection>
-    <EulaSection>
-      <Info>An end-user license agreement</Info>
-      <License>
-${EULA}
-      </License>
-    </EulaSection>
-    <ProductSection>
-      <Info>Information about the installed software</Info>
-      <Product>CAPV HAProxy Load Balancer</Product>
-      <Vendor>VMware Inc.</Vendor>
-      <Version>haproxy-${DATAPLANEAPI_VERSION}</Version>
-      <FullVersion>haproxy-${DATAPLANEAPI_VERSION}</FullVersion>
-      <VendorUrl>https://vmware.com</VendorUrl>
-      <Category>Cluster API Provider (CAPI)</Category>
-      <Property ovf:userConfigurable="false" ovf:value="${BUILD_TIMESTAMP}" ovf:type="string" ovf:key="BUILD_TIMESTAMP"/>
-      <Property ovf:userConfigurable="false" ovf:value="${BUILD_DATE}" ovf:type="string" ovf:key="BUILD_DATE"/>
-      <Property ovf:userConfigurable="false" ovf:value="${CUSTOM_ROLE}" ovf:type="string" ovf:key="CUSTOM_ROLE"/>
-      <Property ovf:userConfigurable="false" ovf:value="${IB_VERSION}" ovf:type="string" ovf:key="IMAGE_BUILDER_VERSION"/>
-      <Property ovf:userConfigurable="false" ovf:value="${DATAPLANEAPI_VERSION}" ovf:type="string" ovf:key="DATAPLANEAPI_VERSION"/>
-    </ProductSection>
-  </VirtualSystem>
-</Envelope>
-'''
 
 if __name__ == "__main__":
     main()
