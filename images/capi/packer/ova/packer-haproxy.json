@@ -62,6 +62,7 @@
         "force": true,
         "output_directory": "{{user `output_dir`}}"
       },
+      "firmware": "{{user `firmware`}}",
       "folder": "{{user `folder`}}",
       "guest_os_type": "{{user `vsphere_guest_os_type`}}",
       "host": "{{user `host`}}",

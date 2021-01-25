@@ -140,6 +140,7 @@
         "force": true,
         "output_directory": "{{user `base_output_dir`}}"
       },
+      "firmware": "{{user `firmware`}}",
       "floppy_dirs": "{{ user `floppy_dirs`}}",
       "folder": "{{user `folder`}}",
       "guest_os_type": "{{user `vsphere_guest_os_type`}}",
@@ -194,6 +195,7 @@
         "manifest": "{{ user `export_manifest`}}",
         "output_directory": "{{user `output_dir`}}"
       },
+      "firmware": "{{user `firmware`}}",
       "floppy_dirs": "{{ user `floppy_dirs`}}",
       "folder": "{{user `folder`}}",
       "guest_os_type": "{{user `vsphere_guest_os_type`}}",
@@ -272,6 +274,7 @@
         "distro_arch": "{{ user `distro_arch` }}",
         "distro_name": "{{ user `distro_name` }}",
         "distro_version": "{{ user `distro_version` }}",
+        "firmware": "{{user `firmware`}}",
         "guest_os_type": "{{user `guest_os_type`}}",
         "ib_version": "{{user `ib_version`}}",
         "kubernetes_cni_semver": "{{user `kubernetes_cni_semver`}}",
