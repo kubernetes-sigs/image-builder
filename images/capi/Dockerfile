@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM ubuntu:focal
+FROM docker.io/library/ubuntu:focal
 
 RUN apt-get update && apt-get install -y apt-transport-https ca-certificates python3-pip curl wget git rsync vim unzip build-essential \
     && useradd -ms /bin/bash imagebuilder \
