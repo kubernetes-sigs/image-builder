@@ -24,18 +24,19 @@ RUN apt-get update && apt-get install -y apt-transport-https ca-certificates pyt
 ARG ARCH
 ARG PASSED_IB_VERSION
 
-COPY . /home/imagebuilder
-RUN chown -R imagebuilder:imagebuilder /home/imagebuilder
-
 USER imagebuilder
+WORKDIR /home/imagebuilder/
+
+COPY --chown=imagebuilder:imagebuilder ansible ansible/
+COPY --chown=imagebuilder:imagebuilder cloudinit cloudinit/
+COPY --chown=imagebuilder:imagebuilder hack hack/
+COPY --chown=imagebuilder:imagebuilder packer packer/
+COPY --chown=imagebuilder:imagebuilder Makefile Makefile
 
 ENV PATH="/home/imagebuilder/.local/bin:${PATH}"
-
 ENV PACKER_ARGS ''
 ENV PACKER_VAR_FILES ''
 ENV IB_VERSION "${PASSED_IB_VERSION}"
-
-WORKDIR /home/imagebuilder/
 
 RUN make deps
 
