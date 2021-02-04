@@ -145,11 +145,18 @@ plugins:
        - [ 'chroot', '{root}', '/bin/sh', '-c', 'echo "APT::Periodic::Unattended-Upgrade \"0\"; " >> /etc/apt/apt.conf.d/20auto-upgrades' ]
        # - [ 'chroot', '{root}', 'apt-get', 'remove', '--yes', 'unattended-upgrades' ]
 
-       # Install docker
-       - [ 'wget', 'http://download.docker.com/linux/debian/dists/stretch/pool/stable/amd64/docker-ce_17.03.2~ce-0~debian-stretch_amd64.deb', '-O', '{root}/tmp/docker.deb' ]
-       - [ '/bin/sh', '-c', 'cd {root}/tmp; echo "36773361cf44817371770cb4e6e6823590d10297  docker.deb" | shasum -c -' ]
-       - [ 'chroot', '{root}', '/bin/sh', '-c', 'DEBIAN_FRONTEND=noninteractive dpkg --install /tmp/docker.deb' ]
-       - [ 'rm', '{root}/tmp/docker.deb' ]
+       # We no longer pre-install docker (instead we pre-seed the cache);
+       # having docker run automatically makes it harder to upgrade and can cause problems with iptables.
+       # Issue: https://github.com/kubernetes/kops/issues/10122
+
+       # Preload some files to our cache, in the hope we can avoid some downloads
+       - [ 'chroot', '{root}', 'mkdir', '-p', '/var/cache/nodeup' ]
+
+       - [ 'wget', 'https://download.docker.com/linux/static/stable/x86_64/docker-18.06.3-ce.tgz', '-O', '{root}/var/cache/nodeup/sha256:346f9394393ee8db5f8bd1e229ee9d90e5b36931bdd754308b2ae68884dd6822_https___download_docker_com_linux_static_stable_x86_64_docker-18_06_3-ce_tgz' ]
+       - [ '/bin/sh', '-c', 'cd {root}/var/cache/nodeup; echo "346f9394393ee8db5f8bd1e229ee9d90e5b36931bdd754308b2ae68884dd6822  sha256:346f9394393ee8db5f8bd1e229ee9d90e5b36931bdd754308b2ae68884dd6822_https___download_docker_com_linux_static_stable_x86_64_docker-18_06_3-ce_tgz" | sha256sum -c -' ]
+
+       - [ 'wget', 'https://storage.googleapis.com/kubernetes-release/network-plugins/cni-plugins-amd64-v0.7.5.tgz', '-O', '{root}/var/cache/nodeup/sha256:3ca15c0a18ee830520cf3a95408be826cbd255a1535a38e0be9608b25ad8bf64_https___storage_googleapis_com_kubernetes-release_network-plugins_cni-plugins-amd64-v0_7_5_tgz' ]
+       - [ '/bin/sh', '-c', 'cd {root}/var/cache/nodeup; echo "3ca15c0a18ee830520cf3a95408be826cbd255a1535a38e0be9608b25ad8bf64  sha256:3ca15c0a18ee830520cf3a95408be826cbd255a1535a38e0be9608b25ad8bf64_https___storage_googleapis_com_kubernetes-release_network-plugins_cni-plugins-amd64-v0_7_5_tgz" | sha256sum -c -' ]
 
        # We perform a full replacement of some grub conf variables:
        #   GRUB_CMDLINE_LINUX_DEFAULT (add memory cgroup)

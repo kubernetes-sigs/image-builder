@@ -145,17 +145,18 @@ plugins:
        - [ 'chroot', '{root}', '/bin/sh', '-c', 'echo "APT::Periodic::Unattended-Upgrade \"0\"; " >> /etc/apt/apt.conf.d/20auto-upgrades' ]
        # - [ 'chroot', '{root}', 'apt-get', 'remove', '--yes', 'unattended-upgrades' ]
 
-       # Install docker
-       - [ 'wget', 'https://download.docker.com/linux/debian/dists/stretch/pool/stable/amd64/containerd.io_1.2.10-3_amd64.deb', '-O', '{root}/tmp/containerd.deb' ]
-       - [ '/bin/sh', '-c', 'cd {root}/tmp; echo "186f2f2c570f37b363102e6b879073db6dec671d  containerd.deb" | shasum -c -' ]
-       - [ 'wget', 'https://download.docker.com/linux/debian/dists/stretch/pool/stable/amd64/docker-ce-cli_18.09.9~3-0~debian-stretch_amd64.deb', '-O', '{root}/tmp/docker-cli.deb' ]
-       - [ '/bin/sh', '-c', 'cd {root}/tmp; echo "88f8f3103d2e5011e2f1a73b9e6dbf03d6e6698a  docker-cli.deb" | shasum -c -' ]
-       - [ 'wget', 'https://download.docker.com/linux/debian/dists/stretch/pool/stable/amd64/docker-ce_18.09.9~3-0~debian-stretch_amd64.deb', '-O', '{root}/tmp/docker.deb' ]
-       - [ '/bin/sh', '-c', 'cd {root}/tmp; echo "9d564b56f5531a08e24c8c7724445d128742572e  docker.deb" | shasum -c -' ]
-       - [ 'chroot', '{root}', '/bin/sh', '-c', 'DEBIAN_FRONTEND=noninteractive dpkg --install /tmp/containerd.deb' ]
-       - [ 'chroot', '{root}', '/bin/sh', '-c', 'DEBIAN_FRONTEND=noninteractive dpkg --install /tmp/docker-cli.deb' ]
-       - [ 'chroot', '{root}', '/bin/sh', '-c', 'DEBIAN_FRONTEND=noninteractive dpkg --install /tmp/docker.deb' ]
-       - [ 'rm', '{root}/tmp/containerd.deb', '{root}/tmp/docker-cli.deb', '{root}/tmp/docker.deb' ]
+       # We no longer pre-install docker (instead we pre-seed the cache);
+       # having docker run automatically makes it harder to upgrade and can cause problems with iptables.
+       # Issue: https://github.com/kubernetes/kops/issues/10122
+
+       # Preload some files to our cache, in the hope we can avoid some downloads
+       - [ 'chroot', '{root}', 'mkdir', '-p', '/var/cache/nodeup' ]
+
+       - [ 'wget', 'https://download.docker.com/linux/static/stable/x86_64/docker-18.09.9.tgz', '-O', '{root}/var/cache/nodeup/sha256:82a362af7689038c51573e0fd0554da8703f0d06f4dfe95dd5bda5acf0ae45fb_https___download_docker_com_linux_static_stable_x86_64_docker-18_09_9_tgz' ]
+       - [ '/bin/sh', '-c', 'cd {root}/var/cache/nodeup; echo "82a362af7689038c51573e0fd0554da8703f0d06f4dfe95dd5bda5acf0ae45fb  sha256:82a362af7689038c51573e0fd0554da8703f0d06f4dfe95dd5bda5acf0ae45fb_https___download_docker_com_linux_static_stable_x86_64_docker-18_09_9_tgz" | sha256sum -c -' ]
+
+       - [ 'wget', 'https://storage.googleapis.com/k8s-artifacts-cni/release/v0.8.7/cni-plugins-linux-amd64-v0.8.7.tgz', '-O', '{root}/var/cache/nodeup/sha256:977824932d5667c7a37aa6a3cbba40100a6873e7bd97e83e8be837e3e7afd0a8_https___storage_googleapis_com_k8s-artifacts-cni_release_v0_8_7_cni-plugins-linux-amd64-v0_8_7_tgz' ]
+       - [ '/bin/sh', '-c', 'cd {root}/var/cache/nodeup; echo "977824932d5667c7a37aa6a3cbba40100a6873e7bd97e83e8be837e3e7afd0a8  sha256:977824932d5667c7a37aa6a3cbba40100a6873e7bd97e83e8be837e3e7afd0a8_https___storage_googleapis_com_k8s-artifacts-cni_release_v0_8_7_cni-plugins-linux-amd64-v0_8_7_tgz" | sha256sum -c -' ]
 
        # We perform a full replacement of some grub conf variables:
        #   GRUB_CMDLINE_LINUX_DEFAULT (add memory cgroup)
