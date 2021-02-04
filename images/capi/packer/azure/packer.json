@@ -19,6 +19,7 @@
     "image_offer": null,
     "image_publisher": null,
     "image_sku": null,
+    "image_version": "latest",
     "kubernetes_cni_rpm_version": null,
     "kubernetes_cni_deb_version": null,
     "kubernetes_cni_semver": null,
@@ -49,6 +50,7 @@
       "image_publisher": "{{user `image_publisher` }}",
       "image_offer": "{{user `image_offer` }}",
       "image_sku": "{{user `image_sku`}}",
+      "image_version": "{{user `image_version`}}",
       "subscription_id": "{{user `subscription_id`}}",
       "client_id": "{{user `client_id`}}",
       "client_secret": "{{user `client_secret`}}",
@@ -86,7 +88,7 @@
         "resource_group": "{{user `resource_group_name`}}",
         "gallery_name": "{{user `shared_image_gallery_name`}}",
         "image_name": "{{user `image_name`}}",
-        "image_version": "0.3.{{user `build_timestamp`}}",
+        "image_version": "{{user `image_version`}}",
         "replication_regions": [
           "{{user `replication_regions`}}"
         ]
