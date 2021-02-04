@@ -62,3 +62,15 @@ aliases:
     - frapposelli
     - yastij
     - randomvariable
+  kops-maintainers:
+    - hakman
+    - justinsb
+    - rifelpet
+    # kOps maintainers, but members of kubernetes, not of kubernetes-sigs:
+    # - geojaz
+    # - johngmyers
+    # - kashifsaadat
+    # - mikesplain
+    # - olemarkus
+    # - rdrgmnzs
+    # - zetaab
