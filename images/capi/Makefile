@@ -47,7 +47,7 @@ version: ## Display version of image-builder
 
 .PHONY: deps
 deps: ## Installs/checks all dependencies
-deps: deps-ami deps-azure deps-do deps-gce deps-ova deps-qemu
+deps: deps-ami deps-azure deps-do deps-gce deps-ova deps-qemu deps-raw
 
 .PHONY: deps-ami
 deps-ami: ## Installs/checks dependencies for AMI builds
@@ -92,6 +92,12 @@ deps-ova:
 .PHONY: deps-qemu
 deps-qemu: ## Installs/checks dependencies for QEMU builds
 deps-qemu:
+	hack/ensure-ansible.sh
+	hack/ensure-packer.sh
+
+.PHONY: deps-raw
+deps-raw: ## Installs/checks dependencies for RAW builds
+deps-raw:
 	hack/ensure-ansible.sh
 	hack/ensure-packer.sh
 
@@ -238,6 +244,8 @@ DO_BUILD_NAMES 			?=	do-centos-7 do-ubuntu-1804 do-ubuntu-2004
 QEMU_FLATCAR_BUILD_NAMES	?=	qemu-flatcar
 QEMU_BUILD_NAMES			?=	qemu-ubuntu-1804 qemu-ubuntu-2004
 
+RAW_BUILD_NAMES                        ?=      raw-ubuntu-1804 raw-ubuntu-2004
+
 ## --------------------------------------
 ## Dynamic build targets
 ## --------------------------------------
@@ -268,6 +276,8 @@ QEMU_FLATCAR_BUILD_TARGETS	:= $(addprefix build-,$(QEMU_FLATCAR_BUILD_NAMES))
 QEMU_FLATCAR_VALIDATE_TARGETS	:= $(addprefix validate-,$(QEMU_FLATCAR_BUILD_NAMES))
 QEMU_BUILD_TARGETS	:= $(addprefix build-,$(QEMU_BUILD_NAMES))
 QEMU_VALIDATE_TARGETS	:= $(addprefix validate-,$(QEMU_BUILD_NAMES))
+RAW_BUILD_TARGETS      := $(addprefix build-,$(RAW_BUILD_NAMES))
+RAW_VALIDATE_TARGETS   := $(addprefix validate-,$(RAW_BUILD_NAMES))
 
 .PHONY: $(NODE_OVA_LOCAL_BUILD_TARGETS)
 $(NODE_OVA_LOCAL_BUILD_TARGETS): deps-ova
@@ -381,6 +391,15 @@ $(QEMU_BUILD_TARGETS): deps-qemu
 $(QEMU_VALIDATE_TARGETS): deps-qemu
 	packer validate $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/qemu/$(subst validate-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) -except=flatcar packer/qemu/packer.json
 
+.PHONY: $(RAW_BUILD_TARGETS)
+$(RAW_BUILD_TARGETS): deps-raw
+	packer build $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/raw/$(subst build-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) -except=flatcar packer/raw/packer.json
+
+.PHONY: $(RAW_VALIDATE_TARGETS)
+$(RAW_VALIDATE_TARGETS): deps-raw
+	packer validate $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/raw/$(subst validate-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) -except=flatcar packer/raw/packer.json
+
+
 ## --------------------------------------
 ## Dynamic clean targets
 ## --------------------------------------
@@ -398,6 +417,11 @@ QEMU_CLEAN_TARGETS := $(subst build-,clean-,$(QEMU_BUILD_TARGETS))
 .PHONY: $(QEMU_CLEAN_TARGETS)
 $(QEMU_CLEAN_TARGETS):
 	rm -fr output/$(subst clean-qemu-,,$@)-kube*
+
+RAW_CLEAN_TARGETS := $(subst build-,clean-,$(RAW_CLEAN_TARGETS))
+.PHONY: $(RAW_CLEAN_TARGETS)
+$(RAW_CLEAN_TARGETS):
+	rm -fr output/$(subst clean-raw-,,$@)-kube*
 
 ## --------------------------------------
 ## Document dynamic build targets
@@ -498,6 +522,10 @@ build-qemu-ubuntu-1804: ## Builds Ubuntu 18.04 QEMU image
 build-qemu-ubuntu-2004: ## Builds Ubuntu 20.04 QEMU image
 build-qemu-all: $(QEMU_BUILD_TARGETS) ## Builds all Qemu images
 
+build-raw-ubuntu-1804: ## Builds Ubuntu 18.04 RAW image
+build-raw-ubuntu-2004: ## Builds Ubuntu 20.04 RAW image
+build-raw-all: $(RAW_BUILD_TARGETS) ## Builds all RAW images
+
 ## --------------------------------------
 ## Document dynamic validate targets
 ## --------------------------------------
@@ -560,6 +588,10 @@ validate-qemu-ubuntu-1804: ## Validates Ubuntu 18.04 QEMU image packer config
 validate-qemu-ubuntu-2004: ## Validates Ubuntu 20.04 QEMU image packer config
 validate-qemu-all: $(QEMU_VALIDATE_TARGETS) ## Validates all Qemu Packer config
 
+validate-raw-ubuntu-1804: ## Validates Ubuntu 18.04 RAW image packer config
+validate-raw-ubuntu-2004: ## Validates Ubuntu 20.04 RAW image packer config
+validate-raw-all: $(RAW_VALIDATE_TARGETS) ## Validates all RAW Packer config
+
 validate-all: validate-ami-all \
 	validate-azure-all \
 	validate-do-all \
@@ -567,7 +599,8 @@ validate-all: validate-ami-all \
 	validate-node-ova-local-all \
 	validate-haproxy-ova-local-photon-3 \
 	validate-qemu-flatcar \
-	validate-qemu-all
+	validate-qemu-all \
+	validate-raw-all
 validate-all: ## Validates the Packer config for all build targets
 
 ## --------------------------------------
@@ -586,6 +619,10 @@ clean-ova: $(NODE_OVA_LOCAL_CLEAN_TARGETS) $(HAPROXY_OVA_LOCAL_CLEAN_TARGETS)
 clean-qemu: ## Removes all qemu image output directories (see NOTE at top of help)
 clean-qemu: $(QEMU_CLEAN_TARGETS)
 
+.PHONY: clean-raw
+clean-raw: ## Removes all raw image output directories (see NOTE at top of help)
+clean-raw: $(RAW_CLEAN_TARGETS)
+
 .PHONY: clean-packer-cache
 clean-packer-cache: ## Removes the packer cache
 clean-packer-cache:
@@ -602,7 +639,7 @@ docker-pull-prerequisites:
 	docker pull docker/dockerfile:1.1-experimental
 	docker pull docker.io/library/ubuntu:focal
 
-.PHONY: docker-build
+	.PHONY: docker-build
 docker-build: docker-pull-prerequisites ## Build the docker image for controller-manager
 	DOCKER_BUILDKIT=1 docker build --build-arg PASSED_IB_VERSION=$(IB_VERSION) --build-arg ARCH=$(ARCH) . -t $(CONTROLLER_IMG)-$(ARCH):$(TAG)
 

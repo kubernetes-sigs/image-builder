@@ -1,0 +1,133 @@
+{
+  "variables": {
+    "ansible_common_vars": "",
+    "ansible_extra_vars": "ansible_python_interpreter=/usr/bin/python3",
+    "boot_wait": "10s",
+    "build_timestamp": "{{timestamp}}",
+    "containerd_version": null,
+    "containerd_sha256": null,
+    "containerd_url": "https://github.com/containerd/containerd/releases/download/v{{user `containerd_version`}}/cri-containerd-cni-{{user `containerd_version`}}-linux-amd64.tar.gz",
+    "crictl_version": null,
+    "crictl_url": "https://github.com/kubernetes-sigs/cri-tools/releases/download/v{{user `crictl_version`}}/crictl-v{{user `crictl_version`}}-linux-amd64.tar.gz",
+    "existing_ansible_ssh_args": "{{env `ANSIBLE_SSH_ARGS`}}",
+    "accelerator": "kvm",
+    "cpus": "1",
+    "disk_size": "20480",
+    "memory": "2048",
+    "format": "raw",
+    "headless": "true",
+    "kubernetes_cni_deb_version": null,
+    "kubernetes_cni_semver": null,
+    "kubernetes_cni_source_type": null,
+    "kubernetes_cni_http_source": null,
+    "kubernetes_series": null,
+    "kubernetes_semver": null,
+    "kubernetes_source_type": null,
+    "kubernetes_load_additional_imgs": null,
+    "kubernetes_http_source": null,
+    "kubernetes_rpm_version": null,
+    "kubernetes_deb_version": null,
+    "kubernetes_rpm_repo": null,
+    "kubernetes_rpm_gpg_key": null,
+    "kubernetes_deb_repo": null,
+    "kubernetes_deb_gpg_key": null,
+    "kubernetes_rpm_gpg_check": null,
+    "kubernetes_container_registry": null,
+    "machine_id_mode": "444",
+    "python_path": "",
+    "output_directory": "./output/{{user `build_name`}}-kube-{{user `kubernetes_semver`}}",
+    "qemu_binary": "qemu-system-x86_64",
+    "ssh_password": "builder",
+    "ssh_username": "builder"
+  },
+  "builders": [
+    {
+      "vm_name": "{{user `build_name`}}-kube-{{user `kubernetes_semver`}}",
+      "output_directory": "{{user `output_directory`}}",
+      "type": "qemu",
+      "accelerator": "{{user `accelerator`}}",
+      "cpus": "{{user `cpus`}}",
+      "disk_size": "{{user `disk_size`}}",
+      "memory": "{{user `memory`}}",
+      "boot_wait": "{{user `boot_wait`}}",
+      "disk_interface": "virtio-scsi",
+      "format": "{{user `format`}}",
+      "headless": "{{user `headless`}}",
+      "http_directory": "./packer/qemu/linux/{{user `distro_name`}}/http/",
+      "iso_checksum": "{{user `iso_checksum_type`}}:{{user `iso_checksum`}}",
+      "iso_url": "{{user `iso_url`}}",
+      "boot_command": [
+        "{{user `boot_command_prefix`}}",
+        "http://{{ .HTTPIP }}:{{ .HTTPPort }}",
+        "{{user `boot_command_suffix`}}"
+      ],
+      "net_device": "virtio-net",
+      "qemu_binary": "{{user `qemu_binary`}}",
+      "shutdown_command": "echo '{{user `ssh_password`}}' | sudo -S -E sh -c 'usermod -L {{user `ssh_username`}} && {{user `shutdown_command`}}'",
+      "ssh_password": "{{user `ssh_password`}}",
+      "ssh_username": "{{user `ssh_username`}}",
+      "ssh_timeout": "2h"
+    },
+    {
+      "name": "flatcar",
+      "vm_name": "{{user `build_name`}}-kube-{{user `kubernetes_semver`}}",
+      "output_directory": "{{user `output_directory`}}",
+      "type": "qemu",
+      "accelerator": "{{user `accelerator`}}",
+      "cpus": "{{user `cpus`}}",
+      "disk_size": "{{user `disk_size`}}",
+      "memory": "{{user `memory`}}",
+      "boot_wait": "{{user `boot_wait`}}",
+      "disk_interface": "virtio-scsi",
+      "format": "{{user `format`}}",
+      "headless": "{{user `headless`}}",
+      "http_directory": "./packer/qemu/linux/{{user `distro_name`}}/http/",
+      "iso_checksum": "{{user `iso_checksum_type`}}:{{user `iso_checksum`}}",
+      "iso_url": "{{user `iso_url`}}",
+      "boot_command": [
+        "{{user `boot_command_prefix`}}",
+        "http://{{ .HTTPIP }}:{{ .HTTPPort }}",
+        "{{user `boot_command_suffix`}}"
+      ],
+      "net_device": "virtio-net",
+      "qemu_binary": "{{user `qemu_binary`}}",
+      "shutdown_command": "echo '{{user `ssh_password`}}' | sudo -S -E sh -c 'usermod -L {{user `ssh_username`}} && {{user `shutdown_command`}}'",
+      "ssh_password": "{{user `ssh_password`}}",
+      "ssh_username": "{{user `ssh_username`}}",
+      "ssh_timeout": "2h"
+    }
+
+  ],
+  "provisioners": [
+    {
+      "only": ["flatcar"],
+      "type": "shell",
+      "environment_vars": [
+        "BUILD_NAME={{user `build_name`}}"
+      ],
+      "script": "./packer/files/bootstrap-flatcar.sh",
+      "execute_command": "BUILD_NAME={{user `build_name`}}; if [[ \"${BUILD_NAME}\" == *\"flatcar\"* ]]; then sudo {{.Vars}} -S -E bash '{{.Path}}'; fi"
+    },
+    {
+      "type": "ansible",
+      "playbook_file": "./ansible/node.yml",
+      "user": "builder",
+      "ansible_env_vars": [
+        "ANSIBLE_SSH_ARGS='{{user `existing_ansible_ssh_args`}} -o IdentitiesOnly=yes'",
+        "ANSIBLE_REMOTE_TEMP='/tmp/.ansible/'"
+      ],
+      "extra_arguments": [
+        "--extra-vars",
+        "{{user `ansible_common_vars`}}",
+        "--extra-vars",
+        "{{user `ansible_extra_vars`}}"
+      ]
+    }
+  ],
+  "post-processors": [
+    {
+      "only": ["flatcar"],
+      "type": "vagrant"
+    }
+  ]
+}
