@@ -623,7 +623,7 @@ docker-pull-prerequisites:
 	docker pull docker/dockerfile:1.1-experimental
 	docker pull docker.io/library/ubuntu:focal
 
-	.PHONY: docker-build
+.PHONY: docker-build
 docker-build: docker-pull-prerequisites ## Build the docker image for controller-manager
 	DOCKER_BUILDKIT=1 docker build --build-arg PASSED_IB_VERSION=$(IB_VERSION) --build-arg ARCH=$(ARCH) . -t $(CONTROLLER_IMG)-$(ARCH):$(TAG)
 

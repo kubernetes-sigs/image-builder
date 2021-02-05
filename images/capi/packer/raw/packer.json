@@ -53,7 +53,7 @@
       "disk_interface": "virtio-scsi",
       "format": "{{user `format`}}",
       "headless": "{{user `headless`}}",
-      "http_directory": "./packer/qemu/linux/{{user `distro_name`}}/http/",
+      "http_directory": "./packer/raw/linux/{{user `distro_name`}}/http/",
       "iso_checksum": "{{user `iso_checksum_type`}}:{{user `iso_checksum`}}",
       "iso_url": "{{user `iso_url`}}",
       "boot_command": [
@@ -81,7 +81,7 @@
       "disk_interface": "virtio-scsi",
       "format": "{{user `format`}}",
       "headless": "{{user `headless`}}",
-      "http_directory": "./packer/qemu/linux/{{user `distro_name`}}/http/",
+      "http_directory": "./packer/raw/linux/{{user `distro_name`}}/http/",
       "iso_checksum": "{{user `iso_checksum_type`}}:{{user `iso_checksum`}}",
       "iso_url": "{{user `iso_url`}}",
       "boot_command": [
