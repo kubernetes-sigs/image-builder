@@ -58,7 +58,7 @@ type AWSConfig struct {
 
 func (c *AWSConfig) InitDefaults(region string) {
 	c.Config.InitDefaults()
-	c.InstanceType = "m3.medium"
+	c.InstanceType = "m4.large"
 
 	if region == "" {
 		region = "us-east-1"
