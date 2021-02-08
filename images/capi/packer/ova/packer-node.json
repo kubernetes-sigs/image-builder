@@ -429,7 +429,7 @@
         "CUSTOM_POST_PROCESSOR={{user `custom_post_processor`}}"
       ],
       "inline": [
-        "if [ $CUSTOM_POST_PROCESSOR != \"true\" ]; then exit 0; fi",
+        "if [ \"$CUSTOM_POST_PROCESSOR\" != \"true\" ]; then exit 0; fi",
         "{{user `custom_post_processor_command`}}"
       ]
     }
