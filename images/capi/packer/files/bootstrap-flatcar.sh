@@ -38,3 +38,6 @@ ln -s builder-env/bin/pip ${BINDIR}/pip
 ln -s builder-env/bin/pip ${BINDIR}/pip3
 
 touch ${BINDIR}/.bootstrapped
+
+# make the image detected by ignition during the next boot
+touch /boot/flatcar/first_boot
