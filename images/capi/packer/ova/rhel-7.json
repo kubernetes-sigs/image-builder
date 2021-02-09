@@ -9,7 +9,9 @@
   "iso_url": "file:///rhel-server-7.7-x86_64-dvd.iso",
   "iso_checksum": "88b42e934c24af65e78e09f0993e4dded128d74ec0af30b89b3cdc02ec48f028",
   "iso_checksum_type": "sha256",
+  "http_directory": "./packer/ova/linux/{{user `distro_name`}}/http/",
   "boot_command_prefix": "<tab><wait><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>quiet text inst.ks=",
+  "boot_media_path": "http://{{ .HTTPIP }}:{{ .HTTPPort }}",
   "boot_command_suffix": "/7/ks.cfg<enter><wait>",
   "redhat_epel_rpm": "https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm",
   "shutdown_command": "sys-unconfig"

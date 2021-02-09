@@ -9,7 +9,9 @@
   "iso_url": "https://packages.vmware.com/photon/3.0/Rev3/iso/photon-minimal-3.0-a383732.iso",
   "iso_checksum": "c2883a42e402a2330d9c39b4d1e071cf9b3b5898",
   "iso_checksum_type": "sha1",
+  "http_directory": "./packer/ova/linux/{{user `distro_name`}}/http/",
   "boot_command_prefix": "<esc><wait> vmlinuz initrd=initrd.img root/dev/ram0 loglevel=3 photon.media=cdrom ks=",
+  "boot_media_path": "http://{{ .HTTPIP }}:{{ .HTTPPort }}",
   "boot_command_suffix": "/3/ks.json<enter><wait>",
   "shutdown_command": "shutdown now"
 }
