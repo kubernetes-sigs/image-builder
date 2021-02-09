@@ -17,6 +17,7 @@
     "cloudbase_plugins_unattend": "cloudbaseinit.plugins.common.mtu.MTUPlugin",
     "containerd_version": null,
     "containerd_url": "",
+    "ib_version": "{{env `IB_VERSION`}}",
     "image_offer": null,
     "image_publisher": null,
     "image_sku": null,
@@ -26,7 +27,7 @@
     "nssm_url": null,
     "prepull": null,
     "subscription_id": null,
-    "vm_size": "", 
+    "vm_size": "",
     "windows_updates_kbs": null,
     "windows_service_manager": null,
     "wins_url": "https://github.com/rancher/wins/releases/download/v{{user `wins_version`}}/wins.exe"
@@ -58,8 +59,9 @@
         "build_date": "{{isotime}}",
         "build_timestamp": "{{user `build_timestamp`}}",
         "creationTimestamp": "{{isotime \"2006-01-02T15:04:05Z\"}}",
-        "os_version": "{{user `image_sku`}}",
-        "kubernetes_version": "{{user `kubernetes_semver`}}"
+        "image_builder_version": "{{user `ib_version`}}",
+        "kubernetes_version": "{{user `kubernetes_semver`}}",
+        "os_version": "{{user `image_sku`}}"
       }
     },
     {
@@ -94,8 +96,9 @@
         "build_date": "{{isotime}}",
         "build_timestamp": "{{user `build_timestamp`}}",
         "creationTimestamp": "{{isotime \"2006-01-02T15:04:05Z\"}}",
-        "os_version": "{{user `image_sku`}}",
-        "kubernetes_version": "{{user `kubernetes_semver`}}"
+        "image_builder_version": "{{user `ib_version`}}",
+        "kubernetes_version": "{{user `kubernetes_semver`}}",
+        "os_version": "{{user `image_sku`}}"
       }
     }
   ],
