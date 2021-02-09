@@ -1,0 +1,1 @@
+KUBELET_EXTRA_ARGS={{ kubelet_extra_args }}
