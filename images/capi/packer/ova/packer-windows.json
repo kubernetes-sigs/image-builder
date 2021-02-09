@@ -15,6 +15,7 @@
     "containerd_version": null,
     "containerd_sha256": null,
     "containerd_url": "",
+    "ib_version": "{{env `IB_VERSION`}}",
     "kubernetes_base_url": "https://kubernetesreleases.blob.core.windows.net/kubernetes/{{user `kubernetes_semver`}}/binaries/node/windows/{{user `kubernetes_goarch`}}",
     "kubernetes_http_package_url": "",
     "manifest_output": "manifest.json",
@@ -46,7 +47,7 @@
       "iso_urls": [
         "{{user `os_iso_url`}}"
       ],
-      "iso_checksum": "{{user `iso_checksum` }}",  
+      "iso_checksum": "{{user `iso_checksum` }}",
       "floppy_files": [
         "./packer/ova/windows/{{user `distro_name`}}/autounattend.xml",
         "./packer/ova/windows/disable-network-discovery.cmd",
@@ -66,7 +67,7 @@
       "vmx_data": {
         "numvcpus": "2",
         "scsi0.virtualDev": "pvscsi"
-      } 
+      }
     },
     {
       "type": "vsphere-iso",
@@ -96,7 +97,7 @@
       "RAM": 8192,
       "disk_controller_type": "{{user `disk_controller_type`}}",
       "guest_os_type": "{{user `vsphere_guest_os_type`}}",
-      "firmware": "bios",  
+      "firmware": "bios",
       "boot_wait": "{{user `boot_wait`}}",
       "iso_paths": [
         "{{user `os_iso_path`}}",
@@ -129,7 +130,7 @@
         "./packer/ova/windows/disable-winrm.ps1",
         "./packer/ova/windows/enable-winrm.ps1",
         "./packer/ova/windows/install-vm-tools.cmd",
-        "./packer/ova/windows/sysprep.ps1"  
+        "./packer/ova/windows/sysprep.ps1"
       ],
       "floppy_dirs": [
         "./packer/ova/windows/pvscsi"

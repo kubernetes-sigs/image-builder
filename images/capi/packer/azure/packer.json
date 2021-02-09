@@ -16,6 +16,7 @@
     "distribution_release": null,
     "distribution_version": null,
     "existing_ansible_ssh_args": "{{env `ANSIBLE_SSH_ARGS`}}",
+    "ib_version": "{{env `IB_VERSION`}}",
     "image_offer": null,
     "image_publisher": null,
     "image_sku": null,
@@ -68,6 +69,7 @@
         "distribution": "{{user `distribution`}}",
         "distribution_release": "{{user `distribution_release`}}",
         "distribution_version": "{{user `distribution_version`}}",
+        "image_builder_version": "{{user `ib_version`}}",
         "kubernetes_version": "{{user `kubernetes_semver`}}"
       }
     },
@@ -102,6 +104,7 @@
         "distribution": "{{user `distribution`}}",
         "distribution_release": "{{user `distribution_release`}}",
         "distribution_version": "{{user `distribution_version`}}",
+        "image_builder_version": "{{user `ib_version`}}",
         "kubernetes_version": "{{user `kubernetes_semver`}}"
       }
     }
