@@ -37,6 +37,7 @@ The build [prerequisites](../capi.md#prerequisites) for using `image-builder` fo
 building qemu images are managed by running:
 
 ```bash
+cd image-builder/images/capi
 make deps-qemu
 ```
 
