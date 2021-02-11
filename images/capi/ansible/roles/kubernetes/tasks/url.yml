@@ -103,14 +103,6 @@
     owner: root
     group: root
 
-- name: Create kubelet sysconfig file
-  copy:
-    src: files/etc/sysconfig/kubelet
-    dest: /etc/sysconfig/kubelet
-    owner: root
-    group: root
-    mode: 0644
-
 - name: Create kubelet drop-in directory
   file:
     state: directory
@@ -134,10 +126,3 @@
     owner: root
     group: root
     mode: 0644
-
-- name: Install kubelet service
-  systemd:
-    name: kubelet
-    daemon_reload: yes
-    enabled: True
-    state: started

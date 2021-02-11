@@ -29,10 +29,20 @@
 - import_tasks: crictl-url.yml
   when: crictl_source_type == "http"
 
-- name: Ensure that the kubelet is running
-  service:
+- name: Create kubelet default config file
+  template:
+    src: etc/sysconfig/kubelet
+    dest: "{{ '/etc/default/kubelet' if ansible_os_family == 'Debian' else '/etc/sysconfig/kubelet'}}"
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Start and Enable kubelet service
+  systemd:
     name: kubelet
-    enabled: true
+    daemon_reload: yes
+    enabled: True
+    state: restarted
 
 - name: Create the Kubernetes version file
   template:
