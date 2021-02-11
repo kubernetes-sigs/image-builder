@@ -89,6 +89,7 @@ def main():
     # Get the first build.
     build = data['builds'][0]
     build_data = build['custom_data']
+
     if args.node:
         print("image-build-ova: loaded %s-kube-%s" % (build_data['build_name'],
                                                       build_data['kubernetes_semver']))
@@ -161,9 +162,19 @@ def main():
       <Property ovf:userConfigurable="false" ovf:value="${CNI_VERSION}" ovf:type="string" ovf:key="CNI_VERSION"/>
       <Property ovf:userConfigurable="false" ovf:value="${CONTAINERD_VERSION}" ovf:type="string" ovf:key="CONTAINERD_VERSION"/>
       <Property ovf:userConfigurable="false" ovf:value="${KUBERNETES_SEMVER}" ovf:type="string" ovf:key="KUBERNETES_SEMVER"/>
-      <Property ovf:userConfigurable="false" ovf:value="${KUBERNETES_SOURCE_TYPE}" ovf:type="string" ovf:key="KUBERNETES_SOURCE_TYPE"/>
-        ''').substitute(data)
-        #windows nodes use nested virtualisation and require a larger hard drive
+      <Property ovf:userConfigurable="false" ovf:value="${KUBERNETES_SOURCE_TYPE}" ovf:type="string" ovf:key="KUBERNETES_SOURCE_TYPE"/>\n''').substitute(data)
+
+        # Check if OVF_CUSTOM_PROPERTIES environment Variable is set.
+        # If so, load the json file & add the properties to the OVF
+
+        if os.environ.get("OVF_CUSTOM_PROPERTIES"):
+            with open(os.environ.get("OVF_CUSTOM_PROPERTIES"), 'r') as f:
+                custom_properties = json.loads(f.read())
+            if custom_properties:
+                for k, v in custom_properties.items():
+                    data['PROPERTIES'] = data['PROPERTIES'] + f'''      <Property ovf:userConfigurable="false" ovf:value="{v}" ovf:type="string" ovf:key="{k}"/>\n'''
+
+        # windows nodes use nested virtualisation and require a larger hard drive
         if "windows" in OS_id_map[build_data['guest_os_type']]['type']:
             data['DISK_SIZE'] = "80"
             if build_data['disable_hypervisor'] != "true":
