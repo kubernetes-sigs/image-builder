@@ -18,8 +18,8 @@ usage() {
 check_for_release() {
     channel="$1"
     release="$2"
-    curl -s \
-         "https://www.flatcar-linux.org/releases-json/releases-$channel.json" \
+    curl -L -s \
+         "https://kinvolk.io/flatcar-container-linux/releases-json/releases-$channel.json" \
         | jq -r 'to_entries[] | "\(.key)"' \
         | grep -q "$release"
 }
