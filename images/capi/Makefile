@@ -87,6 +87,7 @@ deps-ova:
 	hack/ensure-ansible-windows.sh
 	hack/ensure-packer.sh
 	hack/ensure-goss.sh
+	hack/ensure-ovftool.sh
 
 .PHONY: deps-qemu
 deps-qemu: ## Installs/checks dependencies for QEMU builds
