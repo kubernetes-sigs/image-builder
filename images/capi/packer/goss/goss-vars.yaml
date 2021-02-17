@@ -159,7 +159,6 @@ ubuntu:
       cloud-guest-utils:
       cloud-initramfs-copymods:
       cloud-initramfs-dyn-netconf:
-      cloud-initramfs-growroot:
 photon:
   common-kernel-param:
     net.ipv4.tcp_limit_output_bytes:
