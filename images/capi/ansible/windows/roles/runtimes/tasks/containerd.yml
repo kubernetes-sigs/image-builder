@@ -75,6 +75,11 @@
     containerd.exe --register-service
   when: containerd_service.exists == false
 
+- name: Create Windows Defender Exclusions
+  win_shell: |
+    Add-MpPreference -ExclusionProcess "$env:ProgramFiles\containerd\containerd.exe"
+    Add-MpPreference -ExclusionProcess "$env:ProgramFiles\containerd\ctr.exe"
+
 - name: Ensure Containerd Service is running
   win_service:
     name: containerd
