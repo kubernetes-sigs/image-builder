@@ -48,7 +48,6 @@ aliases:
     - cpanato
     - MorrisLaw
     - prksu
-    - xmudrii
   cluster-api-openstack-maintainers:
     - chaosaffe
     - chrigl
