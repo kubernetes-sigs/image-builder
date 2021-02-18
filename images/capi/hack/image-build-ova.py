@@ -154,7 +154,8 @@ def main():
         data['PRODUCT'] = "%s and Kubernetes %s" % (build_data['os_name'], build_data['kubernetes_semver'])
         data['ANNOTATION'] = "Cluster API vSphere image - %s - %s" % (data['PRODUCT'], capv_url)
         data['WAKEONLANENABLED'] = "false"
-        data['TYPED_VERSION'] = "kube-%s" % (build_data['kubernetes_semver'])
+        data['TYPED_VERSION'] = build_data['kubernetes_typed_version']
+
         data['PROPERTIES'] = Template('''
       <Property ovf:userConfigurable="false" ovf:value="${DISTRO_NAME}" ovf:type="string" ovf:key="DISTRO_NAME"/>
       <Property ovf:userConfigurable="false" ovf:value="${DISTRO_VERSION}" ovf:type="string" ovf:key="DISTRO_VERSION"/>

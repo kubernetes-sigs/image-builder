@@ -37,7 +37,8 @@
     "output_dir": "./output/{{user `build_version`}}",
     "base_output_dir": "./output/{{user `base_build_version`}}",
     "username": "",
-    "vcenter_server": ""
+    "vcenter_server": "",
+    "kubernetes_typed_version": "kube-{{user `kubernetes_semver`}}"
   },
   "builders": [
     {
@@ -396,7 +397,8 @@
         "kubernetes_cni_semver": "{{user `kubernetes_cni_semver`}}",
         "kubernetes_semver": "{{user `kubernetes_semver`}}",
         "kubernetes_source_type": "{{user `kubernetes_source_type`}}",
-        "os_name": "{{user `os_display_name`}}"
+        "os_name": "{{user `os_display_name`}}",
+        "kubernetes_typed_version": "{{user `kubernetes_typed_version`}}"
       }
     },
     {
