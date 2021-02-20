@@ -45,13 +45,14 @@
     "snapshot_users": "",
     "subnet_id": "",
     "vpc_id": "",
-    "volume_size": "8"
+    "volume_size": "8",
+    "builder_instance_type": "t3.small"
   },
   "builders": [
     {
       "name": "{{user `build_name`}}",
       "type": "amazon-ebs",
-      "instance_type": "t3.small",
+      "instance_type": "{{user `builder_instance_type`}}",
       "source_ami": "{{user `source_ami`}}",
       "source_ami_filter": {
         "filters": {
