@@ -196,6 +196,9 @@ def main():
     # Create OVF
     create_ovf(ovf, data, ovf_template)
 
+    # Create the OVA manifest
+    create_ova_manifest(ova_manifest, [ovf, vmdk['stream_name']])
+
     # Create the OVA.
     create_ova(ova, ovf)
 
@@ -239,6 +242,11 @@ def get_vmdk_files(inlist):
             outlist.append(f)
     return outlist
 
+def create_ova_manifest(path, infile_paths):
+    print("image-build-ova: create ova manifest %s" % path)
+    with open(path, 'w') as f:
+        for i in infile_paths:
+            f.write('SHA256(%s)= %s\n' % (i, sha256(i)))
 
 def stream_optimize_vmdk_files(inlist):
     for f in inlist:
