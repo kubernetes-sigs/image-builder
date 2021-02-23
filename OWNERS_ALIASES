@@ -30,10 +30,8 @@ aliases:
     - rudoi
     - vincepri
   cluster-api-azure-maintainers:
-    - awesomenix
     - CecileRobertMichon
     - devigned
-    - justaugustus
     - nader-ziada
   cluster-api-gcp-maintainers:
     - cpanato
