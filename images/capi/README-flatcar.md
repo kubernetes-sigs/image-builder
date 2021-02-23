@@ -8,7 +8,7 @@
 
 ## Overview
 
-This is a Cluster API image builder for [Flatcar Container Linux](https://www.flatcar-linux.org).
+This is a Cluster API image builder for [Flatcar Container Linux](https://kinvolk.io/flatcar-container-linux).
 
 On the Packer side it includes `packer/qemu/flatcar.json` and `packer/qemu/packer.json`.
 In `packer/config/` it also includes some other JSON files with configuration for
@@ -47,7 +47,7 @@ Start a new build with
 
 Flatcar Container Linux maintains four distinct
 channels: `alpha`, `beta`, `stable`, and `edge`. For details please refer to
-the [releases page](https://www.flatcar-linux.org/releases/).
+the [releases page](https://kinvolk.io/flatcar-container-linux/releases/).
 
 The build script will default to the latest release of the `stable` channel.
 

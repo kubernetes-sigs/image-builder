@@ -4,8 +4,8 @@
 
 channel="$1"
 
-curl -s \
-     "https://www.flatcar-linux.org/releases-json/releases-$channel.json" \
+curl -L -s \
+     "https://kinvolk.io/flatcar-container-linux/releases-json/releases-$channel.json" \
     | jq -r 'to_entries[] | "\(.key)"' \
     | grep -v "current" \
     | sort --version-sort \
