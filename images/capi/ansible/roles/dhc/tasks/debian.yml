@@ -1,4 +1,14 @@
 ---
+- name: Install HWE Kernel 5.8
+  apt:
+    name: "{{ packages }}"
+    state: present
+    force_apt_get: yes
+    install_recommends: yes
+  vars:
+    packages:
+      - linux-image-virtual-hwe-20.04
+
 - name: Install custom DHC tools
   apt:
     name: "{{ packages }}"
