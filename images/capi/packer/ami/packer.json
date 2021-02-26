@@ -10,12 +10,13 @@
     "aws_profile": "",
     "aws_region": "us-east-1",
     "aws_secret_key": "",
-    "containerd_version": null,
+    "build_timestamp": "{{timestamp}}",
+    "builder_instance_type": "t3.small",
     "containerd_sha256": null,
     "containerd_url": "https://github.com/containerd/containerd/releases/download/v{{user `containerd_version`}}/cri-containerd-cni-{{user `containerd_version`}}-linux-amd64.tar.gz",
-    "crictl_version": null,
+    "containerd_version": null,
     "crictl_url": "https://github.com/kubernetes-sigs/cri-tools/releases/download/v{{user `crictl_version`}}/crictl-v{{user `crictl_version`}}-linux-amd64.tar.gz",
-    "build_timestamp": "{{timestamp}}",
+    "crictl_version": null,
     "encrypted": "false",
     "existing_ansible_ssh_args": "{{env `ANSIBLE_SSH_ARGS`}}",
     "iam_instance_profile": "",
@@ -44,14 +45,14 @@
     "snapshot_groups": "all",
     "snapshot_users": "",
     "subnet_id": "",
-    "vpc_id": "",
-    "volume_size": "8"
+    "volume_size": "8",
+    "vpc_id": ""
   },
   "builders": [
     {
       "name": "{{user `build_name`}}",
       "type": "amazon-ebs",
-      "instance_type": "t3.small",
+      "instance_type": "{{user `builder_instance_type`}}",
       "source_ami": "{{user `source_ami`}}",
       "source_ami_filter": {
         "filters": {
