@@ -191,14 +191,22 @@ def main():
         ''').substitute(data)
 
     ovf = "%s-%s.ovf" % (build_data['build_name'], data['TYPED_VERSION'])
-    ova_manifest = "%s-%s.mf" % (build_data['build_name'], data['TYPED_VERSION'])
+    mf = "%s-%s.mf" % (build_data['build_name'], data['TYPED_VERSION'])
     ova = "%s-%s.ova" % (build_data['build_name'], data['TYPED_VERSION'])
 
     # Create OVF
     create_ovf(ovf, data, ovf_template)
 
-    # Create the OVA.
-    create_ova(ova, ovf)
+    if os.environ.get("IB_OVFTOOL"):
+        # Create the OVA.
+        create_ova(ova, ovf)
+
+    else:
+        # Create the OVA manifest.
+        create_ova_manifest(mf, [ovf, vmdk['stream_name']])
+
+        # Create the OVA
+        create_ova(ova, ovf, ova_files=[mf, vmdk['stream_name']])
 
 
 def sha256(path):
@@ -212,15 +220,24 @@ def sha256(path):
     return m.hexdigest()
 
 
-def create_ova(ova_path, ovf_path):
-    args = [
-        'ovftool',
-        ovf_path,
-        ova_path
-    ]
-    print("image-build-ova: creating OVA from %s using ovftool" %
-          ovf_path)
-    subprocess.check_call(args)
+def create_ova(ova_path, ovf_path, ova_files=None):
+    if ova_files is None:
+        args = [
+            'ovftool',
+            ovf_path,
+            ova_path
+        ]
+        print("image-build-ova: creating OVA from %s using ovftool" %
+              ovf_path)
+        subprocess.check_call(args)
+    else:
+        infile_paths = [ovf_path]
+        infile_paths.extend(ova_files)
+        print("image-build-ova: creating OVA using tar")
+        with open(ova_path, 'wb') as f:
+            with tarfile.open(fileobj=f, mode='w|') as tar:
+                for infile_path in infile_paths:
+                    tar.add(infile_path)
 
     chksum_path = "%s.sha256" % ova_path
     print("image-build-ova: create ova checksum %s" % chksum_path)
@@ -232,6 +249,14 @@ def create_ovf(path, data, ovf_template):
     print("image-build-ova: create ovf %s" % path)
     with io.open(path, 'w', encoding='utf-8') as f:
       f.write(Template(ovf_template).substitute(data))
+
+
+def create_ova_manifest(path, infile_paths):
+    print("image-build-ova: create ova manifest %s" % path)
+    with open(path, 'w') as f:
+        for i in infile_paths:
+            f.write('SHA256(%s)= %s\n' % (i, sha256(i)))
+
 
 def get_vmdk_files(inlist):
     outlist = []
