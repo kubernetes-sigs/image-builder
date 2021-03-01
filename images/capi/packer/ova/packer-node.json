@@ -38,7 +38,8 @@
     "base_output_dir": "./output/{{user `base_build_version`}}",
     "username": "",
     "vcenter_server": "",
-    "kubernetes_typed_version": "kube-{{user `kubernetes_semver`}}"
+    "kubernetes_typed_version": "kube-{{user `kubernetes_semver`}}", 
+    "disk_size": "20480"
   },
   "builders": [
     {
@@ -80,7 +81,7 @@
       "cpus": 1,
       "cores": 1,
       "memory": 2048,
-      "disk_size": 20480,
+      "disk_size": "{{user `disk_size`}}",
       "disk_type_id": "{{user `disk_type_id`}}",
       "disk_adapter_type": "scsi",
       "boot_wait": "{{user `boot_wait`}}",
@@ -125,7 +126,7 @@
       "cpus": 1,
       "cores": 1,
       "memory": 2048,
-      "disk_size": 20480,
+      "disk_size": "{{user `disk_size`}}",
       "disk_type_id": "{{user `disk_type_id`}}",
       "disk_adapter_type": "scsi",
       "boot_wait": "{{user `boot_wait`}}",
@@ -197,7 +198,7 @@
       "ssh_clear_authorized_keys": "false",
       "storage": [
         {
-          "disk_size": 20480,
+          "disk_size": "{{user `disk_size`}}",
           "disk_thin_provisioned": "{{user `disk_thin_provisioned`}}"
         }
       ],
@@ -250,7 +251,7 @@
       "ssh_timeout": "4h",
       "storage": [
         {
-          "disk_size": 20480,
+          "disk_size": "{{user `disk_size`}}",
           "disk_thin_provisioned": "{{user `disk_thin_provisioned`}}"
         }
       ],
@@ -398,7 +399,8 @@
         "kubernetes_semver": "{{user `kubernetes_semver`}}",
         "kubernetes_source_type": "{{user `kubernetes_source_type`}}",
         "os_name": "{{user `os_display_name`}}",
-        "kubernetes_typed_version": "{{user `kubernetes_typed_version`}}"
+        "kubernetes_typed_version": "{{user `kubernetes_typed_version`}}",
+        "disk_size": "{{user `disk_size`}}"
       }
     },
     {

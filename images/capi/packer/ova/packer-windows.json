@@ -16,6 +16,7 @@
     "containerd_url": "",
     "containerd_version": null,
     "disable_hypervisor": null,
+    "disk_size": "81920",
     "ib_version": "{{env `IB_VERSION`}}",
     "kubernetes_base_url": "https://kubernetesreleases.blob.core.windows.net/kubernetes/{{user `kubernetes_semver`}}/binaries/node/windows/{{user `kubernetes_goarch`}}",
     "kubernetes_http_package_url": "",
@@ -40,7 +41,7 @@
       "version": "{{user `vmx_version`}}",
       "cpus": 2,
       "memory": 4096,
-      "disk_size": 81920,
+      "disk_size": "{{user `disk_size`}}",
       "disk_type_id": "{{user `disk_type_id`}}",
       "disk_adapter_type": "scsi",
       "boot_wait": "{{user `boot_wait`}}",
@@ -118,7 +119,7 @@
 
       "storage": [
         {
-          "disk_size": 81920,
+          "disk_size": "{{user `disk_size`}}",
           "disk_thin_provisioned": "{{user `disk_thin_provisioned`}}"
         }
       ],
@@ -180,7 +181,8 @@
         "kubernetes_semver": "{{user `kubernetes_semver`}}",
         "kubernetes_source_type": "{{user `kubernetes_source_type`}}",
         "os_name": "{{user `os_display_name`}}",
-        "disable_hypervisor": "{{user `disable_hypervisor`}}"
+        "disable_hypervisor": "{{user `disable_hypervisor`}}",
+        "disk_size": "{{user `disk_size`}}"
       }
     },
     {

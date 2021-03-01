@@ -29,7 +29,6 @@ import subprocess
 from string import Template
 import tarfile
 
-
 def main():
     parser = argparse.ArgumentParser(
         description="Builds an OVA using the artifacts from a Packer build")
@@ -134,7 +133,7 @@ def main():
         'OS_VERSION': OS_id_map[build_data['guest_os_type']]['version'],
         'IB_VERSION': build_data['ib_version'],
         'DISK_NAME': vmdk['stream_name'],
-        'DISK_SIZE': "20",
+        'DISK_SIZE': build_data['disk_size'],
         'POPULATED_DISK_SIZE': vmdk['size'],
         'STREAM_DISK_SIZE': vmdk['stream_size'],
         'VMX_VERSION': args.vmx_version,
@@ -175,9 +174,7 @@ def main():
                 for k, v in custom_properties.items():
                     data['PROPERTIES'] = data['PROPERTIES'] + f'''      <Property ovf:userConfigurable="false" ovf:value="{v}" ovf:type="string" ovf:key="{k}"/>\n'''
 
-        # windows nodes use nested virtualisation and require a larger hard drive
         if "windows" in OS_id_map[build_data['guest_os_type']]['type']:
-            data['DISK_SIZE'] = "80"
             if build_data['disable_hypervisor'] != "true":
                 data['NESTEDHV'] = "true"
     elif args.haproxy:
