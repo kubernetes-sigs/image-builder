@@ -21,9 +21,9 @@ The `esxi` builder supports building against a remote VMware ESX server with [sp
 The `vsphere` builder supports building against a remote VMware vSphere using standard API.
 
 ### vmware-vmx builder
-During the dev process it's uncommon for the base OS image to change, but the image building process builds the base image from the ISO every time and thus adding a significant amount of time to the build process. 
+During the dev process it's uncommon for the base OS image to change, but the image building process builds the base image from the ISO every time and thus adding a significant amount of time to the build process.
 
-To reduce the image building times during development, one can use the `build-node-ova-local-base-<OS>` target to build the base image from the ISO. By setting `source_path` variable in `vmx.json` to the `*.vmx` file from the output, it can then be re-used with the `build-node-ova-local-vmx-<OS>` build target to speed up the process. 
+To reduce the image building times during development, one can use the `build-node-ova-local-base-<OS>` target to build the base image from the ISO. By setting `source_path` variable in `vmx.json` to the `*.vmx` file from the output, it can then be re-used with the `build-node-ova-local-vmx-<OS>` build target to speed up the process.
 
 
 ### vsphere-clone builder
@@ -62,6 +62,16 @@ make deps-ova
 ```
 
 From the `images/capi` directory, run `make build-node-ova-<hypervisor>-<OS>`, where `<hypervisor>` is your target hypervisor (`local`, `vsphere` or `esx`) and `<OS>` is the desired operating system. The available choices are listed via `make help`.
+
+### OVA Creation
+
+When the final OVA is created, there are two methods that can be used for creation. By default, an OVF file is created, the manifest is created using SHA256 sums of the OVF and VMDK, and then `tar` is used to create an OVA containing the OVF, VMDK, and the manifest.
+
+Optionally, `ovftool` can be used to create the OVA. This has the advantage of validating the created OVF, and has greater chances of producing OVAs that are compliant with more versions of VMware targets of Fusion, Workstation, and vSphere. To use `ovftool` for OVA creation, set the env variable IB_OVFTOOL to any non-empty value, like the following:
+
+```bash
+IB_OVFTOOL=1 make build-node-ova-<hypervisor>-<OS>
+```
 
 ### Configuration
 

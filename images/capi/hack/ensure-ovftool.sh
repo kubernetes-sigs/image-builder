@@ -20,6 +20,8 @@ set -o pipefail
 
 [[ -n ${DEBUG:-} ]] && set -o xtrace
 
+[[ -z ${IB_OVFTOOL:-} ]] && exit 0
+
 source hack/utils.sh
 
 if command -v ovftool >/dev/null 2>&1; then exit 0; fi
