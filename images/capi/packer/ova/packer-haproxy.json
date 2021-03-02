@@ -14,7 +14,8 @@
     "output_dir": "./output/{{user `build_version`}}",
     "username": "",
     "vcenter_server": "",
-    "vsphere_guest_os_type": null
+    "vsphere_guest_os_type": null,
+    "disk_size": "20480"
   },
   "builders": [
     {
@@ -27,7 +28,7 @@
       "cpus": 1,
       "cores": 1,
       "memory": 2048,
-      "disk_size": 20480,
+      "disk_size": "{{user `disk_size`}}",
       "disk_type_id": "{{user `disk_type_id`}}",
       "boot_wait": "{{user `boot_wait`}}",
       "http_directory": "./packer/ova/linux/{{user `distro_name`}}/http/",
@@ -102,7 +103,7 @@
 
       "storage": [
         {
-          "disk_size": 20480,
+          "disk_size": "{{user `disk_size`}}",
           "disk_thin_provisioned": "{{user `disk_thin_provisioned`}}"
         }
       ],
@@ -152,7 +153,8 @@
         "ib_version": "{{user `ib_version`}}",
         "vsphere_guest_os_type": "{{user `vsphere_guest_os_type`}}",
         "dataplaneapi_version": "v{{user `dataplaneapi_version`}}",
-        "os_name": "{{user `os_display_name`}}"
+        "os_name": "{{user `os_display_name`}}",
+        "disk_size": "{{user `disk_size`}}"
       }
     },
     {
