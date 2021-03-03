@@ -19,10 +19,11 @@
 
 - name: Add the Kubernetes repo
   apt_repository:
-    repo: "{{ 'deb ' ~ kubernetes_deb_repo ~ ' main' }}"
+    repo: "deb {{ kubernetes_deb_repo }} main"
     update_cache: True
     state: present
     mode: 0644
+    filename: kubernetes
 
 - name: Install Kubernetes
   apt:
