@@ -60,6 +60,10 @@ Several variables can be used to customize the image build.
 | `remove_extra_repos` | If set to `"true"`, the package repositories added to the OS through the use of `extra_repos` will be removed at the end of the build. | `"false"` |
 | `pause_image` | This can be used to override the default pause image used to hold the network namespace and IP for the pod. | `"k8s.gcr.io/pause:3.4.1"` |
 | `containerd_additional_settings` | This is a string, base64 encoded, that contains additional configuration for containerd. It must be version 2 and not contain the pause image configuration block. See `image-builder/images/capi/ansible/roles/containerd/templates/etc/containerd/config.toml` for the template. | `null` |
+| `load_additional_components` | If set to `"true"`, the `load_additional_components` role will be executed. This needs to be set to `"true"` if any of `additional_url_images`, `additional_registry_images` or `additional_executables` are set to `"true"` | `"false"` |
+| `additional_url_images` | Set this to `"true"` to load addtional container images using a tar url. `additional_url_images_list` var should be set to a comma seperated string of tar urls of the container images. | `"false"` |
+| `additional_registry_images` | Set this to `"true"` to load addtional container images using their registry url. `additional_registry_images_list` var should be set to a comma seperated string of registry urls of the container images. | `"false"` |
+| `additional_executables` | Set this to `"true"` to load addtional executables from a url. `additional_executables_list` var should be set to a comma seperated string of urls. `additional_executables_destination_path` should be set to the destination path of the executables. | `"false"` |
 
 The variables found in `packer/config/*.json` or `packer/<provider>/*.json` should not need to be modified directly. For customization it is better to create a JSON file with your changes and provide it via the `PACKER_VAR_FILES` environment variable. Variables set in this file will override any previous values. Multiple files can be passed via `PACKER_VAR_FILES`, with the last file taking precedence over any others.
 
@@ -136,4 +140,20 @@ Then, execute the build (using a Photon OVA as an example) with the following:
 
 ```sh
 PACKER_VAR_FILES=proxy.json make build-node-ova-local-photon-3
+```
+
+
+##### Loading addtional components using `additional_components.json`
+
+```json
+{
+  "additional_executables": "true",
+  "additional_executables_destination_path": "/path/to/dest",
+  "additional_executables_list": "http://path/to/exec1,http://path/to/exec2",
+  "additional_registry_images": "true",
+  "additional_registry_images_list": "plndr/kube-vip:0.3.4,plndr/kube-vip:0.3.3",
+  "additional_url_images": "true",
+  "additional_url_images_list": "http://path/to/image1.tar,http://path/to/image2.tar",
+  "load_additional_components": "true"
+}
 ```
