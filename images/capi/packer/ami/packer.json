@@ -46,7 +46,9 @@
     "snapshot_users": "",
     "subnet_id": "",
     "volume_size": "8",
-    "vpc_id": ""
+    "vpc_id": "",
+    "throughput": "125",
+    "iops": "3000"
   },
   "builders": [
     {
@@ -100,6 +102,8 @@
           "device_name": "{{ user `root_device_name` }}",
           "volume_size": "{{ user `volume_size` }}",
           "volume_type": "gp3",
+          "throughput": "{{ user `throughput` }}",
+          "iops": "{{ user `iops`}}",
           "delete_on_termination": true
         }
       ]
