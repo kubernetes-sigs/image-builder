@@ -121,6 +121,9 @@ rhel:
       cloud-utils-growpart:
       python2-pip:
 ubuntu:
+  common-kernel-param:
+    net.ipv4.conf.all.rp_filter:
+      value: "1"
   common-package:
     <<: *common_debs
   azure:

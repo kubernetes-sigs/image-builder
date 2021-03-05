@@ -83,3 +83,12 @@
     group: root
     mode: 0644
   when: ansible_os_family != "Flatcar"
+
+- name: Ensure reverse packet filtering is set as strict
+  sysctl:
+    name: net.ipv4.conf.all.rp_filter
+    value: "1"
+    state: present
+    sysctl_set: yes
+    reload: yes
+  when: ansible_distribution == "Ubuntu"
