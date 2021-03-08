@@ -17,3 +17,47 @@ containerd_flatcar_bins:
 - containerd
 - containerd-shim
 
+# examples on how to use the mirror function
+# registry_mirrors:
+#   harbor:
+#     - harbor.yourdomain.com
+#     - harbor-alternative.yourdomain.com
+#   artifactory:
+#     - artifactory.yourdomain.com
+
+
+# containerd_registry_mirrors:
+#   - name: docker.io
+#     mirrors:
+#       - path: v2/docker-hub
+#         type: harbor
+#       - path: v2/docker.bintray.io
+#         type: artifactory
+#   - name: docker.elastic.co
+#     mirrors:
+#       - path: v2/elastic
+#         type: harbor
+#   - name: "*.gcr.io"
+#     mirrors:
+#       - path: v2/gcr
+#         type: harbor
+#   - name: gcr.io
+#     mirrors:
+#       - path: v2/gcr
+#         type: harbor
+#   - name: k8s.gcr.io
+#     mirrors:
+#       - path: v2/gcr
+#         type: harbor
+#   - name: us.gcr.io
+#     mirrors:
+#       - path: v2/gcr
+#         type: harbor
+#   - name: quay.io
+#     mirrors:
+#       - path: v2/quay
+#         type: harbor
+#   - name: ghcr.io
+#     mirrors:
+#       - path: v2/ghcr.io
+#         type: harbor
