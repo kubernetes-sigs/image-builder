@@ -1,17 +1,17 @@
 {
+  "boot_command_prefix": "<esc><wait> vmlinuz initrd=initrd.img root/dev/ram0 loglevel=3 photon.media=cdrom ks=",
+  "boot_command_suffix": "/3/ks.json<enter><wait>",
+  "boot_media_path": "http://{{ .HTTPIP }}:{{ .HTTPPort }}",
   "build_name": "photon-3",
+  "distro_arch": "amd64",
   "distro_name": "photon",
   "distro_version": "3",
-  "distro_arch": "amd64",
-  "os_display_name": "VMware Photon OS 64-bit",
   "guest_os_type": "vmware-photon-64",
-  "vsphere_guest_os_type": "vmwarePhoton64Guest",
-  "iso_url": "https://packages.vmware.com/photon/3.0/Rev3/iso/photon-minimal-3.0-a383732.iso",
+  "http_directory": "./packer/ova/linux/{{user `distro_name`}}/http/",
   "iso_checksum": "c2883a42e402a2330d9c39b4d1e071cf9b3b5898",
   "iso_checksum_type": "sha1",
-  "http_directory": "./packer/ova/linux/{{user `distro_name`}}/http/",
-  "boot_command_prefix": "<esc><wait> vmlinuz initrd=initrd.img root/dev/ram0 loglevel=3 photon.media=cdrom ks=",
-  "boot_media_path": "http://{{ .HTTPIP }}:{{ .HTTPPort }}",
-  "boot_command_suffix": "/3/ks.json<enter><wait>",
-  "shutdown_command": "shutdown now"
+  "iso_url": "https://packages.vmware.com/photon/3.0/Rev3/iso/photon-minimal-3.0-a383732.iso",
+  "os_display_name": "VMware Photon OS 64-bit",
+  "shutdown_command": "shutdown now",
+  "vsphere_guest_os_type": "vmwarePhoton64Guest"
 }

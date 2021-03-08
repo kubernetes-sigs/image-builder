@@ -1,4 +1,138 @@
 {
+  "builders": [
+    {
+      "access_key": "{{user `aws_access_key`}}",
+      "ami_description": "{{user `ami_description`}}",
+      "ami_groups": "{{user `ami_groups`}}",
+      "ami_name": "capa-ami-{{user `build_name`}}-{{user `kubernetes_deb_version` | clean_resource_name}}-{{user `build_timestamp`}}",
+      "ami_product_codes": "",
+      "ami_regions": "{{user `ami_regions`}}",
+      "ami_users": "{{user `ami_users`}}",
+      "encrypt_boot": "{{user `encrypted`}}",
+      "iam_instance_profile": "{{user `iam_instance_profile`}}",
+      "instance_type": "{{user `builder_instance_type`}}",
+      "kms_key_id": "{{user `kms_key_id`}}",
+      "launch_block_device_mappings": [
+        {
+          "delete_on_termination": true,
+          "device_name": "{{ user `root_device_name` }}",
+          "iops": "{{ user `iops`}}",
+          "throughput": "{{ user `throughput` }}",
+          "volume_size": "{{ user `volume_size` }}",
+          "volume_type": "gp3"
+        }
+      ],
+      "name": "{{user `build_name`}}",
+      "profile": "{{ user `aws_profile`}}",
+      "region": "{{ user `aws_region` }}",
+      "secret_key": "{{user `aws_secret_key`}}",
+      "skip_profile_validation": "{{user `skip_profile_validation`}}",
+      "snapshot_groups": "{{user `snapshot_groups`}}",
+      "snapshot_users": "{{user `snapshot_users`}}",
+      "source_ami": "{{user `source_ami`}}",
+      "source_ami_filter": {
+        "filters": {
+          "architecture": "x86_64",
+          "name": "{{user `ami_filter_name`}}",
+          "root-device-type": "ebs",
+          "virtualization-type": "hvm"
+        },
+        "most_recent": true,
+        "owners": "{{user `ami_filter_owners`}}"
+      },
+      "ssh_username": "{{user `ssh_username`}}",
+      "subnet_id": "{{ user `subnet_id` }}",
+      "tags": {
+        "build_date": "{{isotime}}",
+        "build_timestamp": "{{user `build_timestamp`}}",
+        "containerd_version": "{{user `containerd_version`}}",
+        "distribution": "{{user `distribution`}}",
+        "distribution_release": "{{user `distribution_release`}}",
+        "distribution_version": "{{user `distribution_version`}}",
+        "image_builder_version": "{{user `ib_version`}}",
+        "kubernetes_cni_version": "{{user `kubernetes_cni_semver`}}",
+        "kubernetes_version": "{{user `kubernetes_semver`}}",
+        "source_ami": "{{user `source_ami`}}"
+      },
+      "type": "amazon-ebs",
+      "vpc_id": "{{ user `vpc_id` }}"
+    }
+  ],
+  "post-processors": [
+    {
+      "custom_data": {
+        "containerd_version": "{{user `containerd_version`}}",
+        "kubernetes_cni_version": "{{user `kubernetes_cni_semver`}}",
+        "kubernetes_version": "{{user `kubernetes_semver`}}"
+      },
+      "output": "{{user `manifest_output`}}",
+      "type": "manifest"
+    }
+  ],
+  "provisioners": [
+    {
+      "environment_vars": [
+        "BUILD_NAME={{user `build_name`}}"
+      ],
+      "inline": [
+        "if [ $BUILD_NAME != \"ubuntu-1804\" ]; then exit 0; fi",
+        "while [ ! -f /var/lib/cloud/instance/boot-finished ]; do echo 'Waiting for cloud-init...'; sleep 1; done",
+        "sudo apt-get -qq update && sudo DEBIAN_FRONTEND=noninteractive apt-get -qqy install python python-pip"
+      ],
+      "type": "shell"
+    },
+    {
+      "environment_vars": [
+        "BUILD_NAME={{user `build_name`}}"
+      ],
+      "execute_command": "BUILD_NAME={{user `build_name`}}; if [[ \"${BUILD_NAME}\" == *\"flatcar\"* ]]; then sudo {{.Vars}} -S -E bash '{{.Path}}'; fi",
+      "script": "./packer/files/bootstrap-flatcar.sh",
+      "type": "shell"
+    },
+    {
+      "ansible_env_vars": [
+        "ANSIBLE_SSH_ARGS='{{user `existing_ansible_ssh_args`}} -o IdentitiesOnly=yes'",
+        "ANSIBLE_REMOTE_TEMP='/tmp/.ansible/'"
+      ],
+      "extra_arguments": [
+        "--extra-vars",
+        "{{user `ansible_common_vars`}}",
+        "--extra-vars",
+        "{{user `ansible_extra_vars`}}"
+      ],
+      "playbook_file": "./ansible/node.yml",
+      "type": "ansible"
+    },
+    {
+      "arch": "{{user `goss_arch`}}",
+      "format": "{{user `goss_format`}}",
+      "format_options": "{{user `goss_format_options`}}",
+      "goss_file": "{{user `goss_entry_file`}}",
+      "inspect": "{{user `goss_inspect_mode`}}",
+      "tests": [
+        "{{user `goss_tests_dir`}}"
+      ],
+      "type": "goss",
+      "url": "{{user `goss_url`}}",
+      "use_sudo": true,
+      "vars_file": "{{user `goss_vars_file`}}",
+      "vars_inline": {
+        "ARCH": "amd64",
+        "OS": "{{user `distribution` | lower}}",
+        "PROVIDER": "amazon",
+        "containerd_version": "{{user `containerd_version`}}",
+        "kubernetes_cni_deb_version": "{{ user `kubernetes_cni_deb_version` }}",
+        "kubernetes_cni_rpm_version": "{{ split (user `kubernetes_cni_rpm_version`) \"-\" 0 }}",
+        "kubernetes_cni_source_type": "{{user `kubernetes_cni_source_type`}}",
+        "kubernetes_cni_version": "{{user `kubernetes_cni_semver` | replace \"v\" \"\" 1}}",
+        "kubernetes_deb_version": "{{ user `kubernetes_deb_version` }}",
+        "kubernetes_rpm_version": "{{ split (user `kubernetes_rpm_version`) \"-\" 0 }}",
+        "kubernetes_source_type": "{{user `kubernetes_source_type`}}",
+        "kubernetes_version": "{{user `kubernetes_semver` | replace \"v\" \"\" 1}}"
+      },
+      "version": "{{user `goss_version`}}"
+    }
+  ],
   "variables": {
     "ami_description": "Cluster API base image designed for {{user `kubernetes_semver`}}",
     "ami_groups": "all",
@@ -21,6 +155,7 @@
     "existing_ansible_ssh_args": "{{env `ANSIBLE_SSH_ARGS`}}",
     "iam_instance_profile": "",
     "ib_version": "{{env `IB_VERSION`}}",
+    "iops": "3000",
     "kms_key_id": "",
     "kubernetes_cni_deb_version": null,
     "kubernetes_cni_http_source": null,
@@ -45,143 +180,8 @@
     "snapshot_groups": "all",
     "snapshot_users": "",
     "subnet_id": "",
-    "volume_size": "8",
-    "vpc_id": "",
     "throughput": "125",
-    "iops": "3000"
-  },
-  "builders": [
-    {
-      "name": "{{user `build_name`}}",
-      "type": "amazon-ebs",
-      "instance_type": "{{user `builder_instance_type`}}",
-      "source_ami": "{{user `source_ami`}}",
-      "source_ami_filter": {
-        "filters": {
-          "virtualization-type": "hvm",
-          "name": "{{user `ami_filter_name`}}",
-          "root-device-type": "ebs",
-          "architecture": "x86_64"
-        },
-        "owners": "{{user `ami_filter_owners`}}",
-        "most_recent": true
-      },
-      "ami_name": "capa-ami-{{user `build_name`}}-{{user `kubernetes_deb_version` | clean_resource_name}}-{{user `build_timestamp`}}",
-      "ami_groups": "{{user `ami_groups`}}",
-      "ami_users": "{{user `ami_users`}}",
-      "ami_description": "{{user `ami_description`}}",
-      "snapshot_groups": "{{user `snapshot_groups`}}",
-      "snapshot_users": "{{user `snapshot_users`}}",
-      "encrypt_boot": "{{user `encrypted`}}",
-      "kms_key_id": "{{user `kms_key_id`}}",
-      "ami_product_codes": "",
-      "ami_regions": "{{user `ami_regions`}}",
-      "access_key": "{{user `aws_access_key`}}",
-      "profile": "{{ user `aws_profile`}}",
-      "region": "{{ user `aws_region` }}",
-      "secret_key": "{{user `aws_secret_key`}}",
-      "iam_instance_profile": "{{user `iam_instance_profile`}}",
-      "skip_profile_validation": "{{user `skip_profile_validation`}}",
-      "ssh_username": "{{user `ssh_username`}}",
-      "vpc_id": "{{ user `vpc_id` }}",
-      "subnet_id": "{{ user `subnet_id` }}",
-      "tags": {
-        "build_date": "{{isotime}}",
-        "build_timestamp": "{{user `build_timestamp`}}",
-        "containerd_version": "{{user `containerd_version`}}",
-        "distribution": "{{user `distribution`}}",
-        "distribution_release": "{{user `distribution_release`}}",
-        "distribution_version": "{{user `distribution_version`}}",
-        "image_builder_version": "{{user `ib_version`}}",
-        "kubernetes_cni_version": "{{user `kubernetes_cni_semver`}}",
-        "kubernetes_version": "{{user `kubernetes_semver`}}",
-        "source_ami": "{{user `source_ami`}}"
-      },
-      "launch_block_device_mappings": [
-        {
-          "device_name": "{{ user `root_device_name` }}",
-          "volume_size": "{{ user `volume_size` }}",
-          "volume_type": "gp3",
-          "throughput": "{{ user `throughput` }}",
-          "iops": "{{ user `iops`}}",
-          "delete_on_termination": true
-        }
-      ]
-    }
-  ],
-  "provisioners": [
-    {
-      "type": "shell",
-      "environment_vars": [
-        "BUILD_NAME={{user `build_name`}}"
-      ],
-      "inline": [
-        "if [ $BUILD_NAME != \"ubuntu-1804\" ]; then exit 0; fi",
-        "while [ ! -f /var/lib/cloud/instance/boot-finished ]; do echo 'Waiting for cloud-init...'; sleep 1; done",
-        "sudo apt-get -qq update && sudo DEBIAN_FRONTEND=noninteractive apt-get -qqy install python python-pip"
-      ]
-    },
-    {
-      "type": "shell",
-      "environment_vars": [
-        "BUILD_NAME={{user `build_name`}}"
-      ],
-      "script": "./packer/files/bootstrap-flatcar.sh",
-      "execute_command": "BUILD_NAME={{user `build_name`}}; if [[ \"${BUILD_NAME}\" == *\"flatcar\"* ]]; then sudo {{.Vars}} -S -E bash '{{.Path}}'; fi"
-    },
-    {
-      "type": "ansible",
-      "playbook_file": "./ansible/node.yml",
-      "ansible_env_vars": [
-        "ANSIBLE_SSH_ARGS='{{user `existing_ansible_ssh_args`}} -o IdentitiesOnly=yes'",
-        "ANSIBLE_REMOTE_TEMP='/tmp/.ansible/'"
-      ],
-      "extra_arguments": [
-        "--extra-vars",
-        "{{user `ansible_common_vars`}}",
-        "--extra-vars",
-        "{{user `ansible_extra_vars`}}"
-      ]
-    },
-    {
-      "type": "goss",
-      "arch": "{{user `goss_arch`}}",
-      "format": "{{user `goss_format`}}",
-      "format_options": "{{user `goss_format_options`}}",
-      "goss_file": "{{user `goss_entry_file`}}",
-      "inspect": "{{user `goss_inspect_mode`}}",
-      "tests": [
-        "{{user `goss_tests_dir`}}"
-      ],
-      "url": "{{user `goss_url`}}",
-      "use_sudo": true,
-      "vars_inline": {
-        "OS": "{{user `distribution` | lower}}",
-        "ARCH": "amd64",
-        "PROVIDER": "amazon",
-        "kubernetes_source_type": "{{user `kubernetes_source_type`}}",
-        "kubernetes_cni_source_type": "{{user `kubernetes_cni_source_type`}}",
-        "containerd_version": "{{user `containerd_version`}}",
-        "kubernetes_cni_version": "{{user `kubernetes_cni_semver` | replace \"v\" \"\" 1}}",
-        "kubernetes_version": "{{user `kubernetes_semver` | replace \"v\" \"\" 1}}",
-        "kubernetes_rpm_version": "{{ split (user `kubernetes_rpm_version`) \"-\" 0 }}",
-        "kubernetes_deb_version": "{{ user `kubernetes_deb_version` }}",
-        "kubernetes_cni_rpm_version": "{{ split (user `kubernetes_cni_rpm_version`) \"-\" 0 }}",
-        "kubernetes_cni_deb_version": "{{ user `kubernetes_cni_deb_version` }}"
-      },
-      "vars_file": "{{user `goss_vars_file`}}",
-      "version": "{{user `goss_version`}}"
-    }
-  ],
-  "post-processors": [
-    {
-      "type": "manifest",
-      "output": "{{user `manifest_output`}}",
-      "custom_data": {
-        "containerd_version": "{{user `containerd_version`}}",
-        "kubernetes_cni_version": "{{user `kubernetes_cni_semver`}}",
-        "kubernetes_version": "{{user `kubernetes_semver`}}"
-      }
-    }
-  ]
+    "volume_size": "8",
+    "vpc_id": ""
+  }
 }
