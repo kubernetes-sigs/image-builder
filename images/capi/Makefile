@@ -611,3 +611,13 @@ test-azure: ## Run the tests for Azure builders
 .PHONY: release-staging
 release-staging: ## Builds and push container images to the staging bucket.
 	TAG=$(IB_VERSION) REGISTRY=$(STAGING_REGISTRY) $(MAKE) docker-build docker-push
+
+## --------------------------------------
+## Sort JSON
+## --------------------------------------
+##@ Sort JSON
+
+.PHONY: json-sort
+json_files = $(shell find . -type f -name "*.json" | sort -u)
+json-sort: ## Sort all JSON files alphabetically
+	@for f in $(json_files); do (cat "$$f" | jq -S '.' >> "$$f".sorted && mv "$$f".sorted "$$f") || exit 1 ; done
