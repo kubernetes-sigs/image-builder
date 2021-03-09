@@ -1,6 +1,6 @@
 {
-    "build_name": "ubuntu-2004",
-    "distribution_release": "focal",
-    "distribution_version": "2004",
-    "zone": "us-central1-a"
+  "build_name": "ubuntu-2004",
+  "distribution_release": "focal",
+  "distribution_version": "2004",
+  "zone": "us-central1-a"
 }
