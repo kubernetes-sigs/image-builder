@@ -21,7 +21,7 @@ runtime: docker_ee
 docker_ee_version: "19.03.12"
 kubernetes_install_path: 'c:\k'
 windows_service_manager: 'nssm'
-pause_image: mcr.microsoft.com/oss/kubernetes/pause:1.4.0
+pause_image: "k8s.gcr.io/pause:3.4.1"
 additional_prepull_images: "docker.io/sigwindowstools/flannel:0.12.0, docker.io/sigwindowstools/kube-proxy:v1.19.2"
 prepull: false
 distribution_version: 2019

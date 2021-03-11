@@ -7,7 +7,6 @@
   "netbios_host_name_compatibility": "true",
   "no_proxy": "",
   "nssm_url": "https://azurek8scishared.blob.core.windows.net/nssm/nssm.exe",
-  "pause_image": "mcr.microsoft.com/oss/kubernetes/pause:1.4.0",
   "prepull": "true",
   "runtime": "docker_ee",
   "windows_service_manager": "nssm",
