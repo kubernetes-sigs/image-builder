@@ -120,6 +120,7 @@
         "kubernetes_cni_semver": "{{user `kubernetes_cni_semver`}}",
         "kubernetes_semver": "{{user `kubernetes_semver`}}",
         "kubernetes_source_type": "{{user `kubernetes_source_type`}}",
+        "kubernetes_typed_version": "{{user `kubernetes_typed_version`}}",
         "os_name": "{{user `os_display_name`}}",
         "vsphere_guest_os_type": "{{user `vsphere_guest_os_type`}}"
       },
@@ -199,6 +200,7 @@
     "ib_version": "{{env `IB_VERSION`}}",
     "kubernetes_base_url": "https://kubernetesreleases.blob.core.windows.net/kubernetes/{{user `kubernetes_semver`}}/binaries/node/windows/{{user `kubernetes_goarch`}}",
     "kubernetes_http_package_url": "",
+    "kubernetes_typed_version": "kube-{{user `kubernetes_semver`}}",
     "manifest_output": "manifest.json",
     "netbios_host_name_compatibility": null,
     "nssm_url": null,
