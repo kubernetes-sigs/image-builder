@@ -58,10 +58,15 @@
   ],
   "post-processors": [
     {
+      "keep_input_artifact": true,
       "only": [
         "flatcar"
       ],
       "type": "vagrant"
+    },
+    {
+      "output": "./output/{{user `build_name`}}-kube-{{user `kubernetes_semver`}}.gz",
+      "type": "compress"
     }
   ],
   "provisioners": [
