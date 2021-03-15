@@ -19,6 +19,7 @@ If any needed binaries are not present, they can be installed to `images/capi/.b
 * [DigitalOcean](./providers/digitalocean.md)
 * [GCP](./providers/gcp.md)
 * [OpenStack](./providers/openstack.md)
+* [Raw](./providers/raw.md)
 * [vSphere](./providers/vsphere.md)
 
 ## Make targets
