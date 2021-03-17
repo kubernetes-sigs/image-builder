@@ -26,6 +26,17 @@
 - name: Set WinRm Service to delayed start
   win_command: sc.exe config winrm start=delayed-auto
 
+# Best effort to update defender signatures
+# This can fail if there is already a signature
+# update running which means we will get them anyways
+# Also at the time the VM is provisioned Defender will trigger any required updates
+- name: Update Windows Defender signatures
+  win_shell: |
+    $service = Get-Service "Windefend"
+    $service.WaitForStatus("Running","00:5:00")
+    Update-MpSignature
+  ignore_errors: yes
+
 # Find KB Article numbers:
 #  - WS 2019 https://support.microsoft.com/en-us/help/4464619
 #  - WS 2004 https://support.microsoft.com/en-us/help/4555932
@@ -59,21 +70,6 @@
     category_names: "{{ windows_updates_category_names }}"
     reboot: yes
   when: windows_updates_category_names|length > 0
-  
-# Temporarily disabling: https://github.com/kubernetes-sigs/image-builder/issues/549
-# These will be updated periodically on the host once it is running so not an issue for now
-# - name: Update Windows Defender signatures
-#   win_shell: |
-    # Updating windows defender signatures sometimes fails
-    # $service = Get-Service "Windefend"
-    # $service.WaitForStatus("Running","00:5:00")
-    # try {
-    #     Update-MpSignature
-    # }
-    # catch {
-    #     Write-Host "Error occurred during signature update $_"
-    # }
-    
 
 # Requires admin rights to install 
 # https://docs.ansible.com/ansible/latest/user_guide/become.html#become-and-windows
