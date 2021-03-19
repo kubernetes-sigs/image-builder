@@ -10,4 +10,5 @@
   - [OpenStack](./capi/providers/openstack.md)
   - [vSphere](./capi/providers/vsphere.md)
   - [Testing the Images](./capi/goss/goss.md)
+  - [Using Container Images](./capi/container-image.md)
 - [Glossary](./glossary.md)
