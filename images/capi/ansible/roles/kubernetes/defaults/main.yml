@@ -38,4 +38,4 @@ kubernetes_cni_http_checksum: "sha1:{{ kubernetes_cni_http_source }}/{{ kubernet
 
 kubeadm_template: "etc/kubeadm.yml"
 
-kubelet_extra_args: "--pod-infra-container-image={{ containerd_pause_image }}"
+kubelet_extra_args: "--pod-infra-container-image={{ pause_image }}"
