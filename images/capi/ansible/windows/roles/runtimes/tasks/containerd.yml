@@ -75,6 +75,16 @@
     containerd.exe --register-service
   when: containerd_service.exists == false
 
+# Enables DNS resolution of SMB shares
+# https://github.com/kubernetes-sigs/windows-gmsa/issues/30#issuecomment-802240945
+- name: Apply SMB Resolution Fix for containerd
+  win_regedit:
+    path: HKLM:\SYSTEM\CurrentControlSet\Services\hns\State
+    state: present
+    name: EnableCompartmentNamespace
+    data: 1
+    type: dword
+
 - name: Create Windows Defender Exclusions
   win_shell: |
     Add-MpPreference -ExclusionProcess "$env:ProgramFiles\containerd\containerd.exe"
