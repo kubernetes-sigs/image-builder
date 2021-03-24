@@ -23,7 +23,6 @@
     - cloud-guest-utils
     - cloud-initramfs-copymods
     - cloud-initramfs-dyn-netconf
-    - cloud-initramfs-growroot
   when: ansible_os_family == "Debian"
 
 - name: Install cloud-init packages
