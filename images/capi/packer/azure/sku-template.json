@@ -15,8 +15,8 @@
   "microsoft-azure-corevm.imageType": "VmImage",
   "microsoft-azure-corevm.imageVisibility": true,
   "microsoft-azure-corevm.isPremiumThirdParty": false,
-  "microsoft-azure-corevm.largeLogo": "https://publishingstoredm.blob.core.windows.net/prodcontent/D6191_publishers_cncf:2Dupstream/capi/2260f7f2-26f1-4a09-838c-abd105a9df5a.png?sv=2014-02-14&sr=b&sig=2XH7NUxshe2ae0c3NpFR1rkoy4ALvL0WKr6EU40Ont4%3D&se=2022-01-10T21%3A47%3A50Z&sp=r",
-  "microsoft-azure-corevm.mediumLogo": "https://publishingstoredm.blob.core.windows.net/prodcontent/D6191_publishers_cncf:2Dupstream/capi/efd664f2-ce65-4341-a443-2ecd45a0db65.png?sv=2014-02-14&sr=b&sig=6wzkyYlBiDGVG2GBKGQRHxoT5NKC%2BS9yBYpoJxUh1vs%3D&se=2022-01-10T21%3A47%3A50Z&sp=r",
+  "microsoft-azure-corevm.largeLogo": "https://capiofferlogos.blob.core.windows.net/logos/large216x216",
+  "microsoft-azure-corevm.mediumLogo": "hhttps://capiofferlogos.blob.core.windows.net/logos/medium90x90",
   "microsoft-azure-corevm.migratedOffer": false,
   "microsoft-azure-corevm.operatingSystemFamily": "{{OS_FAMILY}}",
   "microsoft-azure-corevm.osType": "{{OS_TYPE}}",
@@ -27,7 +27,7 @@
   "microsoft-azure-corevm.skuLongSummary": "Cluster API Kubernetes {{KUBERNETES_VERSION}} {{OS}} {{OS_VERSION}} Base Image",
   "microsoft-azure-corevm.skuSummary": "Cluster API Kubernetes {{KUBERNETES_VERSION}} {{OS}} {{OS_VERSION}} Base Image",
   "microsoft-azure-corevm.skuTitle": "Kubernetes {{KUBERNETES_VERSION}} {{OS}} {{OS_VERSION}}",
-  "microsoft-azure-corevm.smallLogo": "https://publishingstoredm.blob.core.windows.net/prodcontent/D6191_publishers_cncf:2Dupstream/capi/5b0e6fb7-e199-4dd1-ad6b-5e660b8eac22.png?sv=2014-02-14&sr=b&sig=GUzhgQdNYctMyg0w%2FnhHwMuC1nuTpGx4OQ5Uma6qIYk%3D&se=2022-01-10T21%3A47%3A50Z&sp=r",
+  "microsoft-azure-corevm.smallLogo": "https://capiofferlogos.blob.core.windows.net/logos/small48x48",
   "microsoft-azure-corevm.supportsAADLogin": false,
   "microsoft-azure-corevm.supportsBackup": false,
   "microsoft-azure-corevm.supportsClientHub": false,
@@ -36,6 +36,5 @@
   "microsoft-azure-corevm.supportsSriov": false,
   "microsoft-azure-corevm.termsOfUseURL": "https://github.com/cncf/foundation/blob/master/copyright-notices.md",
   "microsoft-azure-corevm.vmImagesPublicAzure": {},
-  "microsoft-azure-corevm.wideLogo": "https://publishingstoredm.blob.core.windows.net/prodcontent/D6191_publishers_cncf:2Dupstream/capi/62e4ba97-ee9e-4031-bd83-dd018f27ad1d.png?sv=2014-02-14&sr=b&sig=WpBKjrvgvTbIeVBhRc7aMXYUsz7fOtQrWlGOnNKY2RE%3D&se=2022-01-10T21%3A47%3A50Z&sp=r",
   "planId": "{{ID}}"
 }
