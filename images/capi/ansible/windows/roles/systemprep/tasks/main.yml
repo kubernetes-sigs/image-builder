@@ -104,6 +104,16 @@
     start_mode: auto
     state: started
 
+# If multiple LB policies are included for same endpoint then HNS hangs and requires restart
+# this fix forces an error instead of locking up (Fix is available in 2021-2C+)
+- name: Apply HNS fix for Multple LB policies
+  win_regedit:
+    path: HKLM:\SYSTEM\CurrentControlSet\Services\hns\State
+    state: present
+    name: HNSControlFlag
+    data: 1
+    type: dword
+
 - name: Add required Windows Features
   win_feature:
     name:
