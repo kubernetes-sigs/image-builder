@@ -227,10 +227,11 @@ HAPROXY_OVA_LOCAL_BUILD_NAMES			:=	$(addprefix haproxy-ova-local-,$(PHOTON_VERSI
 HAPROXY_OVA_ESX_BUILD_NAMES			:=	$(addprefix haproxy-ova-esx-,$(PHOTON_VERSIONS))
 HAPROXY_OVA_VSPHERE_BUILD_NAMES		:=	$(addprefix haproxy-ova-vsphere-,$(PHOTON_VERSIONS))
 
-AMI_BUILD_NAMES			?=	ami-centos-7 ami-ubuntu-1804 ami-ubuntu-2004 ami-amazon-2 ami-flatcar ami-windows-2019 ami-windows-2004
-GCE_BUILD_NAMES			?=	gce-ubuntu-1804 ## gce-ubuntu-2004
-AZURE_BUILD_VHD_NAMES	?=	azure-vhd-ubuntu-1804 azure-vhd-ubuntu-2004 azure-vhd-centos-7 azure-vhd-windows-2019 azure-vhd-windows-2004
-AZURE_BUILD_SIG_NAMES	?=	azure-sig-ubuntu-1804 azure-sig-ubuntu-2004 azure-sig-centos-7 azure-sig-windows-2019 azure-sig-windows-2004
+AMI_BUILD_NAMES			   ?= ami-centos-7 ami-ubuntu-1804 ami-ubuntu-2004 ami-amazon-2 ami-flatcar ami-windows-2019 ami-windows-2004
+GCE_BUILD_NAMES			   ?= gce-ubuntu-1804 ## gce-ubuntu-2004
+AZURE_BUILD_VHD_NAMES	   ?= azure-vhd-ubuntu-1804 azure-vhd-ubuntu-2004 azure-vhd-centos-7 azure-vhd-windows-2019 azure-vhd-windows-2004
+AZURE_BUILD_SIG_NAMES	   ?= azure-sig-ubuntu-1804 azure-sig-ubuntu-2004 azure-sig-centos-7 azure-sig-windows-2019 azure-sig-windows-2004
+AZURE_BUILD_SIG_GEN2_NAMES ?= azure-sig-ubuntu-1804-gen2 azure-sig-ubuntu-2004-gen2 azure-sig-centos7-gen2
 
 DO_BUILD_NAMES 			?=	do-centos-7 do-ubuntu-1804 do-ubuntu-2004
 
@@ -262,6 +263,7 @@ AZURE_BUILD_VHD_TARGETS	:= $(addprefix build-,$(AZURE_BUILD_VHD_NAMES))
 AZURE_VALIDATE_VHD_TARGETS	:= $(addprefix validate-,$(AZURE_BUILD_VHD_NAMES))
 AZURE_BUILD_SIG_TARGETS	:= $(addprefix build-,$(AZURE_BUILD_SIG_NAMES))
 AZURE_VALIDATE_SIG_TARGETS	:= $(addprefix validate-,$(AZURE_BUILD_SIG_NAMES))
+AZURE_VALIDATE_SIG_GEN2_TARGETS	:= $(addprefix validate-,$(AZURE_BUILD_SIG_GEN2_NAMES))
 DO_BUILD_TARGETS 	:= $(addprefix build-,$(DO_BUILD_NAMES))
 DO_VALIDATE_TARGETS 	:= $(addprefix validate-,$(DO_BUILD_NAMES))
 QEMU_FLATCAR_BUILD_TARGETS	:= $(addprefix build-,$(QEMU_FLATCAR_BUILD_NAMES))
@@ -347,9 +349,17 @@ $(AZURE_VALIDATE_VHD_TARGETS): deps-azure
 $(AZURE_BUILD_SIG_TARGETS): deps-azure
 	. $(abspath packer/azure/scripts/init-sig.sh) && packer build $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="$(abspath packer/azure/azure-config.json)" -var-file="$(abspath packer/azure/azure-sig.json)" -var-file="$(abspath packer/azure/$(subst build-azure-sig-,,$@).json)" -only="$(subst build-azure-,,$@)" $(ABSOLUTE_PACKER_VAR_FILES) packer/azure/packer$(findstring -windows,$@).json
 
+.PHONY: $(AZURE_BUILD_SIG_GEN2_TARGETS)
+$(AZURE_BUILD_SIG_GEN2_TARGETS): deps-azure
+	. $(abspath packer/azure/scripts/init-sig.sh) && packer build $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="$(abspath packer/azure/azure-config.json)" -var-file="$(abspath packer/azure/azure-sig-gen2.json)" -var-file="$(abspath packer/azure/$(subst build-azure-sig-,,$@).json)" -only="$(subst build-azure-,,$@)" $(ABSOLUTE_PACKER_VAR_FILES) packer/azure/packer$(findstring -windows,$@).json
+
 .PHONY: $(AZURE_VALIDATE_SIG_TARGETS)
 $(AZURE_VALIDATE_SIG_TARGETS): deps-azure
 	packer validate $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="$(abspath packer/azure/azure-config.json)" -var-file="$(abspath packer/azure/azure-sig.json)" -var-file="$(abspath packer/azure/$(subst validate-azure-sig-,,$@).json)" -only="$(subst validate-azure-,,$@)" $(ABSOLUTE_PACKER_VAR_FILES) packer/azure/packer$(findstring windows,$@).json
+
+.PHONY: $(AZURE_VALIDATE_SIG_GEN2_TARGETS)
+$(AZURE_VALIDATE_SIG_GEN2_TARGETS): deps-azure
+	packer validate $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="$(abspath packer/azure/azure-config.json)" -var-file="$(abspath packer/azure/azure-sig-gen2.json)" -var-file="$(abspath packer/azure/$(subst validate-azure-sig-,,$@).json)" -only="$(subst validate-azure-,,$@)" $(ABSOLUTE_PACKER_VAR_FILES) packer/azure/packer$(findstring windows,$@).json
 
 .PHONY: $(DO_BUILD_TARGETS)
 $(DO_BUILD_TARGETS): deps-do
@@ -383,7 +393,6 @@ $(QEMU_IBMCLOUD_BUILD_TARGETS): deps-qemu
 $(QEMU_IBMCLOUD_VALIDATE_TARGETS): deps-qemu
 	packer validate $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/ibmcloud/$(subst validate-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) -except=flatcar packer/ibmcloud/packer.json
 
-
 ## --------------------------------------
 ## Dynamic clean targets
 ## --------------------------------------
@@ -405,7 +414,7 @@ $(QEMU_CLEAN_TARGETS):
 QEMU_IBMCLOUD_CLEAN_TARGETS := $(subst build-,clean-,$(QEMU_IBMCLOUD_BUILD_TARGETS))
 .PHONY: $(QEMU_IBMCLOUD_CLEAN_TARGETS)
 $(QEMU_IBMCLOUD_CLEAN_TARGETS):
-	rm -fr output/$(subst clean-qemu-ibmcloud-,,$@)-kube*
+	rm -fr output/$(subst clean-qemu-ibmcloud-,,$@)-ibmcloud-kube*
 
 ## --------------------------------------
 ## Document dynamic build targets
@@ -430,8 +439,11 @@ build-azure-vhd-ubuntu-2004: ## Builds Ubuntu 20.04 VHD image for Azure
 build-azure-vhd-centos-7: ## Builds CentOS 7 VHD image for Azure
 build-azure-vhd-windows-2019: ## Builds for Windows Server 2019
 build-azure-vhd-windows-2004: ## Builds for Windows Server 2004 SAC
+build-azure-sig-centos-7-gen2: ## Builds CentOS Gen2 managed image in Shared Image Gallery
+build-azure-sig-ubuntu-1804-gen2: ## Builds Ubuntu 18.04 Gen2 managed image in Shared Image Gallery
+build-azure-sig-ubuntu-2004-gen2: ## Builds Ubuntu 20.04 Gen2 managed image in Shared Image Gallery
 build-azure-vhds: $(AZURE_BUILD_VHD_TARGETS) ## Builds all Azure VHDs
-build-azure-sigs: $(AZURE_BUILD_SIG_TARGETS) ## Builds all Azure Shared Image Gallery images
+build-azure-sigs: $(AZURE_BUILD_SIG_TARGETS) $(AZURE_BUILD_SIG_GEN2_TARGETS) ## Builds all Azure Shared Image Gallery images
 
 
 build-do-ubuntu-1804: ## Builds Ubuntu 18.04 DigitalOcean Snapshot
@@ -527,6 +539,8 @@ validate-azure-vhd-ubuntu-1804: ## Validates Ubuntu 18.04 VHD image Azure Packer
 validate-azure-vhd-ubuntu-2004: ## Validates Ubuntu 20.04 VHD image Azure Packer config
 validate-azure-vhd-windows-2019: ## Validate Windows Server 2019 VHD image Azure Packer config
 validate-azure-vhd-windows-2004: ## Validate Windows Server 2004 SAC VHD image Azure Packer config
+validate-azure-sig-ubuntu-1804-gen2: ## Validates Ubuntu 18.04 Azure managed image in Shared Image Gallery Packer config
+validate-azure-sig-ubuntu-2004-gen2: ## Validates Ubuntu 20.04 Azure managed image in Shared Image Gallery Packer config
 validate-azure-all: $(AZURE_VALIDATE_SIG_TARGETS) $(AZURE_VALIDATE_VHD_TARGETS) ## Validates all VHD images Azure Packer config
 
 validate-do-ubuntu-1804: ## Valdiates Ubuntu 18.04 DigitalOcean Snapshot Packer config
@@ -637,3 +651,13 @@ test-azure: ## Run the tests for Azure builders
 .PHONY: release-staging
 release-staging: ## Builds and push container images to the staging bucket.
 	TAG=$(IB_VERSION) REGISTRY=$(STAGING_REGISTRY) $(MAKE) docker-build docker-push
+
+## --------------------------------------
+## Sort JSON
+## --------------------------------------
+##@ Sort JSON
+
+.PHONY: json-sort
+json_files = $(shell find . -type f -name "*.json" | sort -u)
+json-sort: ## Sort all JSON files alphabetically
+	@for f in $(json_files); do (cat "$$f" | jq -S '.' >> "$$f".sorted && mv "$$f".sorted "$$f") || exit 1 ; done
