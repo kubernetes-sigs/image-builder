@@ -9,6 +9,6 @@
   - [GCP](./capi/providers/gcp.md)
   - [OpenStack](./capi/providers/openstack.md)
   - [vSphere](./capi/providers/vsphere.md)
+  - [IBM Cloud VPC](./capi/providers/ibmcloudvpc.md)
   - [Testing the Images](./capi/goss/goss.md)
-  - [Using Container Images](./capi/container-image.md)
 - [Glossary](./glossary.md)
