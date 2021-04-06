@@ -8,6 +8,7 @@
   - [DigitalOcean](./capi/providers/digitalocean.md)
   - [GCP](./capi/providers/gcp.md)
   - [OpenStack](./capi/providers/openstack.md)
+  - [raw](./capi/providers/raw.md)
   - [vSphere](./capi/providers/vsphere.md)
   - [Testing the Images](./capi/goss/goss.md)
   - [Using Container Images](./capi/container-image.md)
