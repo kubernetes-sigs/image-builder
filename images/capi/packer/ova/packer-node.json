@@ -191,6 +191,7 @@
       "disk_controller_type": "{{user `disk_controller_type`}}",
       "export": {
         "force": true,
+        "manifest": "{{ user `export_manifest`}}",
         "output_directory": "{{user `output_dir`}}"
       },
       "floppy_dirs": "{{ user `floppy_dirs`}}",
@@ -237,6 +238,7 @@
       "datastore": "{{user `datastore`}}",
       "export": {
         "force": true,
+        "manifest": "{{ user `export_manifest`}}",
         "output_directory": "{{user `output_dir`}}"
       },
       "folder": "{{user `folder`}}",
@@ -427,6 +429,7 @@
     "datastore": "",
     "disk_size": "20480",
     "existing_ansible_ssh_args": "{{env `ANSIBLE_SSH_ARGS`}}",
+    "export_manifest": "none",
     "folder": "",
     "guest_os_type": null,
     "ib_version": "{{env `IB_VERSION`}}",
