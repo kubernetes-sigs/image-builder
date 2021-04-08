@@ -98,9 +98,6 @@
       "type": "powershell"
     },
     {
-      "ansible_env_vars": [
-        "ANSIBLE_REMOTE_TEMP='/tmp/.ansible/'"
-      ],
       "extra_arguments": [
         "-e",
         "ansible_winrm_server_cert_validation=ignore ansible_winrm_operation_timeout_sec=120 ansible_winrm_read_timeout_sec=150",

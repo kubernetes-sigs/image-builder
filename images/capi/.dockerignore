@@ -3,6 +3,7 @@
 
 # Exceptions
 !ansible
+!ansible.cfg
 !cloudinit
 !hack
 !packer
