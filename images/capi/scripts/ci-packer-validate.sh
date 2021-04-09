@@ -1,6 +1,6 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
-# Copyright 2020 The Kubernetes Authors.
+# Copyright 2021 The Kubernetes Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,23 +14,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+###############################################################################
+
 set -o errexit
 set -o nounset
 set -o pipefail
 
 [[ -n ${DEBUG:-} ]] && set -o xtrace
 
-source hack/utils.sh
+CAPI_ROOT=$(dirname "${BASH_SOURCE[0]}")/..
+cd "${CAPI_ROOT}" || exit 1
 
-_version="2.10.0"
+export PATH=${PWD}/.local/bin:$PATH
+export PATH=${PYTHON_BIN_DIR:-"${HOME}/.local/bin"}:$PATH
 
-# Change directories to the parent directory of the one in which this
-# script is located.
-cd "$(dirname "${BASH_SOURCE[0]}")/.."
-
-if command -v ansible >/dev/null 2>&1; then exit 0; fi
-
-ensure_py3
-pip3 install --user "ansible==${_version}"
-ensure_py3_bin ansible
-ensure_py3_bin ansible-playbook
+AZURE_LOCATION=fake RESOURCE_GROUP_NAME=fake STORAGE_ACCOUNT_NAME=fake \
+  DIGITALOCEAN_ACCESS_TOKEN=fake GCP_PROJECT_ID=fake \
+  make validate-all
