@@ -42,7 +42,6 @@
     name: kubelet
     daemon_reload: yes
     enabled: True
-    state: restarted
 
 - name: Create the Kubernetes version file
   template:
