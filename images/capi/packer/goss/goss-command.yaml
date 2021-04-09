@@ -58,12 +58,6 @@ command:
     stderr: []
     timeout: 0
 {{end}}
-{{range $name, $vers := index .Vars .Vars.OS "common-command"}}
-  {{ $name }}:
-  {{range $key, $val := $vers}}
-    {{$key}}: {{$val}}
-  {{end}}
-{{end}}
 {{range $name, $vers := index .Vars .Vars.OS .Vars.PROVIDER "command"}}
   {{ $name }}:
   {{range $key, $val := $vers}}
