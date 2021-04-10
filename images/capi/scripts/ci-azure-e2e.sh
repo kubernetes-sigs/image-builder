@@ -16,28 +16,7 @@
 
 ###############################################################################
 
-set -o errexit
-set -o nounset
-set -o pipefail
-
-[[ -n ${DEBUG:-} ]] && set -o xtrace
-
 CAPI_ROOT=$(dirname "${BASH_SOURCE[0]}")/..
 cd "${CAPI_ROOT}" || exit 1
 
-cleanup() {
-    returnCode="$?"
-    exit "${returnCode}"
-}
-
-trap cleanup EXIT
-
-json_files=$(find . -type f -name "*.json" | sort -u)
-for f in ${json_files}
-do
-  if ! diff <(jq -S . ${f}) ${f} >> /dev/null; then
-    echo "json files are not sorted!! Please sort them with \"make json-sort\" in \"images/capi\" before commit"
-    echo "Unsorted file: ${f}"
-    exit 1
-  fi
-done
+packer/azure/scripts/ci-azure-e2e.sh
