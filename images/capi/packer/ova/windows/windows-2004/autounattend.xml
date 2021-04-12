@@ -1,3 +1,18 @@
+<!--*************************************************
+Windows Server 2004 Answer File
+
+Installation Notes
+Location: 
+Notes: We currently assume your image is using a licesnsed media, and hard code product keys accordingly
+Users will want to modify this file.
+Installation Notes:
+- We currently assume your image is using a licesnsed media, and hard code product keys accordingly
+- ProductKey: must be removed if using an eval version
+- The OOBE and UserAccounts sections: might be removed for administrator details
+- The Timezone in this file should match the location your using (otherwise you hit race conditions related to time.windows.com)
+- We hard code an administrative passcode in here, which administrators may need to modify
+- There are many other parameters in here which may need to be changed.  Over time we will parameterize these as part of the image-builder process
+**************************************************-->
 <?xml version="1.0" encoding="utf-8"?>
 <unattend xmlns="urn:schemas-microsoft-com:unattend">
     <settings pass="windowsPE">

@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- name: Get kubernetes binaries
+- name: Download kubernetes binaries
   win_get_url:
     url: "{{ kubernetes_base_url }}/{{ item }}.exe"
     dest: '{{ kubernetes_install_path }}\'
