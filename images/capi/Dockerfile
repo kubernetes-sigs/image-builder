@@ -28,6 +28,7 @@ USER imagebuilder
 WORKDIR /home/imagebuilder/
 
 COPY --chown=imagebuilder:imagebuilder ansible ansible/
+COPY --chown=imagebuilder:imagebuilder ansible.cfg ansible.cfg
 COPY --chown=imagebuilder:imagebuilder cloudinit cloudinit/
 COPY --chown=imagebuilder:imagebuilder hack hack/
 COPY --chown=imagebuilder:imagebuilder packer packer/
