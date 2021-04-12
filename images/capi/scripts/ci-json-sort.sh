@@ -1,0 +1,1 @@
+../hack/ci-json-sort.sh
