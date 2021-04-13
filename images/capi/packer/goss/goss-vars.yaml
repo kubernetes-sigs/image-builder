@@ -75,7 +75,6 @@ kubernetes_load_additional_imgs: false
 # OS_NAME
 #   common-package:
 #   common-kernel-params:
-#   common-commands:
 #   common-services:
 #   PROVIDER_NAME:
 #     package:
@@ -112,6 +111,22 @@ centos:
       cloud-init:
       cloud-utils-growpart:
       python2-pip:
+flatcar:
+  amazon:
+    command:
+photon:
+  common-kernel-param:
+    net.ipv4.tcp_limit_output_bytes:
+      value: "524288"
+  common-package:
+    <<: *common_photon_rpms
+    audit:
+  ova:
+    package:
+      open-vm-tools:
+      cloud-init:
+      cloud-utils:
+      python3-netifaces:
 rhel:
   common-package: *common_rpms
   ova:
@@ -162,16 +177,3 @@ ubuntu:
       cloud-guest-utils:
       cloud-initramfs-copymods:
       cloud-initramfs-dyn-netconf:
-photon:
-  common-kernel-param:
-    net.ipv4.tcp_limit_output_bytes:
-      value: "524288"
-  common-package:
-    <<: *common_photon_rpms
-    audit:
-  ova:
-    package:
-      open-vm-tools:
-      cloud-init:
-      cloud-utils:
-      python3-netifaces:

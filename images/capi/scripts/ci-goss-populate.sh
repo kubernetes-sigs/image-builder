@@ -1,6 +1,6 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
-# Copyright 2020 The Kubernetes Authors.
+# Copyright 2021 The Kubernetes Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,23 +14,32 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+###############################################################################
+
 set -o errexit
 set -o nounset
 set -o pipefail
 
 [[ -n ${DEBUG:-} ]] && set -o xtrace
 
+CAPI_ROOT=$(dirname "${BASH_SOURCE[0]}")/..
+cd "${CAPI_ROOT}" || exit 1
+
 source hack/utils.sh
-
-_version="2.10.0"
-
-# Change directories to the parent directory of the one in which this
-# script is located.
-cd "$(dirname "${BASH_SOURCE[0]}")/.."
-
-if command -v ansible >/dev/null 2>&1; then exit 0; fi
-
 ensure_py3
-pip3 install --user "ansible==${_version}"
-ensure_py3_bin ansible
-ensure_py3_bin ansible-playbook
+
+_version="v0.3.16"
+_bin_url="https://github.com/aelsabbahy/goss/releases/download/${_version}/goss-linux-amd64"
+
+if ! command -v goss >/dev/null 2>&1; then
+  if [[ ${HOSTOS} == "linux" ]]; then
+    curl -SsL "${_bin_url}" -o goss
+    chmod +x goss
+    mkdir -p "${PWD}/.local/bin"
+    mv goss "${PWD}/.local/bin"
+    export PATH=${PWD}/.local/bin:$PATH
+  fi
+fi
+
+export GOSS_USE_ALPHA=1
+hack/generate-goss-specs.py

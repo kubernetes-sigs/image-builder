@@ -25,7 +25,7 @@ set -o pipefail
 
 [[ -n ${DEBUG:-} ]] && set -o xtrace
 
-CAPI_ROOT=$(dirname "${BASH_SOURCE[0]}")/../../..
+CAPI_ROOT=$(dirname "${BASH_SOURCE[0]}")/..
 cd "${CAPI_ROOT}" || exit 1
 
 # shellcheck source=parse-prow-creds.sh
@@ -61,7 +61,7 @@ trap cleanup EXIT
 
 make deps-azure
 
-# Pre-pulling windows images takes 10-20 mins 
+# Pre-pulling windows images takes 10-20 mins
 # Disable them for CI runs so don't run into timeouts
 export PACKER_VAR_FILES=packer/azure/scripts/disable-windows-prepull.json
 

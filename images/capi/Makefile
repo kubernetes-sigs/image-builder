@@ -47,7 +47,7 @@ version: ## Display version of image-builder
 
 .PHONY: deps
 deps: ## Installs/checks all dependencies
-deps: deps-ami deps-azure deps-do deps-gce deps-ova deps-qemu
+deps: deps-ami deps-azure deps-do deps-gce deps-ova deps-qemu deps-raw
 
 .PHONY: deps-ami
 deps-ami: ## Installs/checks dependencies for AMI builds
@@ -92,6 +92,12 @@ deps-ova:
 .PHONY: deps-qemu
 deps-qemu: ## Installs/checks dependencies for QEMU builds
 deps-qemu:
+	hack/ensure-ansible.sh
+	hack/ensure-packer.sh
+
+.PHONY: deps-raw
+deps-raw: ## Installs/checks dependencies for RAW builds
+deps-raw:
 	hack/ensure-ansible.sh
 	hack/ensure-packer.sh
 
@@ -210,7 +216,6 @@ FLATCAR_VERSION ?= 2605.10.0
 export FLATCAR_CHANNEL FLATCAR_VERSION
 
 PLATFORMS_AND_VERSIONS	:=	$(CENTOS_VERSIONS) \
-							$(FLATCAR_VERSIONS) \
 							$(PHOTON_VERSIONS) \
 							$(RHEL_VERSIONS) \
 							$(UBUNTU_VERSIONS) \
@@ -239,6 +244,8 @@ QEMU_FLATCAR_BUILD_NAMES	?=	qemu-flatcar
 QEMU_BUILD_NAMES			?=	qemu-ubuntu-1804 qemu-ubuntu-2004
 
 QEMU_IBMCLOUD_BUILD_NAMES       ?= qemu-ibmcloud-ubuntu-2004
+
+RAW_BUILD_NAMES                        ?=      raw-ubuntu-1804 raw-ubuntu-2004
 
 ## --------------------------------------
 ## Dynamic build targets
@@ -272,6 +279,8 @@ QEMU_BUILD_TARGETS	:= $(addprefix build-,$(QEMU_BUILD_NAMES))
 QEMU_VALIDATE_TARGETS	:= $(addprefix validate-,$(QEMU_BUILD_NAMES))
 QEMU_IBMCLOUD_BUILD_TARGETS	:= $(addprefix build-,$(QEMU_IBMCLOUD_BUILD_NAMES))
 QEMU_IBMCLOUD_VALIDATE_TARGETS	:= $(addprefix validate-,$(QEMU_IBMCLOUD_BUILD_NAMES))
+RAW_BUILD_TARGETS      := $(addprefix build-,$(RAW_BUILD_NAMES))
+RAW_VALIDATE_TARGETS   := $(addprefix validate-,$(RAW_BUILD_NAMES))
 
 .PHONY: $(NODE_OVA_LOCAL_BUILD_TARGETS)
 $(NODE_OVA_LOCAL_BUILD_TARGETS): deps-ova
@@ -355,7 +364,7 @@ $(AZURE_BUILD_SIG_GEN2_TARGETS): deps-azure
 
 .PHONY: $(AZURE_VALIDATE_SIG_TARGETS)
 $(AZURE_VALIDATE_SIG_TARGETS): deps-azure
-	packer validate $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="$(abspath packer/azure/azure-config.json)" -var-file="$(abspath packer/azure/azure-sig.json)" -var-file="$(abspath packer/azure/$(subst validate-azure-sig-,,$@).json)" -only="$(subst validate-azure-,,$@)" $(ABSOLUTE_PACKER_VAR_FILES) packer/azure/packer$(findstring windows,$@).json
+	packer validate $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="$(abspath packer/azure/azure-config.json)" -var-file="$(abspath packer/azure/azure-sig.json)" -var-file="$(abspath packer/azure/$(subst validate-azure-sig-,,$@).json)" -only="$(subst validate-azure-,,$@)" $(ABSOLUTE_PACKER_VAR_FILES) packer/azure/packer$(findstring -windows,$@).json
 
 .PHONY: $(AZURE_VALIDATE_SIG_GEN2_TARGETS)
 $(AZURE_VALIDATE_SIG_GEN2_TARGETS): deps-azure
@@ -393,6 +402,15 @@ $(QEMU_IBMCLOUD_BUILD_TARGETS): deps-qemu
 $(QEMU_IBMCLOUD_VALIDATE_TARGETS): deps-qemu
 	packer validate $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/ibmcloud/$(subst validate-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) -except=flatcar packer/ibmcloud/packer.json
 
+.PHONY: $(RAW_BUILD_TARGETS)
+$(RAW_BUILD_TARGETS): deps-raw
+	packer build $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/raw/$(subst build-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) -except=flatcar packer/raw/packer.json
+
+.PHONY: $(RAW_VALIDATE_TARGETS)
+$(RAW_VALIDATE_TARGETS): deps-raw
+	packer validate $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/raw/$(subst validate-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) -except=flatcar packer/raw/packer.json
+
+
 ## --------------------------------------
 ## Dynamic clean targets
 ## --------------------------------------
@@ -415,6 +433,11 @@ QEMU_IBMCLOUD_CLEAN_TARGETS := $(subst build-,clean-,$(QEMU_IBMCLOUD_BUILD_TARGE
 .PHONY: $(QEMU_IBMCLOUD_CLEAN_TARGETS)
 $(QEMU_IBMCLOUD_CLEAN_TARGETS):
 	rm -fr output/$(subst clean-qemu-ibmcloud-,,$@)-ibmcloud-kube*
+
+RAW_CLEAN_TARGETS := $(subst build-,clean-,$(RAW_CLEAN_TARGETS))
+.PHONY: $(RAW_CLEAN_TARGETS)
+$(RAW_CLEAN_TARGETS):
+	rm -fr output/$(subst clean-raw-,,$@)-kube*
 
 ## --------------------------------------
 ## Document dynamic build targets
@@ -517,12 +540,17 @@ build-qemu-all: $(QEMU_BUILD_TARGETS) ## Builds all Qemu images
 
 build-qemu-ibmcloud-ubuntu-2004: ## Builds Ubuntu 20.04 QEMU image for ibmcloud
 
+build-raw-ubuntu-1804: ## Builds Ubuntu 18.04 RAW image
+build-raw-ubuntu-2004: ## Builds Ubuntu 20.04 RAW image
+build-raw-all: $(RAW_BUILD_TARGETS) ## Builds all RAW images
+
 ## --------------------------------------
 ## Document dynamic validate targets
 ## --------------------------------------
 ##@ Validate packer config
 validate-ami-amazon-2: ## Validates Amazon-2 Linux AMI Packer config
 validate-ami-centos-7: ## Validates CentOS 7 AMI Packer config
+validate-ami-flatcar: ## Validates Flatcar AMI Packer config
 validate-ami-ubuntu-1804: ## Validates Ubuntu 18.04 AMI Packer config
 validate-ami-ubuntu-2004: ## Validates Ubuntu 20.04 AMI Packer config
 validate-ami-windows-2019: ## Validates Windows Server 2019 AMI Packer config
@@ -577,7 +605,11 @@ validate-node-ova-local-base-ubuntu-2004: ## Validates Ubuntu 20.04 Base Node OV
 validate-qemu-flatcar: ## Validates Flatcar QEMU image packer config
 validate-qemu-ubuntu-1804: ## Validates Ubuntu 18.04 QEMU image packer config
 validate-qemu-ubuntu-2004: ## Validates Ubuntu 20.04 QEMU image packer config
-validate-qemu-all: $(QEMU_VALIDATE_TARGETS) ## Validates all Qemu Packer config
+validate-qemu-all: $(QEMU_VALIDATE_TARGETS) validate-qemu-flatcar ## Validates all Qemu Packer config
+
+validate-raw-ubuntu-1804: ## Validates Ubuntu 18.04 RAW image packer config
+validate-raw-ubuntu-2004: ## Validates Ubuntu 20.04 RAW image packer config
+validate-raw-all: $(RAW_VALIDATE_TARGETS) ## Validates all RAW Packer config
 
 validate-qemu-ibmcloud-ubuntu-2004: ## Validates Ubuntu 20.04 QEMU image for ibmcloud
 
@@ -588,7 +620,8 @@ validate-all: validate-ami-all \
 	validate-node-ova-local-all \
 	validate-haproxy-ova-local-photon-3 \
 	validate-qemu-flatcar \
-	validate-qemu-all
+	validate-qemu-all \
+	validate-raw-all
 validate-all: ## Validates the Packer config for all build targets
 
 ## --------------------------------------
@@ -610,6 +643,10 @@ clean-qemu: $(QEMU_CLEAN_TARGETS)
 .PHONY: clean-qemu-ibmcloud
 clean-qemu-ibmcloud: ## Removes all qemu image output directories (see NOTE at top of help)
 clean-qemu-ibmcloud: $(QEMU_IBMCLOUD_CLEAN_TARGETS)
+
+.PHONY: clean-raw
+clean-raw: ## Removes all raw image output directories (see NOTE at top of help)
+clean-raw: $(RAW_CLEAN_TARGETS)
 
 .PHONY: clean-packer-cache
 clean-packer-cache: ## Removes the packer cache

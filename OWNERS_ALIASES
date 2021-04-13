@@ -18,6 +18,12 @@ aliases:
     - jsturtevant
   image-builder-openstack-reviewers:
     - hidekazuna
+  image-builder-raw-maintainers:
+    - detiber
+    - thebsdbox
+  image-builder-raw-reviewers:
+    - detiber
+    - thebsdbox
   cluster-api-maintainers:
     - justinsb
     - detiber
