@@ -26,7 +26,7 @@
         name: kubernetes
     - include_role:
         name: "{{ role }}"
-      loop: "{{ custom_role_names.split() }}"
+      loop: "{{ custom_role_names.split(',') }}"
       loop_control:
         loop_var: role
       when: custom_role | default(false)|bool
