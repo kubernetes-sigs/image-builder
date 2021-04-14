@@ -16,7 +16,7 @@
   "microsoft-azure-corevm.imageVisibility": true,
   "microsoft-azure-corevm.isPremiumThirdParty": false,
   "microsoft-azure-corevm.largeLogo": "https://capiofferlogos.blob.core.windows.net/logos/large216x216",
-  "microsoft-azure-corevm.mediumLogo": "hhttps://capiofferlogos.blob.core.windows.net/logos/medium90x90",
+  "microsoft-azure-corevm.mediumLogo": "https://capiofferlogos.blob.core.windows.net/logos/medium90x90",
   "microsoft-azure-corevm.migratedOffer": false,
   "microsoft-azure-corevm.operatingSystemFamily": "{{OS_FAMILY}}",
   "microsoft-azure-corevm.osType": "{{OS_TYPE}}",
@@ -36,5 +36,6 @@
   "microsoft-azure-corevm.supportsSriov": false,
   "microsoft-azure-corevm.termsOfUseURL": "https://github.com/cncf/foundation/blob/master/copyright-notices.md",
   "microsoft-azure-corevm.vmImagesPublicAzure": {},
+  "microsoft-azure-corevm.wideLogo": "https://capiofferlogos.blob.core.windows.net/logos/wide255x115",
   "planId": "{{ID}}"
 }
