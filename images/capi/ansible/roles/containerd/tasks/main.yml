@@ -133,6 +133,13 @@
     src: etc/containerd/config.toml
     mode: 0644
 
+- name: Copy in containerd config overrides
+  template:
+    dest: /etc/containerd/config.toml
+    src: etc/containerd/config_ibmcloud.toml
+    mode: 0644
+  when: is_ibmcloud is defined
+
 - name: Copy in crictl config
   template:
     dest: /etc/crictl.yaml
