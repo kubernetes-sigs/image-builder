@@ -16,6 +16,10 @@ aliases:
     - randomvariable
   image-builder-azure-reviewers:
     - jsturtevant
+  image-builder-ibmcloud-reviewers
+    - wentao-zh
+    - emmayang
+    - yiwenh
   image-builder-openstack-reviewers:
     - hidekazuna
   image-builder-raw-maintainers:
@@ -52,6 +56,10 @@ aliases:
     - MorrisLaw
     - prksu
     - timoreimann
+  cluster-api-ibmcloud-maintainers:
+    - gyliu513
+    - jichenjc
+    - xunpan
   cluster-api-openstack-maintainers:
     - chaosaffe
     - chrigl
