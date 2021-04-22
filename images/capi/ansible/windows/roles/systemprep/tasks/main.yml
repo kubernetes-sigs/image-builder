@@ -13,7 +13,23 @@
 # limitations under the License.
 ---
 # This file was adapted from https://github.com/Azure/aks-engine/blob/master/vhd/packer/configure-windows-vhd.ps1 for ansible
-- name: Disable automatic windows updates
+- name: Remove Windows updates default registry settings
+  win_regedit:
+    path: HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\
+    state: absent
+    delete_key: yes
+
+- name: Add Windows update registry path
+  win_regedit:
+    path: HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate
+    state: present
+
+- name: Add Windows automatic update registry path
+  win_regedit:
+    path: HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU
+    state: present
+
+- name: Disable Windows automatic updates in registry
   win_regedit:
     path: HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU
     state: present
