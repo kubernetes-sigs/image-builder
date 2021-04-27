@@ -24,16 +24,16 @@ import sys
 root_path = os.path.abspath(os.path.join(sys.argv[0], '..', '..'))
 
 # Define what OS's are supported on which providers
-builds = {'amazon': ['amazon linux', 'centos', 'flatcar', 'ubuntu'],
-          'azure':  ['centos', 'ubuntu'],
-          'ova': ['centos', 'photon', 'rhel', 'ubuntu']}
+builds = {'amazon': ['amazon linux', 'centos', 'flatcar', 'ubuntu', 'windows'],
+          'azure':  ['centos', 'ubuntu', 'windows'],
+          'ova': ['centos', 'photon', 'rhel', 'ubuntu', 'windows']}
 
-
-def generate_goss(provider, system, versions, dryrun=False, save=False):
-
+def generate_goss(provider, system, versions, runtime, dryrun=False, save=False):
     cmd = ['goss', '-g', 'packer/goss/goss.yaml', '--vars', 'packer/goss/goss-vars.yaml']
     vars = {'OS': system, 'PROVIDER': provider,
             'containerd_version': versions['containerd'],
+            'docker_ee_version': versions['docker'],
+            'distribution_version': versions['os'],
             'kubernetes_version': versions['k8s'],
             'kubernetes_deb_version': versions['k8s_deb'],
             'kubernetes_rpm_version': versions['k8s_rpm'],
@@ -41,11 +41,14 @@ def generate_goss(provider, system, versions, dryrun=False, save=False):
             'kubernetes_cni_version': versions['cni'],
             'kubernetes_cni_deb_version': versions['cni_deb'],
             'kubernetes_cni_rpm_version': versions['cni_rpm'],
-            'kubernetes_cni_source_type': 'pkg'}
+            'kubernetes_cni_source_type': 'pkg',
+            'runtime': runtime,
+            'pause_image': versions['pause']}
+
 
     # Build command
     cmd.extend(['--vars-inline', json.dumps(vars), 'render'])
-    print('generating os: %s, provider: %s' % (system, provider))
+    print('\nGenerating os: %s, provider: %s, runtime: %s' % (system, provider, runtime))
     print(cmd)
 
     # Run command with output going to file
@@ -73,14 +76,14 @@ def main():
         description='Generates GOSS specs. By default, generates all '
                     'possible specs to stdout.',
         usage='%(prog)s [-h] [--provider {amazon,azure,ova}] '
-              '[--os {al2,centos,flatcar,photon,rhel,ubuntu}]')
+              '[--os {al2,centos,flatcar,photon,rhel,ubuntu,windows}]')
     parser.add_argument('--provider',
                         choices=['amazon', 'azure', 'ova'],
                         action='append',
                         default=None,
                         help='One provider. Can be used multiple times')
     parser.add_argument('--os',
-                        choices=['al2', 'centos', 'flatcar', 'photon', 'rhel', 'ubuntu'],
+                        choices=['al2', 'centos', 'flatcar', 'photon', 'rhel', 'ubuntu', 'windows'],
                         action='append',
                         default=None,
                         help='One OS. Can be used multiple times')
@@ -107,6 +110,12 @@ def main():
     containerd = read_json_file(os.path.join(root_path, 'packer', 'config', 'containerd.json'))
     versions['containerd'] = containerd['containerd_version']
 
+    docker = read_json_file(os.path.join(root_path, 'packer', 'config', 'windows', 'docker.json'))
+    versions['docker'] = docker['docker_ee_version']
+
+    common = read_json_file(os.path.join(root_path, 'packer', 'config', 'common.json'))
+    versions['pause'] = common['pause_image']
+
     providers = builds.keys()
     if args.provider is not None:
         providers = args.provider
@@ -120,12 +129,20 @@ def main():
                 oss.append(o)
         oss = list(set(oss))
     oss = [sub.replace('al2', 'amazon linux') for sub in oss]
-
     # Generate spec for each valid permutation
     for provider, system in itertools.product(providers, oss):
         if system in builds[provider]:
-            generate_goss(provider, system, versions, args.dry_run, args.write)
-
+            if system == 'windows':
+                runtimes = ["docker_ee","containerd"]
+                os_versions = ["2019", "2004"]
+            else: 
+                runtimes = ["containerd"]
+                os_versions = [""]
+            for runtime in runtimes:
+                for version in os_versions:
+                    versions["os"] = version
+                    generate_goss(provider, system, versions, runtime, args.dry_run, args.write)
+            
 
 if __name__ == '__main__':
     main()

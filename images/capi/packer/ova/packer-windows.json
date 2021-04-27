@@ -3,7 +3,7 @@
     {
       "boot_wait": "{{user `boot_wait`}}",
       "communicator": "winrm",
-      "cpus": 2,
+      "cpus": 4,
       "disk_adapter_type": "scsi",
       "disk_size": "{{user `disk_size`}}",
       "disk_type_id": "{{user `disk_type_id`}}",
@@ -32,7 +32,7 @@
       "vm_name": "{{user `build_version`}}",
       "vmdk_name": "{{user `build_version`}}",
       "vmx_data": {
-        "numvcpus": "2",
+        "numvcpus": "4",
         "scsi0.virtualDev": "pvscsi"
       },
       "winrm_password": "S3cr3t0!",
@@ -174,6 +174,36 @@
       "restart_check_command": "powershell -command \"& {if ((get-content C:\\ProgramData\\lastboot.txt) -eq (Get-WmiObject win32_operatingsystem).LastBootUpTime) {Write-Output 'Sleeping for 600 seconds to wait for reboot'; start-sleep 600} else {Write-Output 'Reboot complete'}}\"",
       "restart_command": "powershell \"& {(Get-WmiObject win32_operatingsystem).LastBootUpTime > C:\\ProgramData\\lastboot.txt; Restart-Computer -force}\"",
       "type": "windows-restart"
+    },
+    {
+      "arch": "{{user `goss_arch`}}",
+      "format": "{{user `goss_format`}}",
+      "format_options": "{{user `goss_format_options`}}",
+      "goss_file": "{{user `goss_entry_file`}}",
+      "inspect": "{{user `goss_inspect_mode`}}",
+      "target_os": "Windows",
+      "tests": [
+        "{{user `goss_tests_dir`}}"
+      ],
+      "type": "goss",
+      "url": "{{user `goss_url`}}",
+      "use_sudo": false,
+      "vars_env": {
+        "GOSS_MAX_CONCURRENT": "5",
+        "GOSS_USE_ALPHA": "1"
+      },
+      "vars_file": "{{user `goss_vars_file`}}",
+      "vars_inline": {
+        "OS": "{{user `distro_name` | lower}}",
+        "PROVIDER": "ova",
+        "containerd_version": "{{user `containerd_version`}}",
+        "distribution_version": "{{user `distro_version`}}",
+        "docker_ee_version": "{{user `docker_ee_version`}}",
+        "kubernetes_version": "{{user `kubernetes_semver`}}",
+        "pause_image": "{{user `pause_image`}}",
+        "runtime": "{{user `runtime`}}"
+      },
+      "version": "{{user `goss_version`}}"
     }
   ],
   "variables": {

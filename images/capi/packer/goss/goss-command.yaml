@@ -1,4 +1,5 @@
 command:
+{{ if ne .Vars.OS "windows" }} # Linux Only
   containerd --version | awk -F' ' '{print substr($3,2); }':
     exit-status: 0
     stdout: []
@@ -64,3 +65,77 @@ command:
     {{$key}}: {{$val}}
   {{end}}
 {{end}}
+{{end}} #End linux only 
+
+{{ if eq .Vars.OS "windows" }} # Windows
+  kubectl version --client:
+    exit-status: 0
+    stdout:
+    - {{.Vars.kubernetes_version}}
+    - "windows"
+    - {{.Vars.arch}}
+    timeout: 10000
+  kubeadm version:
+    exit-status: 0
+    stdout:
+    - {{.Vars.kubernetes_version}}
+    - "windows"
+    - {{.Vars.arch}}
+    timeout: 10000
+  kubelet --version:
+    exit-status: 0
+    stdout:
+    - {{.Vars.kubernetes_version}}
+    timeout: 10000
+  Check Symbolic link to /etc/kubernetes/pki:
+    exit-status: 0
+    exec: powershell -command "(Get-item -path $env:SystemDrive\var\lib\kubelet\etc\kubernetes\pki| select LinkType,Target)"
+    stdout:
+    - SymbolicLink 
+    - C:\etc\kubernetes\pki\
+{{ if eq .Vars.distribution_version "2019" }}
+  Windows build version is high enough:
+    exit-status: 0
+    exec: powershell -command "(Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion' -Name UBR).UBR -ge 1817"
+    stdout:
+    - "True"
+    timeout: 30000
+{{end}}
+{{ if eq .Vars.runtime "containerd" }}
+  Correct Containerd Version:
+    exec: "\"/Program Files/containerd/containerd.exe\" --version"
+    exit-status: 0
+    stdout:
+    - "{{.Vars.containerd_version}}"
+    timeout: 30000
+  Correct Containerd cni config:
+    exec: "\"/Program Files/containerd/containerd.exe\" config dump"
+    exit-status: 0
+    stdout:
+    - "sandbox_image = \"{{.Vars.pause_image}}\""
+    - "conf_dir = \"C:/etc/cni/net.d\""
+    - "bin_dir = \"C:/opt/cni/bin\""
+    timeout: 30000
+  Check Windows Defender Exclusions are in place:
+    exit-status: 0
+    exec: powershell -command "(Get-MpPreference | select ExclusionProcess)"
+    stdout:
+    - \Program Files\containerd\containerd.exe, 
+    - \Program Files\containerd\ctr.exe
+  Check SMB CompartmentNamespace Flag:
+    exit-status: 0
+    exec: powershell -command "(Get-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Services\hns\State' -Name EnableCompartmentNamespace).EnableCompartmentNamespace -eq 1"
+    stdout:
+    - True
+    timeout: 30000
+{{end}}
+
+{{ if eq .Vars.runtime "docker_ee" }}
+  Correct Docker Version:
+    exec: "docker.exe version"
+    exit-status: 0
+    stdout:
+    - "{{.Vars.docker_ee_version}}"
+    timeout: 30000
+{{end}}
+{{end}} #end windows

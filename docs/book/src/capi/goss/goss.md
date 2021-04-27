@@ -14,8 +14,9 @@ to test if the images have all requisite components to work with cluster API.
 |----|---------|
 | Amazon Linux | aws
 | PhotonOS | ova
-| Ubuntu | aws , ova, azure
+| Ubuntu | aws, azure, ova
 | CentOS | aws, ova 
+| Windows | aws, azure, ova
 
 
 ### Prerequisites for Running GOSS

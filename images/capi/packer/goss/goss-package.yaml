@@ -1,3 +1,4 @@
+{{ if ne .Vars.OS "windows"}}
 kubernetes_version: &kubernetes_version
   versions:
     or:
@@ -50,4 +51,19 @@ package:
   {{range $key, $val := $vers}}
     {{$key}}: {{$val}}
   {{end}}
+{{end}}
+
+{{end}}
+{{ if eq .Vars.OS "windows"}} # Windows
+# Workaround until windows features are added to goss
+command:
+{{range $name, $vers := index .Vars .Vars.OS "common-windows-features"}}
+  "Windows Feature - {{ $name }}":
+    exec: powershell -command "(Get-WindowsFeature {{ $name }} | select *)"
+    exit-status: 0
+    stdout: {{range $vers.expected}}
+    - {{.}}
+    timeout: 30000
+    {{end}}
+{{end}}
 {{end}}
