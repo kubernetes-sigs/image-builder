@@ -127,7 +127,7 @@
       <vmw:Config ovf:required="false" vmw:key="cpuHotAddEnabled" vmw:value="false"/>
       <vmw:Config ovf:required="false" vmw:key="cpuHotRemoveEnabled" vmw:value="false"/>
       <vmw:Config ovf:required="false" vmw:key="memoryHotAddEnabled" vmw:value="false"/>
-      <vmw:Config ovf:required="false" vmw:key="firmware" vmw:value="bios"/>
+      <vmw:Config ovf:required="false" vmw:key="firmware" vmw:value="${FW_TYPE}"/>
       <vmw:Config ovf:required="false" vmw:key="tools.syncTimeWithHost" vmw:value="false"/>
       <vmw:Config ovf:required="false" vmw:key="tools.afterPowerOn" vmw:value="true"/>
       <vmw:Config ovf:required="false" vmw:key="tools.afterResume" vmw:value="true"/>

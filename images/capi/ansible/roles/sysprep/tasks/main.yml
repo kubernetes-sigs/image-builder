@@ -138,6 +138,14 @@
   - { path: /root/.ssh/authorized_keys }
   when: ansible_os_family == "Flatcar"
 
+- name: Remove some blocking files for Ubuntu 20.xx Cloud-init #https://kb.vmware.com/s/article/80934 
+  file:
+    state: absent
+    path: "{{ item.path }}"
+  loop:
+  - { path: /etc/cloud/cloud.cfg.d/subiquity-disable-cloudinit-networking.cfg }
+  - { path: /etc/cloud/cloud.cfg.d/99-installer.cfg }
+  when: ansible_facts['distribution'] == "Ubuntu" and ansible_facts['distribution_major_version'] == "20"
 
 - name: Truncate all remaining log files in /var/log
   shell:
@@ -150,6 +158,7 @@
     cmd: |
       find /var/log -type f -name '*.gz' -exec rm {} +
   when: ansible_os_family != "Flatcar"
+
 
 - name: Remove swapfile
   file:

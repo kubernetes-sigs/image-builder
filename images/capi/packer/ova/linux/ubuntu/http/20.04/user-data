@@ -1,0 +1,28 @@
+#cloud-config
+autoinstall:
+  version: 1
+  early-commands:
+    - systemctl stop ssh # otherwise packer tries to connect and exceed max attempts
+  locale: en_US
+  keyboard:
+    layout: en
+    variant: us
+  storage:
+    layout:
+      name: direct
+    swap:
+      size: 0
+  identity:  
+    hostname: ubuntu
+    username: builder
+    password: $6$pOFtHcrTrT0JO/q$fQE2uT61m82/OkEmgp093mMFGSv58o9xWz4tvj9FXimPQhi.WZQttkXJJ2q6cMq7QZG.RIogl0FyS4K1OSjED1
+  ssh:
+    install-server: yes
+    allow-pw: true
+  user-data:
+    disable_root: false
+  packages:
+    - open-vm-tools
+  late-commands:
+    - "echo 'builder ALL=(ALL) NOPASSWD: ALL' >/target/etc/sudoers.d/builder"
+    - "curtin in-target --target=/target chmod 440 /etc/sudoers.d/builder"

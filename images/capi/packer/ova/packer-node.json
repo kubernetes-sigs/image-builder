@@ -36,6 +36,8 @@
         "{{user `boot_command_suffix`}}"
       ],
       "boot_wait": "{{user `boot_wait`}}",
+      "cd_files": "{{ user `cd_dirs`}}",
+      "cd_label": "cidata",
       "communicator": "ssh",
       "cores": 1,
       "cpus": 1,
@@ -67,7 +69,8 @@
       "vm_name": "{{user `base_build_version`}}",
       "vmdk_name": "{{user `base_build_version`}}",
       "vmx_data": {
-        "ethernet0.networkName": "{{user `network`}}"
+        "ethernet0.networkName": "{{user `network`}}",
+        "firmware": "{{ user `vmware_firmware`}}"
       },
       "vnc_bind_address": "{{user `vnc_bind_address`}}",
       "vnc_disable_password": "{{user `vnc_disable_password`}}",
@@ -81,6 +84,8 @@
         "{{user `boot_command_suffix`}}"
       ],
       "boot_wait": "{{user `boot_wait`}}",
+      "cd_files": "{{ user `cd_dirs`}}",
+      "cd_label": "cidata",
       "communicator": "ssh",
       "cores": 1,
       "cpus": 1,
@@ -112,7 +117,8 @@
       "vm_name": "{{user `build_version`}}",
       "vmdk_name": "{{user `build_version`}}",
       "vmx_data": {
-        "ethernet0.networkName": "{{user `network`}}"
+        "ethernet0.networkName": "{{user `network`}}",
+        "firmware": "{{ user `vmware_firmware`}}"
       },
       "vnc_bind_address": "{{user `vnc_bind_address`}}",
       "vnc_disable_password": "{{user `vnc_disable_password`}}",
@@ -128,6 +134,8 @@
         "{{user `boot_command_suffix`}}"
       ],
       "boot_wait": "{{user `boot_wait`}}",
+      "cd_files": "{{ user `cd_dirs`}}",
+      "cd_label": "cidata",
       "cluster": "{{user `cluster`}}",
       "communicator": "ssh",
       "convert_to_template": "{{user `convert_to_template`}}",
@@ -140,6 +148,7 @@
         "force": true,
         "output_directory": "{{user `base_output_dir`}}"
       },
+      "firmware": "{{ user `vmware_firmware`}}",
       "floppy_dirs": "{{ user `floppy_dirs`}}",
       "folder": "{{user `folder`}}",
       "guest_os_type": "{{user `vsphere_guest_os_type`}}",
@@ -182,6 +191,8 @@
         "{{user `boot_command_suffix`}}"
       ],
       "boot_wait": "{{user `boot_wait`}}",
+      "cd_files": "{{ user `cd_dirs`}}",
+      "cd_label": "cidata",
       "cluster": "{{user `cluster`}}",
       "communicator": "ssh",
       "convert_to_template": "{{user `convert_to_template`}}",
@@ -194,6 +205,7 @@
         "manifest": "{{ user `export_manifest`}}",
         "output_directory": "{{user `output_dir`}}"
       },
+      "firmware": "{{ user `vmware_firmware`}}",
       "floppy_dirs": "{{ user `floppy_dirs`}}",
       "folder": "{{user `folder`}}",
       "guest_os_type": "{{user `vsphere_guest_os_type`}}",
@@ -241,6 +253,7 @@
         "manifest": "{{ user `export_manifest`}}",
         "output_directory": "{{user `output_dir`}}"
       },
+      "firmware": "{{ user `vmware_firmware`}}",
       "folder": "{{user `folder`}}",
       "host": "{{user `host`}}",
       "insecure_connection": "{{user `insecure_connection`}}",
@@ -293,7 +306,7 @@
         "cd {{user `output_dir`}}",
         "tar xf {{user `build_version`}}.ova",
         "rm {{user `build_version`}}.ova",
-        "../../hack/image-build-ova.py --stream_vmdk --node --vmx {{user `vmx_version`}} --eula ../../hack/ovf_eula.txt --ovf_template ../../hack/ovf_template.xml --vmdk_file {{user `build_version`}}-disk1.vmdk"
+        "../../hack/image-build-ova.py --stream_vmdk --node --vmx {{user `vmx_version`}} --fw-type {{ user `vmware_firmware`}} --eula ../../hack/ovf_eula.txt --ovf_template ../../hack/ovf_template.xml --vmdk_file {{user `build_version`}}-disk1.vmdk"
       ],
       "name": "esx",
       "type": "shell-local"
@@ -301,7 +314,7 @@
     {
       "inline": [
         "cd {{user `output_dir`}}",
-        "../../hack/image-build-ova.py --node --vmx {{user `vmx_version`}} --eula ../../hack/ovf_eula.txt --ovf_template ../../hack/ovf_template.xml --vmdk_file {{user `build_version`}}-disk-0.vmdk"
+        "../../hack/image-build-ova.py --node --vmx {{user `vmx_version`}} --fw-type {{ user `vmware_firmware`}} --eula ../../hack/ovf_eula.txt --ovf_template ../../hack/ovf_template.xml --vmdk_file {{user `build_version`}}-disk-0.vmdk"
       ],
       "name": "vsphere",
       "type": "shell-local"
@@ -311,7 +324,7 @@
         "vmware-iso-base"
       ],
       "inline": [
-        "./hack/image-build-ova.py --stream_vmdk --node --vmx {{user `vmx_version`}} --eula ./hack/ovf_eula.txt --ovf_template ./hack/ovf_template.xml {{user `output_dir`}}",
+        "./hack/image-build-ova.py --stream_vmdk --node --vmx {{user `vmx_version`}} --fw-type {{ user `vmware_firmware`}} --eula ./hack/ovf_eula.txt --ovf_template ./hack/ovf_template.xml {{user `output_dir`}}",
         "./hack/image-post-create-config.sh {{user `output_dir`}}"
       ],
       "name": "local",
@@ -418,6 +431,7 @@
     "base_output_dir": "./output/{{user `base_build_version`}}",
     "build_timestamp": "{{timestamp}}",
     "build_version": "{{user `build_name`}}-kube-{{user `kubernetes_semver`}}",
+    "cd_dirs": "{{ user `floppy_dirs`}}",
     "cluster": "",
     "containerd_sha256": null,
     "containerd_url": "https://github.com/containerd/containerd/releases/download/v{{user `containerd_version`}}/cri-containerd-cni-{{user `containerd_version`}}-linux-amd64.tar.gz",
