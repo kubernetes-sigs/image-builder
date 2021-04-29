@@ -115,6 +115,36 @@
       "type": "windows-restart"
     },
     {
+      "arch": "{{user `goss_arch`}}",
+      "format": "{{user `goss_format`}}",
+      "format_options": "{{user `goss_format_options`}}",
+      "goss_file": "{{user `goss_entry_file`}}",
+      "inspect": "{{user `goss_inspect_mode`}}",
+      "target_os": "Windows",
+      "tests": [
+        "{{user `goss_tests_dir`}}"
+      ],
+      "type": "goss",
+      "url": "{{user `goss_url`}}",
+      "use_sudo": false,
+      "vars_env": {
+        "GOSS_MAX_CONCURRENT": "5",
+        "GOSS_USE_ALPHA": "1"
+      },
+      "vars_file": "{{user `goss_vars_file`}}",
+      "vars_inline": {
+        "OS": "{{user `distribution` | lower}}",
+        "PROVIDER": "azure",
+        "containerd_version": "{{user `containerd_version`}}",
+        "distribution_version": "{{user `distribution_version`}}",
+        "docker_ee_version": "{{user `docker_ee_version`}}",
+        "kubernetes_version": "{{user `kubernetes_semver`}}",
+        "pause_image": "{{user `pause_image`}}",
+        "runtime": "{{user `runtime`}}"
+      },
+      "version": "{{user `goss_version`}}"
+    },
+    {
       "elevated_password": "{{.WinRMPassword}}",
       "elevated_user": "packer",
       "script": "packer/azure/scripts/sysprep.ps1",

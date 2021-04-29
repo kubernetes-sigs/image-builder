@@ -1,4 +1,5 @@
 service:
+{{ if ne .Vars.OS "windows"}} # Linux
   containerd:
     enabled: true
     running: true
@@ -28,4 +29,46 @@ service:
   {{range $key, $val := $vers}}
     {{$key}}: {{$val}}
   {{end}}
+{{end}}
+{{end}}
+
+{{ if eq .Vars.OS "windows"}} # Windows
+# Workaround until windows services are added to goss
+command:
+{{range $name, $vers := index .Vars .Vars.OS "common-windows-service"}}
+  "Windows Service - {{ $name }}":
+    exec: powershell -command "(Get-Service {{ $name }} | select *)"
+    exit-status: 0
+    stdout: {{range $vers.expected}}
+    - {{.}}
+    {{end}}
+{{end}}
+{{range $name, $vers := index .Vars .Vars.OS .Vars.PROVIDER "windows-service"}}
+  "Windows Service - {{ $name }}":
+    exec: powershell -command "(Get-Service {{ $name }} | select *)"
+    exit-status: 0
+    stdout: {{range $vers.expected}}
+    - {{.}}
+    {{end}}
+{{end}}
+
+{{ if eq .Vars.runtime "docker_ee" }}
+
+  "Windows Service - docker":
+    exec: powershell -command "(Get-Service docker | select *)"
+    exit-status: 0
+    stdout: 
+    - Automatic
+    - Running
+{{end}}
+
+{{ if eq .Vars.runtime "containerd"}}
+  "Windows Service - containerd":
+    exec: powershell -command "(Get-Service containerd | select *)"
+    exit-status: 0
+    stdout: 
+    - Automatic
+    - Running
+{{end}}
+
 {{end}}

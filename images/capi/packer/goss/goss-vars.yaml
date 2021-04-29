@@ -70,6 +70,12 @@ kubernetes_cni_rpm_version: ""
 # When k8s and k8s cni source is http
 kubernetes_load_additional_imgs: false
 
+#windows variables
+kubernetes_install_path: ""
+windows_service_manager: ""
+distribution_version: ""
+runtime: ""
+
 # OS Specific package/Command/Kernal Params etc...
 # Structured in below format
 # OS_NAME
@@ -177,3 +183,101 @@ ubuntu:
       cloud-guest-utils:
       cloud-initramfs-copymods:
       cloud-initramfs-dyn-netconf:
+
+# Windows specific variables
+windows:
+  common-windows-features:
+    Hyper-V-PowerShell:
+      expected:
+      - Installed
+    Containers:
+      expected:
+      - Installed
+
+  common-files:
+    c:/etc/kubernetes/pki:
+      exists: true
+      filetype: directory
+      contains:
+    c:/var/lib/kubelet/etc/kubernetes:
+      exists: true
+      filetype: directory
+      contains:
+    c:/var/lib/kubelet/etc/kubernetes/manifests:
+      exists: true
+      filetype: directory
+      contains:
+    c:/var/log/kubelet:
+      exists: true
+      filetype: directory
+      contains:
+
+  common-windows-service:
+    cloudbase-init:
+      expected:
+      - Manual
+      - Stopped
+    kubelet:
+      expected: 
+      - Manual 
+      - Stopped
+      - "/RequiredServices.+:.+(containerd|docker)/"
+    sshd:
+      expected:
+      - Automatic
+      - Running
+
+  azure:
+    windows-service:
+
+    files: 
+      'c:/program files/Cloudbase Solutions/Cloudbase-init/conf/cloudbase-init.conf': 
+        exists: true
+        filetype: file
+        contains:
+        - "COM1,115200,N,8"
+        - "metadata_services=cloudbaseinit.metadata.services.azureservice.AzureService"
+        - "cloudbaseinit.plugins.common.ephemeraldisk.EphemeralDiskPlugin"
+        - "cloudbaseinit.plugins.windows.azureguestagent.AzureGuestAgentPlugin"
+        - "cloudbaseinit.plugins.common.mtu.MTUPlugin"
+        - "cloudbaseinit.plugins.common.sethostname.SetHostNamePlugin"
+  ova:
+    windows-service:
+      vmtools:
+        expected: 
+        - Automatic 
+        - Running
+    files:
+      'c:/program files/Cloudbase Solutions/Cloudbase-init/conf/cloudbase-init.conf': 
+        exists: true
+        filetype: file
+        contains:
+        - "!/logging_serial_port=COM1,115200,N,8/"
+        - "cloudbaseinit.metadata.services.vmwareguestinfoservice.VMwareGuestInfoService"
+        - "cloudbaseinit.plugins.common.ephemeraldisk.EphemeralDiskPlugin"
+        - "cloudbaseinit.plugins.common.mtu.MTUPlugin"
+        - "cloudbaseinit.plugins.common.sethostname.SetHostNamePlugin"
+        - "cloudbaseinit.plugins.common.sshpublickeys.SetUserSSHPublicKeysPlugin"
+        - "cloudbaseinit.plugins.common.userdata.UserDataPlugin"
+        - "cloudbaseinit.plugins.common.localscripts.LocalScriptsPlugin"
+        - "cloudbaseinit.plugins.windows.createuser.CreateUserPlugin"
+        - "cloudbaseinit.plugins.windows.extendvolumes.ExtendVolumesPlugin"
+      'c:/program files/Cloudbase Solutions/Cloudbase-init/conf/cloudbase-init-unattend.conf': 
+        exists: true
+        filetype: file
+        contains:
+        - "metadata_services=cloudbaseinit.metadata.services.vmwareguestinfoservice.VMwareGuestInfoService"
+  amazon:
+    windows-service:
+
+    files:
+      'c:/program files/Cloudbase Solutions/Cloudbase-init/conf/cloudbase-init.conf': 
+        exists: true
+        filetype: file
+        contains:
+        - "!/logging_serial_port=COM1,115200,N,8/"
+        - "metadata_services=cloudbaseinit.metadata.services.ec2service.EC2Service"
+        - "cloudbaseinit.plugins.common.ephemeraldisk.EphemeralDiskPlugin"
+        - "cloudbaseinit.plugins.common.mtu.MTUPlugin"
+        - "cloudbaseinit.plugins.common.sethostname.SetHostNamePlugin"
+  

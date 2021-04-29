@@ -1,3 +1,4 @@
+{{ if ne .Vars.OS "windows" }}
 kernel-param:
   net.bridge.bridge-nf-call-iptables:
     value: "1"
@@ -20,4 +21,5 @@ kernel-param:
   {{range $key, $val := $vers}}
     {{$key}}: "{{$val}}"
   {{end}}
+{{end}}
 {{end}}
