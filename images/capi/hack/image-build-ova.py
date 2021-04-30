@@ -140,7 +140,8 @@ def main():
         'DISTRO_NAME': build_data['distro_name'],
         'DISTRO_VERSION': build_data['distro_version'],
         'DISTRO_ARCH': build_data['distro_arch'],
-        'NESTEDHV': "false"
+        'NESTEDHV': "false",
+        'FIRMWARE': build_data['firmware']
     }
 
     capv_url = "https://github.com/kubernetes-sigs/cluster-api-provider-vsphere"

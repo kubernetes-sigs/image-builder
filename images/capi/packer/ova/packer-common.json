@@ -4,6 +4,7 @@
   "disk_controller_type": "pvscsi",
   "disk_thin_provisioned": "true",
   "disk_type_id": "0",
+  "firmware": "bios",
   "format": "",
   "guestinfo_datasource_ref": "v1.4.0",
   "guestinfo_datasource_script": "{{user `guestinfo_datasource_slug`}}/{{user `guestinfo_datasource_ref`}}/install.sh",

@@ -207,7 +207,7 @@ CENTOS_VERSIONS			:=	centos-7
 FLATCAR_VERSIONS		:=	flatcar
 PHOTON_VERSIONS			:=	photon-3
 RHEL_VERSIONS			:=	rhel-7
-UBUNTU_VERSIONS			:=	ubuntu-1804 ubuntu-2004
+UBUNTU_VERSIONS			:=	ubuntu-1804 ubuntu-2004 ubuntu-2004-efi
 WINDOWS_VERSIONS		:=	windows-2019 windows-2004
 
 # Set Flatcar Container Linux channel and version if not supplied
@@ -302,6 +302,7 @@ $(NODE_OVA_ESX_BUILD_TARGETS): deps-ova
 .PHONY: $(NODE_OVA_VSPHERE_BUILD_TARGETS)
 $(NODE_OVA_VSPHERE_BUILD_TARGETS): deps-ova
 	packer build $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS))  -var-file="packer/ova/packer-common.json" -var-file="$(abspath packer/ova/$(subst build-node-ova-vsphere-,,$@).json)" -var-file="packer/ova/vsphere.json" -except=esx -except=local -only=vsphere-iso $(ABSOLUTE_PACKER_VAR_FILES) -only=vsphere packer/ova/packer-$(if $(findstring windows,$@),windows,node).json
+
 
 .PHONY: $(NODE_OVA_VSPHERE_BASE_BUILD_TARGETS)
 $(NODE_OVA_VSPHERE_BASE_BUILD_TARGETS): deps-ova
@@ -487,7 +488,9 @@ build-node-ova-vsphere-ubuntu-1804: ## Builds Ubuntu 18.04 Node OVA and template
 build-node-ova-vsphere-ubuntu-2004: ## Builds Ubuntu 20.04 Node OVA and template on vSphere
 build-node-ova-vsphere-windows-2019: ## Builds for Windows Server 2019 and template on vSphere
 build-node-ova-vsphere-windows-2004: ## Builds for Windows Server 2004 SAC and template on vSphere
+build-node-ova-vsphere-ubuntu-2004-efi: ## Builds Ubuntu 20.04 Node OVA and template on vSphere that EFI boots
 build-node-ova-vsphere-all: $(NODE_OVA_VSPHERE_BUILD_TARGETS) ## Builds all Node OVAs and templates on vSphere
+
 build-haproxy-ova-vsphere-photon-3: ## Builds Photon 3 HAProxy OVA and template on vSphere
 
 build-node-ova-vsphere-clone-centos-7: ## Builds CentOS 7 Node OVA and template on vSphere
