@@ -25,6 +25,9 @@
     - include_role:
         name: kubernetes
     - include_role:
+        name: load_additional_components
+      when: load_additional_components | bool
+    - include_role:
         name: "{{ role }}"
       loop: "{{ custom_role_names.split() }}"
       loop_control:

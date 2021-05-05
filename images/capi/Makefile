@@ -171,7 +171,8 @@ COMMON_NODE_VAR_FILES :=	packer/config/kubernetes.json \
 					packer/config/containerd.json \
 					packer/config/ansible-args.json \
 					packer/config/goss-args.json \
-					packer/config/common.json
+					packer/config/common.json \
+					packer/config/additional_components.json
 
 COMMON_HAPROXY_VAR_FILES := packer/ova/packer-common.json \
 					packer/config/ansible-args.json \
