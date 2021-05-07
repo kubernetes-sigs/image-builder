@@ -147,6 +147,13 @@ ubuntu:
       value: "1"
   common-package:
     <<: *common_debs
+  common-service:
+    apt-daily.timer:
+      enabled: false
+      running: false
+    apt-daily-upgrade.timer:
+      enabled: false
+      running: false
   azure:
     command:
       pip3 list --format=columns | grep 'azure-cli' | awk -F' ' '{print $1}':
