@@ -7,6 +7,7 @@ These images are designed for use with [Cluster API Provider Azure]([Cluster API
 - An Azure account
 - The Azure CLI installed and configured
 - Set environment variables for `AZURE_SUBSCRIPTION_ID`, `AZURE_CLIENT_ID`, `AZURE_CLIENT_SECRET`
+- Set optional environment variables `RESOURCE_GROUP_NAME`, `STORAGE_ACCOUNT_NAME` & `AZURE_LOCATION` to override the default values
 
 ## Building Images
 
