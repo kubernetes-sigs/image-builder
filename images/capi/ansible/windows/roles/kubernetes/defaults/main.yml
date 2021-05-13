@@ -12,7 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-kubernetes_bins:
+kubernetes_bin_defaults:
 - kubeadm
 - kubectl
 - kubelet
+
+
+kubernetes_bins: "{{ kubernetes_bin_list.split(',') if (kubernetes_bin_list is defined) and (kubernetes_bin_list|length > 0) else kubernetes_bin_defaults }}"
