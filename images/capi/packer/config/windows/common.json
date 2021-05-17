@@ -1,6 +1,5 @@
 {
   "additional_debug_files": "",
-  "additional_prepull_images": "",
   "disable_hypervisor": "false",
   "http_proxy": "",
   "https_proxy": "",

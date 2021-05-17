@@ -1,4 +1,4 @@
-# Copyright 2020 The Kubernetes Authors.
+# Copyright 2021 The Kubernetes Authors.
 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,16 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-pause_image: mcr.microsoft.com/oss/kubernetes/pause:1.4.0
-containerd_additional_settings: ""
+- name: Create temporary download dir
+  win_file:
+    path: "{{ additional_executables_destination_path }}/"
+    state: directory
 
-prepull: false
-prepull_images:
-  2019:
-    - mcr.microsoft.com/windows/servercore:ltsc2019
-    - mcr.microsoft.com/windows/nanoserver:1809
-    - "{{ pause_image }}"
-  2004:
-    - mcr.microsoft.com/windows/servercore:2004
-    - mcr.microsoft.com/windows/nanoserver:2004
-    - "{{ pause_image }}"
+- name: Download additional executables
+  win_get_url:
+    url: "{{ item }}"
+    dest: "{{ additional_executables_destination_path }}/"
+  loop: "{{ additional_executables_list.split(',') }}"
+  async: 1800
+  poll: 60
+  retries: 5
+  delay: 3

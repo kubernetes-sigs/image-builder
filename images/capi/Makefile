@@ -186,7 +186,8 @@ COMMON_WINDOWS_VAR_FILES :=	packer/config/kubernetes.json \
 					packer/config/windows/ansible-args-windows.json \
 					packer/config/windows/common.json \
 					packer/config/windows/cloudbase-init.json \
-					packer/config/goss-args.json 
+					packer/config/goss-args.json \
+					packer/config/additional_components.json
 
 # Initialize a list of flags to pass to Packer. This includes any existing flags
 # specified by PACKER_FLAGS, as well as prefixing the list with the variable

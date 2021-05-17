@@ -153,7 +153,6 @@
   ],
   "variables": {
     "additional_debug_files": null,
-    "additional_prepull_images": null,
     "ansible_common_vars": "",
     "ansible_extra_vars": "",
     "azure_location": null,
