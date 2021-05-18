@@ -164,7 +164,7 @@ type ISO struct {
 	Checksum        string `yaml:"checksum,omitempty" structs:"iso_checksum,omitempty"`
 	ChecksumType    string `yaml:"checksum_type,omitempty" structs:"iso_checksum_type,omitempty"`
 	ShutdownCommand string `yaml:"shutdown_command,omitempty"`
-	BootCommand     string `yaml:"boot_commmand,omitempty"`
+	BootCommand     string `yaml:"boot_command,omitempty"`
 }
 
 func (i ISO) Kind() string {
