@@ -67,10 +67,10 @@ From the `images/capi` directory, run `make build-node-ova-<hypervisor>-<OS>`, w
 
 When the final OVA is created, there are two methods that can be used for creation. By default, an OVF file is created, the manifest is created using SHA256 sums of the OVF and VMDK, and then `tar` is used to create an OVA containing the OVF, VMDK, and the manifest.
 
-Optionally, `ovftool` can be used to create the OVA. This has the advantage of validating the created OVF, and has greater chances of producing OVAs that are compliant with more versions of VMware targets of Fusion, Workstation, and vSphere. To use `ovftool` for OVA creation, set the env variable IB_OVFTOOL to any non-empty value, like the following:
+Optionally, `ovftool` can be used to create the OVA. This has the advantage of validating the created OVF, and has greater chances of producing OVAs that are compliant with more versions of VMware targets of Fusion, Workstation, and vSphere. To use `ovftool` for OVA creation, set the env variable IB_OVFTOOL to any non-empty value. Optionally, args to `ovftool` can be passed by setting the env var IB_OVFTOOL_ARGS like the following:
 
 ```bash
-IB_OVFTOOL=1 make build-node-ova-<hypervisor>-<OS>
+IB_OVFTOOL=1 IB_OVFTOOL_ARGS="--allowExtraConfig" make build-node-ova-<hypervisor>-<OS>
 ```
 
 ### Configuration

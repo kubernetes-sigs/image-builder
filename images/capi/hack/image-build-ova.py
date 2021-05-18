@@ -197,7 +197,7 @@ def main():
 
     if os.environ.get("IB_OVFTOOL"):
         # Create the OVA.
-        create_ova(ova, ovf)
+        create_ova(ova, ovf, ovftool_args=os.environ.get("IB_OVFTOOL_ARGS"))
 
     else:
         # Create the OVA manifest.
@@ -218,16 +218,13 @@ def sha256(path):
     return m.hexdigest()
 
 
-def create_ova(ova_path, ovf_path, ova_files=None):
+def create_ova(ova_path, ovf_path, ovftool_args=None, ova_files=None):
     if ova_files is None:
-        args = [
-            'ovftool',
-            ovf_path,
-            ova_path
-        ]
+        cmd = f"ovftool {ovftool_args} {ovf_path} {ova_path}"
+
         print("image-build-ova: creating OVA from %s using ovftool" %
               ovf_path)
-        subprocess.check_call(args)
+        subprocess.run(cmd.split(), check=True)
     else:
         infile_paths = [ovf_path]
         infile_paths.extend(ova_files)
