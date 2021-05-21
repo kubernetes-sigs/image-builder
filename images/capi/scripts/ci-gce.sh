@@ -84,7 +84,7 @@ fi
 groupadd -r packer && useradd -m -s /bin/bash -r -g packer packer
 chown -R packer:packer /home/prow/go/src/sigs.k8s.io/image-builder
 # use the packer user to run the build
-su - packer -c "bash -c 'cd /home/prow/go/src/sigs.k8s.io/image-builder/images/capi && PATH=$PATH:~packer/.local/bin:/home/prow/go/src/sigs.k8s.io/image-builder/images/capi/.local/bin GCP_PROJECT_ID=$GCP_PROJECT GOOGLE_APPLICATION_CREDENTIALS=$GOOGLE_APPLICATION_CREDENTIALS make deps-gce build-gce-all'"
+su - packer -c "bash -c 'cd /home/prow/go/src/sigs.k8s.io/image-builder/images/capi && PATH=$PATH:~packer/.local/bin:/home/prow/go/src/sigs.k8s.io/image-builder/images/capi/.local/bin GCP_PROJECT_ID=$GCP_PROJECT GOOGLE_APPLICATION_CREDENTIALS=$GOOGLE_APPLICATION_CREDENTIALS PACKER_VAR_FILES=scripts/ci-disable-goss-inspect.json make deps-gce build-gce-all'"
 test_status="${?}"
 
 echo "Displaying the generated image information"
