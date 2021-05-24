@@ -33,6 +33,9 @@
     - include_role:
         name: kubernetes
     - include_role:
+        name: load_additional_components
+      when: load_additional_components | bool
+    - include_role:
         name: debug
     - include_role:
         name: "{{ role }}"

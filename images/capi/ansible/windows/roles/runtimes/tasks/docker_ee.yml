@@ -36,14 +36,7 @@
   loop: "{{ images }}"
   async: 1800
   poll: 60
+  retries: 5
   when: (prepull | bool)
   vars:
     images: "{{ prepull_images[distribution_version] | default([]) }}"
-
-- name: Pre-pull docker additional images
-  win_command: docker pull {{ item }}
-  loop: "{{ additional_prepull_images_list }}"
-  async: 1800
-  poll: 60
-  when: (prepull | bool) and (additional_prepull_images_list|length > 0) 
-  

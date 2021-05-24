@@ -1,0 +1,81 @@
+# Copyright 2021 The Kubernetes Authors.
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+
+# http://www.apache.org/licenses/LICENSE-2.0
+
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+---
+- name: Create temporary download dir
+  win_file:
+    path: "%TEMP%/images"
+    state: directory
+  when: runtime == "containerd" 
+
+- name: Download additional images from url
+  win_get_url:
+    url: "{{ item }}"
+    dest: "%TEMP%/images/"
+  register: images
+  loop: "{{ additional_url_images_list.split(',') }}"
+  async: 1800
+  poll: 60
+  retries: 5
+  delay: 3
+  when: runtime == "containerd" 
+
+- name: Load additional images to containerd
+  win_shell: |
+    Function DeGZip-File{
+      Param(
+          $infile,
+          $outfile = ($infile -replace '\.gz$','')
+      )
+      $input = New-Object System.IO.FileStream $inFile, ([IO.FileMode]::Open), ([IO.FileAccess]::Read), ([IO.FileShare]::Read)
+      $output = New-Object System.IO.FileStream $outFile, ([IO.FileMode]::Create), ([IO.FileAccess]::Write), ([IO.FileShare]::None)
+      $gzipStream = New-Object System.IO.Compression.GzipStream $input, ([IO.Compression.CompressionMode]::Decompress)
+      $buffer = New-Object byte[](1024)
+      while($true){
+          $read = $gzipstream.Read($buffer, 0, 1024)
+          if ($read -le 0){break}
+          $output.Write($buffer, 0, $read)
+          }
+      $gzipStream.Close()
+      $output.Close()
+      $input.Close()
+    } 
+
+    $file = "{{ item.dest }}"
+    $ext = $file.substring($file.length - 3, 3)
+    
+    if ($ext -eq ".gz") {
+      DeGZip-File $file 
+      $file = ($file -replace '\.gz$','')
+    }
+    #refresh the path to ensure ansible sees update
+    $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine")
+    ctr.exe -n k8s.io images import --no-unpack $file
+  loop: "{{ images.results }}"
+  when: runtime == "containerd" 
+
+- name: Load additional docker images
+  win_shell: |
+    docker import {{ item }}
+  loop: "{{ additional_url_images_list.split(',') }}"
+  async: 1800
+  poll: 60
+  retries: 5
+  delay: 3
+  when: runtime == "docker" 
+
+- name: Remove downloaded files
+  win_file:
+    state: absent
+    path: "%TEMP%/images"
+  when: runtime == "containerd" 
