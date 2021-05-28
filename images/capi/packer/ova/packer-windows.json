@@ -164,7 +164,9 @@
         "--extra-vars",
         "{{user `ansible_common_vars`}}",
         "--extra-vars",
-        "{{user `ansible_extra_vars`}}"
+        "{{user `ansible_extra_vars`}}",
+        "--extra-vars",
+        "{{user `ansible_user_vars`}}"
       ],
       "playbook_file": "ansible/windows/node_windows.yml",
       "type": "ansible",
@@ -211,6 +213,7 @@
     "additional_debug_files": null,
     "ansible_common_vars": "",
     "ansible_extra_vars": "",
+    "ansible_user_vars": "",
     "build_name": null,
     "build_timestamp": "{{timestamp}}",
     "build_version": "{{user `build_name`}}-kube-{{user `kubernetes_semver`}}",
