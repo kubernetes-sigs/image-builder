@@ -14,14 +14,15 @@
 
 root = "{{ allusersprofile }}\\root"
 state = "{{ allusersprofile }}\\state"
+version = 2
 
 [grpc]
   address = "\\\\.\\pipe\\containerd-containerd"
   
 [plugins]
-  [plugins.cri]
+  [plugins."io.containerd.grpc.v1.cri"]
     sandbox_image = "{{ pause_image }}"
-  [plugins.cri.cni]
+    [plugins."io.containerd.grpc.v1.cri".cni]
       bin_dir = "{{ plugin_bin_dir }}"
       conf_dir = "{{ plugin_conf_dir }}"
 
