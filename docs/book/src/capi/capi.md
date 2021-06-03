@@ -64,6 +64,7 @@ Several variables can be used to customize the image build.
 | `additional_url_images` | Set this to `"true"` to load addtional container images using a tar url. `additional_url_images_list` var should be set to a comma seperated string of tar urls of the container images. | `"false"` |
 | `additional_registry_images` | Set this to `"true"` to load addtional container images using their registry url. `additional_registry_images_list` var should be set to a comma seperated string of registry urls of the container images. | `"false"` |
 | `additional_executables` | Set this to `"true"` to load addtional executables from a url. `additional_executables_list` var should be set to a comma seperated string of urls. `additional_executables_destination_path` should be set to the destination path of the executables. | `"false"` |
+| `ansible_user_vars` | A space delimited string that the user can pass to use in the ansible roles  | `""` |
 
 The variables found in `packer/config/*.json` or `packer/<provider>/*.json` should not need to be modified directly. For customization it is better to create a JSON file with your changes and provide it via the `PACKER_VAR_FILES` environment variable. Variables set in this file will override any previous values. Multiple files can be passed via `PACKER_VAR_FILES`, with the last file taking precedence over any others.
 
@@ -155,5 +156,14 @@ PACKER_VAR_FILES=proxy.json make build-node-ova-local-photon-3
   "additional_url_images": "true",
   "additional_url_images_list": "http://path/to/image1.tar,http://path/to/image2.tar",
   "load_additional_components": "true"
+}
+```
+
+##### Using `ansible_user_vars` to pass custom variables
+
+```json
+{
+  "ansible_user_vars": "var1=value1 var2={{ user `myvar2`}}",
+  "myvar2": "value2"
 }
 ```

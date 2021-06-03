@@ -81,7 +81,9 @@
         "--extra-vars",
         "{{user `ansible_common_vars`}}",
         "--extra-vars",
-        "{{user `ansible_extra_vars`}}"
+        "{{user `ansible_extra_vars`}}",
+        "--extra-vars",
+        "{{user `ansible_user_vars`}}"
       ],
       "playbook_file": "ansible/windows/node_windows.yml",
       "type": "ansible",
@@ -142,6 +144,7 @@
     "ami_users": "",
     "ansible_common_vars": "",
     "ansible_extra_vars": "",
+    "ansible_user_vars": "",
     "aws_access_key": "",
     "aws_profile": "",
     "aws_region": "us-east-1",
