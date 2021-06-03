@@ -55,3 +55,30 @@ az sig image-definition create \
    --offer capz-demo \
    --sku win-2004 \
    --os-type Windows
+az sig image-definition create \
+   --resource-group ${RESOURCE_GROUP_NAME} \
+   --gallery-name ${GALLERY_NAME} \
+   --gallery-image-definition capi-ubuntu-1804-gen2 \
+   --publisher capz \
+   --offer capz-demo \
+   --sku 18.04-lts-gen2 \
+   --hyper-v-generation V2 \
+   --os-type Linux
+az sig image-definition create \
+   --resource-group ${RESOURCE_GROUP_NAME} \
+   --gallery-name ${GALLERY_NAME} \
+   --gallery-image-definition capi-ubuntu-2004-gen2 \
+   --publisher capz \
+   --offer capz-demo \
+   --sku 20_04-lts-gen2 \
+   --hyper-v-generation V2 \
+   --os-type Linux
+az sig image-definition create \
+   --resource-group ${RESOURCE_GROUP_NAME} \
+   --gallery-name ${GALLERY_NAME} \
+   --gallery-image-definition capi-centos-7.7-gen2 \
+   --publisher capz \
+   --offer capz-demo \
+   --sku centos-7.7-gen2 \
+   --hyper-v-generation V2 \
+   --os-type Linux

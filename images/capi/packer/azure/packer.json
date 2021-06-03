@@ -92,7 +92,7 @@
         "BUILD_NAME={{user `build_name`}}"
       ],
       "inline": [
-        "if [ $BUILD_NAME != \"ubuntu-1804\" ]; then exit 0; fi",
+        "if [ $BUILD_NAME != \"ubuntu-1804\" ] && [ $BUILD_NAME != \"ubuntu-1804-gen2\" ]; then exit 0; fi",
         "while [ ! -f /var/lib/cloud/instance/boot-finished ]; do echo 'Waiting for cloud-init...'; sleep 1; done",
         "sudo apt-get -qq update && sudo DEBIAN_FRONTEND=noninteractive apt-get -qqy install python python-pip"
       ],
