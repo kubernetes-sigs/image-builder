@@ -63,7 +63,7 @@ make deps-azure
 
 # Pre-pulling windows images takes 10-20 mins
 # Disable them for CI runs so don't run into timeouts
-export PACKER_VAR_FILES=packer/azure/scripts/disable-windows-prepull.json
+export PACKER_VAR_FILES="packer/azure/scripts/disable-windows-prepull.json scripts/ci-disable-goss-inspect.json"
 
 if [[ "${AZURE_BUILD_FORMAT:-vhd}" == "sig" ]]; then
     make -j build-azure-sigs
