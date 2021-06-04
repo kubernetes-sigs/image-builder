@@ -29,18 +29,10 @@ CAPI_ROOT=$(dirname "${BASH_SOURCE[0]}")/..
 cd "${CAPI_ROOT}" || exit 1
 
 # Verify the required Environment Variables are present.
-: "${GOOGLE_APPLICATION_CREDENTIALS:?Environment variable empty or not defined.}"
 : "${GCP_PROJECT:?Environment variable empty or not defined.}"
 
-if [[ -z "$GOOGLE_APPLICATION_CREDENTIALS" ]]; then
-  cat <<EOF
-GOOGLE_APPLICATION_CREDENTIALS is not set.
-Please set this to the path of the service account used to run this script.
-EOF
-  return 2
-else
-  gcloud auth activate-service-account --key-file="${GOOGLE_APPLICATION_CREDENTIALS}"
-fi
+# to list and check if have the properly access to the service account
+gcloud auth list
 
 # assume we are running in the CI environment as root
 # Add a user for ansible to work properly
@@ -50,15 +42,15 @@ chown -R packer:packer /home/prow/go/src/sigs.k8s.io/image-builder
 
 # build image for 1.18
 # using PACKER_FLAGS=-force to overwrite the previous image and keep the same name
-su - packer -c "bash -c 'cd /home/prow/go/src/sigs.k8s.io/image-builder/images/capi && PATH=$PATH:~packer/.local/bin:/home/prow/go/src/sigs.k8s.io/image-builder/images/capi/.local/bin GCP_PROJECT_ID=$GCP_PROJECT GOOGLE_APPLICATION_CREDENTIALS=$GOOGLE_APPLICATION_CREDENTIALS PACKER_VAR_FILES=packer/gce/ci/nightly/overwrite-1-18.json PACKER_FLAGS=-force make deps-gce build-gce-all'"
+su - packer -c "bash -c 'cd /home/prow/go/src/sigs.k8s.io/image-builder/images/capi && PATH=$PATH:~packer/.local/bin:/home/prow/go/src/sigs.k8s.io/image-builder/images/capi/.local/bin GCP_PROJECT_ID=$GCP_PROJECT PACKER_VAR_FILES=packer/gce/ci/nightly/overwrite-1-18.json PACKER_FLAGS=-force make deps-gce build-gce-all'"
 
 # build image for 1.19
 # using PACKER_FLAGS=-force to overwrite the previous image and keep the same name
-su - packer -c "bash -c 'cd /home/prow/go/src/sigs.k8s.io/image-builder/images/capi && PATH=$PATH:~packer/.local/bin:/home/prow/go/src/sigs.k8s.io/image-builder/images/capi/.local/bin GCP_PROJECT_ID=$GCP_PROJECT GOOGLE_APPLICATION_CREDENTIALS=$GOOGLE_APPLICATION_CREDENTIALS PACKER_VAR_FILES=packer/gce/ci/nightly/overwrite-1-19.json PACKER_FLAGS=-force make deps-gce build-gce-all'"
+su - packer -c "bash -c 'cd /home/prow/go/src/sigs.k8s.io/image-builder/images/capi && PATH=$PATH:~packer/.local/bin:/home/prow/go/src/sigs.k8s.io/image-builder/images/capi/.local/bin GCP_PROJECT_ID=$GCP_PROJECT PACKER_VAR_FILES=packer/gce/ci/nightly/overwrite-1-19.json PACKER_FLAGS=-force make deps-gce build-gce-all'"
 
 # build image for 1.20
 # using PACKER_FLAGS=-force to overwrite the previous image and keep the same name
-su - packer -c "bash -c 'cd /home/prow/go/src/sigs.k8s.io/image-builder/images/capi && PATH=$PATH:~packer/.local/bin:/home/prow/go/src/sigs.k8s.io/image-builder/images/capi/.local/bin GCP_PROJECT_ID=$GCP_PROJECT GOOGLE_APPLICATION_CREDENTIALS=$GOOGLE_APPLICATION_CREDENTIALS PACKER_VAR_FILES=packer/gce/ci/nightly/overwrite-1-20.json PACKER_FLAGS=-force make deps-gce build-gce-all'"
+su - packer -c "bash -c 'cd /home/prow/go/src/sigs.k8s.io/image-builder/images/capi && PATH=$PATH:~packer/.local/bin:/home/prow/go/src/sigs.k8s.io/image-builder/images/capi/.local/bin GCP_PROJECT_ID=$GCP_PROJECT PACKER_VAR_FILES=packer/gce/ci/nightly/overwrite-1-20.json PACKER_FLAGS=-force make deps-gce build-gce-all'"
 
 echo "Displaying the generated image information"
 filter="name~cluster-api-ubuntu-*"
