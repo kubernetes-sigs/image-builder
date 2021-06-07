@@ -197,7 +197,7 @@ def main():
 
     if os.environ.get("IB_OVFTOOL"):
         # Create the OVA.
-        create_ova(ova, ovf, ovftool_args=os.environ.get("IB_OVFTOOL_ARGS"))
+        create_ova(ova, ovf, ovftool_args=os.environ.get("IB_OVFTOOL_ARGS", ""))
 
     else:
         # Create the OVA manifest.
