@@ -37,3 +37,12 @@
 - name: install extra RPMs
   command: tdnf install {{ extra_rpms }} -y
   when: extra_rpms != ""
+
+# Default size of 1G is insufficient when downloading additional components
+- name: Increase tmpfs size
+  mount:
+    path: /tmp
+    src: "tmpfs"
+    fstype: tmpfs
+    opts: "size=5G"
+    state: remounted
