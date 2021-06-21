@@ -7,7 +7,7 @@
     install_recommends: yes
   vars:
     packages:
-      - linux-image-virtual-hwe-20.04
+      - linux-oem-20.04b
 
 - name: Install custom DHC tools
   apt:
