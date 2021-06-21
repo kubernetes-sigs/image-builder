@@ -20,18 +20,6 @@
 - name: set hostname
   command: hostnamectl set-hostname localhost.local
 
-- name: reset iptables rules input
-  replace:
-    path: /etc/systemd/scripts/ip4save
-    regexp: 'INPUT DROP'
-    replace: 'INPUT ACCEPT'
-
-- name: reset ip6tables rules input
-  replace:
-    path: /etc/systemd/scripts/ip6save
-    regexp: 'INPUT DROP'
-    replace: 'INPUT ACCEPT'
-
 - name: Remove the kickstart log
   file:
     state: absent

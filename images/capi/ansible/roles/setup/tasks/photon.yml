@@ -46,3 +46,15 @@
     fstype: tmpfs
     opts: "size=5G"
     state: remounted
+
+- name: reset iptables rules input
+  replace:
+    path: /etc/systemd/scripts/ip4save
+    regexp: 'INPUT DROP'
+    replace: 'INPUT ACCEPT'
+
+- name: reset ip6tables rules input
+  replace:
+    path: /etc/systemd/scripts/ip6save
+    regexp: 'INPUT DROP'
+    replace: 'INPUT ACCEPT'
