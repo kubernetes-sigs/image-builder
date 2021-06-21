@@ -25,9 +25,13 @@ Supported arguments are passed through file: `packer/config/goss-args.json`
 ```json
 {
   "goss_arch": "amd64",
+  "goss_download_path": "",
   "goss_entry_file": "goss/goss.yaml",
   "goss_format": "json",
   "goss_inspect_mode": "true",
+  "goss_remote_folder": "",
+  "goss_remote_path": "",
+  "goss_skip_install": "",
   "goss_tests_dir": "packer/goss",
   "goss_url": "",
   "goss_format_options": "pretty",
