@@ -24,6 +24,9 @@ aliases:
   image-builder-raw-reviewers:
     - detiber
     - thebsdbox
+  image-builder-windows-maintainers:
+    - jsturtevant
+    - perithompson
   cluster-api-maintainers:
     - justinsb
     - detiber
