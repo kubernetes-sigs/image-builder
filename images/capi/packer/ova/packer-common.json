@@ -1,6 +1,8 @@
 {
   "boot_wait": "10s",
   "convert_to_template": "false",
+  "cpu": "4",
+  "cpu_cores": "1",
   "disk_controller_type": "pvscsi",
   "disk_thin_provisioned": "true",
   "disk_type_id": "0",
@@ -11,6 +13,7 @@
   "guestinfo_datasource_slug": "https://raw.githubusercontent.com/vmware/cloud-init-vmware-guestinfo",
   "headless": "true",
   "insecure_connection": "false",
+  "memory": "8192",
   "network": "",
   "network_card": "vmxnet3",
   "remote_datastore": "",
