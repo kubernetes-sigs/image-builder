@@ -1,5 +1,5 @@
 ---
-- name: Install HWE Kernel 5.8
+- name: Install OEM Kernel 5.10
   apt:
     name: "{{ packages }}"
     state: present
