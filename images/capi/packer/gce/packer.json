@@ -1,6 +1,7 @@
 {
   "builders": [
     {
+      "disable_default_service_account": "{{ user `disable_default_service_account` }}",
       "image_family": "capi-{{user `build_name`}}-k8s-{{user `kubernetes_series` | clean_resource_name}}",
       "image_name": "cluster-api-{{user `build_name`}}-{{user `kubernetes_semver` | clean_resource_name}}-{{user `build_timestamp`}}",
       "labels": {
@@ -13,6 +14,7 @@
       "machine_type": "{{ user `machine_type` }}",
       "name": "{{user `build_name`}}",
       "project_id": "{{ user `project_id` }}",
+      "service_account_email": "{{ user `service_account_email` }}",
       "source_image_family": "{{ user `source_image_family` }}",
       "ssh_username": "ubuntu",
       "type": "googlecompute",
@@ -54,6 +56,7 @@
     "containerd_version": null,
     "crictl_url": "https://github.com/kubernetes-sigs/cri-tools/releases/download/v{{user `crictl_version`}}/crictl-v{{user `crictl_version`}}-linux-amd64.tar.gz",
     "crictl_version": null,
+    "disable_default_service_account": "",
     "encrypted": "false",
     "existing_ansible_ssh_args": "{{env `ANSIBLE_SSH_ARGS`}}",
     "kubernetes_cni_deb_version": null,
@@ -76,6 +79,7 @@
     "kubernetes_source_type": null,
     "machine_type": "n1-standard-1",
     "project_id": "{{env `GCP_PROJECT_ID`}}",
+    "service_account_email": "",
     "source_image_family": "{{user `build_name`}}-lts",
     "zone": null
   }
