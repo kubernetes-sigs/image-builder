@@ -109,6 +109,24 @@
     path: "{{ item.path }}"
   loop: "{{ temp_files.files }}"
 
+- name: Find netplan files
+  find:
+    depth: 1
+    file_type: any
+    paths:
+    - /lib/netplan
+    - /etc/netplan
+    - /run/netplan
+    pattern: '*.yaml'
+  register: netplan_files
+
+- name: Delete netplan files
+  file:
+    state: absent
+    path: "{{ item.path }}"
+  loop: "{{ netplan_files.files }}"
+  when: netplan_files.files is defined and (netplan_files.files|length>0)
+
 - name: Find SSH host keys
   find:
     path: /etc/ssh
@@ -167,3 +185,14 @@
   loop:
   - { path: /root/.bash_history }
   - { path: "/home/{{ ansible_env.SUDO_USER }}/.bash_history" }
+
+- name: Rotate journalctl to archive logs
+  shell:
+    cmd: |
+      journalctl --rotate
+  when: not ( ansible_os_family == "RedHat" and ansible_distribution_major_version|int <= 7 )
+
+- name: Remove archived journalctl logs
+  shell:
+    cmd: |
+      journalctl -m --vacuum-time=1s
