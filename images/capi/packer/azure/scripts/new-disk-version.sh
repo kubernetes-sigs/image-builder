@@ -40,7 +40,7 @@ do
 done
 
 echo "Getting pub..."
-(set -x ; curl -fsSL https://github.com/devigned/pub/releases/download/v0.2.6/pub_v0.2.6_linux_amd64.tar.gz -o pub; tar -xzf pub)
+(set -x ; curl -fsSL https://github.com/devigned/pub/releases/download/v0.3.2/pub_v0.3.2_linux_amd64.tar.gz -o pub; tar -xzf pub)
 
 echo "SKU publishing info:"
 cat $SKU_INFO
@@ -91,7 +91,7 @@ sku=$(< $SKU_INFO jq -r ".sku_id")
 
 # TODO: Update pub versions put to take in version.json as a file
 echo "Create new disk version"
-set -x  
+set -x
 ./pub_linux_amd64 versions put corevm -p $publisher -o $offer -s $sku --version $image_version --vhd-uri $vhd_url --media-name $media_name --label "$label" --desc "$description" --published-date "$published_date"
 set +x
 echo -e "\nCreated disk version"
