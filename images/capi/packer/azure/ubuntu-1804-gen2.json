@@ -5,5 +5,5 @@
   "distribution_version": "1804",
   "image_offer": "UbuntuServer",
   "image_publisher": "Canonical",
-  "image_sku": "18_04-LTS-GEN2"
+  "image_sku": "18_04-lts-gen2"
 }
