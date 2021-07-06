@@ -3,7 +3,7 @@
     {
       "boot_wait": "{{user `boot_wait`}}",
       "communicator": "winrm",
-      "cpus": 4,
+      "cpus": "{{user `cpu`}}",
       "disk_adapter_type": "scsi",
       "disk_size": "{{user `disk_size`}}",
       "disk_type_id": "{{user `disk_type_id`}}",
@@ -22,7 +22,7 @@
       "iso_urls": [
         "{{user `os_iso_url`}}"
       ],
-      "memory": 4096,
+      "memory": "{{user `memory`}}",
       "name": "vmware-iso",
       "output_directory": "{{user `output_dir`}}",
       "shutdown_command": "powershell A:/sysprep.ps1",
@@ -40,8 +40,8 @@
       "winrm_username": "Administrator"
     },
     {
-      "CPUs": 4,
-      "RAM": 8192,
+      "CPUs": "{{user `cpu`}}",
+      "RAM": "{{user `memory`}}",
       "boot_wait": "{{user `boot_wait`}}",
       "cluster": "{{user `cluster`}}",
       "communicator": "winrm",
