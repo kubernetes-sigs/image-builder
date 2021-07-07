@@ -1,6 +1,7 @@
 {
-  "boot_command_prefix": "<esc><wait><esc><wait><enter><wait>/install/vmlinuz auto console-setup/ask_detect=false console-setup/layoutcode=us console-setup/modelcode=pc105 debconf/frontend=noninteractive debian-installer=en_US fb=false initrd=/install/initrd.gz kbd-chooser/method=us keyboard-configuration/layout=USA keyboard-configuration/variant=USA locale=en_US netcfg/get_domain=local netcfg/get_hostname=localhost grub-installer/bootdev=/dev/sda preseed/file=",
+  "boot_command_prefix": "<esc><wait><esc><wait><enter><wait>/install/vmlinuz auto console-setup/ask_detect=false console-setup/layoutcode=us console-setup/modelcode=pc105 debconf/frontend=noninteractive debian-installer=en_US fb=false initrd=/install/initrd.gz kbd-chooser/method=us keyboard-configuration/layout=USA keyboard-configuration/variant=USA locale=en_US netcfg/get_domain=local netcfg/get_hostname=localhost ipv6.disable={{ user `boot_disable_ipv6` }} grub-installer/bootdev=/dev/sda preseed/file=",
   "boot_command_suffix": "/20.04/preseed.cfg -- <wait><enter><wait>",
+  "boot_disable_ipv6": "0",
   "boot_media_path": "/media/HTTP",
   "build_name": "ubuntu-2004",
   "distro_arch": "amd64",
