@@ -136,10 +136,6 @@
       "datacenter": "{{user `datacenter`}}",
       "datastore": "{{user `datastore`}}",
       "disk_controller_type": "{{user `disk_controller_type`}}",
-      "export": {
-        "force": true,
-        "output_directory": "{{user `base_output_dir`}}"
-      },
       "firmware": "{{user `firmware`}}",
       "floppy_dirs": "{{ user `floppy_dirs`}}",
       "folder": "{{user `folder`}}",
@@ -285,7 +281,8 @@
         "vsphere_guest_os_type": "{{user `vsphere_guest_os_type`}}"
       },
       "except": [
-        "vmware-iso-base"
+        "vmware-iso-base",
+        "vsphere-iso-base"
       ],
       "output": "{{user `output_dir`}}/packer-manifest.json",
       "strip_path": true,
@@ -302,6 +299,9 @@
       "type": "shell-local"
     },
     {
+      "except": [
+        "vsphere-iso-base"
+      ],
       "inline": [
         "cd {{user `output_dir`}}",
         "../../hack/image-build-ova.py --node --vmx {{user `vmx_version`}} --eula ../../hack/ovf_eula.txt --ovf_template ../../hack/ovf_template.xml --vmdk_file {{user `build_version`}}-disk-0.vmdk"
