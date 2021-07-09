@@ -110,6 +110,7 @@ IMAGE_NAME ?= cluster-node-image-builder
 CONTROLLER_IMG ?= $(REGISTRY)/$(IMAGE_NAME)
 TAG ?= dev
 ARCH ?= amd64
+BASE_IMAGE ?= docker.io/library/ubuntu:focal
 
 ## --------------------------------------
 ## Packer flags
@@ -644,11 +645,11 @@ clean-packer-cache:
 docker-pull-prerequisites:
 	# We must pre-pull images https://github.com/moby/buildkit/issues/1271
 	docker pull docker/dockerfile:1.1-experimental
-	docker pull docker.io/library/ubuntu:focal
+	docker pull $(BASE_IMAGE)
 
 .PHONY: docker-build
 docker-build: docker-pull-prerequisites ## Build the docker image for controller-manager
-	DOCKER_BUILDKIT=1 docker build --build-arg PASSED_IB_VERSION=$(IB_VERSION) --build-arg ARCH=$(ARCH) . -t $(CONTROLLER_IMG)-$(ARCH):$(TAG)
+	DOCKER_BUILDKIT=1 docker build --build-arg PASSED_IB_VERSION=$(IB_VERSION) --build-arg ARCH=$(ARCH) --build-arg BASE_IMAGE=$(BASE_IMAGE) . -t $(CONTROLLER_IMG)-$(ARCH):$(TAG)
 
 .PHONY: docker-push
 docker-push: ## Push the docker image
