@@ -1,6 +1,7 @@
 {
-  "boot_command_prefix": "<esc><wait><esc><wait><enter><wait>linux /install/vmlinuz auto console-setup/ask_detect=false console-setup/layoutcode=us console-setup/modelcode=pc105 debconf/frontend=noninteractive debian-installer=en_US fb=false kbd-chooser/method=us keyboard-configuration/layout=USA keyboard-configuration/variant=USA locale=en_US netcfg/get_domain=local netcfg/get_hostname=localhost preseed/file=",
+  "boot_command_prefix": "<esc><wait><esc><wait><enter><wait>linux /install/vmlinuz auto console-setup/ask_detect=false console-setup/layoutcode=us console-setup/modelcode=pc105 debconf/frontend=noninteractive debian-installer=en_US fb=false kbd-chooser/method=us keyboard-configuration/layout=USA keyboard-configuration/variant=USA locale=en_US netcfg/get_domain=local netcfg/get_hostname=localhost ipv6.disable={{ user `boot_disable_ipv6` }} preseed/file=",
   "boot_command_suffix": "/20.04/preseed-efi.cfg -- <wait><enter>initrd /install/initrd.gz<enter>boot<enter><wait>",
+  "boot_disable_ipv6": "0",
   "boot_media_path": "/media/HTTP",
   "build_name": "ubuntu-2004-efi",
   "cdrom_type": "sata",
