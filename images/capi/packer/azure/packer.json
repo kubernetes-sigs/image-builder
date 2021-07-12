@@ -59,6 +59,11 @@
         ],
         "resource_group": "{{user `resource_group_name`}}"
       },
+      "plan_info": {
+        "plan_name": "{{user `plan_image_sku`}}",
+        "plan_product": "{{user `plan_image_offer`}}",
+        "plan_publisher": "{{user `plan_image_publisher`}}"
+      },
       "ssh_username": "packer",
       "subscription_id": "{{user `subscription_id`}}",
       "type": "azure-arm",
@@ -97,6 +102,22 @@
         "sudo apt-get -qq update && sudo DEBIAN_FRONTEND=noninteractive apt-get -qqy install python python-pip"
       ],
       "type": "shell"
+    },
+    {
+      "ansible_env_vars": [
+        "ANSIBLE_SSH_ARGS='{{user `existing_ansible_ssh_args`}} -o IdentitiesOnly=yes'"
+      ],
+      "extra_arguments": [
+        "--extra-vars",
+        "{{user `ansible_common_vars`}}",
+        "--extra-vars",
+        "{{user `ansible_extra_vars`}}",
+        "--extra-vars",
+        "{{user `ansible_user_vars`}}"
+      ],
+      "playbook_file": "./ansible/python.yml",
+      "type": "ansible",
+      "user": "packer"
     },
     {
       "ansible_env_vars": [
@@ -171,6 +192,9 @@
     "image_publisher": null,
     "image_sku": null,
     "image_version": "latest",
+    "plan_image_offer": "",
+    "plan_image_publisher": "",
+    "plan_image_sku": "",
     "kubernetes_cni_deb_version": null,
     "kubernetes_cni_http_source": null,
     "kubernetes_cni_rpm_version": null,
