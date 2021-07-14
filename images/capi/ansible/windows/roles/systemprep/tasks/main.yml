@@ -36,6 +36,13 @@
     name: NoAutoUpdate
     data: 1
 
+- name: Set Windows automatic updates to notify only in registry
+  win_regedit:
+    path: HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU
+    state: present
+    name: AUOptions
+    data: 2
+
 # Hyper-V messes with networking components on startup after the feature is enabled
 # causing issues with communication over winrm and setting winrm to delayed start
 # gives Hyper-V enough time to finish configuration before having packer continue.
@@ -94,10 +101,6 @@
   become: yes
   become_method: runas
   become_user: SYSTEM
-
-- name: Get Install Drive
-  win_shell: $env:SYSTEMDRIVE
-  register: systemdrive
 
 - name: Set default SSH shell to Powershell
   win_regedit:

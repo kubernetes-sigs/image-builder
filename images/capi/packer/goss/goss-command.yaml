@@ -74,14 +74,14 @@ command:
     - {{.Vars.kubernetes_version}}
     - "windows"
     - {{.Vars.arch}}
-    timeout: 10000
+    timeout: 30000
   kubeadm version:
     exit-status: 0
     stdout:
     - {{.Vars.kubernetes_version}}
     - "windows"
     - {{.Vars.arch}}
-    timeout: 10000
+    timeout: 30000
   kubelet --version:
     exit-status: 0
     stdout:

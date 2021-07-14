@@ -15,51 +15,46 @@
 - name: Download containerd
   win_get_url:
     url: '{{ containerd_url }}'
-    dest: '%TEMP%\containerd.tar.gz'
+    dest: '{{ tempdir.stdout | trim }}\containerd.tar.gz'
     checksum: '{{ containerd_sha256 }}'
     checksum_algorithm: "sha256"
   register: containerd
+  retries: 5
+  delay: 3
+  until: containerd is not failed
 
 - name: Create containerd directory structure
   win_file:
     path:  "{{ item }}"
     state: directory
   loop: 
-    - '%programfiles%\containerd'
-    - '%ALLUSERSPROFILE%\containerd\state'
-    - '%ALLUSERSPROFILE%\containerd\root'
-    - '%SystemDrive%/opt/cni/bin'
-    - '%SystemDrive%/etc/cni/net.d'
+    - '{{ programfiles.stdout | trim }}\containerd'
+    - '{{ alluserprofile.stdout | trim }}\containerd\state'
+    - '{{ alluserprofile.stdout | trim }}\containerd\root'
+    - '{{ systemdrive.stdout | trim }}/opt/cni/bin'
+    - '{{ systemdrive.stdout | trim }}/etc/cni/net.d'
 
 - name: Check if containerd exists
   win_stat:
-    path: '%programfiles%\containerd\containerd.exe'
+    path: '{{ programfiles.stdout | trim }}\containerd\containerd.exe'
   register: containerd_file
 
 - name: Unpack containerd binaries
-  win_command: cmd /c tar -zxvf {{ containerd.dest }} -C "%programfiles%\containerd" --strip-components 1
+  win_command: cmd /c tar -zxvf {{ containerd.dest }} -C "{{ programfiles.stdout | trim }}\containerd" --strip-components 1
   when: not containerd_file.stat.exists
 
 - name: Add containerd to path
   win_path:
     elements:
-    - '%programfiles%\containerd'
+    - '{{ programfiles.stdout | trim }}\containerd'
     scope: machine
-
-- name: Get All Users profile path
-  win_shell: $env:ALLUSERSPROFILE.Replace("\", "\\")
-  register: profile
-
-- name: Get Install Drive
-  win_shell: $env:SYSTEMDRIVE
-  register: systemdrive
 
 - name: Copy containerd config overrides
   win_template:
-    dest: '%programfiles%\containerd\config.toml'
+    dest: '{{ programfiles.stdout | trim }}\containerd\config.toml'
     src: config.toml
   vars:
-    allusersprofile: "{{ profile.stdout | trim }}"
+    allusersprofile: "{{ alluserprofile.stdout | trim }}"
     plugin_bin_dir: "{{ systemdrive.stdout | trim }}/opt/cni/bin"
     plugin_conf_dir: "{{ systemdrive.stdout | trim }}/etc/cni/net.d"
 
@@ -87,8 +82,8 @@
 
 - name: Create Windows Defender Exclusions
   win_shell: |
-    Add-MpPreference -ExclusionProcess "$env:ProgramFiles\containerd\containerd.exe"
-    Add-MpPreference -ExclusionProcess "$env:ProgramFiles\containerd\ctr.exe"
+    Add-MpPreference -ExclusionProcess "{{ programfiles.stdout | trim }}\containerd\containerd.exe"
+    Add-MpPreference -ExclusionProcess "{{ programfiles.stdout | trim }}\containerd\ctr.exe"
 
 - name: Ensure Containerd Service is running
   win_service:
@@ -105,6 +100,8 @@
   async: 1800
   poll: 60
   retries: 5
+  register: pull
+  until: pull is not failed
   when: (prepull | bool)
   vars:
     images: "{{ prepull_images[distribution_version] | default([]) }}"

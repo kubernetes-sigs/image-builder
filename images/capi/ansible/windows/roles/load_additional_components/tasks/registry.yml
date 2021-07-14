@@ -22,6 +22,8 @@
   poll: 60
   retries: 5
   delay: 3
+  register: pull
+  until: pull is not failed
   when: runtime == "containerd"
   
 - name: Pre-pull docker additional images
@@ -31,5 +33,7 @@
   poll: 60
   retries: 5
   delay: 3
+  register: pull
+  until: pull is not failed
   when: runtime == "docker_ee"
   

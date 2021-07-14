@@ -17,3 +17,8 @@
     url: "{{ kubernetes_base_url }}/{{ item }}.exe"
     dest: '{{ kubernetes_install_path }}\'
   loop: "{{ kubernetes_bins }}"
+  retries: 5
+  delay: 3
+  register: kubernetes_download
+  until: kubernetes_download is not failed
+  

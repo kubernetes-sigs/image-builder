@@ -37,6 +37,9 @@
   async: 1800
   poll: 60
   retries: 5
+  register: pull
+  until: pull is not failed
   when: (prepull | bool)
   vars:
     images: "{{ prepull_images[distribution_version] | default([]) }}"
+    
