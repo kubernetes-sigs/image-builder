@@ -190,8 +190,9 @@
   shell:
     cmd: |
       journalctl --rotate
+  when: not ( ansible_os_family == "RedHat" and ansible_lsb.major_release|int <= 7 )
 
 - name: Remove archived journalctl logs
   shell:
     cmd: |
-      journalctl --vacuum-time=1s
+      journalctl -m --vacuum-time=1s
