@@ -21,8 +21,7 @@ import sys
 import tarfile
 from io import BytesIO
 
-KUBE_CI_SRC = "https://storage.googleapis.com/kubernetes-release-dev"
-KUBE_RELEASE_SRC = "https://storage.googleapis.com/kubernetes-release"
+KUBE_SRC = "https://dl.k8s.io"
 
 KUBE_RESOLVED_SEM = "kubernetes_semver"
 KUBE_RESOLVED_SRC = "kubernetes_http_source"
@@ -68,11 +67,9 @@ class KubeVersionResolver(object):
         elif re.match(r'^v?\d+(?:\.\d+){0,3}(?:[.+-].+)?$', version):
             if not version.startswith('v'):
                 version = "v%s" % version
-            url = "%s/release/%s" % (KUBE_RELEASE_SRC, version)
-        elif version.startswith('ci/'):
-            url = self.__resolve_build_url(version, True)
-        elif re.match(r'^release/.+$', version):
-            url = self.__resolve_build_url(version, False)
+            url = "%s/release/%s" % (KUBE_SRC, version)
+        elif re.match(r'^(ci|release)/.+$', version):
+            url = self.__resolve_build_url(version)
         else:
             raise Exception("Invalid Kubernetes version: %s" % version)
         result[KUBE_RESOLVED_SRC] = url
@@ -83,12 +80,8 @@ class KubeVersionResolver(object):
 
         return result
 
-    def __resolve_build_url(self, buildID, ciBuild):
-        url = ""
-        if ciBuild:
-            url = "%s/%s" % (KUBE_CI_SRC, buildID)
-        else:
-            url = "%s/%s" % (KUBE_RELEASE_SRC, buildID)
+    def __resolve_build_url(self, buildID):
+        url = "%s/%s" % (KUBE_SRC, buildID)
 
         # If the URL doesn't end with ".txt" then see if the URL is already valid.
         if not url.endswith('.txt'):
@@ -108,10 +101,9 @@ class KubeVersionResolver(object):
         version = requests.get(url).text
         version = version.strip()
 
-        if ciBuild:
-            url = "%s/ci/%s" % (KUBE_CI_SRC, version)
-        else:
-            url = "%s/release/%s" % (KUBE_RELEASE_SRC, version)
+        if buildID.startswith('ci/'):
+            version = f'ci/{version}'
+        url = "%s/%s" % (KUBE_SRC, version)
 
         return url
 
@@ -142,8 +134,7 @@ if __name__ == "__main__":
             ====================================================================
             The following placeholders are used in the examples below:
 
-            DEV_SRC   storage.googleapis.com/kubernetes-release-dev
-            REL_SRC   storage.googleapis.com/kubernetes-release
+            BASE_URI  https://dl.k8s.io
             K8S_TGZ   kubernetes.tar.gz
 
             PACKAGE MANAGER INSTALLATION
@@ -164,13 +155,13 @@ if __name__ == "__main__":
               the "kuberentes/version" file from the URL "VALUE/K8S_TGZ".
 
               2. If the VALUE matches a semantic version then the value is
-              treated as a release build and "https://REL_SRC/release/SEMVER"
+              treated as a release build and "BASE_URI/release/SEMVER"
               is processed like the URL in step one.
 
               3. If the VALUE begins with "ci/" then:
               
                 a. If VALUE does not end with ".txt" then a HEAD request is used
-                to check the existence of "https://DEV_SRC/ci/VALUE/K8S_TGZ":
+                to check the existence of "BASE_URI/VALUE/K8S_TGZ":
                 
                   i. If the HEAD request is successful then the URL is processed
                   like the one in step one.
@@ -178,12 +169,12 @@ if __name__ == "__main__":
                   of the URL and is processed by step 3b.
 
                 b. If VALUE *does* end with ".txt" then a GET request is used to
-                read "https://DEV_SRC/ci/VALUE" in order to get the dereferenced
-                version string. Then "https://DEV_SRC/ci/DEREF" is processed
+                read "BASE_URI/VALUE" in order to get the dereferenced
+                version string. Then "BASE_URI/ci/DEREF" is processed
                 like the URL in step one.
 
               4. If the VALUE begins with "release/" then the VALUE is processed
-              like step three, with "ci/" replaced by "release/".
+              like step three, without the "ci/" prefix
 
             The resolved URL is used to install Kuberentes from the set of
             pre-built container images and binaries.
