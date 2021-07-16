@@ -6,7 +6,6 @@ common_rpms: &common_rpms
   curl:
   ebtables:
   jq:
-  open-vm-tools:
   python-netifaces:
   python-requests:
   socat:
@@ -24,9 +23,6 @@ common_debs: &common_debs
   libnetfilter-acct1:
   libnetfilter-cttimeout1:
   libnetfilter-log1:
-  linux-cloud-tools-virtual:
-  linux-tools-virtual:
-  open-vm-tools:
   python3-distutils:
   python3-netifaces:
   python3-pip:
@@ -48,7 +44,6 @@ common_photon_rpms: &common_photon_rpms
   jq:
   net-tools:
   openssl-c_rehash:
-  open-vm-tools:
   python-netifaces:
   python3-pip:
   python-requests:
@@ -110,10 +105,22 @@ centos:
         timeout: 0
   azure:
     package:
+      open-vm-tools:
       azure-cli:
   ova:
     package:
       open-vm-tools:
+      cloud-init:
+      cloud-utils-growpart:
+      python2-pip:
+  qemu:
+    package:
+      open-vm-tools:
+      cloud-init:
+      cloud-utils-growpart:
+      python2-pip:
+  raw:
+    package:
       cloud-init:
       cloud-utils-growpart:
       python2-pip:
@@ -133,11 +140,33 @@ photon:
       cloud-init:
       cloud-utils:
       python3-netifaces:
+  qemu:
+    package:
+      open-vm-tools:
+      cloud-init:
+      cloud-utils:
+      python3-netifaces:
+  raw:
+    package:
+      cloud-init:
+      cloud-utils:
+      python3-netifaces:
 rhel:
   common-package: *common_rpms
   ova:
     package:
       open-vm-tools:
+      cloud-init:
+      cloud-utils-growpart:
+      python2-pip:
+  qemu:
+    package:
+      open-vm-tools:
+      cloud-init:
+      cloud-utils-growpart:
+      python2-pip:
+  raw:
+    package:
       cloud-init:
       cloud-utils-growpart:
       python2-pip:
@@ -162,6 +191,9 @@ ubuntu:
         stderr: []
         timeout: 0
     package:
+      open-vm-tools:
+      linux-cloud-tools-virtual:
+      linux-tools-virtual:
       <<: *chrony_deb
     service:
       chrony:
@@ -173,6 +205,8 @@ ubuntu:
         enabled: true
         running: true
     package:
+      linux-cloud-tools-virtual:
+      linux-tools-virtual:
     command:
       snap list | grep 'amazon-ssm-agent' | awk -F' ' '{print $1}':
         exit-status: 0
@@ -186,11 +220,27 @@ ubuntu:
         timeout: 0
   ova:
     package:
+      linux-cloud-tools-virtual:
+      linux-tools-virtual:
       open-vm-tools:
       cloud-guest-utils:
       cloud-initramfs-copymods:
       cloud-initramfs-dyn-netconf:
-
+  qemu:
+    package:
+      linux-cloud-tools-virtual:
+      linux-tools-virtual:
+      open-vm-tools:
+      cloud-guest-utils:
+      cloud-initramfs-copymods:
+      cloud-initramfs-dyn-netconf:
+  raw:
+    package:
+      cloud-guest-utils:
+      cloud-initramfs-copymods:
+      cloud-initramfs-dyn-netconf:
+      linux-cloud-tools-common:
+      linux-tools-common:
 # Windows specific variables
 windows:
   common-windows-features:
