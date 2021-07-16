@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 
 # Copyright 2019 The Kubernetes Authors.
 #
@@ -14,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import json
 import re
 import requests
 import sys
@@ -122,7 +123,7 @@ class KubeVersionResolver(object):
         b = BytesIO(r.content)
         t = tarfile.open(fileobj=b, mode='r')
         v = t.extractfile("kubernetes/version")
-        return v.read().strip()
+        return v.read().strip().decode("utf-8")
 
 
 if __name__ == "__main__":
@@ -195,6 +196,5 @@ if __name__ == "__main__":
     resolver = KubeVersionResolver()
     result = resolver.Resolve(args.version[0])
 
-    import json
     data = json.dumps(result, indent=2)
     print(data)
