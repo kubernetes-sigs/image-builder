@@ -56,3 +56,7 @@ echo "Displaying the generated image information"
 filter="name~cluster-api-ubuntu-*"
 gcloud compute images list --project "$GCP_PROJECT" \
   --no-standard-images --filter="${filter}"
+
+echo "Making images public to use in CI"
+(gcloud compute images list --project "$GCP_PROJECT" --no-standard-images --filter="${filter}" --format="value(name[])" | \
+awk '{print "gcloud compute images add-iam-policy-binding --project '"$GCP_PROJECT"' " $1 " --member='"'allAuthenticatedUsers'"' --role='"'roles/compute.imageUser'"' \n"}' | bash)
