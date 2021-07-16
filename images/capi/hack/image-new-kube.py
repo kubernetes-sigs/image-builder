@@ -37,8 +37,8 @@ class KubeVersionResolver(object):
     # Resolve accepts a Kubernetes version string and returns a dictionary with
     # information that can be used to deploy the provided version.
     def Resolve(self, version):
-        if version == "":
-            raise Exception("version is required")
+        if version == '':
+            raise Exception('version is required')
 
         result = {
             KUBE_RESOLVED_SEM: version,
@@ -46,32 +46,33 @@ class KubeVersionResolver(object):
             KUBE_RESOLVED_VER: version,
         }
 
-        # When version is "latest" then the returned dictionary points
+        # When version is 'latest' then the returned dictionary points
         # to the latest package for Kubernetes.
-        if version == "latest":
+        if version == 'latest':
             return result
         # Otherwise check to see if the provided version matches a
         # managed package format. Technically the else clause could be
         # descoped one level, but by placing the logic in the scope of
-        # the else clause, the scope of "match" is isolated from the
+        # the else clause, the scope of 'match' is isolated from the
         # rest of this function.
         else:
             match = re.match(r'^(\d+\.\d+.\d+)\-\d+$', version)
             if match:
-                result[KUBE_RESOLVED_SEM] = 'v%s' % match.groups(1)[0]
+                version = match.groups(1)[0]
+                result[KUBE_RESOLVED_SEM] = f'v{version}'
                 return result
 
-        url = ""
+        url = ''
         if re.match(r'(?i)^https?:', version):
             url = version
         elif re.match(r'^v?\d+(?:\.\d+){0,3}(?:[.+-].+)?$', version):
             if not version.startswith('v'):
-                version = "v%s" % version
-            url = "%s/release/%s" % (KUBE_SRC, version)
+                version = f'v{version}'
+            url = f'{KUBE_SRC}/release/{version}'
         elif re.match(r'^(ci|release)/.+$', version):
             url = self.__resolve_build_url(version)
         else:
-            raise Exception("Invalid Kubernetes version: %s" % version)
+            raise Exception(f'Invalid Kubernetes version: {version}')
         result[KUBE_RESOLVED_SRC] = url
 
         version = self.__read_version_from_kube_tarball(url)
@@ -81,9 +82,9 @@ class KubeVersionResolver(object):
         return result
 
     def __resolve_build_url(self, buildID):
-        url = "%s/%s" % (KUBE_SRC, buildID)
+        url = f'{KUBE_SRC}/{buildID}'
 
-        # If the URL doesn't end with ".txt" then see if the URL is already valid.
+        # If the URL doesn't end with '.txt' then see if the URL is already valid.
         if not url.endswith('.txt'):
             # If there is a kubernetes tarball available at the root of the URL
             # then it is already a valid URL.
@@ -93,9 +94,9 @@ class KubeVersionResolver(object):
                     return url
             except:
                 pass
-            # The URL wasn't valid, so add ".txt" to the end and let's see if the
+            # The URL wasn't valid, so add '.txt' to the end and let's see if the
             # URL points to a valid build.
-            url = "%s.txt" % url
+            url = f'{url}.txt'
 
         # Do an HTTP GET on the txt file to get the actual Kubernetes version.
         version = requests.get(url).text
@@ -103,22 +104,22 @@ class KubeVersionResolver(object):
 
         if buildID.startswith('ci/'):
             version = f'ci/{version}'
-        url = "%s/%s" % (KUBE_SRC, version)
+        url = f'{KUBE_SRC}/{version}'
 
         return url
 
     def __read_version_from_kube_tarball(self, url):
-        url = "%s/kubernetes.tar.gz" % url
+        url = f'{url}/kubernetes.tar.gz'
         r = requests.get(url)
         if not r.status_code == 200:
-            raise Exception("HTTP GET %s failed: %d" % (url, r.status_code))
+            raise Exception(f'HTTP GET {url} failed: {r.status_code}')
         b = BytesIO(r.content)
         t = tarfile.open(fileobj=b, mode='r')
-        v = t.extractfile("kubernetes/version")
-        return v.read().strip().decode("utf-8")
+        v = t.extractfile('kubernetes/version')
+        return v.read().strip().decode('utf-8')
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     import argparse
     import textwrap
     parser = argparse.ArgumentParser(
