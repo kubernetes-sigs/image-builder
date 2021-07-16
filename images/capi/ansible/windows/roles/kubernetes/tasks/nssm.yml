@@ -16,6 +16,10 @@
   win_get_url:
     url: '{{ nssm_url }}'
     dest: '{{ kubernetes_install_path }}\'
+  retries: 5
+  delay: 3
+  register: nssm_download
+  until: nssm_download is not failed
     
 - name: Create kubelet start file for nssm
   win_template:

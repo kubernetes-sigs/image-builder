@@ -16,6 +16,10 @@
   win_get_url:
     url:  '{{ wins_url }}'
     dest: '{{ kubernetes_install_path }}'
+  retries: 5
+  delay: 3
+  register: wins_download
+  until: wins_download is not failed
 
 - name: Register wins.exe
   win_command:  wins.exe srv app run --register

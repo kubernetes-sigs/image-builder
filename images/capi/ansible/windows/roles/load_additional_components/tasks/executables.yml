@@ -26,3 +26,6 @@
   poll: 60
   retries: 5
   delay: 3
+  register: download
+  until: download is not failed
+  

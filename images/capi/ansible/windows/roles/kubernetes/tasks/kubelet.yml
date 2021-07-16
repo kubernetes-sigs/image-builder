@@ -17,10 +17,10 @@
     path:  "{{ item }}"
     state: directory
   loop: 
-    - '%SystemDrive%\var\log\kubelet'
-    - '%SystemDrive%\var\lib\kubelet\etc\kubernetes'
-    - '%SystemDrive%\var\lib\kubelet\etc\kubernetes\manifests'
-    - '%SystemDrive%\etc\kubernetes\pki'
+    - '{{ systemdrive.stdout | trim }}\var\log\kubelet'
+    - '{{ systemdrive.stdout | trim }}\var\lib\kubelet\etc\kubernetes'
+    - '{{ systemdrive.stdout | trim }}\var\lib\kubelet\etc\kubernetes\manifests'
+    - '{{ systemdrive.stdout | trim }}\etc\kubernetes\pki'
 
 - name: Symlink kubelet pki folder
   win_shell: New-Item -path $env:SystemDrive\var\lib\kubelet\etc\kubernetes\pki -type SymbolicLink -value  $env:SystemDrive\etc\kubernetes\pki\ -Force

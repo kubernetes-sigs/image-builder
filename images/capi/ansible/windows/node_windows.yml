@@ -22,12 +22,53 @@
     - name: Check if wins url is set
       set_fact:
         use_wins: '{{ true if (wins_url is defined) and (wins_url|length > 0) else false }}'  
-        
+
+    # https://docs.ansible.com/ansible/latest/user_guide/windows_performance.html
+    - name: Optimise powershell
+      win_shell: |
+        function Optimize-PowershellAssemblies {
+          # NGEN powershell assembly, improves startup time of powershell by 10x
+          $old_path = $env:path
+          try {
+            $env:path = [Runtime.InteropServices.RuntimeEnvironment]::GetRuntimeDirectory()
+            [AppDomain]::CurrentDomain.GetAssemblies() | % {
+              if (! $_.location) {continue}
+              $Name = Split-Path $_.location -leaf
+              if ($Name.startswith("Microsoft.PowerShell.")) {
+                Write-Progress -Activity "Native Image Installation" -Status "$name"
+                ngen install $_.location | % {"`t$_"}
+              }
+            }
+          } finally {
+            $env:path = $old_path
+          }
+        }
+        Optimize-PowershellAssemblies
+      become: yes
+      become_method: runas
+      become_user: SYSTEM
+
+    - name: Get Install Drive
+      win_shell: $env:SYSTEMDRIVE
+      register: systemdrive
+
+    - name: Get Program Files Directory
+      win_shell: $env:ProgramFiles
+      register: programfiles
+
+    - name: Get All Users profile path
+      win_shell: $env:ALLUSERSPROFILE.Replace("\", "\\")
+      register: alluserprofile
+      
+    - name: Get TEMP Directory
+      win_shell: $env:TEMP
+      register: tempdir
+
     - include_role:
         name: systemprep
     - include_role:
         name: cloudbase-init
-      when: install_cloudbase_init 
+      when: install_cloudbase_init
     - include_role:
         name: runtimes
     - include_role:
