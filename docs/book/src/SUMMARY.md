@@ -7,6 +7,7 @@
   - [Azure](./capi/providers/azure.md)
   - [DigitalOcean](./capi/providers/digitalocean.md)
   - [GCP](./capi/providers/gcp.md)
+  - [IBM Cloud VPC](./capi/providers/ibmcloudvpc.md)
   - [OpenStack](./capi/providers/openstack.md)
   - [raw](./capi/providers/raw.md)
   - [vSphere](./capi/providers/vsphere.md)
