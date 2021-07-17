@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-kubernetes_base_url: https://storage.googleapis.com/kubernetes-release/release/v1.19.2/bin/windows/amd64
+kubernetes_base_url: https://dl.k8s.io/release/v1.19.2/bin/windows/amd64
 cloudbase_init_url: https://github.com/cloudbase/cloudbase-init/releases/download/1.1.2/CloudbaseInitSetup_1_1_2_x64.msi
 wins_url: https://github.com/rancher/wins/releases/download/v0.0.4/wins.exe
 nssm_url: https://azurek8scishared.blob.core.windows.net/nssm/nssm.exe

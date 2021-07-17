@@ -24,7 +24,7 @@ var (
 func main() {
 	artifacts := map[string]string {
 	   "kubelet.exe": "kubernetes_base_url",
-	   //"kubernetes_base_url": "https://storage.googleapis.com/kubernetes-release/release/v1.19.2/bin/windows/amd64",
+	   //"kubernetes_base_url": "https://dl.k8s.io/release/v1.19.2/bin/windows/amd64",
 	   "CloudbaseInit*": "cloudbase_init_url",  
 	   // "cloudbase_init_url": "https://github.com/cloudbase/cloudbase-init/releases/download/1.1.2/CloudbaseInitSetup_1_1_2_x64.msi",
 	   "wins.exe": "wins_url", //: "https://github.com/rancher/wins/releases/download/v0.0.4/wins.exe",
