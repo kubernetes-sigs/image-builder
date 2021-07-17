@@ -23,7 +23,7 @@ set -o pipefail
 source hack/utils.sh
 
 _version="0.4.2"
-
+    
 if [[ ${HOSTOS} == "darwin" ]]; then
     echo "IMPORTANT: Winrm connection plugin for Ansible on MacOS causes connection issues."
     echo "See https://docs.ansible.com/ansible/latest/user_guide/windows_winrm.html#what-is-winrm for more details."
