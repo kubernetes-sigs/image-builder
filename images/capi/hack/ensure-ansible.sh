@@ -32,6 +32,6 @@ if command -v ansible >/dev/null 2>&1; then exit 0; fi
 
 ensure_py3
 pip3 install --user "ansible==${_version}"
-pip3 install --user "ansible-base==2.10.9" --force-reinstall
 ensure_py3_bin ansible
 ensure_py3_bin ansible-playbook
+ansible-galaxy collection install ansible.windows:==1.7.0
