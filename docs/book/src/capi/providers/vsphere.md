@@ -23,7 +23,7 @@ The `vsphere` builder supports building against a remote VMware vSphere using st
 ### vmware-vmx builder
 During the dev process it's uncommon for the base OS image to change, but the image building process builds the base image from the ISO every time and thus adding a significant amount of time to the build process.
 
-To reduce the image building times during development, one can use the `build-node-ova-local-base-<OS>` target to build the base image from the ISO. By setting `source_path` variable in `vmx.json` to the `*.vmx` file from the output, it can then be re-used with the `build-node-ova-local-vmx-<OS>` build target to speed up the process.
+To reduce the image building times during development, one can use the `build-node-ova-local-base-<OS>` target to build the base image from the ISO. By setting `source_path` variable in `vmx.json` to the `*.vmx` file from the output, it can then be re-used with the `build-node-ova-local-vmx-<OS>` build target to speed up the process. More details on configuring this builder can be found [here](https://www.packer.io/docs/builders/vmware/vmx).
 
 
 ### vsphere-clone builder
