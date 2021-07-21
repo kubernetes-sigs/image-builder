@@ -91,6 +91,7 @@
       "user": "Administrator"
     },
     {
+      "restart_timeout": "10m",
       "type": "windows-restart"
     },
     {

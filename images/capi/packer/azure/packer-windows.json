@@ -114,6 +114,7 @@
       "user": "packer"
     },
     {
+      "restart_timeout": "10m",
       "type": "windows-restart"
     },
     {
