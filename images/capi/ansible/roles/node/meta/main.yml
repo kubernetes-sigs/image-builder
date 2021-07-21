@@ -15,5 +15,5 @@
 dependencies:
   - role: setup
     vars:
-      rpms: "{{ common_photon_rpms if ansible_os_family == 'VMware Photon OS' else ( common_rpms + rh7_rpms if (ansible_os_family == 'RedHat' and ansible_distribution_major_version == '7') else common_rpms + rh8_rpms ) }}"
-      debs: "{{ common_debs }}"
+      rpms: "{{ ( common_photon_rpms + lookup('vars', 'common_' + build_target + '_photon_rpms') ) if ansible_os_family == 'VMware Photon OS' else ( ( common_rpms + rh7_rpms + lookup('vars', 'common_' + build_target + '_rpms') ) if (ansible_os_family == 'RedHat' and ansible_distribution_major_version == '7') else ( common_rpms + rh8_rpms + lookup('vars', 'common_' + build_target + '_rpms') ) ) }}"
+      debs: "{{ common_debs +  lookup('vars', 'common_' + build_target + '_debs') }}"

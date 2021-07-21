@@ -8,7 +8,6 @@ common_rpms: &common_rpms
   chrony:
   curl:
   jq:
-  open-vm-tools:
   python3-pip:
   socat:
   sysstat:
@@ -36,9 +35,6 @@ common_debs: &common_debs
   libnetfilter-acct1:
   libnetfilter-cttimeout1:
   libnetfilter-log1:
-  linux-cloud-tools-virtual:
-  linux-tools-virtual:
-  open-vm-tools:
   python3-distutils:
   python3-netifaces:
   python3-pip:
@@ -59,7 +55,6 @@ common_photon_rpms: &common_photon_rpms
   jq:
   net-tools:
   openssl-c_rehash:
-  open-vm-tools:
   python-netifaces:
   python3-pip:
   python-requests:
@@ -123,11 +118,25 @@ centos:
         timeout: 0
   azure:
     package:
+      open-vm-tools:
       azure-cli:
   ova:
     package:
       python2-pip:
+      open-vm-tools:
       <<: *rh7_rpms
+  qemu:
+    package:
+      open-vm-tools:
+      cloud-init:
+      cloud-utils-growpart:
+      python2-pip:
+      <<: *rh7_rpms
+  raw:
+    package:
+      cloud-init:
+      cloud-utils-growpart:
+      python2-pip:
 flatcar:
   amazon:
     command:
@@ -149,12 +158,40 @@ rockylinux:
   common-package: *common_rpms
   ova:
     package:
+      open-vm-tools:
       python2-pip:
+      <<: *rh8_rpms
+  qemu:
+    package:
+      open-vm-tools:
+      cloud-init:
+      cloud-utils:
+      python3-netifaces:
+      <<: *rh8_rpms
+  raw:
+    package:
+      cloud-init:
+      cloud-utils:
+      python3-netifaces:
       <<: *rh8_rpms
 rhel:
   common-package: *common_rpms
   ova:
     package:
+      python2-pip:
+      open-vm-tools:
+      <<: *rh7_rpms
+  qemu:
+    package:
+      open-vm-tools:
+      cloud-init:
+      cloud-utils-growpart:
+      python2-pip:
+      <<: *rh7_rpms
+  raw:
+    package:
+      cloud-init:
+      cloud-utils-growpart:
       python2-pip:
       <<: *rh7_rpms
 ubuntu:
@@ -181,6 +218,9 @@ ubuntu:
         exit-status: 0
         timeout: 0
     package:
+      open-vm-tools:
+      linux-cloud-tools-virtual:
+      linux-tools-virtual:
       <<: *chrony_deb
     service:
       chrony:
@@ -192,6 +232,8 @@ ubuntu:
         enabled: true
         running: true
     package:
+      linux-cloud-tools-virtual:
+      linux-tools-virtual:
     command:
       snap list | grep 'amazon-ssm-agent' | awk -F' ' '{print $1}':
         exit-status: 0
@@ -205,11 +247,27 @@ ubuntu:
         timeout: 0
   ova:
     package:
+      linux-cloud-tools-virtual:
+      linux-tools-virtual:
       open-vm-tools:
       cloud-guest-utils:
       cloud-initramfs-copymods:
       cloud-initramfs-dyn-netconf:
-
+  qemu:
+    package:
+      linux-cloud-tools-virtual:
+      linux-tools-virtual:
+      open-vm-tools:
+      cloud-guest-utils:
+      cloud-initramfs-copymods:
+      cloud-initramfs-dyn-netconf:
+  raw:
+    package:
+      cloud-guest-utils:
+      cloud-initramfs-copymods:
+      cloud-initramfs-dyn-netconf:
+      linux-cloud-tools-generic:
+      linux-tools-generic:
 # Windows specific variables
 windows:
   common-windows-features:
