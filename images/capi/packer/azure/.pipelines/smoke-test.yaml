@@ -1,0 +1,59 @@
+# Required pipeline variables:
+# - BUILD_POOL - Azure DevOps build pool to use
+# - CONTAINER_IMAGE - Dev container image URL to use. Should have Azure CLI, Packer and Ansible.
+# - AZURE_TENANT_ID_VHD - tenant ID to build the vhd
+# - AZURE_CLIENT_ID_VHD - Service principal ID to build the vhd
+# - AZURE_CLIENT_SECRET_VHD - Service principal secret to build the vhd
+# - AZURE_SUBSCRIPTION_ID_VHD - Subscription ID to build the vhd
+# - KUBERNETES_VERSION - version of Kubernetes to create the sku for, e.g. `1.21.3`
+# - CLEANUP - whether or not to clean up resources created in the run
+
+trigger: none
+
+schedules:
+  - cron: "0 1 * * *"
+    displayName: "nightly build"
+    always: true
+    branches:
+      include:
+        - master
+
+stages:
+  - stage: vhd
+    jobs:
+    - job:
+      container: $[ variables['CONTAINER_IMAGE'] ]
+      timeoutInMinutes: 120
+      pool:
+        name: $(BUILD_POOL)
+      steps:
+      - template: k8s-config.yaml
+      - script: |
+          set -o pipefail
+          make deps-azure
+          os=$(echo "$OS" | tr '[:upper:]' '[:lower:]')
+          version=$(echo "$OS_VERSION" | tr '[:upper:]' '[:lower:]' | tr -d .)
+          make build-azure-vhd-$os-$version | tee packer/azure/packer.out
+        displayName: Building VHD
+        workingDirectory: '$(system.defaultWorkingDirectory)/images/capi'
+        env:
+          AZURE_CLIENT_SECRET: $(AZURE_CLIENT_SECRET)
+      - template: delete-storage-account.yaml
+      - script: |
+          chown -R $USER:$USER .
+        displayName: cleanup - chown all files in work directory
+        condition: always()
+      strategy:
+        maxParallel: 0
+        matrix:
+          Windows:
+            OS: Windows
+            OS_VERSION: 2019
+          Linux:
+            OS: Ubuntu
+            OS_VERSION: 2004
+      variables:
+        AZURE_TENANT_ID: $(AZURE_TENANT_ID_VHD)
+        AZURE_CLIENT_ID: $(AZURE_CLIENT_ID_VHD)
+        AZURE_CLIENT_SECRET: $(AZURE_CLIENT_SECRET_VHD)
+        AZURE_SUBSCRIPTION_ID: $(AZURE_SUBSCRIPTION_ID_VHD)
