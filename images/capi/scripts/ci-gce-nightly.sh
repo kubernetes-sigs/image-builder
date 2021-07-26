@@ -52,6 +52,10 @@ su - packer -c "bash -c 'cd /home/prow/go/src/sigs.k8s.io/image-builder/images/c
 # using PACKER_FLAGS=-force to overwrite the previous image and keep the same name
 su - packer -c "bash -c 'cd /home/prow/go/src/sigs.k8s.io/image-builder/images/capi && PATH=$PATH:~packer/.local/bin:/home/prow/go/src/sigs.k8s.io/image-builder/images/capi/.local/bin GCP_PROJECT_ID=$GCP_PROJECT PACKER_VAR_FILES=packer/gce/ci/nightly/overwrite-1-20.json PACKER_FLAGS=-force make deps-gce build-gce-all'"
 
+# build image for 1.21
+# using PACKER_FLAGS=-force to overwrite the previous image and keep the same name
+su - packer -c "bash -c 'cd /home/prow/go/src/sigs.k8s.io/image-builder/images/capi && PATH=$PATH:~packer/.local/bin:/home/prow/go/src/sigs.k8s.io/image-builder/images/capi/.local/bin GCP_PROJECT_ID=$GCP_PROJECT PACKER_VAR_FILES=packer/gce/ci/nightly/overwrite-1-21.json PACKER_FLAGS=-force make deps-gce build-gce-all'"
+
 echo "Displaying the generated image information"
 filter="name~cluster-api-ubuntu-*"
 gcloud compute images list --project "$GCP_PROJECT" \
