@@ -5,8 +5,6 @@
   "build_name": "flatcar-{{env `FLATCAR_CHANNEL`}}-{{env `FLATCAR_VERSION`}}",
   "channel_name": "{{env `FLATCAR_CHANNEL`}}",
   "containerd_cri_socket": "/run/docker/libcontainerd/docker-containerd.sock",
-  "containerd_sha256": "2697a342e3477c211ab48313e259fd7e32ad1f5ded19320e6a559f50a82bff3d",
-  "containerd_version": "1.4.3",
   "crictl_source_type": "http",
   "distro_name": "flatcar",
   "guest_os_type": "linux-64",
