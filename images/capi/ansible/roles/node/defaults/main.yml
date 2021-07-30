@@ -72,3 +72,4 @@ sysctl_conf_file: "{{ '/etc/sysctl.d/99-sysctl.conf' if ansible_os_family == 'VM
 
 pause_image: "k8s.gcr.io/pause:3.4.1"
 containerd_additional_settings: null
+leak_local_mdns_to_dns: false

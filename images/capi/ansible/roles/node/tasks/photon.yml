@@ -13,7 +13,21 @@
 # limitations under the License.
 
 ---
-- name: Double TCP small queue limit to be the same as Ubuntu 
+- name: Leak mDNS to DNS (cloud-init-nics) (enable .local domain lookups)
+  ini_file:
+    path: /etc/systemd/network/10-cloud-init-nics.network
+    section: Network
+    option: Domains
+    value: "~local"
+  when: leak_local_mdns_to_dns
+- name: Leak mDNS to DNS (dhcp) (enable .local domain lookups)
+  ini_file:
+    path: /etc/systemd/network/99-dhcp-en.network
+    section: Network
+    option: Domains
+    value: "~local"
+  when: leak_local_mdns_to_dns
+- name: Double TCP small queue limit to be the same as Ubuntu
   sysctl:
     name: net.ipv4.tcp_limit_output_bytes
     value: "524288"
