@@ -218,7 +218,7 @@ write_files:
       apiServer:
         extraArgs:
           cloud-provider: external
-      apiVersion: kubeadm.k8s.io/v1beta1
+      apiVersion: kubeadm.k8s.io/v1beta2
       certificatesDir: ""
       clusterName: sakc4
       controlPlaneEndpoint: ""
@@ -238,7 +238,7 @@ write_files:
       scheduler: {}
       
       ---
-      apiVersion: kubeadm.k8s.io/v1beta1
+      apiVersion: kubeadm.k8s.io/v1beta2
       kind: InitConfiguration
       localAPIEndpoint:
         advertiseAddress: ""
