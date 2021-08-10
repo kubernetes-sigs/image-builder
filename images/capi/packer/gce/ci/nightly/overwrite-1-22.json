@@ -1,0 +1,8 @@
+{
+  "build_timestamp": "nightly",
+  "kubernetes_deb_version": "1.22.0-00",
+  "kubernetes_rpm_version": "1.22.0-0",
+  "kubernetes_semver": "v1.22.0",
+  "kubernetes_series": "v1.22",
+  "service_account_email": "gcb-builder-cluster-api-gcp@k8s-staging-cluster-api-gcp.iam.gserviceaccount.com"
+}
