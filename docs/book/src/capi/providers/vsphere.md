@@ -4,16 +4,16 @@
 
 The images may be built using one of the following hypervisors:
 
-| OS | Builder | Build target |
-|----|---------|--------------|
-| Linux | VMware Workstation (vmware-iso) | build-node-ova-local-<OS> |
-| macOS | VMware Fusion (vmware-iso)| build-node-ova-local-<OS> |
-| ESXi | ESXi | build-node-ova-esx-<OS> |
-| vSphere | vSphere >= 6.5 | build-node-ova-vsphere-<OS> |
-| vSphere | vSphere >= 6.5 | build-node-ova-vsphere-base-<OS> |
-| vSphere Clone | vSphere >= 6.5 | build-node-ova-vsphere-clone-<OS> |
-| Linux | VMware Workstation (vmware-vmx) | build-node-ova-local-vmx-<OS> |
-| macOS | VMware Fusion (vmware-vmx) | build-node-ova-local-vmx-<OS> |
+| OS            | Builder                         | Build target                      |
+| ------------- | ------------------------------- | --------------------------------- |
+| Linux         | VMware Workstation (vmware-iso) | build-node-ova-local-<OS>         |
+| macOS         | VMware Fusion (vmware-iso)      | build-node-ova-local-<OS>         |
+| ESXi          | ESXi                            | build-node-ova-esx-<OS>           |
+| vSphere       | vSphere >= 6.5                  | build-node-ova-vsphere-<OS>       |
+| vSphere       | vSphere >= 6.5                  | build-node-ova-vsphere-base-<OS>  |
+| vSphere Clone | vSphere >= 6.5                  | build-node-ova-vsphere-clone-<OS> |
+| Linux         | VMware Workstation (vmware-vmx) | build-node-ova-local-vmx-<OS>     |
+| macOS         | VMware Fusion (vmware-vmx)      | build-node-ova-local-vmx-<OS>     |
 
 **NOTE** If you want to build all available OS's, uses the `-all` target. If you want to build them in parallel, use `make -j`. For example, `make -j build-node-ova-local-all`.
 
@@ -77,15 +77,22 @@ IB_OVFTOOL=1 IB_OVFTOOL_ARGS="--allowExtraConfig" make build-node-ova-<hyperviso
 
 In addition to the configuration found in `images/capi/packer/config`, the `ova` directory includes several JSON files that define the configuration for the images:
 
-| File | Description |
-|------|-------------|
-| `esx.json` | Additional settings needed when building on a remote ESXi host |
-| `centos-7.json` | The settings for the CentOS 7 image |
-| `photon-3.json` | The settings for the Photon 3 image |
-| `rhel-7.json` | The settings for the RHEL 7 image |
-| `ubuntu-1804.json` | The settings for the Ubuntu 18.04 image |
-| `ubuntu-2004.json` | The settings for the Ubuntu 20.04 image |
-| `vsphere.json` | Additional settings needed when building on a remote vSphere |
+| File               | Description                                                    |
+| ------------------ | -------------------------------------------------------------- |
+| `esx.json`         | Additional settings needed when building on a remote ESXi host |
+| `centos-7.json`    | The settings for the CentOS 7 image                            |
+| `photon-3.json`    | The settings for the Photon 3 image                            |
+| `rhel-7.json`      | The settings for the RHEL 7 image                              |
+| `ubuntu-1804.json` | The settings for the Ubuntu 18.04 image                        |
+| `ubuntu-2004.json` | The settings for the Ubuntu 20.04 image                        |
+| `vsphere.json`     | Additional settings needed when building on a remote vSphere   |
+
+### Photon specific options
+
+#### Enabling .local lookups via DNS
+
+Photon uses systemd-resolved defaults, which means that .local will be resolved using Multicast DNS. If you are deploying to
+an environment where you require DNS resolution .local, then add `leak_local_mdns_to_dns=yes` in `ansible_user_vars`.
 
 ### RHEL
 
@@ -105,10 +112,10 @@ The images are built and located in `images/capi/output/BUILD_NAME+kube-KUBERNET
 
 The images are uploaded to the GCS bucket `capv-images`. The path to the image depends on the version of Kubernetes:
 
-| Build type | Upload location |
-|------------|-----------------|
-| CI | `gs://capv-images/ci/KUBERNETES_VERSION/BUILD_NAME-kube-KUBERNETES_VERSION.ova` |
-| Release | `gs://capv-images/release/KUBERNETES_VERSION/BUILD_NAME-kube-KUBERNETES_VERSION.ova` |
+| Build type | Upload location                                                                      |
+| ---------- | ------------------------------------------------------------------------------------ |
+| CI         | `gs://capv-images/ci/KUBERNETES_VERSION/BUILD_NAME-kube-KUBERNETES_VERSION.ova`      |
+| Release    | `gs://capv-images/release/KUBERNETES_VERSION/BUILD_NAME-kube-KUBERNETES_VERSION.ova` |
 
 Uploading the images requires the `gcloud` and `gsutil` programs, an active Google Cloud account, or a service account with an associated key file. The latter may be specified via the environment variable `KEY_FILE`.
 
@@ -130,10 +137,10 @@ gsutil ls gs://capv-images/release
 
 Images may be downloaded via HTTP:
 
-| Build type | Download location |
-|------------|-----------------|
-| CI | `http://storage.googleapis.com/capv-images/ci/KUBERNETES_VERSION/BUILD_NAME-kube-KUBERNETES_VERSION.ova` |
-| Release | `http://storage.googleapis.com/capv-images/release/KUBERNETES_VERSION/BUILD_NAME-kube-KUBERNETES_VERSION.ova` |
+| Build type | Download location                                                                                             |
+| ---------- | ------------------------------------------------------------------------------------------------------------- |
+| CI         | `http://storage.googleapis.com/capv-images/ci/KUBERNETES_VERSION/BUILD_NAME-kube-KUBERNETES_VERSION.ova`      |
+| Release    | `http://storage.googleapis.com/capv-images/release/KUBERNETES_VERSION/BUILD_NAME-kube-KUBERNETES_VERSION.ova` |
 
 ## Testing Images
 
