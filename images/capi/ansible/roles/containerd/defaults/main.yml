@@ -17,3 +17,4 @@ containerd_flatcar_bins:
 - containerd
 - containerd-shim
 
+containerd_config_file: "etc/containerd/config.toml"

@@ -65,6 +65,7 @@ Several variables can be used to customize the image build.
 | `additional_registry_images` | Set this to `"true"` to load addtional container images using their registry url. `additional_registry_images_list` var should be set to a comma seperated string of registry urls of the container images. | `"false"` |
 | `additional_executables` | Set this to `"true"` to load addtional executables from a url. `additional_executables_list` var should be set to a comma seperated string of urls. `additional_executables_destination_path` should be set to the destination path of the executables. | `"false"` |
 | `ansible_user_vars` | A space delimited string that the user can pass to use in the ansible roles  | `""` |
+| `containerd_config_file` | Custom containerd config file a user can pass to override the default. Use `ansible_user_vars` to pass this var  | `""` |
 
 The variables found in `packer/config/*.json` or `packer/<provider>/*.json` should not need to be modified directly. For customization it is better to create a JSON file with your changes and provide it via the `PACKER_VAR_FILES` environment variable. Variables set in this file will override any previous values. Multiple files can be passed via `PACKER_VAR_FILES`, with the last file taking precedence over any others.
 
