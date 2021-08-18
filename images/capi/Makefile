@@ -111,6 +111,7 @@ CONTROLLER_IMG ?= $(REGISTRY)/$(IMAGE_NAME)
 TAG ?= dev
 ARCH ?= amd64
 BASE_IMAGE ?= docker.io/library/ubuntu:focal
+KUBERNETES_VERSION ?= 1.22
 
 ## --------------------------------------
 ## Packer flags
@@ -173,7 +174,8 @@ COMMON_NODE_VAR_FILES :=	packer/config/kubernetes.json \
 					packer/config/ansible-args.json \
 					packer/config/goss-args.json \
 					packer/config/common.json \
-					packer/config/additional_components.json
+					packer/config/additional_components.json \
+					packer/config/kubernetes-versions/version-$(subst .,-,$(KUBERNETES_VERSION)).json
 
 COMMON_HAPROXY_VAR_FILES := packer/ova/packer-common.json \
 					packer/config/ansible-args.json \
