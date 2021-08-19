@@ -1,0 +1,16 @@
+{
+  "additional_registry_images": "false",
+  "additional_registry_images_list": "",
+  "build_name": "windows-2019-containerd",
+  "distribution": "windows",
+  "distribution_version": "2019",
+  "image_offer": "WindowsServer",
+  "image_publisher": "MicrosoftWindowsServer",
+  "image_sku": "2019-Datacenter-Core-smalldisk",
+  "image_version": "latest",
+  "load_additional_components": "false",
+  "runtime": "containerd",
+  "vm_size": "Standard_D4s_v3",
+  "windows_updates_kbs": "",
+  "wins_url": ""
+}
