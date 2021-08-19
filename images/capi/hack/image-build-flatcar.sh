@@ -6,12 +6,20 @@ export VAGRANT_VAGRANTFILE=${VAGRANT_VAGRANTFILE:-/tmp/Vagrantfile.builder-flatc
 export VAGRANT_SSH_PRIVATE_KEY=${VAGRANT_SSH_PRIVATE_KEY:-/tmp/vagrant-insecure-key}
 export VAGRANT_SSH_PUBLIC_KEY=${VAGRANT_SSH_PUBLIC_KEY:-/tmp/vagrant-insecure-key.pub}
 
+CONTAINERD_TMPDIR="$(mktemp -d)"
+CONTAINERD_CHECKSUM_FILE="${CONTAINERD_TMPDIR}/containerd-sha256sum"
+PACKER_VAR_FILES_CONTAINERD="${CONTAINERD_TMPDIR}/containerd.json"
+
 usage() {
     echo "Usage: $0 [<channel>] [<version>]"
     echo "          <channel> is one of: edge alpha beta stable (defaults to"
     echo "                      stable)"
     echo "          <version> release version to use (defaults to the latest"
     echo "                      release available for <channel>)"
+    echo ""
+    echo "To specify Flatcar-specific containerd version and/or its sha256:"
+    echo ""
+    echo "  FLATCAR_CONTAINERD_VERSION=1.5.4 FLATCAR_CONTAINERD_SHA256=abcd... ./hack/image-build-flatcar.sh"
 }
 # --
 
@@ -90,6 +98,25 @@ run_vagrant() {
     echo "before using vagrant commands."
 }
 
+function create_containerd_config() {
+    [ -z "${FLATCAR_CONTAINERD_VERSION}" ] && return
+
+    if [ -z "${FLATCAR_CONTAINERD_SHA256}" ]; then
+        curl -Ls -o ${CONTAINERD_CHECKSUM_FILE} \
+            "https://github.com/containerd/containerd/releases/download/v${FLATCAR_CONTAINERD_VERSION}/cri-containerd-cni-${FLATCAR_CONTAINERD_VERSION}-linux-amd64.tar.gz.sha256sum"
+        FLATCAR_CONTAINERD_SHA256="$(cat ${CONTAINERD_CHECKSUM_FILE} | cut -f1 -d \  )"
+    fi
+
+    echo "{\"containerd_sha256\": \"${FLATCAR_CONTAINERD_SHA256}\", \"containerd_version\": \"${FLATCAR_CONTAINERD_VERSION}\"}" \
+        > ${PACKER_VAR_FILES_CONTAINERD}
+}
+
+function cleanup_containerd_config() {
+    rm -rf ${CONTAINERD_TMPDIR}
+}
+
+trap cleanup_containerd_config INT KILL EXIT
+
 CAPI_PROVIDER=${CAPI_PROVIDER:-qemu}
 
 channel="$1"
@@ -125,18 +152,27 @@ export FLATCAR_CHANNEL FLATCAR_VERSION
 
 rm -rf ./output/flatcar-"${channel}-${release}"-kube-*
 
+create_containerd_config
+
+if [ -f "${PACKER_VAR_FILES_CONTAINERD}" ]; then
+    FLATCAR_MAKE_OPTS+="PACKER_VAR_FILES=${PACKER_VAR_FILES_CONTAINERD} "
+fi
+
 if [[ ${CAPI_PROVIDER} = "qemu" ]]; then
+    FLATCAR_MAKE_OPTS+="FLATCAR_CHANNEL=$channel FLATCAR_VERSION=$release "
+    FLATCAR_MAKE_OPTS+="SSH_PRIVATE_KEY_FILE=${VAGRANT_SSH_PRIVATE_KEY} "
+    FLATCAR_MAKE_OPTS+="SSH_PUBLIC_KEY_FILE=${VAGRANT_SSH_PUBLIC_KEY} "
+
     fetch_vagrant_ssh_keys
-    make FLATCAR_CHANNEL="$channel" FLATCAR_VERSION="$release" \
-        SSH_PRIVATE_KEY_FILE="${VAGRANT_SSH_PRIVATE_KEY}" \
-        SSH_PUBLIC_KEY_FILE="${VAGRANT_SSH_PUBLIC_KEY}" \
-        build-${CAPI_PROVIDER}-flatcar
+    make ${FLATCAR_MAKE_OPTS} build-qemu-flatcar
     run_vagrant
 elif [[ ${CAPI_PROVIDER} = "aws" ]] || [[ ${CAPI_PROVIDER} = "ami" ]]; then
-    make build-ami-flatcar
+    make ${FLATCAR_MAKE_OPTS} build-ami-flatcar
 else
     echo "Unknown CAPI_PROVIDER=${CAPI_PROVIDER}. exit."
     exit 1
 fi
+
+exit 0
 
 # vim:set sts=4 sw=4 et:
