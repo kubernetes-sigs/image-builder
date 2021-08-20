@@ -22,11 +22,15 @@
       "location": "{{user `azure_location`}}",
       "name": "vhd-{{user `build_name`}}",
       "os_type": "Linux",
+      "private_virtual_network_with_public_ip": "{{user `private_virtual_network_with_public_ip`}}",
       "resource_group_name": "{{user `resource_group_name`}}",
       "ssh_username": "packer",
       "storage_account": "{{user `storage_account_name`}}",
       "subscription_id": "{{user `subscription_id`}}",
       "type": "azure-arm",
+      "virtual_network_name": "{{user `virtual_network_name`}}",
+      "virtual_network_resource_group_name": "{{user `virtual_network_resource_group_name`}}",
+      "virtual_network_subnet_name": "{{user `virtual_network_subnet_name`}}",
       "vm_size": "{{user `vm_size`}}"
     },
     {
@@ -190,7 +194,11 @@
     "kubernetes_series": null,
     "kubernetes_source_type": null,
     "manifest_output": "manifest.json",
+    "private_virtual_network_with_public_ip": "",
     "subscription_id": null,
+    "virtual_network_name": "",
+    "virtual_network_resource_group_name": "",
+    "virtual_network_subnet_name": "",
     "vm_size": ""
   }
 }

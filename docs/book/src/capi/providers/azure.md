@@ -42,6 +42,21 @@ make build-azure-sig-ubuntu-1804-gen2
 
 Generation 2 images may only be used with Shared Image Gallery, not VHD.
 
+### Configuration
+#### Common Azure options
+
+This table lists several common options that a user may want to set via
+`PACKER_VAR_FILES` to customize their build behavior.  This is not an exhaustive
+list, and greater explanation can be found in the
+[Packer documentation for the Azure ARM builder](https://www.packer.io/docs/builders/azure/arm).
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `private_virtual_network_with_public_ip` | This value allows you to set a virtual_network_name and obtain a public IP. If this value is not set and virtual_network_name is defined Packer is only allowed to be executed from a host on the same subnet / virtual network. | `""` |
+| `virtual_network_name` | Use a pre-existing virtual network for the VM. This option enables private communication with the VM, no public IP address is used or provisioned (unless you set private_virtual_network_with_public_ip). | `""` |
+| `virtual_network_resource_group_name` | If virtual_network_name is set, this value may also be set. If virtual_network_name is set, and this value is not set the builder attempts to determine the subnet to use with the virtual network. If the subnet cannot be found, or it cannot be disambiguated, this value should be set. | `""` |
+| `virtual_network_subnet_name` | If virtual_network_name is set, this value may also be set. If virtual_network_name is set, and this value is not set the builder attempts to determine the resource group containing the virtual network. If the resource group cannot be found, or it cannot be disambiguated, this value should be set.. | `""` |
+
 ## Developer
 
 If you are adding features to image builder than it is sometimes useful to work with the images directly. This section gives some tips.
