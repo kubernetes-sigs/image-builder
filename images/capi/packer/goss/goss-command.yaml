@@ -130,7 +130,7 @@ command:
     timeout: 30000
 {{end}}
 
-{{ if eq .Vars.runtime "docker_ee" }}
+{{ if eq .Vars.runtime "docker-ee" }}
   Correct Docker Version:
     exec: "docker.exe version"
     exit-status: 0

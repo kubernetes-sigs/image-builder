@@ -133,7 +133,7 @@ def main():
     for provider, system in itertools.product(providers, oss):
         if system in builds[provider]:
             if system == 'windows':
-                runtimes = ["docker_ee","containerd"]
+                runtimes = ["docker-ee","containerd"]
                 os_versions = ["2019", "2004"]
             else: 
                 runtimes = ["containerd"]

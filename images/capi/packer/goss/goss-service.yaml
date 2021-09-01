@@ -52,7 +52,7 @@ command:
     {{end}}
 {{end}}
 
-{{ if eq .Vars.runtime "docker_ee" }}
+{{ if eq .Vars.runtime "docker-ee" }}
 
   "Windows Service - docker":
     exec: powershell -command "(Get-Service docker | select *)"

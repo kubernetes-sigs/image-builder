@@ -42,10 +42,10 @@ az sig image-definition create \
 az sig image-definition create \
    --resource-group ${RESOURCE_GROUP_NAME} \
    --gallery-name ${GALLERY_NAME} \
-   --gallery-image-definition capi-windows-2019-docker_ee \
+   --gallery-image-definition capi-windows-2019-docker-ee \
    --publisher capz \
    --offer capz-demo \
-   --sku win-2019-docker \
+   --sku win-2019-docker-ee \
    --os-type Windows
 az sig image-definition create \
    --resource-group ${RESOURCE_GROUP_NAME} \

@@ -40,7 +40,7 @@
   vars:
     dependencies:
       containerd: containerd
-      docker_ee: docker
+      docker-ee: docker
       default: docker
     runtime_service: "{{ dependencies[runtime] | default(dependencies['docker']) }}"
 
