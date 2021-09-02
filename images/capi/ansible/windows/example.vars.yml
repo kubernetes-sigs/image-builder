@@ -17,7 +17,7 @@ cloudbase_init_url: https://github.com/cloudbase/cloudbase-init/releases/downloa
 wins_url: https://github.com/rancher/wins/releases/download/v0.0.4/wins.exe
 nssm_url: https://azurek8scishared.blob.core.windows.net/nssm/nssm.exe
 
-runtime: docker_ee
+runtime: docker-ee
 docker_ee_version: "19.03.12"
 kubernetes_install_path: 'c:\k'
 windows_service_manager: 'nssm'

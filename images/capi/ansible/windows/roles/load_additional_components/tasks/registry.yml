@@ -35,5 +35,5 @@
   delay: 3
   register: pull
   until: pull is not failed
-  when: runtime == "docker_ee"
+  when: runtime == "docker-ee"
   

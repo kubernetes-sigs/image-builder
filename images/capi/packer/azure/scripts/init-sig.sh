@@ -42,18 +42,18 @@ az sig image-definition create \
 az sig image-definition create \
    --resource-group ${RESOURCE_GROUP_NAME} \
    --gallery-name ${GALLERY_NAME} \
-   --gallery-image-definition capi-windows-2019 \
+   --gallery-image-definition capi-windows-2019-docker-ee \
    --publisher capz \
    --offer capz-demo \
-   --sku win-2019 \
+   --sku win-2019-docker-ee \
    --os-type Windows
 az sig image-definition create \
    --resource-group ${RESOURCE_GROUP_NAME} \
    --gallery-name ${GALLERY_NAME} \
-   --gallery-image-definition capi-windows-2004 \
+   --gallery-image-definition capi-windows-2019-containerd \
    --publisher capz \
    --offer capz-demo \
-   --sku win-2004 \
+   --sku win-2019-containerd \
    --os-type Windows
 az sig image-definition create \
    --resource-group ${RESOURCE_GROUP_NAME} \
