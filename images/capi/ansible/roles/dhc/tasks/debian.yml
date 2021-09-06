@@ -1,13 +1,20 @@
 ---
-- name: Install OEM Kernel 5.10
-  apt:
-    name: "{{ packages }}"
-    state: present
-    force_apt_get: yes
-    install_recommends: yes
-  vars:
-    packages:
-      - linux-oem-20.04b
+- name: Install mainline Kernel
+  block:
+  - name: add mainline lts ppa
+    command: |
+      add-apt-repository -y ppa:tuxinvader/lts-mainline
+    become: true
+
+  - name: install kernel from ppa
+    apt:
+      name: "{{ packages }}"
+      state: present
+      force_apt_get: yes
+      install_recommends: yes
+    vars:
+      packages:
+      - linux-generic-5.14
 
 - name: Install custom DHC tools
   apt:
