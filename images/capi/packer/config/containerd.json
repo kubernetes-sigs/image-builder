@@ -1,6 +1,6 @@
 {
-    "containerd_version": "1.5.4",
-    "containerd_sha256": "591e4e087ea2f5007e6c64deb382df58d419b7b6922eab45a1923d843d57615f",
+    "containerd_version": "1.5.5",
+    "containerd_sha256": "45f02cfc65db47cf088c95555906e1dcba7baf5a3fbad3d947dd6b9af476a144",
     "containerd_pause_image": "k8s.gcr.io/pause:3.2",
     "containerd_additional_settings": null,
     "containerd_cri_socket": "/var/run/containerd/containerd.sock"
