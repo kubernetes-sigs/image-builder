@@ -49,10 +49,10 @@
     - '{{ programfiles.stdout | trim }}\containerd'
     scope: machine
 
-- name: Copy containerd config overrides
+- name: Copy containerd config file {{ containerd_config_file }}
   win_template:
     dest: '{{ programfiles.stdout | trim }}\containerd\config.toml'
-    src: config.toml
+    src: "{{ containerd_config_file }}"
   vars:
     allusersprofile: "{{ alluserprofile.stdout | trim }}"
     plugin_bin_dir: "{{ systemdrive.stdout | trim }}/opt/cni/bin"

@@ -127,10 +127,10 @@
     path: /etc/containerd
     state: directory
 
-- name: Copy in containerd config overrides
+- name: Copy in containerd config file {{ containerd_config_file }}
   template:
     dest: /etc/containerd/config.toml
-    src: etc/containerd/config.toml
+    src: "{{ containerd_config_file }}"
     mode: 0644
 
 - name: Copy in crictl config
