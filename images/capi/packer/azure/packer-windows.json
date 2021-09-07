@@ -55,6 +55,7 @@
       "managed_image_resource_group_name": "{{user `resource_group_name`}}",
       "name": "sig-{{user `build_name`}}",
       "os_type": "Windows",
+      "private_virtual_network_with_public_ip": "{{user `private_virtual_network_with_public_ip`}}",
       "shared_image_gallery_destination": {
         "gallery_name": "{{user `shared_image_gallery_name`}}",
         "image_name": "{{user `image_name`}}-{{user `runtime`}}",
@@ -66,6 +67,9 @@
       },
       "subscription_id": "{{user `subscription_id`}}",
       "type": "azure-arm",
+      "virtual_network_name": "{{user `virtual_network_name`}}",
+      "virtual_network_resource_group_name": "{{user `virtual_network_resource_group_name`}}",
+      "virtual_network_subnet_name": "{{user `virtual_network_subnet_name`}}",
       "vm_size": "{{user `vm_size`}}",
       "winrm_insecure": true,
       "winrm_timeout": "10m",
