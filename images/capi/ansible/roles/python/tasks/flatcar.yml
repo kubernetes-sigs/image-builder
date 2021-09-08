@@ -1,0 +1,30 @@
+# Copyright 2018 The Kubernetes Authors.
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+
+# http://www.apache.org/licenses/LICENSE-2.0
+
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+---
+- name: Check if pypy is installed
+  raw: "[ -f {{ pypy_install_path }}/pypy/bin/pypy ] && echo 'true' || echo 'false'"
+  register: pypy_installed
+
+- name: Install pypy
+  block:
+    - name: Download pypy archive
+      raw: "curl https://github.com/squeaky-pl/portable-pypy/releases/download/pypy{{ pypy_python_version }}-{{ pypy_version }}/pypy{{ pypy_python_version }}-{{ pypy_version }}-linux_x86_64-portable.tar.bz2 -L --output {{ pypy_download_path }}"
+    - name: Extract archive
+      raw: "tar -xjf {{ pypy_download_path }} -C {{ pypy_install_path }}"
+    - name: Rename pypy folder
+      raw: "mv {{ pypy_install_path }}/pypy{{ pypy_python_version }}-{{ pypy_version }}-linux_x86_64-portable/ {{ pypy_install_path }}/pypy"
+    - name: Delete downloaded archive
+      raw: "rm -f {{ pypy_download_path }}"
+  when:
+  - pypy_installed.stdout_lines[0] == "false"

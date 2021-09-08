@@ -215,7 +215,7 @@ WINDOWS_VERSIONS		:=	windows-2019 windows-2004
 
 # Set Flatcar Container Linux channel and version if not supplied
 FLATCAR_CHANNEL ?= stable
-FLATCAR_VERSION ?= 2605.10.0
+FLATCAR_VERSION ?= 2765.2.6
 
 export FLATCAR_CHANNEL FLATCAR_VERSION
 
@@ -239,7 +239,7 @@ HAPROXY_OVA_VSPHERE_BUILD_NAMES		:=	$(addprefix haproxy-ova-vsphere-,$(PHOTON_VE
 AMI_BUILD_NAMES			   ?= ami-centos-7 ami-ubuntu-1804 ami-ubuntu-2004 ami-amazon-2 ami-flatcar ami-windows-2019 ami-windows-2004
 GCE_BUILD_NAMES			   ?= gce-ubuntu-1804 ## gce-ubuntu-2004
 AZURE_BUILD_VHD_NAMES	   ?= azure-vhd-ubuntu-1804 azure-vhd-ubuntu-2004 azure-vhd-centos-7 azure-vhd-windows-2019 azure-vhd-windows-2019-containerd
-AZURE_BUILD_SIG_NAMES	   ?= azure-sig-ubuntu-1804 azure-sig-ubuntu-2004 azure-sig-centos-7 azure-sig-windows-2019 azure-sig-windows-2019-containerd
+AZURE_BUILD_SIG_NAMES	   ?= azure-sig-ubuntu-1804 azure-sig-ubuntu-2004 azure-sig-centos-7 azure-sig-windows-2019 azure-sig-windows-2019-containerd azure-sig-flatcar
 AZURE_BUILD_SIG_GEN2_NAMES ?= azure-sig-ubuntu-1804-gen2 azure-sig-ubuntu-2004-gen2 azure-sig-centos-7-gen2
 
 DO_BUILD_NAMES 			?=	do-centos-7 do-ubuntu-1804 do-ubuntu-2004
@@ -454,6 +454,7 @@ build-azure-vhd-windows-2019: ## Builds for Windows Server 2019
 build-azure-vhd-windows-2019-containerd: ## Builds for Windows Server 2019 with containerd
 build-azure-vhd-windows-2004: ## Builds for Windows Server 2004 SAC
 build-azure-sig-centos-7-gen2: ## Builds CentOS Gen2 managed image in Shared Image Gallery
+build-azure-sig-flatcar: ## Builds Flatcar Azure managed image in Shared Image Gallery
 build-azure-sig-ubuntu-1804-gen2: ## Builds Ubuntu 18.04 Gen2 managed image in Shared Image Gallery
 build-azure-sig-ubuntu-2004-gen2: ## Builds Ubuntu 20.04 Gen2 managed image in Shared Image Gallery
 build-azure-vhds: $(AZURE_BUILD_VHD_TARGETS) ## Builds all Azure VHDs
