@@ -29,3 +29,12 @@
     path: /etc/chrony/chrony.conf
     regexp: '^makestep'
     line: makestep 1.0 -1
+
+- name: Block traffic to 168.63.129.16 port 80 for cve-2021-27075
+  ansible.builtin.iptables:
+    chain: FORWARD
+    destination: 168.63.129.16
+    destination_port: 80
+    protocol: tcp
+    jump: DROP
+    comment: block traffic to 168.63.129.16 for cve-2021-27075
