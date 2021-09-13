@@ -22,7 +22,7 @@ set -o pipefail
 
 source hack/utils.sh
 
-_version="2.9.0"
+_version="2.28.1"
 
 # Change directories to the parent directory of the one in which this
 # script is located.
@@ -31,5 +31,6 @@ cd "$(dirname "${BASH_SOURCE[0]}")/.."
 if command -v az >/dev/null 2>&1; then exit 0; fi
 
 ensure_py3
+pip install -U pip setuptools
 pip3 install --user "azure-cli==${_version}"
 ensure_py3_bin az azure-cli
