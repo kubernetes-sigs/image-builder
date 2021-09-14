@@ -110,6 +110,10 @@
     data: '{{ systemdrive.stdout | trim }}\Windows\System32\WindowsPowerShell\v1.0\powershell.exe'
     type: string
 
+- name: Create SSH program data folder
+  win_shell: mkdir "$env:ProgramData\ssh"
+  ignore_errors: yes
+
 - name: Enable ssh login without a password
   win_shell: Add-Content -Path "$env:ProgramData\ssh\sshd_config" -Value "PasswordAuthentication no`nPubkeyAuthentication yes"
 
