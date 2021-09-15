@@ -40,6 +40,7 @@
   loop:
   - { path: /etc/machine-id, state: absent, mode: "{{ machine_id_mode }}" }
   - { path: /etc/machine-id, state: touch,  mode: "{{ machine_id_mode }}" }
+  when: ansible_os_family != "Flatcar"
 
 - name: Truncate hostname file
   file:

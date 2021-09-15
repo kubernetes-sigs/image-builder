@@ -16,3 +16,8 @@
   set_fact:
     last_log_mode:   "0644"
     machine_id_mode: "0444"
+
+- name: Invalidate the machine-id file for systemd to reevaluate presets
+  file:
+    path: /etc/machine-id
+    state: absent
