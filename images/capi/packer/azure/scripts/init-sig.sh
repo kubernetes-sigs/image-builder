@@ -58,6 +58,14 @@ az sig image-definition create \
 az sig image-definition create \
    --resource-group ${RESOURCE_GROUP_NAME} \
    --gallery-name ${GALLERY_NAME} \
+   --gallery-image-definition capi-flatcar-${FLATCAR_CHANNEL}-${FLATCAR_VERSION} \
+   --publisher capz \
+   --offer capz-demo \
+   --sku flatcar-${FLATCAR_CHANNEL}-${FLATCAR_VERSION} \
+   --os-type Linux
+az sig image-definition create \
+   --resource-group ${RESOURCE_GROUP_NAME} \
+   --gallery-name ${GALLERY_NAME} \
    --gallery-image-definition capi-ubuntu-1804-gen2 \
    --publisher capz \
    --offer capz-demo \
