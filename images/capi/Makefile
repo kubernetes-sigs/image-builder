@@ -48,7 +48,7 @@ version: ## Display version of image-builder
 
 .PHONY: deps
 deps: ## Installs/checks all dependencies
-deps: deps-ami deps-azure deps-do deps-gce deps-ova deps-qemu deps-raw deps-oci
+deps: deps-ami deps-azure deps-do deps-gce deps-ova deps-qemu deps-raw deps-oci deps-vbox
 
 .PHONY: deps-ami
 deps-ami: ## Installs/checks dependencies for AMI builds
@@ -67,7 +67,6 @@ deps-azure:
 	hack/ensure-jq.sh
 	hack/ensure-azure-cli.sh
 	hack/ensure-goss.sh
-
 
 .PHONY: deps-do
 deps-do: ## Installs/checks dependencies for DigitalOcean builds
@@ -109,6 +108,15 @@ deps-oci: ## Installs/checks dependencies for OCI builds
 deps-oci:
 	hack/ensure-ansible.sh
 	hack/ensure-packer.sh
+
+.PHONY: deps-vbox
+deps-vbox: ## Installs/checks dependencies for VirtualBox builds
+deps-vbox:
+	hack/ensure-ansible.sh
+	hack/ensure-ansible-windows.sh
+	hack/ensure-packer.sh
+	hack/ensure-goss.sh
+
 
 ## --------------------------------------
 ## Container variables
@@ -264,6 +272,7 @@ QEMU_FLATCAR_BUILD_NAMES	?=	qemu-flatcar
 QEMU_BUILD_NAMES			?=	qemu-ubuntu-1804 qemu-ubuntu-2004 qemu-centos-7 qemu-ubuntu-2004-efi qemu-rhel-8 qemu-rockylinux-8
 
 RAW_BUILD_NAMES                        ?=      raw-ubuntu-1804 raw-ubuntu-2004 raw-ubuntu-2004-efi
+VBOX_BUILD_NAMES			?=      vbox-windows-2019
 
 ## --------------------------------------
 ## Dynamic build targets
@@ -300,6 +309,8 @@ RAW_BUILD_TARGETS      := $(addprefix build-,$(RAW_BUILD_NAMES))
 RAW_VALIDATE_TARGETS   := $(addprefix validate-,$(RAW_BUILD_NAMES))
 OCI_BUILD_TARGETS	:= $(addprefix build-,$(OCI_BUILD_NAMES))
 OCI_VALIDATE_TARGETS	:= $(addprefix validate-,$(OCI_BUILD_NAMES))
+VBOX_BUILD_TARGETS      := $(addprefix build-,$(VBOX_BUILD_NAMES))
+VBOX_VALIDATE_TARGETS   := $(addprefix validate-,$(VBOX_BUILD_NAMES))
 
 .PHONY: $(NODE_OVA_LOCAL_BUILD_TARGETS)
 $(NODE_OVA_LOCAL_BUILD_TARGETS): deps-ova
@@ -330,7 +341,6 @@ $(NODE_OVA_VSPHERE_BUILD_TARGETS): deps-ova
 	$(if $(findstring windows,$@),packer build $(PACKER_WINDOWS_NODE_FLAGS) -var-file="packer/ova/packer-common.json" -var-file="$(abspath packer/ova/$(subst build-node-ova-vsphere-,,$@).json)" -only=file $(ABSOLUTE_PACKER_VAR_FILES) packer/ova/packer-windows.json,)
 	$(if $(findstring windows,$@),hack/windows-ova-unattend.py --unattend-file='./packer/ova/windows/$(subst build-node-ova-vsphere-,,$@)/autounattend.xml',)
 	packer build $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS))  -var-file="packer/ova/packer-common.json" -var-file="$(abspath packer/ova/$(subst build-node-ova-vsphere-,,$@).json)" -var-file="packer/ova/vsphere.json" -except=esx -except=local -only=vsphere-iso $(ABSOLUTE_PACKER_VAR_FILES) -only=vsphere packer/ova/packer-$(if $(findstring windows,$@),windows,node).json
-
 
 .PHONY: $(NODE_OVA_VSPHERE_BASE_BUILD_TARGETS)
 $(NODE_OVA_VSPHERE_BASE_BUILD_TARGETS): deps-ova
@@ -436,6 +446,14 @@ $(OCI_BUILD_TARGETS): deps-oci
 $(OCI_VALIDATE_TARGETS): deps-oci
 	packer validate $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/oci/$(subst validate-oci-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/oci/packer.json
 
+.PHONY: $(VBOX_BUILD_TARGETS)
+$(VBOX_BUILD_TARGETS): deps-vbox
+	packer build $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="packer/vbox/packer-common.json" -var-file="$(abspath packer/vbox/$(subst build-vbox-,,$@).json)" -only=virtualbox-iso $(ABSOLUTE_PACKER_VAR_FILES) packer/vbox/packer-$(if $(findstring windows,$@),windows).json
+
+.PHONY: $(VBOX_VALIDATE_TARGETS)
+$(VBOX_VALIDATE_TARGETS): deps-vbox
+	packer validate $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="packer/vbox/packer-common.json" -var-file="$(abspath packer/vbox/$(subst validate-vbox-,,$@).json)" -only=virtualbox-iso $(ABSOLUTE_PACKER_VAR_FILES) packer/vbox/packer-$(if $(findstring windows,$@),windows).json
+
 
 ## --------------------------------------
 ## Dynamic clean targets
@@ -459,6 +477,11 @@ RAW_CLEAN_TARGETS := $(subst build-,clean-,$(RAW_CLEAN_TARGETS))
 .PHONY: $(RAW_CLEAN_TARGETS)
 $(RAW_CLEAN_TARGETS):
 	rm -fr output/$(subst clean-raw-,,$@)-kube*
+
+VBOX_CLEAN_TARGETS := $(subst build-,clean-,$(VBOX_BUILD_TARGETS))
+.PHONY: $(VBOX_CLEAN_TARGETS)
+$(VBOX_CLEAN_TARGETS):
+	rm -fr output/$(subst clean-vbox-,,$@)-kube*
 
 ## --------------------------------------
 ## Document dynamic build targets
@@ -493,7 +516,6 @@ build-azure-sig-ubuntu-1804-gen2: ## Builds Ubuntu 18.04 Gen2 managed image in S
 build-azure-sig-ubuntu-2004-gen2: ## Builds Ubuntu 20.04 Gen2 managed image in Shared Image Gallery
 build-azure-vhds: $(AZURE_BUILD_VHD_TARGETS) ## Builds all Azure VHDs
 build-azure-sigs: $(AZURE_BUILD_SIG_TARGETS) $(AZURE_BUILD_SIG_GEN2_TARGETS) ## Builds all Azure Shared Image Gallery images
-
 
 build-do-ubuntu-1804: ## Builds Ubuntu 18.04 DigitalOcean Snapshot
 build-do-ubuntu-2004: ## Builds Ubuntu 20.04 DigitalOcean Snapshot
@@ -554,7 +576,6 @@ build-node-ova-vsphere-base-ubuntu-1804: ## Builds base Ubuntu 18.04 Node OVA an
 build-node-ova-vsphere-base-ubuntu-2004: ## Builds base Ubuntu 20.04 Node OVA and template on vSphere
 build-node-ova-vsphere-base-all: $(NODE_OVA_VSPHERE_BASE_BUILD_TARGETS) ## Builds all base Node OVAs and templates on vSphere
 
-
 build-node-ova-local-vmx-photon-3: ## Builds Photon 3 Node OVA from VMX file w local hypervisor
 build-node-ova-local-vmx-centos-7: ## Builds Centos 7 Node OVA from VMX file w local hypervisor
 build-node-ova-local-vmx-rhel-7: ## Builds RHEL 7 Node OVA from VMX file w local hypervisor
@@ -587,6 +608,9 @@ build-oci-ubuntu-1804: ## Builds the OCI ubuntu-1804 image
 build-oci-ubuntu-2004: ## Builds the OCI ubuntu-2004 image
 build-oci-oracle-linux-8: ## Builds the OCI Oracle Linux 8.x image
 build-oci-all: $(OCI_BUILD_TARGETS) ## Builds all OCI image
+
+build-vbox-windows-2019: ## Builds for Windows Server 2019 Node VirtualBox w local hypervisor
+build-vbox-all: $(VBOX_BUILD_TARGETS) ## Builds all Qemu images
 
 ## --------------------------------------
 ## Document dynamic validate targets
@@ -673,6 +697,9 @@ validate-oci-ubuntu-2004: ## Validates the OCI ubuntu-2004 image packer config
 validate-oci-oracle-linux-8: ## Validates the OCI Oracle Linux 8.x image packer config
 validate-oci-all: $(OCI_VALIDATE_TARGETS) ## Validates all OCI image packer config
 
+validate-vbox-windows-2019: ## Validates Windows Server 2019 Node VirtualBox Packer config w local hypervisor
+validate-vbox-all: $(VBOX_VALIDATE_TARGETS) ## Validates all RAW Packer config
+
 validate-all: validate-ami-all \
 	validate-azure-all \
 	validate-do-all \
@@ -682,7 +709,8 @@ validate-all: validate-ami-all \
 	validate-qemu-flatcar \
 	validate-qemu-all \
 	validate-raw-all \
-	validate-oci-all
+	validate-oci-all \
+	validate-vbox-all
 validate-all: ## Validates the Packer config for all build targets
 
 ## --------------------------------------
@@ -691,7 +719,7 @@ validate-all: ## Validates the Packer config for all build targets
 ##@ Cleaning
 .PHONY: clean
 clean: ## Removes all image output directories and packer image cache
-clean: $(NODE_OVA_LOCAL_CLEAN_TARGETS) $(HAPROXY_OVA_LOCAL_CLEAN_TARGETS) $(QEMU_CLEAN_TARGETS) clean-packer-cache
+clean: $(NODE_OVA_LOCAL_CLEAN_TARGETS) $(HAPROXY_OVA_LOCAL_CLEAN_TARGETS) $(QEMU_CLEAN_TARGETS) $(VBOX_CLEAN_TARGETS) clean-packer-cache
 
 .PHONY: clean-ova
 clean-ova: ## Removes all ova image output directories (see NOTE at top of help)
@@ -704,6 +732,10 @@ clean-qemu: $(QEMU_CLEAN_TARGETS)
 .PHONY: clean-raw
 clean-raw: ## Removes all raw image output directories (see NOTE at top of help)
 clean-raw: $(RAW_CLEAN_TARGETS)
+
+.PHONY: clean-vbox
+clean-vbox: ## Removes all vbox image output directories (see NOTE at top of help)
+clean-vbox: $(VBOX_CLEAN_TARGETS)
 
 .PHONY: clean-packer-cache
 clean-packer-cache: ## Removes the packer cache
