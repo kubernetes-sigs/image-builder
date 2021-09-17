@@ -111,8 +111,7 @@
     type: string
 
 - name: Create SSH program data folder
-  win_shell: mkdir "$env:ProgramData\ssh"
-  ignore_errors: yes
+  win_shell: If (-Not (Test-Path -Path "$env:ProgramData\ssh")) { mkdir "$env:ProgramData\ssh" }
 
 - name: Enable ssh login without a password
   win_shell: Add-Content -Path "$env:ProgramData\ssh\sshd_config" -Value "PasswordAuthentication no`nPubkeyAuthentication yes"
