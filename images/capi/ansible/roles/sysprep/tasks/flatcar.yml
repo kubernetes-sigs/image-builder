@@ -21,3 +21,17 @@
   file:
     path: /etc/machine-id
     state: absent
+
+- name: Stop and mask update-engine to freeze the image version
+  systemd:
+    name: update-engine
+    state: stopped
+    enabled: no
+    masked: yes
+
+- name: Stop and mask the locksmith reboot manager since it depends on update-engine
+  systemd:
+    name: locksmithd
+    state: stopped
+    enabled: no
+    masked: yes
