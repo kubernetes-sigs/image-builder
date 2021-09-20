@@ -12,9 +12,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-containerd_flatcar_bins:
-- ctr
-- containerd
-- containerd-shim
-
 containerd_config_file: "etc/containerd/config.toml"

@@ -4,7 +4,6 @@
   "boot_wait": "120s",
   "build_name": "flatcar-{{env `FLATCAR_CHANNEL`}}-{{env `FLATCAR_VERSION`}}",
   "channel_name": "{{env `FLATCAR_CHANNEL`}}",
-  "containerd_cri_socket": "/run/docker/libcontainerd/docker-containerd.sock",
   "crictl_source_type": "http",
   "distro_name": "flatcar",
   "guest_os_type": "linux-64",

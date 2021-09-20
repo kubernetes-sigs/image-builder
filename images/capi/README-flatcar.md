@@ -93,9 +93,6 @@ $ make FLATCAR_CHANNEL=stable FLATCAR_VERSION=$(hack/image-grok-latest-flatcar-v
 
 * `images/capi/ansible/roles/setup/tasks/bootstrap-flatcar.yml` installs python under `/opt`.
 * `images/capi/ansible/roles/kubernetes/tasks/url.yml` installs artificts of Kubernetes and CNI under `/opt` and `/etc`, mainly because `/usr` is read-only in Flatcar.
-* It unpacks only parts of containerd binaries, since Flatcar already has its own built-in containerd.
-* To make containerd work correctly, we install Flatcar-specific config files for containerd, so it listens on its containerd socket `/run/docker/libcontainerd/docker-containerd.sock`.
-* Since Flatcar has its own containerd socket, we need to also specify the socket name when running commands like `kubeadm config images pull`, `/opt/bin/ctr images import` as well as in `/etc/crictl.yaml`.
 * We do not delete `/etc/kubeadm.yml` for Flatcar, because later steps running `kubeadm init` require the config to be in place.
 
 ## TODOs
