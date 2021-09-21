@@ -197,3 +197,11 @@
   shell:
     cmd: |
       journalctl -m --vacuum-time=1s
+
+- name: Ensure ignition runs on next boot
+  file:
+    state: touch
+    path: /boot/flatcar/first_boot
+    owner: root
+    group: root
+  when: ansible_os_family == "Flatcar"
