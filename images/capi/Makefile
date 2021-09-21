@@ -22,6 +22,7 @@ SHELL := /usr/bin/env bash
 
 # This option is for running docker manifest command
 export DOCKER_CLI_EXPERIMENTAL := enabled
+export PATH := $(PATH):$(PWD)/.local/bin
 
 export IB_VERSION ?= $(shell git describe --dirty)
 
