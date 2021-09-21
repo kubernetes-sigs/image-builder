@@ -216,7 +216,7 @@ WINDOWS_VERSIONS		:=	windows-2019 windows-2004
 
 # Set Flatcar Container Linux channel and version if not supplied
 FLATCAR_CHANNEL ?= stable
-FLATCAR_VERSION ?= 2765.2.6
+FLATCAR_VERSION ?= 2905.2.3
 
 export FLATCAR_CHANNEL FLATCAR_VERSION
 
