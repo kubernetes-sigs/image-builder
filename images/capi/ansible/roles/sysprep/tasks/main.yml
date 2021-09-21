@@ -205,3 +205,9 @@
     owner: root
     group: root
   when: ansible_os_family == "Flatcar"
+
+- name: Remove any default Ignition files used by Packer
+  file:
+    state: absent
+    path: /usr/share/oem/config.ign
+  when: ansible_os_family == "Flatcar"
