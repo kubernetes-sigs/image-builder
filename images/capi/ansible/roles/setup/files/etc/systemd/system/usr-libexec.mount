@@ -1,0 +1,11 @@
+[Unit]
+Description=Kubernetes flex volume plugin directory
+
+[Mount]
+What=overlay
+Where=/usr/libexec
+Type=overlay
+Options=lowerdir=/usr/libexec,workdir=/opt/libexec.work,upperdir=/opt/libexec
+
+[Install]
+WantedBy=multi-user.target
