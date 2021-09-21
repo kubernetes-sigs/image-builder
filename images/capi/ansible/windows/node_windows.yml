@@ -70,6 +70,8 @@
         name: cloudbase-init
       when: install_cloudbase_init
     - include_role:
+        name: providers
+    - include_role:
         name: runtimes
     - include_role:
         name: kubernetes
