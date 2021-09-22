@@ -1,6 +1,6 @@
 {
   "ansible_extra_vars": "ansible_python_interpreter=/opt/bin/python",
-  "boot_command_prefix": "curl -sLo /tmp/ignition.json https://raw.githubusercontent.com/flatcar-linux/flatcar-packer-qemu/builder-ignition/ignition-builder.json<enter>sed -i \"s|BUILDERSSHAUTHKEY|{{user `ssh_public_key`}}|\" /tmp/ignition.json<enter>sudo flatcar-install -d /dev/sda -C {{user `channel_name`}} -V {{user `release_version`}} -i /tmp/ignition.json<enter>sudo reboot<enter><wait3m>",
+  "boot_command_prefix": "curl -sLo /tmp/ignition.json https://raw.githubusercontent.com/flatcar-linux/flatcar-packer-qemu/917f209e1afd262e71f41c65c1295f29c08cb8c6/ignition-builder.json<enter>sed -i \"s|BUILDERSSHAUTHKEY|{{user `ssh_public_key`}}|\" /tmp/ignition.json<enter>sudo flatcar-install -d /dev/sda -C {{user `channel_name`}} -V {{user `release_version`}} -i /tmp/ignition.json<enter>sudo reboot<enter><wait3m>",
   "boot_wait": "120s",
   "build_name": "flatcar-{{env `FLATCAR_CHANNEL`}}-{{env `FLATCAR_VERSION`}}",
   "channel_name": "{{env `FLATCAR_CHANNEL`}}",
