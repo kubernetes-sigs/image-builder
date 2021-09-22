@@ -75,7 +75,7 @@ variables for convenient copy/paste.
 
 Make target `build-qemu-flatcar` will build a Flatcar Container Linux qemu
 image. The make variables `FLATCAR_CHANNEL` and `FLATCAR_VERSION` can be set to
-build specific releases. THe build will default to the current stable release.
+build specific releases. The version defaults to the latest release of the channel, when `FLATCAR_VERSION=current` is set.
 
 Example usage:
 ```shell
@@ -85,8 +85,7 @@ $ make FLATCAR_CHANNEL=beta build-qemu-flatcar
 or
 $ make FLATCAR_CHANNEL=stable FLATCAR_VERSION=2512.2.0 build-qemu-flatcar
 or
-$ make FLATCAR_CHANNEL=stable FLATCAR_VERSION=$(hack/image-grok-latest-flatcar-version.sh stable) \
-  build-qemu-flatcar
+$ make FLATCAR_CHANNEL=stable FLATCAR_VERSION=current build-qemu-flatcar
 ```
 
 ## Notes

@@ -1,4 +1,4 @@
-#!/bin/sh -ue
+#!/bin/bash -ue
 
 [[ -n ${DEBUG:-} ]] && set -o xtrace
 
