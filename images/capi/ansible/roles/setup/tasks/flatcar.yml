@@ -44,3 +44,16 @@
     daemon_reload: yes
     enabled: yes
     name: usr-libexec.mount
+
+- name: Create system-environment-generators directory
+  file:
+    path: /etc/systemd/system-environment-generators
+    state: directory
+
+- name: Add env generator that includes system PATH on service path
+  copy:
+    src: etc/systemd/system-environment-generators/10-flatcar-path
+    dest: /etc/systemd/system-environment-generators/10-flatcar-path
+    owner: root
+    group: root
+    mode: "0755"
