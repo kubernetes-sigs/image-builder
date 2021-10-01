@@ -250,7 +250,7 @@ AZURE_BUILD_SIG_GEN2_NAMES ?= azure-sig-ubuntu-1804-gen2 azure-sig-ubuntu-2004-g
 DO_BUILD_NAMES 			?=	do-centos-7 do-ubuntu-1804 do-ubuntu-2004
 
 QEMU_FLATCAR_BUILD_NAMES	?=	qemu-flatcar
-QEMU_BUILD_NAMES			?=	qemu-ubuntu-1804 qemu-ubuntu-2004
+QEMU_BUILD_NAMES			?=	qemu-ubuntu-1804 qemu-ubuntu-2004 qemu-centos-7
 
 RAW_BUILD_NAMES                        ?=      raw-ubuntu-1804 raw-ubuntu-2004
 
@@ -535,6 +535,7 @@ build-node-ova-local-base-ubuntu-2004: ## Builds Ubuntu 20.04 Base Node OVA w lo
 build-qemu-flatcar: ## Builds Flatcar QEMU image
 build-qemu-ubuntu-1804: ## Builds Ubuntu 18.04 QEMU image
 build-qemu-ubuntu-2004: ## Builds Ubuntu 20.04 QEMU image
+build-qemu-centos-7: ## Builds CentOS 7 QEMU image
 build-qemu-all: $(QEMU_BUILD_TARGETS) ## Builds all Qemu images
 
 build-raw-ubuntu-1804: ## Builds Ubuntu 18.04 RAW image
@@ -604,6 +605,7 @@ validate-node-ova-local-base-ubuntu-2004: ## Validates Ubuntu 20.04 Base Node OV
 validate-qemu-flatcar: ## Validates Flatcar QEMU image packer config
 validate-qemu-ubuntu-1804: ## Validates Ubuntu 18.04 QEMU image packer config
 validate-qemu-ubuntu-2004: ## Validates Ubuntu 20.04 QEMU image packer config
+validate-qemu-centos-7: ## Validates CentOS 7 QEMU image packer config
 validate-qemu-all: $(QEMU_VALIDATE_TARGETS) validate-qemu-flatcar ## Validates all Qemu Packer config
 
 validate-raw-ubuntu-1804: ## Validates Ubuntu 18.04 RAW image packer config

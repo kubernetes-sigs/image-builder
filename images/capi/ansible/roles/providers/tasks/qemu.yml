@@ -41,14 +41,6 @@
 #    regexp: '(?i)lock_passwd: True'
 #    replace: 'lock_passwd: False'
 
-- name: Symlink /usr/libexec/cloud-init to /usr/lib/cloud-init
-  file:
-    src:   /usr/libexec/cloud-init
-    dest:  /usr/lib/cloud-init
-    mode: 0777
-    state: link
-  when: ansible_os_family == "RedHat"
-
 - name: Disable Hyper-V KVP protocol daemon on Ubuntu
   systemd:
     name: hv-kvp-daemon
