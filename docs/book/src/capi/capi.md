@@ -14,7 +14,7 @@ If any needed binaries are not present, they can be installed to `images/capi/.b
 
 ## Providers
 
-* [AWS](./providers/aws.md)  
+* [AWS](./providers/aws.md)
 * [Azure](./providers/azure.md)
 * [DigitalOcean](./providers/digitalocean.md)
 * [GCP](./providers/gcp.md)
@@ -58,7 +58,7 @@ Several variables can be used to customize the image build.
 | `no_proxy` | This can be set to a comma-delimited list of domains that should be exluded from proxying during the Ansible stage of building | `""` |
 | `reenable_public_repos` | If set to `"false"`, the package repositories disabled by setting `disable_public_repos` will remain disabled at the end of the build. | `"true"` |
 | `remove_extra_repos` | If set to `"true"`, the package repositories added to the OS through the use of `extra_repos` will be removed at the end of the build. | `"false"` |
-| `pause_image` | This can be used to override the default pause image used to hold the network namespace and IP for the pod. | `"k8s.gcr.io/pause:3.4.1"` |
+| `pause_image` | This can be used to override the default pause image used to hold the network namespace and IP for the pod. | `"k8s.gcr.io/pause:3.6"` |
 | `containerd_additional_settings` | This is a string, base64 encoded, that contains additional configuration for containerd. It must be version 2 and not contain the pause image configuration block. See `image-builder/images/capi/ansible/roles/containerd/templates/etc/containerd/config.toml` for the template. | `null` |
 | `load_additional_components` | If set to `"true"`, the `load_additional_components` role will be executed. This needs to be set to `"true"` if any of `additional_url_images`, `additional_registry_images` or `additional_executables` are set to `"true"` | `"false"` |
 | `additional_url_images` | Set this to `"true"` to load addtional container images using a tar url. `additional_url_images_list` var should be set to a comma seperated string of tar urls of the container images. | `"false"` |
