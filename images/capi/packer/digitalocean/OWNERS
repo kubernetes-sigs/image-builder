@@ -2,3 +2,5 @@
 
 approvers:
   - cluster-api-digitalocean-maintainers
+reviewers:
+  - cluster-api-digitalocean-maintainers
