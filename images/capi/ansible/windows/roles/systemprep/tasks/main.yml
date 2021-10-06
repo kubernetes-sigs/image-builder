@@ -94,13 +94,11 @@
     reboot: yes
   when: windows_updates_category_names|length > 0
 
-# Requires admin rights to install 
-# https://docs.ansible.com/ansible/latest/user_guide/become.html#become-and-windows
-- name: Install OpenSSH
-  win_shell: Add-WindowsCapability -Online -Name OpenSSH.Server~~~~0.0.1.0
-  become: yes
-  become_method: runas
-  become_user: SYSTEM
+- import_tasks: ssh-feature.yml
+  when: ssh_source_url == ""
+
+- import_tasks: ssh-archive.yml
+  when: ssh_source_url != ""
 
 - name: Set default SSH shell to Powershell
   win_regedit:

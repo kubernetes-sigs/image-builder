@@ -1,4 +1,4 @@
-# Copyright 2020 The Kubernetes Authors.
+# Copyright 2021 The Kubernetes Authors.
 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,7 +11,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
----
-windows_updates_kbs_numbers: "{{ windows_updates_kbs.split() if (windows_updates_kbs is defined) and (windows_updates_kbs|length > 0) else [] }}"
-windows_updates_category_names: "{{ windows_updates_categories.split() if (windows_updates_categories is defined) and (windows_updates_categories|length > 0) else [] }}"
-ssh_source_url: "{{ ssh_source_url if ssh_source_url is defined else ''}}"
+
+# Requires admin rights to install 
+# https://docs.ansible.com/ansible/latest/user_guide/become.html#become-and-windows
+- name: Install OpenSSH
+  win_shell: Add-WindowsCapability -Online -Name OpenSSH.Server~~~~0.0.1.0
+  become: yes
+  become_method: runas
+  become_user: SYSTEM

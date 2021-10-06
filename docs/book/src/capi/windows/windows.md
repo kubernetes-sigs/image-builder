@@ -41,6 +41,13 @@ To choose individual updates, provide a value for `windows_updates_kbs` in `pack
 Example: 
 `"windows_updates_kbs": "KB4580390 KB4471332"`.  
 
+## OpenSSH Server
+
+If a connection to the Microsoft Updates server is not possible, you may use the Win32 port of OpenSSH located on [GitHub](https://github.com/PowerShell/Win32-OpenSSH). To do this, you can set the ssh_source_url to the location of the desired OpenSSH Version from https://github.com/PowerShell/Win32-OpenSSH/releases/
+
+Example:
+`"ssh_source_url": "https://github.com/PowerShell/Win32-OpenSSH/releases/download/V8.6.0.0p1-Beta/OpenSSH-Win64.zip"`
+
 ## Using the Ansible Scripts directly
 
 Ansible doesn't run on directly on Windows (wsl works) but can used to configure a remote Windows host.  For faster development you can create a VM and run Ansible against the Windows VM directly with out using packer. This document gives the high level steps to use Ansible from Linux machine.
