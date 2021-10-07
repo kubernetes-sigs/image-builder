@@ -1,0 +1,3 @@
+#!/bin/bash
+. /etc/profile
+echo "PATH=$PATH"

@@ -3,7 +3,6 @@
   "ami_filter_owners": "075585003325",
   "ansible_extra_vars": "ansible_python_interpreter=/opt/bin/python",
   "build_name": "flatcar-{{env `FLATCAR_CHANNEL`}}",
-  "containerd_cri_socket": "/run/docker/libcontainerd/docker-containerd.sock",
   "crictl_source_type": "http",
   "goss_entry_file": "goss/goss-flatcar.yaml",
   "kubernetes_cni_source_type": "http",

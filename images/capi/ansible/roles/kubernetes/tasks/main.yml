@@ -37,11 +37,12 @@
     group: root
     mode: 0644
 
-- name: Start and Enable kubelet service
+- name: Enable kubelet service
   systemd:
     name: kubelet
     daemon_reload: yes
     enabled: True
+    state: stopped
 
 - name: Create the Kubernetes version file
   template:

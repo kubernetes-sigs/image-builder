@@ -40,6 +40,7 @@
   loop:
   - { path: /etc/machine-id, state: absent, mode: "{{ machine_id_mode }}" }
   - { path: /etc/machine-id, state: touch,  mode: "{{ machine_id_mode }}" }
+  when: ansible_os_family != "Flatcar"
 
 - name: Truncate hostname file
   file:
@@ -55,7 +56,7 @@
 - name: Set hostname
   hostname:
     name: localhost.local
-  when: ansible_os_family != "VMware Photon OS"
+  when: ansible_os_family != "VMware Photon OS" and ansible_os_family != "Flatcar"
 
 - name: Reset hosts file
   copy:
@@ -196,3 +197,17 @@
   shell:
     cmd: |
       journalctl -m --vacuum-time=1s
+
+- name: Ensure ignition runs on next boot
+  file:
+    state: touch
+    path: /boot/flatcar/first_boot
+    owner: root
+    group: root
+  when: ansible_os_family == "Flatcar"
+
+- name: Remove any default Ignition files used by Packer
+  file:
+    state: absent
+    path: /usr/share/oem/config.ign
+  when: ansible_os_family == "Flatcar"

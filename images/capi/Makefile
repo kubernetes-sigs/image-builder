@@ -22,6 +22,7 @@ SHELL := /usr/bin/env bash
 
 # This option is for running docker manifest command
 export DOCKER_CLI_EXPERIMENTAL := enabled
+export PATH := $(PATH):$(PWD)/.local/bin
 
 export IB_VERSION ?= $(shell git describe --dirty)
 
@@ -216,7 +217,10 @@ WINDOWS_VERSIONS		:=	windows-2019 windows-2004
 
 # Set Flatcar Container Linux channel and version if not supplied
 FLATCAR_CHANNEL ?= stable
-FLATCAR_VERSION ?= 2765.2.6
+FLATCAR_VERSION ?= 2905.2.3
+ifeq ($(FLATCAR_VERSION),current)
+FLATCAR_VERSION := $(shell hack/image-grok-latest-flatcar-version.sh $(FLATCAR_CHANNEL))
+endif
 
 export FLATCAR_CHANNEL FLATCAR_VERSION
 

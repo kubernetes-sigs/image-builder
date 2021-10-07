@@ -75,7 +75,7 @@ variables for convenient copy/paste.
 
 Make target `build-qemu-flatcar` will build a Flatcar Container Linux qemu
 image. The make variables `FLATCAR_CHANNEL` and `FLATCAR_VERSION` can be set to
-build specific releases. THe build will default to the current stable release.
+build specific releases. The version defaults to the latest release of the channel, when `FLATCAR_VERSION=current` is set.
 
 Example usage:
 ```shell
@@ -85,17 +85,13 @@ $ make FLATCAR_CHANNEL=beta build-qemu-flatcar
 or
 $ make FLATCAR_CHANNEL=stable FLATCAR_VERSION=2512.2.0 build-qemu-flatcar
 or
-$ make FLATCAR_CHANNEL=stable FLATCAR_VERSION=$(hack/image-grok-latest-flatcar-version.sh stable) \
-  build-qemu-flatcar
+$ make FLATCAR_CHANNEL=stable FLATCAR_VERSION=current build-qemu-flatcar
 ```
 
 ## Notes
 
 * `images/capi/ansible/roles/setup/tasks/bootstrap-flatcar.yml` installs python under `/opt`.
 * `images/capi/ansible/roles/kubernetes/tasks/url.yml` installs artificts of Kubernetes and CNI under `/opt` and `/etc`, mainly because `/usr` is read-only in Flatcar.
-* It unpacks only parts of containerd binaries, since Flatcar already has its own built-in containerd.
-* To make containerd work correctly, we install Flatcar-specific config files for containerd, so it listens on its containerd socket `/run/docker/libcontainerd/docker-containerd.sock`.
-* Since Flatcar has its own containerd socket, we need to also specify the socket name when running commands like `kubeadm config images pull`, `/opt/bin/ctr images import` as well as in `/etc/crictl.yaml`.
 * We do not delete `/etc/kubeadm.yml` for Flatcar, because later steps running `kubeadm init` require the config to be in place.
 
 ## TODOs

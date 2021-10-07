@@ -1,9 +1,6 @@
 {
   "ansible_extra_vars": "ansible_python_interpreter=/opt/pypy/bin/pypy",
   "build_name": "flatcar",
-  "containerd_cri_socket": "/run/docker/libcontainerd/docker-containerd.sock",
-  "containerd_sha256": "591e4e087ea2f5007e6c64deb382df58d419b7b6922eab45a1923d843d57615f",
-  "containerd_version": "1.5.4",
   "crictl_source_type": "http",
   "distribution": "flatcar",
   "distribution_release": "{{env `FLATCAR_CHANNEL`}}",

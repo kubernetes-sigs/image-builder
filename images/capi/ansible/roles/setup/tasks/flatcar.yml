@@ -22,3 +22,38 @@
 
 - include_tasks: bootstrap-flatcar.yml
   when: '"Flatcar" in os_release.stdout'
+
+- name: Create /opt/libexec overlay directories
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - /opt/libexec
+    - /opt/libexec.work
+
+- name: Create usr-libexec.mount unit
+  copy:
+    src: etc/systemd/system/usr-libexec.mount
+    dest: /etc/systemd/system/usr-libexec.mount
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Enable usr-libexec.mount unit
+  systemd:
+    daemon_reload: yes
+    enabled: yes
+    name: usr-libexec.mount
+
+- name: Create system-environment-generators directory
+  file:
+    path: /etc/systemd/system-environment-generators
+    state: directory
+
+- name: Add env generator that includes system PATH on service path
+  copy:
+    src: etc/systemd/system-environment-generators/10-flatcar-path
+    dest: /etc/systemd/system-environment-generators/10-flatcar-path
+    owner: root
+    group: root
+    mode: "0755"
