@@ -22,7 +22,7 @@ set -o pipefail
 
 source hack/utils.sh
 
-_version="2.10.0"
+_version="2.11.5"
 
 # Change directories to the parent directory of the one in which this
 # script is located.
@@ -31,7 +31,11 @@ cd "$(dirname "${BASH_SOURCE[0]}")/.."
 if command -v ansible >/dev/null 2>&1; then exit 0; fi
 
 ensure_py3
-pip3 install --user "ansible==${_version}"
+pip3 install --user "ansible-core==${_version}"
 ensure_py3_bin ansible
 ensure_py3_bin ansible-playbook
-ansible-galaxy collection install ansible.windows:==1.7.0
+
+ansible-galaxy collection install community.general
+ansible-galaxy collection install ansible.posix
+ansible-galaxy collection install 'ansible.windows:>=1.7.0'
+ansible-galaxy collection install community.windows
