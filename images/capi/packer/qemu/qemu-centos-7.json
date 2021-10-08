@@ -1,4 +1,5 @@
 {
+  "ansible_extra_vars": "ansible_python_interpreter=/usr/bin/python extra_arguments =vvvv",
   "boot_command_prefix": "<tab> text ks=",
   "boot_command_suffix": "/7/ks.cfg<enter><wait>",
   "boot_media_path": "http://{{ .HTTPIP }}:{{ .HTTPPort }}",
@@ -12,6 +13,5 @@
   "iso_checksum_type": "sha256",
   "iso_url": "https://mirrors.edge.kernel.org/centos/7.9.2009/isos/x86_64/CentOS-7-x86_64-Minimal-2009.iso",
   "os_display_name": "CentOS 7",
-  "shutdown_command": "sys-unconfig",
-  "ansible_extra_vars": "ansible_python_interpreter=/usr/bin/python extra_arguments =vvvv"
+  "shutdown_command": "sys-unconfig"
 }
