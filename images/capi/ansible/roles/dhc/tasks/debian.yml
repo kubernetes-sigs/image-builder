@@ -31,6 +31,7 @@
     - mc
     - inetutils-traceroute
     - tcptraceroute
+    - arp-scan
     # some top-commands to make everyone in the team happy
     - htop
     - ctop
