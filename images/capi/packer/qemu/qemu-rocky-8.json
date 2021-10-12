@@ -1,0 +1,14 @@
+{
+    "boot_command_prefix": "<tab> text inst.ks=",
+    "boot_command_suffix": "/8/ks.cfg<enter><wait>",
+    "build_name": "rocky-8",
+    "distro_name": "centos",
+    "distro_version": "8",
+    "guest_os_type": "RedHat_64",
+    "iso_checksum_type": "sha256",
+    "iso_checksum": "53a62a72881b931bdad6b13bcece7c3a2d4ca9c4a2f1e1a8029d081dd25ea61f",
+    "iso_url": "https://download.rockylinux.org/pub/rocky/8.4/isos/x86_64/Rocky-8.4-x86_64-boot.iso",
+    "redhat_epel_rpm": "https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm",
+    "os_display_name": "Rocky Linux 8",
+    "shutdown_command": "shutdown -P now"
+}

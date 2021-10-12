@@ -28,6 +28,22 @@ common_rpms:
 - sysstat
 - yum-utils
 
+common_rpms_rhel8:
+  - audit
+  - ca-certificates
+  - conntrack-tools
+  - chrony
+  - curl
+  - ebtables
+  - jq
+  - open-vm-tools
+  - python3-pip
+  - python3-netifaces
+  - python3-requests
+  - socat
+  - sysstat
+  - yum-utils
+
 common_debs:
 - auditd
 - apt-transport-https
