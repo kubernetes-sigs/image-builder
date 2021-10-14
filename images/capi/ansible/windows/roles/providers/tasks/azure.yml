@@ -10,9 +10,39 @@
 # limitations under the License.
 ---
 
+- name: Create Azure wireserver access group
+  ansible.windows.win_group:
+    name: WireServerAccess
+    description: Controls access to the Azure WireServer
+
+# AzureGuestAgent and Cloudbase-init need access to wireserver otherwise VM doesn't boot
+# So we give the users access via the firewall security filters
+# https://docs.microsoft.com/en-us/powershell/module/netsecurity/set-netfirewallsecurityfilter
+# 
+# Permissions set on the Firewall rule:
+#   S-1-1-0 is Everyone. We mark this as Allow (A) to ensure the Block is enforced for all users other than on the exception list.
+#   S-1-5-18 is LocalSystem used by AzureGuestAgent.  We mark this as Deny (D) to add to Block exception list. 
+#   We also add the newly created group WireServerAccess to the block exception list and add Cloudbase-init user later.
+#
+# View the details of the SDDL string used with ConvertFrom-SddlString and see well known sids: https://docs.microsoft.com/en-us/windows/win32/secauthz/well-known-sids
 - name: Block traffic to 168.63.129.16 port 80 for cve-2021-27075
   win_shell: |
-    New-NetFirewallRule -DisplayName 'Block-Outbound-168.63.129.16-port-80-for-cve-2021-27075' -Direction Outbound -RemoteAddress '168.63.129.16' -RemotePort '80' -Protocol TCP -Action Block
+    $wsg = Get-LocalGroup -n "WireServerAccess"
+    $r = New-NetFirewallRule -DisplayName 'Block-Outbound-168.63.129.16-port-80-for-cve-2021-27075' -Direction Outbound -RemoteAddress '168.63.129.16' -RemotePort '80' -Protocol TCP -Action Block
+    $r | Get-NetFirewallSecurityFilter | Set-NetFirewallSecurityFilter -LocalUser "O:LSD:(D;;CC;;;S-1-5-18)(D;;CC;;;$($wsg.SID.Value))(A;;CC;;;S-1-1-0)"
   become: yes
   become_method: runas
   become_user: SYSTEM
+
+- name: Add users to WireServerAccessGroup
+  ansible.windows.win_group_membership:
+    name: WireServerAccess
+    members:
+      - cloudbase-init
+
+- name: Add additional users
+  ansible.windows.win_group_membership:
+    name: WireServerAccess
+    members: "{{ users }}"
+  vars:
+    users: "{{ wire_server_users.split(',') if (wire_server_users is defined) and (wire_server_users|length > 0) else [] }}"
