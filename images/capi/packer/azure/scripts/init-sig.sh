@@ -58,6 +58,14 @@ az sig image-definition create \
 az sig image-definition create \
    --resource-group ${RESOURCE_GROUP_NAME} \
    --gallery-name ${GALLERY_NAME} \
+   --gallery-image-definition capi-windows-2022-containerd \
+   --publisher capz \
+   --offer capz-demo \
+   --sku win-2022-containerd \
+   --os-type Windows
+az sig image-definition create \
+   --resource-group ${RESOURCE_GROUP_NAME} \
+   --gallery-name ${GALLERY_NAME} \
    --gallery-image-definition capi-flatcar-${FLATCAR_CHANNEL}-${FLATCAR_VERSION} \
    --publisher capz \
    --offer capz-demo \

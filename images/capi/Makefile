@@ -243,8 +243,8 @@ HAPROXY_OVA_VSPHERE_BUILD_NAMES		:=	$(addprefix haproxy-ova-vsphere-,$(PHOTON_VE
 
 AMI_BUILD_NAMES			   ?= ami-centos-7 ami-ubuntu-1804 ami-ubuntu-2004 ami-amazon-2 ami-flatcar ami-windows-2019 ami-windows-2004
 GCE_BUILD_NAMES			   ?= gce-ubuntu-1804 ## gce-ubuntu-2004
-AZURE_BUILD_VHD_NAMES	   ?= azure-vhd-ubuntu-1804 azure-vhd-ubuntu-2004 azure-vhd-centos-7 azure-vhd-windows-2019 azure-vhd-windows-2019-containerd
-AZURE_BUILD_SIG_NAMES	   ?= azure-sig-ubuntu-1804 azure-sig-ubuntu-2004 azure-sig-centos-7 azure-sig-windows-2019 azure-sig-windows-2019-containerd azure-sig-flatcar
+AZURE_BUILD_VHD_NAMES	   ?= azure-vhd-ubuntu-1804 azure-vhd-ubuntu-2004 azure-vhd-centos-7 azure-vhd-windows-2019 azure-vhd-windows-2019-containerd azure-vhd-windows-2022-containerd
+AZURE_BUILD_SIG_NAMES	   ?= azure-sig-ubuntu-1804 azure-sig-ubuntu-2004 azure-sig-centos-7 azure-sig-windows-2019 azure-sig-windows-2019-containerd azure-sig-flatcar azure-sig-windows-2022-containerd
 AZURE_BUILD_SIG_GEN2_NAMES ?= azure-sig-ubuntu-1804-gen2 azure-sig-ubuntu-2004-gen2 azure-sig-centos-7-gen2
 
 DO_BUILD_NAMES 			?=	do-centos-7 do-ubuntu-1804 do-ubuntu-2004
@@ -451,12 +451,14 @@ build-azure-sig-ubuntu-2004: ## Builds Ubuntu 20.04 Azure managed image in Share
 build-azure-sig-centos-7: ## Builds CentOS 7 Azure managed image in Shared Image Gallery
 build-azure-sig-windows-2019: ## Builds Windows Server 2019 Azure managed image in Shared Image Gallery
 build-azure-sig-windows-2019-containerd: ## Builds Windows Server 2019 with containerd Azure managed image in Shared Image Gallery
+build-azure-sig-windows-2022-containerd: ## Builds Windows Server 2022 with containerd Azure managed image in Shared Image Gallery
 build-azure-sig-windows-2004: ## Builds Windows Server 2004 SAC Azure managed image in Shared Image Gallery
 build-azure-vhd-ubuntu-1804: ## Builds Ubuntu 18.04 VHD image for Azure
 build-azure-vhd-ubuntu-2004: ## Builds Ubuntu 20.04 VHD image for Azure
 build-azure-vhd-centos-7: ## Builds CentOS 7 VHD image for Azure
 build-azure-vhd-windows-2019: ## Builds for Windows Server 2019
 build-azure-vhd-windows-2019-containerd: ## Builds for Windows Server 2019 with containerd
+build-azure-vhd-windows-2022-containerd: ## Builds for Windows Server 2022 with containerd
 build-azure-vhd-windows-2004: ## Builds for Windows Server 2004 SAC
 build-azure-sig-centos-7-gen2: ## Builds CentOS Gen2 managed image in Shared Image Gallery
 build-azure-sig-flatcar: ## Builds Flatcar Azure managed image in Shared Image Gallery
@@ -559,12 +561,14 @@ validate-azure-sig-ubuntu-1804: ## Validates Ubuntu 18.04 Azure managed image in
 validate-azure-sig-ubuntu-2004: ## Validates Ubuntu 20.04 Azure managed image in Shared Image Gallery Packer config
 validate-azure-sig-windows-2019: ## Validate Windows Server 2019 Azure managed image in Shared Image Gallery Packer config
 validate-azure-sig-windows-2019-containerd: ## Validate Windows Server 2019 with containerd Azure managed image in Shared Image Gallery Packer config
+validate-azure-sig-windows-2022-containerd: ## Validate Windows Server 2022 with containerd Azure managed image in Shared Image Gallery Packer config
 validate-azure-sig-windows-2004: ## Validate Windows Server 2004 SAC Azure managed image in Shared Image Gallery Packer config
 validate-azure-vhd-centos-7: ## Validates CentOS 7 VHD image Azure Packer config
 validate-azure-vhd-ubuntu-1804: ## Validates Ubuntu 18.04 VHD image Azure Packer config
 validate-azure-vhd-ubuntu-2004: ## Validates Ubuntu 20.04 VHD image Azure Packer config
 validate-azure-vhd-windows-2019: ## Validate Windows Server 2019 VHD image Azure Packer config
 validate-azure-vhd-windows-2019-containerd: ## Validate Windows Server 2019 VHD with containerd image Azure Packer config
+validate-azure-vhd-windows-2022-containerd: ## Validate Windows Server 2022 VHD with containerd image Azure Packer config
 validate-azure-vhd-windows-2004: ## Validate Windows Server 2004 SAC VHD image Azure Packer config
 validate-azure-sig-ubuntu-1804-gen2: ## Validates Ubuntu 18.04 Azure managed image in Shared Image Gallery Packer config
 validate-azure-sig-ubuntu-2004-gen2: ## Validates Ubuntu 20.04 Azure managed image in Shared Image Gallery Packer config
