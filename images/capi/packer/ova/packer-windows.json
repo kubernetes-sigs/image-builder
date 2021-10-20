@@ -1,6 +1,11 @@
 {
   "builders": [
     {
+      "content": "{\n \"unattend_timezone\" : \"{{user `unattend_timezone`}}\"\n}",
+      "target": "./packer_cache/unattend.json",
+      "type": "file"
+    },
+    {
       "boot_wait": "{{user `boot_wait`}}",
       "communicator": "winrm",
       "cpus": "{{user `cpu`}}",
@@ -125,11 +130,17 @@
         "os_name": "{{user `os_display_name`}}",
         "vsphere_guest_os_type": "{{user `vsphere_guest_os_type`}}"
       },
+      "except": [
+        "file"
+      ],
       "output": "{{user `output_dir`}}/packer-manifest.json",
       "strip_path": true,
       "type": "manifest"
     },
     {
+      "except": [
+        "file"
+      ],
       "inline": [
         "cd {{user `output_dir`}}",
         "tar xf {{user `build_version`}}.ova",
@@ -140,6 +151,9 @@
       "type": "shell-local"
     },
     {
+      "except": [
+        "file"
+      ],
       "inline": [
         "cd {{user `output_dir`}}",
         "../../hack/image-build-ova.py --node --vmx {{user `vmx_version`}} --eula ../../hack/ovf_eula.txt --ovf_template ../../hack/ovf_template.xml --vmdk_file {{user `build_version`}}-disk-0.vmdk"
@@ -148,6 +162,9 @@
       "type": "shell-local"
     },
     {
+      "except": [
+        "file"
+      ],
       "inline": [
         "./hack/image-build-ova.py --stream_vmdk --node --vmx {{user `vmx_version`}} --eula ./hack/ovf_eula.txt --ovf_template ./hack/ovf_template.xml {{user `output_dir`}}",
         "./hack/image-post-create-config.sh {{user `output_dir`}}"
@@ -158,6 +175,7 @@
   ],
   "provisioners": [
     {
+      "except": "file",
       "extra_arguments": [
         "-e",
         "ansible_winrm_server_cert_validation=ignore",
@@ -174,6 +192,7 @@
       "user": "Administrator"
     },
     {
+      "except": "file",
       "restart_check_command": "powershell -command \"& {if ((get-content C:\\ProgramData\\lastboot.txt) -eq (Get-WmiObject win32_operatingsystem).LastBootUpTime) {Write-Output 'Sleeping for 600 seconds to wait for reboot'; start-sleep 600} else {Write-Output 'Reboot complete'}}\"",
       "restart_command": "powershell \"& {(Get-WmiObject win32_operatingsystem).LastBootUpTime > C:\\ProgramData\\lastboot.txt; Restart-Computer -force}\"",
       "type": "windows-restart"
@@ -181,6 +200,7 @@
     {
       "arch": "{{user `goss_arch`}}",
       "download_path": "{{user `goss_download_path`}}",
+      "except": "file",
       "format": "{{user `goss_format`}}",
       "format_options": "{{user `goss_format_options`}}",
       "goss_file": "{{user `goss_entry_file`}}",
@@ -240,6 +260,7 @@
     "nssm_url": null,
     "output_dir": "./output/{{user `build_version`}}",
     "prepull": null,
+    "unattend_timezone": "Pacific Standard Time",
     "windows_service_manager": null,
     "windows_updates_categories": null,
     "windows_updates_kbs": null,
