@@ -26,18 +26,22 @@
     packages:
     # we use xfs as our default filesystem
     - xfsprogs
+    # a machine without a terminal multiplexer isn't a real machine
     - screen
     - tmux
     - mc
+    # some well loved networking tools
     - inetutils-traceroute
     - tcptraceroute
     - arp-scan
+    - nmap
+    # as we love containers, we should have some low level container tools in place
+    - cgroup-tools
     # some top-commands to make everyone in the team happy
     - htop
     - ctop
     - iotop
     - iftop
-    - nmap
     # an instance without vim isn't an instance
     - vim
     # nfs-common is required to make the mount of nfs-shares possible
