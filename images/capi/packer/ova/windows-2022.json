@@ -1,0 +1,16 @@
+{
+  "build_name": "windows-2022",
+  "disk_controller_type": "pvscsi",
+  "distro_arch": "amd64",
+  "distro_name": "windows",
+  "distro_version": "2022",
+  "guest_os_type": "Windows2019Server-64",
+  "iso_checksum": "none",
+  "local_guest_os_type": "windows9srv-64",
+  "os_display_name": "Windows Server 2022",
+  "os_iso_path": "[datastore] ISO/en-us_windows_server_2022_x64_dvd_620d7eac.iso",
+  "os_iso_url": "file:/path/en-us_windows_server_2022_x64_dvd_620d7eac.iso",
+  "vmtools_iso_path": "[datastore] ISO/vmtools/windows-11.1.5.iso",
+  "vmtools_iso_url": "file:/path/VMware-tools-windows-11.1.5-16724464.iso",
+  "vsphere_guest_os_type": "windows9Server64Guest"
+}
