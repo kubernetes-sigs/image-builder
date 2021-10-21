@@ -20,6 +20,24 @@
     auto_attach: true
   when: ansible_distribution == "RedHat"
 
+# If custom root certificate file is provided to add ca-trusts
+- name: Make sure the folder exists (Red Hat)
+  file:
+    path: /etc/pki/ca-trust/source/anchors
+    state: directory
+  when: repo_root_cert_pem != ""
+
+- name: Copy PEM into folder (Red Hat)
+  copy:
+    src: "{{ repo_root_cert_pem }}"
+    dest: "/etc/pki/ca-trust/source/anchors/{{ repo_root_cert_pem | basename }}"
+  register: result
+  when: repo_root_cert_pem != ""
+
+- name: Update CA Trust (Red Hat)
+  command: update-ca-trust
+  when: result is changed
+
 - name: add epel repo
   yum:
     name: "{{ redhat_epel_rpm }}"

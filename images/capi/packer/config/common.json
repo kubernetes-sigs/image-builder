@@ -9,5 +9,6 @@
   "pause_image": "k8s.gcr.io/pause:3.4.1",
   "redhat_epel_rpm": "https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm",
   "reenable_public_repos": "true",
-  "remove_extra_repos": "false"
+  "remove_extra_repos": "false",
+  "repo_root_cert_pem": ""
 }
