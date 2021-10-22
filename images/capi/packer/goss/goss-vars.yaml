@@ -161,6 +161,9 @@ ubuntu:
         stdout: ["azure-cli"]
         stderr: []
         timeout: 0
+      iptables -C FORWARD -d 168.63.129.16/32 -p tcp -m tcp --dport 80 -m comment --comment "block traffic to 168.63.129.16 for cve-2021-27075" -j DROP:
+        exit-status: 0
+        timeout: 0
     package:
       <<: *chrony_deb
     service:

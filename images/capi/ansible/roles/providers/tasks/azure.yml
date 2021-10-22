@@ -30,11 +30,27 @@
     regexp: '^makestep'
     line: makestep 1.0 -1
 
+- name: Install iptables persistence
+  apt:
+    name: "{{ packages }}"
+    state: present
+    force_apt_get: yes
+  vars:
+    packages:
+      - iptables-persistent
+  when: ansible_os_family == "Debian"
+
 - name: Block traffic to 168.63.129.16 port 80 for cve-2021-27075
-  ansible.builtin.iptables:
-    chain: FORWARD
-    destination: 168.63.129.16
-    destination_port: 80
-    protocol: tcp
-    jump: DROP
-    comment: block traffic to 168.63.129.16 for cve-2021-27075
+  copy:
+    src: files/etc/azure/iptables
+    dest: /etc/iptables/rules.v4
+    owner: root
+    group: root
+    mode: 0644
+  when: ansible_os_family == "Debian"
+
+- name: Load iptable rules from file
+  community.general.iptables_state:
+    state: restored
+    path: /etc/iptables/rules.v4
+  when: ansible_os_family == "Debian"
