@@ -63,4 +63,17 @@ docker pull gcr.io/k8s-staging-scl-image-builder/cluster-node-image-builder-amd6
     docker run -it --rm --net=host --env PACKER_VAR_FILES=/home/imagebuilder/vsphere.json -v <complete path of vsphere.json>:/home/imagebuilder/vsphere.json k8s.gcr.io/scl-image-builder/cluster-node-image-builder-amd64:v0.1.9 build-node-ova-vsphere-ubuntu-2004
     ```
 
+- OpenStack kvm
+
+    - Docker's `--net=host` is required to connect the KVM image
+
+    - `--device=/dev/kvm` is require to connect to the kvm device
+      - if you encounter device permission issues there are a couple solutions
+        - You may have to add `--priviledged` to run the container in priviledged mode
+        - `chmod /dev/kvm` 
+        - run `sudo usermod -a -G kvm <yourusername>` `sudo chown root:kvm /dev/kvm` and add option `-u $(id -u ${USER}):$(id -g ${USER}) ` to the docker command.
+
+    ```commandline
+    docker run -it --rm --network="host" --device=/dev/kvm -v <output folder>:/home/imagebuilder/images/capi/output k8s.gcr.io/scl-image-builder/cluster-node-image-builder-amd64:v0.2.0 build-qemu-ubuntu-2004
+    ```
 In addition to this, further customizations can be done as discussed [here](./capi.md#customization).
