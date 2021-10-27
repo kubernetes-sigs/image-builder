@@ -1,5 +1,7 @@
 # Building Images for OpenStack
 
+Optionally you can also [use a container image to build a custom image](../container-image). 
+
 ## Hypervisor
 
 The image is built using KVM hypervisor.
@@ -52,3 +54,4 @@ $ git clone https://github.com/kubernetes-sigs/image-builder.git
 $ cd image-builder/images/capi/
 $ make build-qemu-ubuntu-2004
 ```
+
