@@ -17,7 +17,8 @@
 ARG BASE_IMAGE=docker.io/library/ubuntu:focal
 FROM $BASE_IMAGE
 
-RUN apt-get update && apt-get install -y apt-transport-https ca-certificates python3-pip curl wget git rsync vim unzip build-essential \
+ENV DEBIAN_FRONTEND noninteractive
+RUN apt-get update && apt-get install -y apt-transport-https ca-certificates python3-pip curl wget git rsync vim unzip build-essential qemu qemu-kvm\
     && useradd -ms /bin/bash imagebuilder \
     && apt-get purge --auto-remove -y \
     && rm -rf /var/lib/apt/lists/*
