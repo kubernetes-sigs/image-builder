@@ -74,6 +74,6 @@ docker pull gcr.io/k8s-staging-scl-image-builder/cluster-node-image-builder-amd6
         - run `sudo usermod -a -G kvm <yourusername>` `sudo chown root:kvm /dev/kvm` and add option `-u $(id -u ${USER}):$(id -g ${USER}) ` to the docker command.
 
     ```commandline
-    docker run -it --rm --network="host" --device=/dev/kvm -v <output folder>:/home/imagebuilder/images/capi/output k8s.gcr.io/scl-image-builder/cluster-node-image-builder-amd64:v0.2.0 build-qemu-ubuntu-2004
+    docker run -it --rm --network="host" --device=/dev/kvm -v <output folder>:/home/imagebuilder/output k8s.gcr.io/scl-image-builder/cluster-node-image-builder-amd64:v0.2.0 build-qemu-ubuntu-2004
     ```
 In addition to this, further customizations can be done as discussed [here](./capi.md#customization).
