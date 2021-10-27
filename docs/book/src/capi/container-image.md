@@ -63,14 +63,14 @@ docker pull gcr.io/k8s-staging-scl-image-builder/cluster-node-image-builder-amd6
     docker run -it --rm --net=host --env PACKER_VAR_FILES=/home/imagebuilder/vsphere.json -v <complete path of vsphere.json>:/home/imagebuilder/vsphere.json k8s.gcr.io/scl-image-builder/cluster-node-image-builder-amd64:v0.1.9 build-node-ova-vsphere-ubuntu-2004
     ```
 
-- OpenStack kvm
+- OpenStack KVM
 
-    - Docker's `--net=host` is required to connect the KVM image
+    - Docker's `--net=host` is required to connect the launched KVM 
 
-    - `--device=/dev/kvm` is require to connect to the kvm device
-      - if you encounter device permission issues there are a couple solutions
-        - You may have to add `--priviledged` to run the container in priviledged mode
-        - `chmod /dev/kvm` 
+    - `--device=/dev/kvm` is required for qemu to connect to the KVM
+      - If you encounter device permission issues here are a few solutions
+        - You may add `--priviledged` to run the container in priviledged mode
+        - `chmod 666 /dev/kvm` 
         - run `sudo usermod -a -G kvm <yourusername>` `sudo chown root:kvm /dev/kvm` and add option `-u $(id -u ${USER}):$(id -g ${USER}) ` to the docker command.
 
     ```commandline
