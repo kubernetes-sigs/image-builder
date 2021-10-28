@@ -1,16 +1,28 @@
 ---
 common_rpms: &common_rpms
+  audit:
   ca-certificates:
+  cloud-init:
+  cloud-utils-growpart:
   conntrack-tools:
   chrony:
   curl:
-  ebtables:
   jq:
   open-vm-tools:
+  python3-pip:
+  socat:
+  sysstat:
+  yum-utils:
+
+rh7_rpms: &rh7_rpms
+  ebtables:
   python-netifaces:
   python-requests:
-  socat:
-  yum-utils:
+
+rh8_rpms: &rh8_rpms
+  nftables:
+  python3-netifaces:
+  python3-requests:
 
 common_debs: &common_debs
   auditd:
@@ -37,7 +49,6 @@ chrony_deb: &chrony_deb
   ntp:
     skip: true
     installed: false
-
 
 common_photon_rpms: &common_photon_rpms
   audit:
@@ -97,11 +108,13 @@ amazon linux:
     package:
       awscli:
       amazon-ssm-agent:
+      <<: *rh7_rpms
 centos:
   common-package: *common_rpms
   amazon:
     package:
       amazon-ssm-agent:
+      <<: *rh7_rpms
     command:
       pip3 list --format=columns | grep 'awscli' | awk -F' ' '{print $1}':
         exit-status: 0
@@ -113,10 +126,8 @@ centos:
       azure-cli:
   ova:
     package:
-      open-vm-tools:
-      cloud-init:
-      cloud-utils-growpart:
       python2-pip:
+      <<: *rh7_rpms
 flatcar:
   amazon:
     command:
@@ -132,15 +143,20 @@ photon:
       open-vm-tools:
       cloud-init:
       cloud-utils:
+      python2-pip:
       python3-netifaces:
+rockylinux:
+  common-package: *common_rpms
+  ova:
+    package:
+      python2-pip:
+      <<: *rh8_rpms
 rhel:
   common-package: *common_rpms
   ova:
     package:
-      open-vm-tools:
-      cloud-init:
-      cloud-utils-growpart:
       python2-pip:
+      <<: *rh7_rpms
 ubuntu:
   common-kernel-param:
     net.ipv4.conf.all.rp_filter:
