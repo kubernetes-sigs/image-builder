@@ -25,6 +25,21 @@
     - cloud-initramfs-dyn-netconf
   when: ansible_os_family == "Debian"
 
+- name: Download cloud-init_21.1-19 from launchpad
+  get_url:
+    url: "{{ cloud_init_deb_download_url }}"
+    dest: /tmp
+  register: cloud_init_deb_file
+  when: ansible_os_family == "Debian" and ansible_distribution_version == "20.04"
+
+- name: Install cloud-init v21.1-19 deb
+  command: "dpkg -i {{ cloud_init_deb_file.dest }}"
+  when: ansible_os_family == "Debian" and ansible_distribution_version == "20.04"
+
+- name: Downgrade to cloud-init 21.2-4.ph3
+  command: "tdnf downgrade cloud-init=21.2-4.ph3 -y"
+  when: ansible_os_family == "VMware Photon OS"
+
 - name: Install cloud-init packages
   yum:
     name: "{{ packages }}"
