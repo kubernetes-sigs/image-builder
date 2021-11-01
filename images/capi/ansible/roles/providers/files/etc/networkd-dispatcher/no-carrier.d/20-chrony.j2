@@ -1,0 +1,26 @@
+#!/bin/bash
+
+# This is a networkd-dispatcher script for chronyd to handle its NTP
+# sources. It sets the NTP sources online or offline when a network
+# interface is configured or removed. On DHCP change, chrony will
+# update its NTP sources passed from DHCP options.
+
+export LC_ALL=C
+
+DHCP_SERVER_FILE={{ server_dir }}/chrony.servers.$IFACE
+
+clear_servers_from_dhcp() {
+    if [ -f "$DHCP_SERVER_FILE" ]; then
+        rm -f "$DHCP_SERVER_FILE"
+        {{ chrony_helper_dir }}/chrony-helper update-daemon || :
+    fi
+}
+
+if [ "$STATE" = "no-carrier" ]; then
+    clear_servers_from_dhcp
+    # The onoffline command tells chronyd to switch all sources to
+    # the online (routable) or offline (off) status according to the current network configuration.
+    chronyc onoffline > /dev/null 2>&1
+fi
+
+exit 0

@@ -57,11 +57,13 @@ common_photon_rpms:
 - audit
 - conntrack-tools
 - chrony
+- dbus-python3
 - distrib-compat
 - ebtables
 - jq
 - net-tools
 - openssl-c_rehash
+- python3-pygobject
 - python-netifaces
 - python3-pip
 - python-requests

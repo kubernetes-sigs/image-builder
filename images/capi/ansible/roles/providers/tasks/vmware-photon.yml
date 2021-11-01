@@ -1,0 +1,70 @@
+# Copyright 2021 The Kubernetes Authors.
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+
+# http://www.apache.org/licenses/LICENSE-2.0
+
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+---
+
+- name: Install networkd-dispatcher service (Download from source)
+  unarchive:
+    src: "{{ networkd_dispatcher_download_url }}"
+    dest: /tmp
+    remote_src: yes
+
+- name: Create needed directories
+  file:
+    path: "{{ item.dir }}"
+    state: directory
+  loop:
+    - { dir: /etc/conf.d }
+    - { dir: /etc/networkd-dispatcher/carrier.d }
+    - { dir: /etc/networkd-dispatcher/configured.d }
+    - { dir: /etc/networkd-dispatcher/configuring.d }
+    - { dir: /etc/networkd-dispatcher/degraded.d }
+    - { dir: /etc/networkd-dispatcher/dormant.d }
+    - { dir: /etc/networkd-dispatcher/no-carrier.d }
+    - { dir: /etc/networkd-dispatcher/off.d }
+    - { dir: /etc/networkd-dispatcher/routable.d }
+
+- name: Install networkd-dispatcher service (Move files)
+  command: mv "{{ item.src }}" "{{ item.dest }}"
+  loop:
+    - { src: /tmp/networkd-dispatcher-2.1/networkd-dispatcher, dest: /usr/bin }
+    - { src: /tmp/networkd-dispatcher-2.1/networkd-dispatcher.service, dest: /etc/systemd/system }
+    - { src: /tmp/networkd-dispatcher-2.1/networkd-dispatcher.conf, dest: /etc/conf.d }
+
+- name: Install networkd-dispatcher service (Run networkd-dispatcher)
+  systemd:
+    name: networkd-dispatcher
+    state: started
+    enabled: yes
+
+- name: Copy networkd-dispatcher scripts to add DHCP provided NTP servers
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: a+x
+  vars:
+    server_dir: "/var/lib/dhclient"
+    chrony_helper_dir: "/usr/libexec"
+  loop:
+    - { src: files/etc/networkd-dispatcher/routable.d/20-chrony.j2, dest: /etc/networkd-dispatcher/routable.d/20-chrony }
+    - { src: files/etc/networkd-dispatcher/off.d/20-chrony.j2, dest: /etc/networkd-dispatcher/off.d/20-chrony }
+    - { src: files/etc/networkd-dispatcher/no-carrier.d/20-chrony.j2, dest: /etc/networkd-dispatcher/no-carrier.d/20-chrony }
+
+- name: Copy chrony-helper script
+  copy:
+    src: files/usr/libexec/chrony-helper
+    dest: /usr/libexec/chrony-helper
+    owner: root
+    group: root
+    mode: a+x
