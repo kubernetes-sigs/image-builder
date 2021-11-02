@@ -46,6 +46,8 @@
     - vim
     # nfs-common is required to make the mount of nfs-shares possible
     - nfs-common
+    # moreutils is required for ts to add timestamps to the cloud-init log
+    - moreutils
 
 - name: disable apparmor
   systemd:
