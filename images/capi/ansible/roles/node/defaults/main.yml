@@ -19,7 +19,6 @@ common_rpms:
 - chrony
 - curl
 - jq
-- open-vm-tools
 - python3-pip
 - socat
 - sysstat
@@ -49,9 +48,6 @@ common_debs:
 - libnetfilter-acct1
 - libnetfilter-cttimeout1
 - libnetfilter-log1
-- linux-cloud-tools-virtual
-- linux-tools-virtual
-- open-vm-tools
 - python3-distutils
 - python3-netifaces
 - python3-pip
@@ -66,7 +62,6 @@ common_photon_rpms:
 - jq
 - net-tools
 - openssl-c_rehash
-- open-vm-tools
 - python-netifaces
 - python3-pip
 - python-requests
@@ -74,6 +69,25 @@ common_photon_rpms:
 - socat
 - tar
 - unzip
+
+common_virt_rpms:
+- open-vm-tools
+
+common_virt_debs:
+- linux-cloud-tools-virtual
+- linux-tools-virtual
+- open-vm-tools
+
+common_virt_photon_rpms:
+- open-vm-tools
+
+common_raw_rpms:
+
+common_raw_debs:
+- linux-cloud-tools-generic
+- linux-tools-generic
+
+common_raw_photon_rpms:
 
 #photon does not have backward compatibility for legacy distro behavior for sysctl.conf by default
 #as it uses systemd-sysctl. set this var so we can use for sysctl conf file value.
