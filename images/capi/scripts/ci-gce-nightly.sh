@@ -40,10 +40,6 @@ groupadd -r packer && useradd -m -s /bin/bash -r -g packer packer
 chown -R packer:packer /home/prow/go/src/sigs.k8s.io/image-builder
 # use the packer user to run the build
 
-# build image for 1.18
-# using PACKER_FLAGS=-force to overwrite the previous image and keep the same name
-su - packer -c "bash -c 'cd /home/prow/go/src/sigs.k8s.io/image-builder/images/capi && PATH=$PATH:~packer/.local/bin:/home/prow/go/src/sigs.k8s.io/image-builder/images/capi/.local/bin GCP_PROJECT_ID=$GCP_PROJECT PACKER_VAR_FILES=packer/gce/ci/nightly/overwrite-1-18.json PACKER_FLAGS=-force make deps-gce build-gce-all'"
-
 # build image for 1.19
 # using PACKER_FLAGS=-force to overwrite the previous image and keep the same name
 su - packer -c "bash -c 'cd /home/prow/go/src/sigs.k8s.io/image-builder/images/capi && PATH=$PATH:~packer/.local/bin:/home/prow/go/src/sigs.k8s.io/image-builder/images/capi/.local/bin GCP_PROJECT_ID=$GCP_PROJECT PACKER_VAR_FILES=packer/gce/ci/nightly/overwrite-1-19.json PACKER_FLAGS=-force make deps-gce build-gce-all'"
