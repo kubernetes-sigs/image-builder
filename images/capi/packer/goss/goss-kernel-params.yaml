@@ -10,6 +10,12 @@ kernel-param:
     value: "1"
   net.bridge.bridge-nf-call-ip6tables:
     value: "1"
+  vm.overcommit_memory:
+    value: "1"
+  kernel.panic:
+    value: "10"
+  kernel.panic_on_oops:
+    value: "1"
 {{range $name, $vers := index .Vars .Vars.OS "common-kernel-param"}}
   {{ $name }}:
   {{range $key, $val := $vers}}
