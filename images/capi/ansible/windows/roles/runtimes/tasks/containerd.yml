@@ -57,6 +57,9 @@
     allusersprofile: "{{ alluserprofile.stdout | trim }}"
     plugin_bin_dir: "{{ systemdrive.stdout | trim }}/opt/cni/bin"
     plugin_conf_dir: "{{ systemdrive.stdout | trim }}/etc/cni/net.d"
+    # programfiles is C:\Program Files, but should be C:\\Program Files
+    # otherwise task Register Containerd fails with "invalid escape sequence: \P"
+    containerd_conf_dir: '{{ programfiles.stdout | trim | regex_replace("\\", "\\\\") }}\\\\containerd'
 
 - name: Check if a Containerd service is installed
   win_service:

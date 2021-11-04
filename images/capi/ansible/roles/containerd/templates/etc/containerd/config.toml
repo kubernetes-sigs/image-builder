@@ -4,6 +4,10 @@
 # Config file is parsed as version 1 by default.
 version = 2
 
+{% if 'imports' not in containerd_additional_settings | b64decode %}
+imports = ["/etc/containerd/conf.d/*.toml"]
+{% endif %}
+
 [plugins]
   [plugins."io.containerd.grpc.v1.cri"]
     sandbox_image = "{{ pause_image }}"

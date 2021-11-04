@@ -16,6 +16,10 @@ root = "{{ allusersprofile }}\\root"
 state = "{{ allusersprofile }}\\state"
 version = 2
 
+{% if 'imports' not in containerd_additional_settings | b64decode %}
+imports = ["{{ containerd_conf_dir }}\\conf.d\\*.toml"]
+{% endif %}
+
 [grpc]
   address = "\\\\.\\pipe\\containerd-containerd"
   

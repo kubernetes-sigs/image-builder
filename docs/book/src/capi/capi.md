@@ -101,6 +101,24 @@ Then, execute the build (using a Photon OVA as an example) with the following:
 PACKER_VAR_FILES=extra_vars.json make build-node-ova-local-photon-3
 ```
 
+##### Configuring Containerd at runtime
+
+Containerd default configuration has the following `imports` value:
+
+```
+imports = ["/etc/containerd/conf.d/*.toml"]
+```
+
+This allows you to place files at runtime in `/etc/containerd/conf.d/` that will then be merged with the rest of containerd configuration.
+
+For example to enable containerd metrics, create a file `/etc/containerd/conf.d/metrics.toml` with the following:
+
+```
+[metrics]
+  address = "0.0.0.0:1338"
+  grpc_histogram = false
+```
+
 ##### Disabling default repos and using an internal package mirror
 
 A common use-case within enterprise environments is to have a package repository available on an internal network to install from rather than reaching out to the internet. To support this, you can inject custom repository definitions into the image, and optionally disable the use of the default ones.
