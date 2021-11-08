@@ -152,7 +152,6 @@ photon:
       open-vm-tools:
       cloud-init:
       cloud-utils:
-      python2-pip:
       python3-netifaces:
 rockylinux:
   common-package: *common_rpms
