@@ -13,3 +13,4 @@
 # limitations under the License.
 ---
 cloud_init_deb_download_url: "https://launchpad.net/ubuntu/+source/cloud-init/21.1-19-gbad84ad4-0ubuntu1~20.04.2/+build/21434629/+files/cloud-init_21.1-19-gbad84ad4-0ubuntu1~20.04.2_all.deb"
+networkd_dispatcher_download_url: "https://gitlab.com/craftyguy/networkd-dispatcher/-/archive/2.1/networkd-dispatcher-2.1.tar.bz2"

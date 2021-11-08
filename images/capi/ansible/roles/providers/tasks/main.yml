@@ -33,6 +33,16 @@
   when: packer_builder_type is search('qemu') and 
     build_target is search('raw')
 
+- include_tasks: vmware-photon.yml
+  when: (packer_builder_type is search('vmware') or
+    packer_builder_type is search('vsphere')) and
+    ansible_os_family == "VMware Photon OS"
+
+- include_tasks: vmware-ubuntu.yml
+  when: (packer_builder_type is search('vmware') or
+    packer_builder_type is search('vsphere')) and
+    ansible_distribution == "Ubuntu"
+
 # Create a boot order configuration
 # b/w containerd and cloud final, cloud config services
 
