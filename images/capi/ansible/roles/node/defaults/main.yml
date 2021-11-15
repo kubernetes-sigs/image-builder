@@ -55,6 +55,7 @@ common_debs:
 
 common_photon_rpms:
 - audit
+- apparmor-parser
 - conntrack-tools
 - chrony
 - dbus-python3

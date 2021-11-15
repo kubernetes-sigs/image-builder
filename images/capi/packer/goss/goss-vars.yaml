@@ -48,6 +48,7 @@ chrony_deb: &chrony_deb
 
 common_photon_rpms: &common_photon_rpms
   audit:
+  apparmor-parser:
   conntrack-tools:
   chrony:
   distrib-compat:
