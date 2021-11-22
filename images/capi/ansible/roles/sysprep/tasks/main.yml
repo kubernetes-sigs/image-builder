@@ -146,7 +146,7 @@
     path: "{{ item.path }}"
   loop:
   - { path: /root/.ssh/authorized_keys }
-  - { path: "/home/{{ ansible_env.SUDO_USER }}/.ssh/authorized_keys" }
+  - { path: "/home/{{ ansible_env.SUDO_USER | default(ansible_user_id) }}/.ssh/authorized_keys" }
   when: ansible_os_family != "Flatcar"
 
 - name: Remove SSH authorized users for Flatcar
@@ -185,7 +185,7 @@
     path: "{{ item.path }}"
   loop:
   - { path: /root/.bash_history }
-  - { path: "/home/{{ ansible_env.SUDO_USER }}/.bash_history" }
+  - { path: "/home/{{ ansible_env.SUDO_USER | default(ansible_user_id) }}/.bash_history" }
 
 - name: Rotate journalctl to archive logs
   shell:
