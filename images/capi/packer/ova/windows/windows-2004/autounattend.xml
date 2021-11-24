@@ -115,6 +115,17 @@ Installation Notes:
         </component>
     </settings>
     <settings pass="specialize">
+        <component name="Microsoft-Windows-Deployment" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" 
+            xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+            <RunSynchronous>
+                <RunSynchronousCommand wcm:action="add">
+                    <WillReboot>Always</WillReboot>
+                    <Path>e:\setup64.exe /s /v "/qb REBOOT=R ADDLOCAL=ALL"</Path>
+                    <Order>1</Order>
+                </RunSynchronousCommand>
+            </RunSynchronous>
+        </component>    
         <component name="Microsoft-Windows-International-Core" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS"
             xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State"
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
@@ -195,19 +206,14 @@ Installation Notes:
                     <Description>Disable password expiration for Administrator user</Description>
                 </SynchronousCommand>
                 <SynchronousCommand wcm:action="add">
-                    <Description>Install VMware Tools</Description>
-                    <CommandLine>cmd.exe /c a:\install-vm-tools.cmd</CommandLine>
-                    <Order>6</Order>
-                </SynchronousCommand>
-                <SynchronousCommand wcm:action="add">
                     <CommandLine>cmd.exe /c %SystemDrive%\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -File a:\enable-winrm.ps1</CommandLine>
                     <Description>Enable WinRM</Description>
-                    <Order>7</Order>
+                    <Order>6</Order>
                 </SynchronousCommand>
                 <SynchronousCommand wcm:action="add">
                     <CommandLine>cmd.exe /c a:\disable-network-discovery.cmd</CommandLine>
                     <Description>Disable Network Discovery</Description>
-                    <Order>8</Order>
+                    <Order>7</Order>
                 </SynchronousCommand>
             </FirstLogonCommands>
             <AutoLogon>

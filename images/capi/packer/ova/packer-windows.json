@@ -67,7 +67,6 @@
         "./packer/ova/windows/disable-network-discovery.cmd",
         "./packer/ova/windows/disable-winrm.ps1",
         "./packer/ova/windows/enable-winrm.ps1",
-        "./packer/ova/windows/install-vm-tools.cmd",
         "./packer/ova/windows/sysprep.ps1"
       ],
       "folder": "{{user `folder`}}",
