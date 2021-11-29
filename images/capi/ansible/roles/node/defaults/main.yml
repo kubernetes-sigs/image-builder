@@ -24,6 +24,12 @@ common_rpms:
 - sysstat
 - yum-utils
 
+# Used for AmazonLinux-2 distributions
+al2_rpms:
+- ebtables
+- python-netifaces
+- python-requests
+
 # Used for RedHat based distributions ==  7 (ex. RHEL-7, CentOS-7 etc.)
 rh7_rpms:
 - ebtables

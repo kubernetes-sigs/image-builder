@@ -13,6 +13,11 @@ common_rpms: &common_rpms
   sysstat:
   yum-utils:
 
+al2_rpms: &al2_rpms
+  ebtables:
+  python-netifaces:
+  python-requests:
+
 rh7_rpms: &rh7_rpms
   ebtables:
   python-netifaces:
@@ -104,7 +109,7 @@ amazon linux:
     package:
       awscli:
       amazon-ssm-agent:
-      <<: *rh7_rpms
+      <<: *al2_rpms
 centos:
   common-package: *common_rpms
   amazon:
