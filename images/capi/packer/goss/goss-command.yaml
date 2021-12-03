@@ -128,6 +128,13 @@ command:
     stdout:
     - True
     timeout: 30000
+  Windows Port Range is Expanded:
+    exit-status: 0
+    exec: netsh int ipv4 show dynamicportrange tcp
+    stdout:
+    - "Start Port      : 33000"
+    - "Number of Ports : 32536"
+    timeout: 30000
 {{end}}
 
 {{ if eq .Vars.runtime "docker-ee" }}
