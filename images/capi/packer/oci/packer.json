@@ -1,0 +1,97 @@
+{
+  "builders": [
+    {
+      "availability_domain": "{{user `availability_domain`}}",
+      "base_image_filter": {
+        "operating_system": "{{user `operating_system`}}",
+        "operating_system_version": "{{user `operating_system_version`}}"
+      },
+      "compartment_ocid": "{{user `compartment_ocid`}}",
+      "fingerprint": "{{user `fingerprint`}}",
+      "image_name": "cluster-api-{{user `build_name`}}-{{user `kubernetes_semver`}}-{{user `build_timestamp`}}",
+      "key_file": "{{user `key_file`}}",
+      "shape": "{{user `shape`}}",
+      "shape_config": {
+        "ocpus": "{{user `ocpus`}}"
+      },
+      "ssh_username": "{{user `ssh_username`}}",
+      "subnet_ocid": "{{user `subnet_ocid`}}",
+      "tenancy_ocid": "{{user `tenancy_ocid`}}",
+      "type": "oracle-oci",
+      "user_ocid": "{{user `user_ocid`}}"
+    }
+  ],
+  "provisioners": [
+    {
+      "environment_vars": [
+        "BUILD_NAME={{user `build_name`}}"
+      ],
+      "inline": [
+        "if [ $BUILD_NAME != \"ubuntu-1804\" ] || [ $BUILD_NAME != \"ubuntu-2004\" ]; then exit 0; fi",
+        "while [ ! -f /var/lib/cloud/instance/boot-finished ]; do echo 'Waiting for cloud-init...'; sleep 1; done",
+        "sudo apt-get -qq update && sudo DEBIAN_FRONTEND=noninteractive apt-get -qqy install python python-pip"
+      ],
+      "type": "shell"
+    },
+    {
+      "ansible_env_vars": [
+        "ANSIBLE_SSH_ARGS='{{user `existing_ansible_ssh_args`}} -o IdentitiesOnly=yes'"
+      ],
+      "extra_arguments": [
+        "--extra-vars",
+        "{{user `ansible_common_vars`}}",
+        "--extra-vars",
+        "{{user `ansible_extra_vars`}}",
+        "--extra-vars",
+        "{{user `ansible_user_vars`}}"
+      ],
+      "playbook_file": "./ansible/node.yml",
+      "type": "ansible"
+    }
+  ],
+  "variables": {
+    "ansible_common_vars": "",
+    "ansible_extra_vars": "",
+    "ansible_user_vars": "",
+    "availability_domain": "{{env `OCI_AVAILABILITY_DOMAIN`}}",
+    "build_timestamp": "{{timestamp}}",
+    "compartment_ocid": "",
+    "containerd_sha256": null,
+    "containerd_url": "https://github.com/containerd/containerd/releases/download/v{{user `containerd_version`}}/cri-containerd-cni-{{user `containerd_version`}}-linux-amd64.tar.gz",
+    "containerd_version": null,
+    "crictl_url": "https://github.com/kubernetes-sigs/cri-tools/releases/download/v{{user `crictl_version`}}/crictl-v{{user `crictl_version`}}-linux-amd64.tar.gz",
+    "crictl_version": null,
+    "disable_default_service_account": "",
+    "encrypted": "false",
+    "existing_ansible_ssh_args": "{{env `ANSIBLE_SSH_ARGS`}}",
+    "fingerprint": "{{env `OCI_USER_FINGERPRINT`}}",
+    "key_file": "{{env `OCI_USER_KEY_FILE`}}",
+    "kubernetes_cni_deb_version": null,
+    "kubernetes_cni_http_source": null,
+    "kubernetes_cni_rpm_version": null,
+    "kubernetes_cni_semver": null,
+    "kubernetes_cni_source_type": null,
+    "kubernetes_container_registry": null,
+    "kubernetes_deb_gpg_key": null,
+    "kubernetes_deb_repo": null,
+    "kubernetes_deb_version": null,
+    "kubernetes_http_source": null,
+    "kubernetes_load_additional_imgs": null,
+    "kubernetes_rpm_gpg_check": null,
+    "kubernetes_rpm_gpg_key": null,
+    "kubernetes_rpm_repo": null,
+    "kubernetes_rpm_version": null,
+    "kubernetes_semver": null,
+    "kubernetes_series": null,
+    "kubernetes_source_type": null,
+    "ocpus": "1",
+    "operating_system": null,
+    "operating_system_version": null,
+    "region": "us-ashburn-1",
+    "shape": "VM.Standard.E4.Flex",
+    "ssh_username": null,
+    "subnet_ocid": "{{env `OCI_SUBNET_OCID`}}",
+    "tenancy_ocid": "{{env `OCI_TENANCY_OCID`}}",
+    "user_ocid": "{{env `OCI_USER_OCID`}}"
+  }
+}
