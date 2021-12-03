@@ -185,6 +185,7 @@
         "sudo bash -c \"/usr/share/oem/python/bin/python /usr/share/oem/bin/waagent -force -deprovision+user && sync\""
       ],
       "inline_shebang": "/bin/bash -x",
+      "remote_folder": "{{user `provisioner_remote_folder`}}",
       "type": "shell"
     }
   ],
@@ -234,6 +235,7 @@
     "plan_image_publisher": "",
     "plan_image_sku": "",
     "private_virtual_network_with_public_ip": "",
+    "provisioner_remote_folder": "/tmp",
     "subscription_id": null,
     "virtual_network_name": "",
     "virtual_network_resource_group_name": "",
