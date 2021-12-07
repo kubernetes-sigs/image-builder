@@ -103,8 +103,22 @@ cat << EOF > ci-${target}.json
 "build_version": "capv-ci-${target}-${TIMESTAMP}"
 }
 EOF
-  PACKER_VAR_FILES="ci-${target}.json" make -j build-node-ova-vsphere-${target} > ${target}-${TIMESTAMP}.log 2>&1 &
+  PACKER_VAR_FILES="ci-${target}.json" make build-node-ova-vsphere-${target} > ${target}-${TIMESTAMP}.log 2>&1 &
+  PIDS+=($!)
 done
-wait
+
+# need to unset errexit so that failed child tasks don't cause script to exit
+set +o errexit
+exit_err=false
+for pid in "${PIDS[@]}"; do
+  wait "${pid}"
+  if [[ $? -ne 0 ]]; then
+    exit_err=true
+  fi
+done
+set -o errexit
 
 cleanup_build_vm
+if [[ "${exit_err}" = true ]]; then
+  exit 1
+fi
