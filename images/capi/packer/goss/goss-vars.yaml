@@ -147,6 +147,10 @@ flatcar:
   amazon:
     command:
 photon:
+  common-service:
+    apparmor:
+      enabled: false
+      running: false
   common-kernel-param:
     net.ipv4.tcp_limit_output_bytes:
       value: "524288"

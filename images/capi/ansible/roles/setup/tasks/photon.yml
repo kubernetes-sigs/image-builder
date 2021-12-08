@@ -58,3 +58,10 @@
     path: /etc/systemd/scripts/ip6save
     regexp: 'INPUT DROP'
     replace: 'INPUT ACCEPT'
+
+- name: Disable Apparmor service
+  systemd:
+    name: apparmor
+    daemon_reload: yes
+    enabled: false
+    state: stopped
