@@ -90,13 +90,13 @@ common_virt_debs:
 common_virt_photon_rpms:
 - open-vm-tools
 
-common_raw_rpms:
+common_raw_rpms: []
 
 common_raw_debs:
 - linux-cloud-tools-generic
 - linux-tools-generic
 
-common_raw_photon_rpms:
+common_raw_photon_rpms: []
 
 #photon does not have backward compatibility for legacy distro behavior for sysctl.conf by default
 #as it uses systemd-sysctl. set this var so we can use for sysctl conf file value.
@@ -105,3 +105,4 @@ sysctl_conf_file: "{{ '/etc/sysctl.d/99-sysctl.conf' if ansible_os_family == 'VM
 pause_image: "k8s.gcr.io/pause:3.6"
 containerd_additional_settings: null
 leak_local_mdns_to_dns: false
+build_target: "virt"
