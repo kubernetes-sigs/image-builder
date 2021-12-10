@@ -20,6 +20,7 @@
     option: Domains
     value: "~local"
   when: leak_local_mdns_to_dns
+
 - name: Leak mDNS to DNS (dhcp) (enable .local domain lookups)
   ini_file:
     path: /etc/systemd/network/99-dhcp-en.network
@@ -27,6 +28,7 @@
     option: Domains
     value: "~local"
   when: leak_local_mdns_to_dns
+
 - name: Double TCP small queue limit to be the same as Ubuntu
   sysctl:
     name: net.ipv4.tcp_limit_output_bytes
@@ -35,3 +37,17 @@
     sysctl_set: yes
     reload: yes
     sysctl_file: "{{ sysctl_conf_file }}"
+
+- name: Disable Apparmor service
+  systemd:
+    name: apparmor
+    daemon_reload: yes
+    enabled: false
+    state: stopped
+
+- name: Disable Apparmor in kernel
+  lineinfile:
+    path: /boot/photon.cfg
+    backrefs: yes
+    regexp: "^(?!.*apparmor=0)(photon_cmdline.*)"
+    line: '\1 apparmor=0'
