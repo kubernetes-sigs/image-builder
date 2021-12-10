@@ -158,6 +158,12 @@ photon:
     <<: *common_photon_rpms
     audit:
   ova:
+    command:
+      grep apparmor=0 /boot/photon.cfg:
+        exit-status: 0
+        stdout: ["apparmor=0"]
+        stderr: []
+        timeout: 0
     service:
       networkd-dispatcher:
         enabled: true
