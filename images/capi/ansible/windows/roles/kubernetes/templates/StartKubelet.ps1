@@ -33,8 +33,6 @@ $args = "--cert-dir=$env:SYSTEMDRIVE/var/lib/kubelet/pki",
         "--enforce-node-allocatable=`"`"",
         "--network-plugin=cni",
         "--resolv-conf=`"`"",
-        "--log-dir=$env:SYSTEMDRIVE/var/log/kubelet",
-        "--logtostderr=false",
        	"--image-pull-progress-deadline=20m"
 
 $kubeletCommandLine = "{{ kubernetes_install_path }}\kubelet.exe " + ($args -join " ") + " $kubeAdmArgs"

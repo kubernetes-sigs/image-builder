@@ -162,6 +162,12 @@
       "version": "{{user `goss_version`}}"
     },
     {
+      "inline": [
+        "rm -Force -Recurse C:\\var\\log\\kubelet\\*"
+      ],
+      "type": "powershell"
+    },
+    {
       "elevated_password": "{{.WinRMPassword}}",
       "elevated_user": "packer",
       "script": "packer/azure/scripts/sysprep.ps1",
