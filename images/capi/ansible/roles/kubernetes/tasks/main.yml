@@ -50,6 +50,19 @@
     src: etc/kubernetes-version
     mode: 0644
 
+- name: Symlink cri-tools
+  file:
+    src:   "/usr/local/bin/{{ item }}"
+    dest:  "/usr/bin/{{ item }}"
+    mode: 0777
+    state: link
+    force: yes
+  loop:
+  - ctr
+  - crictl
+  - critest
+  when: ansible_os_family != "Flatcar"
+
 # TODO: This section will be deprecated once https://github.com/containerd/cri/issues/1131 is fixed. It is used to support ECR with containerd.
 - name: Check if Kubernetes container registry is using Amazon ECR
   set_fact:

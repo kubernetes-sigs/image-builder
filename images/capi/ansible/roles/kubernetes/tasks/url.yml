@@ -12,19 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- name: Symlink cri-tools
-  file:
-    src:   "/usr/local/bin/{{ item }}"
-    dest:  "/usr/bin/{{ item }}"
-    mode: 0777
-    state: link
-    force: yes
-  loop:
-  - ctr
-  - crictl
-  - critest
-  when: ansible_os_family != "Flatcar"
-
 - name: Create CNI directory
   file:
     state: directory
