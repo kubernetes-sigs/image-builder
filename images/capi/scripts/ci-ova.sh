@@ -21,7 +21,7 @@ set -o pipefail # any non-zero exit code in a piped command causes the pipeline 
 CAPI_ROOT=$(dirname "${BASH_SOURCE[0]}")/..
 cd "${CAPI_ROOT}" || exit 1
 
-TARGETS=("ubuntu-1804" "ubuntu-2004" "centos-7")
+TARGETS=("ubuntu-1804" "ubuntu-2004" "centos-7" "photon-3")
 
 on_exit() {
   for target in ${TARGETS[@]};
@@ -84,6 +84,7 @@ EOF
 # Since access to esxi is blocked due to firewall rules,
 # `export`, `post-processor` sections from `packer-node.json` are removed.
 cat packer/ova/packer-node.json | jq  'del(.builders[] | select( .name == "vsphere" ).export)' > packer/ova/packer-node.json.tmp && mv packer/ova/packer-node.json.tmp packer/ova/packer-node.json
+cat packer/ova/packer-node.json | jq  'del(.builders[] | select( .name == "vsphere-clone" ).export)' > packer/ova/packer-node.json.tmp && mv packer/ova/packer-node.json.tmp packer/ova/packer-node.json
 cat packer/ova/packer-node.json | jq  'del(."post-processors"[])' > packer/ova/packer-node.json.tmp && mv packer/ova/packer-node.json.tmp packer/ova/packer-node.json
 
 # Run the vpn client in container
@@ -99,12 +100,24 @@ make deps-ova
 
 for target in ${TARGETS[@]};
 do
+  if [[ "${target}" == 'photon-3' ]]; then
+cat << EOF > ci-${target}.json
+{
+"build_version": "capv-ci-${target}-${TIMESTAMP}",
+"linked_clone": "true",
+"template": "base-photon-3-20211209"
+}
+EOF
+    PACKER_VAR_FILES="ci-${target}.json" make build-node-ova-vsphere-clone-${target} > ${target}-${TIMESTAMP}.log 2>&1 &
+
+  else
 cat << EOF > ci-${target}.json
 {
 "build_version": "capv-ci-${target}-${TIMESTAMP}"
 }
 EOF
-  PACKER_VAR_FILES="ci-${target}.json" make build-node-ova-vsphere-${target} > ${target}-${TIMESTAMP}.log 2>&1 &
+    PACKER_VAR_FILES="ci-${target}.json" make build-node-ova-vsphere-${target} > ${target}-${TIMESTAMP}.log 2>&1 &
+  fi
   PIDS+=($!)
 done
 
