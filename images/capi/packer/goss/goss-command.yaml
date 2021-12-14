@@ -108,13 +108,15 @@ command:
     stdout:
     - "{{.Vars.containerd_version}}"
     timeout: 30000
-  Correct Containerd cni config:
+  Correct Containerd config:
     exec: "\"/Program Files/containerd/containerd.exe\" config dump"
     exit-status: 0
     stdout:
     - "sandbox_image = \"{{.Vars.pause_image}}\""
     - "conf_dir = \"C:/etc/cni/net.d\""
     - "bin_dir = \"C:/opt/cni/bin\""
+    - "root = \"C:\\\\ProgramData\\\\containerd\\\\root\""
+    - "state = \"C:\\\\ProgramData\\\\containerd\\\\state\""
     timeout: 30000
   Check Windows Defender Exclusions are in place:
     exit-status: 0
