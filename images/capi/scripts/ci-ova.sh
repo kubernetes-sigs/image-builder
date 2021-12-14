@@ -42,7 +42,7 @@ cleanup_build_vm() {
   chmod +x govc
   mv govc /usr/local/bin/govc
 
-  export GOVC_URL="${VSPHERE_SERVER}"
+  export GOVC_URL="10.2.224.4"
   export GOVC_USERNAME="${VSPHERE_USERNAME}"
   export GOVC_PASSWORD="${VSPHERE_PASSWORD}"
   export GOVC_DATACENTER="SDDC-Datacenter"
@@ -69,7 +69,8 @@ fi
 
 cat << EOF > packer/ova/vsphere.json
 {
-    "vcenter_server":"${VSPHERE_SERVER}",
+    "vcenter_server":"10.2.224.4",
+    "insecure_connection": "true",
     "username":"${VSPHERE_USERNAME}",
     "password":"${VSPHERE_PASSWORD}",
     "datastore":"WorkloadDatastore",
