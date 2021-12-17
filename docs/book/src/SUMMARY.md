@@ -10,6 +10,7 @@
   - [OpenStack](./capi/providers/openstack.md)
   - [raw](./capi/providers/raw.md)
   - [vSphere](./capi/providers/vsphere.md)
+  - [Windows](./capi/windows/windows.md)
   - [Testing the Images](./capi/goss/goss.md)
   - [Using Container Images](./capi/container-image.md)
 - [Glossary](./glossary.md)
