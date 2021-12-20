@@ -8,7 +8,6 @@ The images may be built using one of the following hypervisors:
 | ------------- | ------------------------------- | --------------------------------- |
 | Linux         | VMware Workstation (vmware-iso) | build-node-ova-local-<OS>         |
 | macOS         | VMware Fusion (vmware-iso)      | build-node-ova-local-<OS>         |
-| ESXi          | ESXi                            | build-node-ova-esx-<OS>           |
 | vSphere       | vSphere >= 6.5                  | build-node-ova-vsphere-<OS>       |
 | vSphere       | vSphere >= 6.5                  | build-node-ova-vsphere-base-<OS>  |
 | vSphere Clone | vSphere >= 6.5                  | build-node-ova-vsphere-clone-<OS> |
@@ -17,7 +16,6 @@ The images may be built using one of the following hypervisors:
 
 **NOTE** If you want to build all available OS's, uses the `-all` target. If you want to build them in parallel, use `make -j`. For example, `make -j build-node-ova-local-all`.
 
-The `esxi` builder supports building against a remote VMware ESX server with [specific configuration](https://packer.io/docs/builders/vmware-iso.html#building-on-a-remote-vsphere-hypervisor) (ssh access), but is untested with this project.
 The `vsphere` builder supports building against a remote VMware vSphere using standard API.
 
 ### vmware-vmx builder
@@ -61,7 +59,7 @@ building OVAs are managed by running:
 make deps-ova
 ```
 
-From the `images/capi` directory, run `make build-node-ova-<hypervisor>-<OS>`, where `<hypervisor>` is your target hypervisor (`local`, `vsphere` or `esx`) and `<OS>` is the desired operating system. The available choices are listed via `make help`.
+From the `images/capi` directory, run `make build-node-ova-<hypervisor>-<OS>`, where `<hypervisor>` is your target hypervisor (`local` or `vsphere`) and `<OS>` is the desired operating system. The available choices are listed via `make help`.
 
 ### OVA Creation
 
@@ -79,7 +77,6 @@ In addition to the configuration found in `images/capi/packer/config`, the `ova`
 
 | File               | Description                                                    |
 | ------------------ | -------------------------------------------------------------- |
-| `esx.json`         | Additional settings needed when building on a remote ESXi host |
 | `centos-7.json`    | The settings for the CentOS 7 image                            |
 | `photon-3.json`    | The settings for the Photon 3 image                            |
 | `rhel-7.json`      | The settings for the RHEL 7 image                              |
