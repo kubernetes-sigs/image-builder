@@ -95,12 +95,14 @@ deps-qemu: ## Installs/checks dependencies for QEMU builds
 deps-qemu:
 	hack/ensure-ansible.sh
 	hack/ensure-packer.sh
+	hack/ensure-goss.sh
 
 .PHONY: deps-raw
 deps-raw: ## Installs/checks dependencies for RAW builds
 deps-raw:
 	hack/ensure-ansible.sh
 	hack/ensure-packer.sh
+	hack/ensure-goss.sh
 
 ## --------------------------------------
 ## Container variables
