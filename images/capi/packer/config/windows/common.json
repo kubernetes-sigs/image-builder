@@ -1,5 +1,6 @@
 {
   "additional_debug_files": "",
+  "debug_tools": "true",
   "disable_hypervisor": "false",
   "http_proxy": "",
   "https_proxy": "",
