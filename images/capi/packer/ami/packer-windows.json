@@ -129,6 +129,12 @@
       "version": "{{user `goss_version`}}"
     },
     {
+      "inline": [
+        "rm -Force -Recurse C:\\var\\log\\kubelet\\*"
+      ],
+      "type": "powershell"
+    },
+    {
       "elevated_password": "{{.WinRMPassword}}",
       "elevated_user": "Administrator",
       "script": "packer/ami/scripts/sysprep_prerequisites.ps1",

@@ -29,6 +29,11 @@
 - name: Install kubelet via nssm
   win_nssm:
     name: kubelet
-    start_mode: manual
+    start_mode: auto
+    state: present
     application: '%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe'
     arguments: '-ExecutionPolicy Bypass -NoProfile {{ kubernetes_install_path }}\StartKubelet.ps1'
+    app_rotate_bytes: 10485760
+    stderr_file: '{{ systemdrive.stdout | trim }}\var\log\kubelet\kubelet.err.log'
+    stdout_file: '{{ systemdrive.stdout | trim }}\var\log\kubelet\kubelet.log'
+    app_rotate_online: 1

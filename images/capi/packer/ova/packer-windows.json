@@ -231,6 +231,12 @@
         "runtime": "{{user `runtime`}}"
       },
       "version": "{{user `goss_version`}}"
+    },
+    {
+      "inline": [
+        "rm -Force -Recurse C:\\var\\log\\kubelet\\*"
+      ],
+      "type": "powershell"
     }
   ],
   "variables": {

@@ -326,8 +326,7 @@ windows:
       - Stopped
     kubelet:
       expected: 
-      - Manual 
-      - Stopped
+      - Automatic 
       - "/RequiredServices.+:.+(containerd|docker)/"
     sshd:
       expected:
