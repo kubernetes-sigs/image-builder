@@ -28,12 +28,12 @@ _version="2.11.5"
 # script is located.
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
 
-if command -v ansible >/dev/null 2>&1; then exit 0; fi
-
-ensure_py3
-pip3 install --user "ansible-core==${_version}"
-ensure_py3_bin ansible
-ensure_py3_bin ansible-playbook
+if ! command -v ansible >/dev/null 2>&1; then
+    ensure_py3
+    pip3 install --user "ansible-core==${_version}"
+    ensure_py3_bin ansible
+    ensure_py3_bin ansible-playbook
+fi
 
 ansible-galaxy collection install community.general
 ansible-galaxy collection install ansible.posix
