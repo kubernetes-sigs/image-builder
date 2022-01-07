@@ -24,7 +24,14 @@
     name: temp-disk-swapfile
     enabled: no
     masked: yes
-  when: ansible_memory_mb.swap.total != 0
+  when: ansible_memory_mb.swap.total != 0 and ansible_distribution_major_version|int <= 7
+
+- name: Disable swap service and ensure it is masked on RHEL 8
+  systemd:
+    name: swap.target
+    enabled: no
+    masked: yes
+  when: ansible_memory_mb.swap.total != 0 and ansible_distribution_major_version|int == 8 
 
 - name: Remove RHEL subscription
   block:
