@@ -28,23 +28,23 @@ aliases:
     - jsturtevant
     - perithompson
   cluster-api-maintainers:
-    - justinsb
-    - detiber
-    - vincepri
     - CecileRobertMichon
-  cluster-api-aws-maintainers:
-    - detiber
-    - randomvariable
-    - richardcase
-    - rudoi
+    - enxebre
+    - fabriziopandini
     - vincepri
+  cluster-api-aws-maintainers:
+    - richardcase
+    - sedefsavas
   cluster-api-azure-maintainers:
+    - alexeldeib
     - CecileRobertMichon
     - devigned
     - nader-ziada
+    - shysank
   cluster-api-gcp-maintainers:
     - cpanato
     - detiber
+    - dims
     - gab-satchi
     - justinsb
     - krousey
@@ -56,18 +56,18 @@ aliases:
     - prksu
     - timoreimann
   cluster-api-openstack-maintainers:
-    - chaosaffe
-    - chrigl
-    - dims
-    - gyliu513
+    - chrischdi
+    - hidekazuna
     - jichenjc
-    - Lion-Wei
-    - m1093782566
-    - sbueringer
+    - mdbooth
+    - seanschneeweiss
+    - tobiasgiese
   cluster-api-vsphere-maintainers:
     - frapposelli
-    - yastij
+    - gab-satchi
     - randomvariable
+    - srm09
+    - yastij
   kops-maintainers:
     - hakman
     - justinsb
