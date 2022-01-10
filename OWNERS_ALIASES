@@ -2,15 +2,11 @@
 
 aliases:
   image-builder-maintainers:
-    - akutz
     - CecileRobertMichon
     - codenrhoden
     - detiber
-    - figo
     - justinsb
-    - luxas
     - moshloop
-    - timothysc
   image-builder-reviewers:
     - EleanorRigby
     - randomvariable
