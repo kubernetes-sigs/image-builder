@@ -14,7 +14,7 @@
       install_recommends: yes
     vars:
       packages:
-      - linux-generic-5.14
+      - linux-generic-5.15
 
 - name: Install custom DHC tools
   apt:
