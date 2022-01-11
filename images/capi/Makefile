@@ -438,7 +438,7 @@ QEMU_CLEAN_TARGETS := $(subst build-,clean-,$(QEMU_BUILD_TARGETS))
 $(QEMU_CLEAN_TARGETS):
 	rm -fr output/$(subst clean-qemu-,,$@)-kube*
 
-RAW_CLEAN_TARGETS := $(subst build-,clean-,$(RAW_CLEAN_TARGETS))
+RAW_CLEAN_TARGETS := $(subst build-,clean-,$(RAW_BUILD_TARGETS))
 .PHONY: $(RAW_CLEAN_TARGETS)
 $(RAW_CLEAN_TARGETS):
 	rm -fr output/$(subst clean-raw-,,$@)-kube*
