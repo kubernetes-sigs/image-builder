@@ -76,7 +76,7 @@ cat << EOF > packer/ova/vsphere.json
     "datastore":"WorkloadDatastore",
     "datacenter":"SDDC-Datacenter",
     "cluster": "Cluster-1",
-    "network": "sddc-cgw-network-8",
+    "network": "sddc-cgw-network-3",
     "folder": "Workloads/ci/imagebuilder"
 }
 EOF
