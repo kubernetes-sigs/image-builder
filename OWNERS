@@ -6,3 +6,9 @@ approvers:
 reviewers:
   - image-builder-maintainers
   - image-builder-reviewers
+
+emeritus_approvers:
+  - akutz
+  - figo
+  - luxas
+  - timothysc
