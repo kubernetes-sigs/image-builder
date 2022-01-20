@@ -28,6 +28,11 @@ cd "${CAPI_ROOT}" || exit 1
 export PATH=${PWD}/.local/bin:$PATH
 export PATH=${PYTHON_BIN_DIR:-"${HOME}/.local/bin"}:$PATH
 
+# OCI packer builder requires a valid private key file, hence creating a temporary one
+openssl genrsa -out /tmp/oci_api_key.pem 2048
+
 AZURE_LOCATION=fake RESOURCE_GROUP_NAME=fake STORAGE_ACCOUNT_NAME=fake \
   DIGITALOCEAN_ACCESS_TOKEN=fake GCP_PROJECT_ID=fake \
+  OCI_AVAILABILITY_DOMAIN=fake OCI_SUBNET_OCID=fake OCI_USER_FINGERPRINT=fake \
+  OCI_TENANCY_OCID=fake OCI_USER_OCID=fake OCI_USER_KEY_FILE=/tmp/oci_api_key.pem \
   make validate-all

@@ -1,0 +1,6 @@
+{
+  "build_name": "ubuntu-1804",
+  "operating_system": "Canonical Ubuntu",
+  "operating_system_version": "18.04",
+  "ssh_username": "ubuntu"
+}

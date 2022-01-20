@@ -48,7 +48,7 @@ version: ## Display version of image-builder
 
 .PHONY: deps
 deps: ## Installs/checks all dependencies
-deps: deps-ami deps-azure deps-do deps-gce deps-ova deps-qemu deps-raw
+deps: deps-ami deps-azure deps-do deps-gce deps-ova deps-qemu deps-raw deps-oci
 
 .PHONY: deps-ami
 deps-ami: ## Installs/checks dependencies for AMI builds
@@ -103,6 +103,12 @@ deps-raw:
 	hack/ensure-ansible.sh
 	hack/ensure-packer.sh
 	hack/ensure-goss.sh
+
+.PHONY: deps-oci
+deps-oci: ## Installs/checks dependencies for OCI builds
+deps-oci:
+	hack/ensure-ansible.sh
+	hack/ensure-packer.sh
 
 ## --------------------------------------
 ## Container variables
@@ -250,6 +256,7 @@ GCE_BUILD_NAMES			   ?= gce-ubuntu-1804 ## gce-ubuntu-2004
 AZURE_BUILD_VHD_NAMES	   ?= azure-vhd-ubuntu-1804 azure-vhd-ubuntu-2004 azure-vhd-centos-7 azure-vhd-windows-2019 azure-vhd-windows-2019-containerd azure-vhd-windows-2022-containerd
 AZURE_BUILD_SIG_NAMES	   ?= azure-sig-ubuntu-1804 azure-sig-ubuntu-2004 azure-sig-centos-7 azure-sig-windows-2019 azure-sig-windows-2019-containerd azure-sig-flatcar azure-sig-windows-2022-containerd
 AZURE_BUILD_SIG_GEN2_NAMES ?= azure-sig-ubuntu-1804-gen2 azure-sig-ubuntu-2004-gen2 azure-sig-centos-7-gen2
+OCI_BUILD_NAMES			   ?= oci-ubuntu-1804 oci-ubuntu-2004 oci-oracle-linux-8
 
 DO_BUILD_NAMES 			?=	do-centos-7 do-ubuntu-1804 do-ubuntu-2004
 
@@ -291,6 +298,8 @@ QEMU_BUILD_TARGETS	:= $(addprefix build-,$(QEMU_BUILD_NAMES))
 QEMU_VALIDATE_TARGETS	:= $(addprefix validate-,$(QEMU_BUILD_NAMES))
 RAW_BUILD_TARGETS      := $(addprefix build-,$(RAW_BUILD_NAMES))
 RAW_VALIDATE_TARGETS   := $(addprefix validate-,$(RAW_BUILD_NAMES))
+OCI_BUILD_TARGETS	:= $(addprefix build-,$(OCI_BUILD_NAMES))
+OCI_VALIDATE_TARGETS	:= $(addprefix validate-,$(OCI_BUILD_NAMES))
 
 .PHONY: $(NODE_OVA_LOCAL_BUILD_TARGETS)
 $(NODE_OVA_LOCAL_BUILD_TARGETS): deps-ova
@@ -418,6 +427,14 @@ $(RAW_BUILD_TARGETS): deps-raw
 .PHONY: $(RAW_VALIDATE_TARGETS)
 $(RAW_VALIDATE_TARGETS): deps-raw
 	packer validate $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/raw/$(subst validate-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) -except=flatcar packer/raw/packer.json
+
+.PHONY: $(OCI_BUILD_TARGETS)
+$(OCI_BUILD_TARGETS): deps-oci
+	packer build $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/oci/$(subst build-oci-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/oci/packer.json
+
+.PHONY: $(OCI_VALIDATE_TARGETS)
+$(OCI_VALIDATE_TARGETS): deps-oci
+	packer validate $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/oci/$(subst validate-oci-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/oci/packer.json
 
 
 ## --------------------------------------
@@ -566,6 +583,11 @@ build-raw-ubuntu-2004: ## Builds Ubuntu 20.04 RAW image
 build-raw-ubuntu-2004-efi: ## Builds Ubuntu 20.04 RAW image that EFI boots
 build-raw-all: $(RAW_BUILD_TARGETS) ## Builds all RAW images
 
+build-oci-ubuntu-1804: ## Builds the OCI ubuntu-1804 image
+build-oci-ubuntu-2004: ## Builds the OCI ubuntu-2004 image
+build-oci-oracle-linux-8: ## Builds the OCI Oracle Linux 8.x image
+build-oci-all: $(OCI_BUILD_TARGETS) ## Builds all OCI image
+
 ## --------------------------------------
 ## Document dynamic validate targets
 ## --------------------------------------
@@ -597,14 +619,14 @@ validate-azure-sig-ubuntu-1804-gen2: ## Validates Ubuntu 18.04 Azure managed ima
 validate-azure-sig-ubuntu-2004-gen2: ## Validates Ubuntu 20.04 Azure managed image in Shared Image Gallery Packer config
 validate-azure-all: $(AZURE_VALIDATE_SIG_TARGETS) $(AZURE_VALIDATE_VHD_TARGETS) ## Validates all VHD images Azure Packer config
 
-validate-do-ubuntu-1804: ## Valdiates Ubuntu 18.04 DigitalOcean Snapshot Packer config
-validate-do-ubuntu-2004: ## Valdiates Ubuntu 20.04 DigitalOcean Snapshot Packer config
-validate-do-centos-7: ## Valdiates Centos 7 DigitalOcean Snapshot Packer config
-validate-do-all: $(DO_VALIDATE_TARGETS) ## Valdiates all DigitalOcean Snapshot Packer config
+validate-do-ubuntu-1804: ## Validates Ubuntu 18.04 DigitalOcean Snapshot Packer config
+validate-do-ubuntu-2004: ## Validates Ubuntu 20.04 DigitalOcean Snapshot Packer config
+validate-do-centos-7: ## Validates Centos 7 DigitalOcean Snapshot Packer config
+validate-do-all: $(DO_VALIDATE_TARGETS) ## Validates all DigitalOcean Snapshot Packer config
 
-validate-gce-ubuntu-1804: ## Valdiates Ubuntu 18.04 GCE Snapshot Packer config
-validate-gce-ubuntu-2004: ## Valdiates Ubuntu 20.04 GCE Snapshot Packer config
-validate-gce-all: $(GCE_VALIDATE_TARGETS) ## Valdiates all GCE Snapshot Packer config
+validate-gce-ubuntu-1804: ## Validates Ubuntu 18.04 GCE Snapshot Packer config
+validate-gce-ubuntu-2004: ## Validates Ubuntu 20.04 GCE Snapshot Packer config
+validate-gce-all: $(GCE_VALIDATE_TARGETS) ## Validates all GCE Snapshot Packer config
 
 validate-node-ova-local-centos-7: ## Validates CentOS 7 Node OVA Packer config w local hypervisor
 validate-node-ova-local-photon-3: ## Validates Photon 3 Node OVA Packer config w local hypervisor
@@ -646,6 +668,11 @@ validate-raw-ubuntu-2004: ## Validates Ubuntu 20.04 RAW image packer config
 validate-raw-ubuntu-2004-efi: ## Validates Ubuntu 20.04 RAW EFI image packer config
 validate-raw-all: $(RAW_VALIDATE_TARGETS) ## Validates all RAW Packer config
 
+validate-oci-ubuntu-1804: ## Validates the OCI ubuntu-1804 image packer config
+validate-oci-ubuntu-2004: ## Validates the OCI ubuntu-2004 image packer config
+validate-oci-oracle-linux-8: ## Validates the OCI Oracle Linux 8.x image packer config
+validate-oci-all: $(OCI_VALIDATE_TARGETS) ## Validates all OCI image packer config
+
 validate-all: validate-ami-all \
 	validate-azure-all \
 	validate-do-all \
@@ -654,7 +681,8 @@ validate-all: validate-ami-all \
 	validate-haproxy-ova-local-photon-3 \
 	validate-qemu-flatcar \
 	validate-qemu-all \
-	validate-raw-all
+	validate-raw-all \
+	validate-oci-all
 validate-all: ## Validates the Packer config for all build targets
 
 ## --------------------------------------

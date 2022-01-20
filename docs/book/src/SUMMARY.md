@@ -8,6 +8,7 @@
   - [DigitalOcean](./capi/providers/digitalocean.md)
   - [GCP](./capi/providers/gcp.md)
   - [OpenStack](./capi/providers/openstack.md)
+  - [OCI](./capi/providers/oci.md)
   - [raw](./capi/providers/raw.md)
   - [vSphere](./capi/providers/vsphere.md)
   - [Windows](./capi/windows/windows.md)
