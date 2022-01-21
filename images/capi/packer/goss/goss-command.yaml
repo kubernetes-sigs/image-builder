@@ -111,12 +111,6 @@ command:
     stdout:
     - {{.Vars.kubernetes_version}}
     timeout: 10000
-  Check Symbolic link to /etc/kubernetes/pki:
-    exit-status: 0
-    exec: powershell -command "(Get-item -path $env:SystemDrive\var\lib\kubelet\etc\kubernetes\pki| select LinkType,Target)"
-    stdout:
-    - SymbolicLink 
-    - C:\etc\kubernetes\pki\
 {{ if eq .Vars.distribution_version "2019" }}
   Windows build version is high enough:
     exit-status: 0
