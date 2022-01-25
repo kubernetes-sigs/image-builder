@@ -36,10 +36,6 @@
   command: "dpkg -i {{ cloud_init_deb_file.dest }}"
   when: ansible_os_family == "Debian" and ansible_distribution_version == "20.04"
 
-- name: Downgrade to cloud-init 21.2-4.ph3
-  command: "tdnf downgrade cloud-init=21.2-4.ph3 -y"
-  when: ansible_os_family == "VMware Photon OS"
-
 - name: Install cloud-init packages
   yum:
     name: "{{ packages }}"
@@ -55,6 +51,10 @@
   command: tdnf install {{ packages }} -y
   vars:
     packages: "cloud-init cloud-utils python3-netifaces"
+  when: ansible_os_family == "VMware Photon OS"
+
+- name: Downgrade to cloud-init 21.2-4.ph3
+  command: "tdnf downgrade cloud-init=21.2-4.ph3 -y"
   when: ansible_os_family == "VMware Photon OS"
 
 - name: Download cloud-init datasource for VMware Guestinfo
