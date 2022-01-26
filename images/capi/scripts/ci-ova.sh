@@ -42,12 +42,6 @@ cleanup_build_vm() {
   chmod +x govc
   mv govc /usr/local/bin/govc
 
-  export GOVC_URL="10.2.224.4"
-  export GOVC_USERNAME="${VSPHERE_USERNAME}"
-  export GOVC_PASSWORD="${VSPHERE_PASSWORD}"
-  export GOVC_DATACENTER="SDDC-Datacenter"
-  export GOVC_INSECURE=true
-
   for target in ${TARGETS[@]};
   do
     govc vm.destroy capv-ci-${target}-${TIMESTAMP}
@@ -61,20 +55,17 @@ export PATH=${PWD}/.local/bin:$PATH
 export PATH=${PYTHON_BIN_DIR:-"/root/.local/bin"}:$PATH
 export GC_KIND="false"
 export TIMESTAMP="$(date -u '+%Y%m%dT%H%M%S')"
-
-# Load VMC Creds
-if [ -f "${CONFIG_ENV-}" ]; then
-  set -o allexport && . "${CONFIG_ENV-}" && set +o allexport
-fi
+export GOVC_DATACENTER="SDDC-Datacenter"
+export GOVC_INSECURE=true
 
 cat << EOF > packer/ova/vsphere.json
 {
-    "vcenter_server":"10.2.224.4",
-    "insecure_connection": "true",
-    "username":"${VSPHERE_USERNAME}",
-    "password":"${VSPHERE_PASSWORD}",
+    "vcenter_server":"${GOVC_URL}",
+    "insecure_connection": "${GOVC_INSECURE}",
+    "username":"${GOVC_USERNAME}",
+    "password":"${GOVC_PASSWORD}",
     "datastore":"WorkloadDatastore",
-    "datacenter":"SDDC-Datacenter",
+    "datacenter":"${GOVC_DATACENTER}",
     "cluster": "Cluster-1",
     "network": "sddc-cgw-network-8",
     "folder": "Workloads/ci/imagebuilder"
