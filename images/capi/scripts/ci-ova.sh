@@ -21,7 +21,7 @@ set -o pipefail # any non-zero exit code in a piped command causes the pipeline 
 CAPI_ROOT=$(dirname "${BASH_SOURCE[0]}")/..
 cd "${CAPI_ROOT}" || exit 1
 
-TARGETS=("ubuntu-1804" "ubuntu-2004" "photon-3")
+TARGETS=("ubuntu-1804" "ubuntu-2004" "photon-3" "centos-7")
 
 on_exit() {
   for target in ${TARGETS[@]};
