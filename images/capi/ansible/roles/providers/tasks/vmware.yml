@@ -63,6 +63,14 @@
     dest: /tmp/cloud-init-vmware.sh
     mode: 0700
 
+# pip on CentOS needs to be upgraded, but since it's still
+# Python 2.7, need < 21.0
+- name: Upgrade pip
+  pip:
+    name: pip<21.0
+    state: forcereinstall
+  when: ansible_os_family == "RedHat" and ansible_distribution_major_version == '7'
+
 - name: Execute cloud-init-vmware.sh
   shell: bash -o errexit -o pipefail /tmp/cloud-init-vmware.sh
   environment:
