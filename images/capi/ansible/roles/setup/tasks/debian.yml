@@ -17,6 +17,9 @@
     src: etc/apt/sources.list.j2
     dest: /etc/apt/sources.list
     mode: 0644
+  # OCI Base images have the required apt sources list embedded inside the image, adding the sources list
+  # from this repo leads to build failures(especially in Arm), hence ignoring the step.
+  when: packer_builder_type != "oracle-oci"
 
 - name: Put templated apt.conf.d/90proxy in place when defined
   template:
