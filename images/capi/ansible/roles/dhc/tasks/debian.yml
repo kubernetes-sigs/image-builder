@@ -93,11 +93,11 @@
     regexp: 'rp_filter=2'
     replace: 'rp_filter=1'
 
-- name: disable apparmor
+- name: disable apparmor and disable vga driver to have a working spice console on openstack
   replace:
     path: /etc/default/grub
     regexp: '^GRUB_CMDLINE_LINUX=""'
-    replace: 'GRUB_CMDLINE_LINUX="apparmor=0"'
+    replace: 'GRUB_CMDLINE_LINUX="apparmor=0 nomodeset"'
 
 - name: update grub config
   shell: update-grub
