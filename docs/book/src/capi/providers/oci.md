@@ -40,7 +40,7 @@ list, and greater explanation can be found in the
 | Variable | Description | Default | Mandatory |
 |----------|-------------|---------|---------|
 | `compartment_ocid` | The OCID of the compartment that the instance will run in. |  | Yes |
-| `subnet_ocid` |  The name of the subnet within which a new instance is launched and provisioned. |  | Yes |
+| `subnet_ocid` |  The OCID of the subnet within which a new instance is launched and provisioned. |  | Yes |
 | `availability_domain` | The name of the Availability Domain within which a new instance is launched and provisioned. The names of the Availability Domains have a prefix that is specific to your tenancy. |  | Yes |
 | `shape` | An OCI region. Overrides value provided by the OCI config file if present. This cannot be used along with the use_instance_principals key. | `VM.Standard.E4.Flex` | No |
 
