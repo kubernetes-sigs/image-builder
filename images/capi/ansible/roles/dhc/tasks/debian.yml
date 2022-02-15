@@ -1,9 +1,11 @@
 ---
+  # https://github.com/TuxInvader/focal-mainline-builder/issues/12
+  # TODO: revert to ppa:tuxinvader/lts-mainline when updated 5.15 kernel available
 - name: Install mainline Kernel
   block:
   - name: add mainline lts ppa
     command: |
-      add-apt-repository -y ppa:tuxinvader/lts-mainline
+      add-apt-repository -y ppa:m1khal3v/5.15-focal
     become: true
 
   - name: install kernel from ppa
