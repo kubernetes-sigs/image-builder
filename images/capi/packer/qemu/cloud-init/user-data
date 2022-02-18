@@ -1,0 +1,11 @@
+#cloud-config
+users:
+  - name: builder
+    lock_passwd: false
+    sudo: ALL=(ALL) NOPASSWD:ALL
+ssh_pwauth: true
+disable_root: false
+chpasswd:
+  list: |
+     builder:linux
+  expire: False

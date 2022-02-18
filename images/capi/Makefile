@@ -231,6 +231,7 @@ RHEL_VERSIONS			:=	rhel-7
 ROCKYLINUX_VERSIONS     :=  rockylinux-8
 UBUNTU_VERSIONS			:=	ubuntu-1804 ubuntu-2004 ubuntu-2004-efi
 WINDOWS_VERSIONS		:=	windows-2019 windows-2004 windows-2022
+OPENSUSE_VERSIONS               :=      opensuse-153-cloud
 
 # Set Flatcar Container Linux channel and version if not supplied
 FLATCAR_CHANNEL ?= stable
@@ -246,7 +247,8 @@ PLATFORMS_AND_VERSIONS	:=	$(CENTOS_VERSIONS) \
 							$(RHEL_VERSIONS) \
 							$(ROCKYLINUX_VERSIONS) \
 							$(UBUNTU_VERSIONS) \
-							$(WINDOWS_VERSIONS)
+							$(WINDOWS_VERSIONS) \
+							$(OPENSUSE_VERSIONS)
 
 NODE_OVA_LOCAL_BUILD_NAMES			:=	$(addprefix node-ova-local-,$(PLATFORMS_AND_VERSIONS))
 NODE_OVA_LOCAL_VMX_BUILD_NAMES		:=	$(addprefix node-ova-local-vmx-,$(PLATFORMS_AND_VERSIONS))
@@ -267,7 +269,7 @@ OCI_BUILD_NAMES			   ?= oci-ubuntu-1804 oci-ubuntu-2004 oci-oracle-linux-8
 DO_BUILD_NAMES 			?=	do-centos-7 do-ubuntu-1804 do-ubuntu-2004
 
 QEMU_FLATCAR_BUILD_NAMES	?=	qemu-flatcar
-QEMU_BUILD_NAMES			?=	qemu-ubuntu-1804 qemu-ubuntu-2004 qemu-centos-7 qemu-ubuntu-2004-efi qemu-rhel-8 qemu-rockylinux-8
+QEMU_BUILD_NAMES			?=	qemu-ubuntu-1804 qemu-ubuntu-2004 qemu-centos-7 qemu-ubuntu-2004-efi qemu-rhel-8 qemu-rockylinux-8 qemu-opensuse-153-cloud
 
 RAW_BUILD_NAMES                        ?=      raw-ubuntu-1804 raw-ubuntu-2004 raw-ubuntu-2004-efi
 VBOX_BUILD_NAMES			?=      vbox-windows-2019
@@ -574,6 +576,7 @@ build-qemu-ubuntu-1804: ## Builds Ubuntu 18.04 QEMU image
 build-qemu-ubuntu-2004: ## Builds Ubuntu 20.04 QEMU image
 build-qemu-ubuntu-2004-efi: ## Builds Ubuntu 20.04 QEMU image that EFI boots
 build-qemu-centos-7: ## Builds CentOS 7 QEMU image
+build-qemu-opensuse-153-cloud: ## Builds openSuse 15.3  QEMU image from base cloud image containing cloud-init
 build-qemu-rhel-8: ## Builds RHEL 8 QEMU image
 build-qemu-rockylinux-8: ## Builds Rocky 8 QEMU image
 build-qemu-all: $(QEMU_BUILD_TARGETS) ## Builds all Qemu images

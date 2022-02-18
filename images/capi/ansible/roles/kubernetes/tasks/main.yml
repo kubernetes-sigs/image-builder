@@ -21,6 +21,9 @@
 - import_tasks: photon.yml
   when: kubernetes_source_type == "pkg" and ansible_os_family == "VMware Photon OS"
 
+- import_tasks: suse.yml
+  when: kubernetes_source_type == "pkg" and ansible_os_family == "Suse"
+
 - import_tasks: url.yml
   when: kubernetes_source_type == "http" and kubernetes_cni_source_type == "http"
 
@@ -43,6 +46,8 @@
     daemon_reload: yes
     enabled: True
     state: stopped
+  register: out
+- debug: var=out.stdout_lines
 
 - name: Create the Kubernetes version file
   template:

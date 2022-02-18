@@ -1,0 +1,18 @@
+{
+  "ansible_extra_vars": "ansible_python_interpreter=/usr/bin/python3 extra_arguments =vvvv",
+  "build_name": "opensuse-153",
+  "distro_arch": "amd64",
+  "distro_name": "opensuse",
+  "distro_version": "153",
+  "guest_os_type": "opensuse153-64",
+  "iso_checksum": "6e984a1f7807002790591443476961768ddb1a7c917c442e258c9fd087b90fe0",
+  "iso_checksum_type": "sha256",
+  "iso_url": "https://downloadcontent.opensuse.org/distribution/leap/15.3/appliances/openSUSE-Leap-15.3-JeOS.x86_64-OpenStack-Cloud.qcow2",
+  "cd_files": "./packer/qemu/cloud-init/user-data,./packer/qemu/cloud-init/meta-data",
+  "cd_label": "cidata",
+  "disk_image": "true",
+  "ssh_username": "builder",
+  "ssh_password": "linux",
+  "shutdown_command": "shutdown -P now",
+  "os_display_name": "openSuSE 153 JeOS"
+}

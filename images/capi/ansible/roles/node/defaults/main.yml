@@ -42,6 +42,14 @@ rh8_rpms:
 - python3-netifaces
 - python3-requests
 
+suse15_rpms:
+- ebtables
+- python-netifaces
+- python-requests
+- iptables
+- apparmor-parser
+- ethtool
+
 common_debs:
 - auditd
 - apt-transport-https

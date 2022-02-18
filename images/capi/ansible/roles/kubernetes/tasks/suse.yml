@@ -1,0 +1,42 @@
+# Copyright 2018 The Kubernetes Authors.
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+
+# http://www.apache.org/licenses/LICENSE-2.0
+
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+---
+
+- name: Add  Kubernetes rpm repository
+  zypper_repository:
+    name: kubernetes
+    description: Kubernetes package repository
+    repo: "{{ kubernetes_rpm_repo }}"
+    disable_gpg_check:  "{{ kubernetes_rpm_gpg_check }}"
+    autorefresh: true
+  register: kubernetes_repo_installation_rpm
+  until: kubernetes_repo_installation_rpm is success
+  retries: 15
+  delay: 60
+
+- name: Download kubernetes rpms
+  shell: 'echo {{ item }} && zypper --pkg-cache-dir /tmp download  {{ item }}'
+  loop:
+     - "kubelet-{{ kubernetes_rpm_version }}"
+     - "kubeadm-{{ kubernetes_rpm_version }}" 
+     - "kubectl-{{ kubernetes_rpm_version }}"
+     - "kubernetes-cni-{{kubernetes_cni_rpm_version }}"
+  register: out
+- debug: var=out.stdout_lines
+
+- name: Install  kubernetes rpms
+  shell: 'rpm -ivh --nodeps /tmp/kubernetes/Packages/*.rpm'
+  register: out
+- debug: var=out.stdout_lines
+
