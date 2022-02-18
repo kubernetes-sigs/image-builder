@@ -21,6 +21,19 @@
 - import_tasks: photon.yml
   when: kubernetes_source_type == "pkg" and ansible_os_family == "VMware Photon OS"
 
+- name: Symlink cri-tools
+  file:
+    src:   "/usr/local/bin/{{ item }}"
+    dest:  "/usr/bin/{{ item }}"
+    mode: 0777
+    state: link
+    force: yes
+  loop:
+  - ctr
+  - crictl
+  - critest
+  when: ansible_os_family != "Flatcar"
+
 - import_tasks: url.yml
   when: kubernetes_source_type == "http" and kubernetes_cni_source_type == "http"
 
@@ -49,19 +62,6 @@
     dest: /etc/kubernetes-version
     src: etc/kubernetes-version
     mode: 0644
-
-- name: Symlink cri-tools
-  file:
-    src:   "/usr/local/bin/{{ item }}"
-    dest:  "/usr/bin/{{ item }}"
-    mode: 0777
-    state: link
-    force: yes
-  loop:
-  - ctr
-  - crictl
-  - critest
-  when: ansible_os_family != "Flatcar"
 
 # TODO: This section will be deprecated once https://github.com/containerd/cri/issues/1131 is fixed. It is used to support ECR with containerd.
 - name: Check if Kubernetes container registry is using Amazon ECR
