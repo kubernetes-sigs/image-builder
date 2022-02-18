@@ -13,6 +13,11 @@ common_rpms: &common_rpms
   sysstat:
   yum-utils:
 
+al2_rpms: &al2_rpms
+  ebtables:
+  python-netifaces:
+  python-requests:
+
 rh7_rpms: &rh7_rpms
   ebtables:
   python-netifaces:
@@ -48,6 +53,7 @@ chrony_deb: &chrony_deb
 
 common_photon_rpms: &common_photon_rpms
   audit:
+  apparmor-parser:
   conntrack-tools:
   chrony:
   distrib-compat:
@@ -103,7 +109,7 @@ amazon linux:
     package:
       awscli:
       amazon-ssm-agent:
-      <<: *rh7_rpms
+      <<: *al2_rpms
 centos:
   common-package: *common_rpms
   amazon:
@@ -141,6 +147,10 @@ flatcar:
   amazon:
     command:
 photon:
+  common-service:
+    apparmor:
+      enabled: false
+      running: false
   common-kernel-param:
     net.ipv4.tcp_limit_output_bytes:
       value: "524288"
@@ -148,6 +158,12 @@ photon:
     <<: *common_photon_rpms
     audit:
   ova:
+    command:
+      grep apparmor=0 /boot/photon.cfg:
+        exit-status: 0
+        stdout: ["apparmor=0"]
+        stderr: []
+        timeout: 0
     service:
       networkd-dispatcher:
         enabled: true
@@ -310,8 +326,7 @@ windows:
       - Stopped
     kubelet:
       expected: 
-      - Manual 
-      - Stopped
+      - Automatic 
       - "/RequiredServices.+:.+(containerd|docker)/"
     sshd:
       expected:

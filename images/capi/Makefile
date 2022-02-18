@@ -48,7 +48,7 @@ version: ## Display version of image-builder
 
 .PHONY: deps
 deps: ## Installs/checks all dependencies
-deps: deps-ami deps-azure deps-do deps-gce deps-ova deps-qemu deps-raw
+deps: deps-ami deps-azure deps-do deps-gce deps-ova deps-qemu deps-raw deps-oci deps-vbox
 
 .PHONY: deps-ami
 deps-ami: ## Installs/checks dependencies for AMI builds
@@ -67,7 +67,6 @@ deps-azure:
 	hack/ensure-jq.sh
 	hack/ensure-azure-cli.sh
 	hack/ensure-goss.sh
-
 
 .PHONY: deps-do
 deps-do: ## Installs/checks dependencies for DigitalOcean builds
@@ -95,12 +94,29 @@ deps-qemu: ## Installs/checks dependencies for QEMU builds
 deps-qemu:
 	hack/ensure-ansible.sh
 	hack/ensure-packer.sh
+	hack/ensure-goss.sh
 
 .PHONY: deps-raw
 deps-raw: ## Installs/checks dependencies for RAW builds
 deps-raw:
 	hack/ensure-ansible.sh
 	hack/ensure-packer.sh
+	hack/ensure-goss.sh
+
+.PHONY: deps-oci
+deps-oci: ## Installs/checks dependencies for OCI builds
+deps-oci:
+	hack/ensure-ansible.sh
+	hack/ensure-packer.sh
+
+.PHONY: deps-vbox
+deps-vbox: ## Installs/checks dependencies for VirtualBox builds
+deps-vbox:
+	hack/ensure-ansible.sh
+	hack/ensure-ansible-windows.sh
+	hack/ensure-packer.sh
+	hack/ensure-goss.sh
+
 
 ## --------------------------------------
 ## Container variables
@@ -235,26 +251,26 @@ PLATFORMS_AND_VERSIONS	:=	$(CENTOS_VERSIONS) \
 NODE_OVA_LOCAL_BUILD_NAMES			:=	$(addprefix node-ova-local-,$(PLATFORMS_AND_VERSIONS))
 NODE_OVA_LOCAL_VMX_BUILD_NAMES		:=	$(addprefix node-ova-local-vmx-,$(PLATFORMS_AND_VERSIONS))
 NODE_OVA_LOCAL_BASE_BUILD_NAMES		:=	$(addprefix node-ova-local-base-,$(PLATFORMS_AND_VERSIONS))
-NODE_OVA_ESX_BUILD_NAMES			:=	$(addprefix node-ova-esx-,$(PLATFORMS_AND_VERSIONS))
 NODE_OVA_VSPHERE_BUILD_NAMES		:=	$(addprefix node-ova-vsphere-,$(PLATFORMS_AND_VERSIONS))
 NODE_OVA_VSPHERE_BASE_BUILD_NAMES		:=	$(addprefix node-ova-vsphere-base-,$(PLATFORMS_AND_VERSIONS))
 NODE_OVA_VSPHERE_CLONE_BUILD_NAMES		:=	$(addprefix node-ova-vsphere-clone-,$(PLATFORMS_AND_VERSIONS))
 HAPROXY_OVA_LOCAL_BUILD_NAMES			:=	$(addprefix haproxy-ova-local-,$(PHOTON_VERSIONS))
-HAPROXY_OVA_ESX_BUILD_NAMES			:=	$(addprefix haproxy-ova-esx-,$(PHOTON_VERSIONS))
 HAPROXY_OVA_VSPHERE_BUILD_NAMES		:=	$(addprefix haproxy-ova-vsphere-,$(PHOTON_VERSIONS))
 
 AMI_BUILD_NAMES			   ?= ami-centos-7 ami-ubuntu-1804 ami-ubuntu-2004 ami-amazon-2 ami-flatcar ami-windows-2019 ami-windows-2004
-GCE_BUILD_NAMES			   ?= gce-ubuntu-1804 ## gce-ubuntu-2004
+GCE_BUILD_NAMES			   ?= gce-ubuntu-1804 gce-ubuntu-2004
 AZURE_BUILD_VHD_NAMES	   ?= azure-vhd-ubuntu-1804 azure-vhd-ubuntu-2004 azure-vhd-centos-7 azure-vhd-windows-2019 azure-vhd-windows-2019-containerd azure-vhd-windows-2022-containerd
 AZURE_BUILD_SIG_NAMES	   ?= azure-sig-ubuntu-1804 azure-sig-ubuntu-2004 azure-sig-centos-7 azure-sig-windows-2019 azure-sig-windows-2019-containerd azure-sig-flatcar azure-sig-windows-2022-containerd
 AZURE_BUILD_SIG_GEN2_NAMES ?= azure-sig-ubuntu-1804-gen2 azure-sig-ubuntu-2004-gen2 azure-sig-centos-7-gen2
+OCI_BUILD_NAMES			   ?= oci-ubuntu-1804 oci-ubuntu-2004 oci-oracle-linux-8
 
 DO_BUILD_NAMES 			?=	do-centos-7 do-ubuntu-1804 do-ubuntu-2004
 
 QEMU_FLATCAR_BUILD_NAMES	?=	qemu-flatcar
-QEMU_BUILD_NAMES			?=	qemu-ubuntu-1804 qemu-ubuntu-2004 qemu-centos-7 qemu-ubuntu-2004-efi 
+QEMU_BUILD_NAMES			?=	qemu-ubuntu-1804 qemu-ubuntu-2004 qemu-centos-7 qemu-ubuntu-2004-efi qemu-rhel-8 qemu-rockylinux-8
 
 RAW_BUILD_NAMES                        ?=      raw-ubuntu-1804 raw-ubuntu-2004 raw-ubuntu-2004-efi
+VBOX_BUILD_NAMES			?=      vbox-windows-2019
 
 ## --------------------------------------
 ## Dynamic build targets
@@ -263,13 +279,11 @@ NODE_OVA_LOCAL_BUILD_TARGETS	:= $(addprefix build-,$(NODE_OVA_LOCAL_BUILD_NAMES)
 NODE_OVA_LOCAL_VMX_BUILD_TARGETS	:= $(addprefix build-,$(NODE_OVA_LOCAL_VMX_BUILD_NAMES))
 NODE_OVA_LOCAL_BASE_BUILD_TARGETS	:= $(addprefix build-,$(NODE_OVA_LOCAL_BASE_BUILD_NAMES))
 NODE_OVA_LOCAL_VALIDATE_TARGETS	:= $(addprefix validate-,$(NODE_OVA_LOCAL_BUILD_NAMES))
-NODE_OVA_ESX_BUILD_TARGETS	:= $(addprefix build-,$(NODE_OVA_ESX_BUILD_NAMES))
 NODE_OVA_VSPHERE_BUILD_TARGETS	:= $(addprefix build-,$(NODE_OVA_VSPHERE_BUILD_NAMES))
 NODE_OVA_VSPHERE_BASE_BUILD_TARGETS	:= $(addprefix build-,$(NODE_OVA_VSPHERE_BASE_BUILD_NAMES))
 NODE_OVA_VSPHERE_CLONE_BUILD_TARGETS	:= $(addprefix build-,$(NODE_OVA_VSPHERE_CLONE_BUILD_NAMES))
 HAPROXY_OVA_LOCAL_BUILD_TARGETS	:= $(addprefix build-,$(HAPROXY_OVA_LOCAL_BUILD_NAMES))
 HAPROXY_OVA_LOCAL_VALIDATE_TARGETS	:= $(addprefix validate-,$(HAPROXY_OVA_LOCAL_BUILD_NAMES))
-HAPROXY_OVA_ESX_BUILD_TARGETS	:= $(addprefix build-,$(HAPROXY_OVA_ESX_BUILD_NAMES))
 HAPROXY_OVA_VSPHERE_BUILD_TARGETS	:= $(addprefix build-,$(HAPROXY_OVA_VSPHERE_BUILD_NAMES))
 AMI_BUILD_TARGETS	:= $(addprefix build-,$(AMI_BUILD_NAMES))
 AMI_VALIDATE_TARGETS	:= $(addprefix validate-,$(AMI_BUILD_NAMES))
@@ -289,61 +303,56 @@ QEMU_BUILD_TARGETS	:= $(addprefix build-,$(QEMU_BUILD_NAMES))
 QEMU_VALIDATE_TARGETS	:= $(addprefix validate-,$(QEMU_BUILD_NAMES))
 RAW_BUILD_TARGETS      := $(addprefix build-,$(RAW_BUILD_NAMES))
 RAW_VALIDATE_TARGETS   := $(addprefix validate-,$(RAW_BUILD_NAMES))
+OCI_BUILD_TARGETS	:= $(addprefix build-,$(OCI_BUILD_NAMES))
+OCI_VALIDATE_TARGETS	:= $(addprefix validate-,$(OCI_BUILD_NAMES))
+VBOX_BUILD_TARGETS      := $(addprefix build-,$(VBOX_BUILD_NAMES))
+VBOX_VALIDATE_TARGETS   := $(addprefix validate-,$(VBOX_BUILD_NAMES))
 
 .PHONY: $(NODE_OVA_LOCAL_BUILD_TARGETS)
 $(NODE_OVA_LOCAL_BUILD_TARGETS): deps-ova
     # This uses a packer file builder to input unattend variables into a json file to be consumed by the python script before running the vmware-iso provisioner
 	$(if $(findstring windows,$@),packer build $(PACKER_WINDOWS_NODE_FLAGS) -var-file="packer/ova/packer-common.json" -var-file="$(abspath packer/ova/$(subst build-node-ova-local-,,$@).json)" -only=file $(ABSOLUTE_PACKER_VAR_FILES) packer/ova/packer-windows.json,)
 	$(if $(findstring windows,$@),hack/windows-ova-unattend.py --unattend-file='./packer/ova/windows/$(subst build-node-ova-local-,,$@)/autounattend.xml',)
-	packer build $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="packer/ova/packer-common.json" -var-file="$(abspath packer/ova/$(subst build-node-ova-local-,,$@).json)" -except=esx -except=vsphere -only=vmware-iso $(ABSOLUTE_PACKER_VAR_FILES) packer/ova/packer-$(if $(findstring windows,$@),windows,node).json
+	packer build $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="packer/ova/packer-common.json" -var-file="$(abspath packer/ova/$(subst build-node-ova-local-,,$@).json)" -except=vsphere -only=vmware-iso $(ABSOLUTE_PACKER_VAR_FILES) packer/ova/packer-$(if $(findstring windows,$@),windows,node).json
 
 .PHONY: $(NODE_OVA_LOCAL_VALIDATE_TARGETS)
 $(NODE_OVA_LOCAL_VALIDATE_TARGETS): deps-ova
-	packer validate $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="packer/ova/packer-common.json" -var-file="$(abspath packer/ova/$(subst validate-node-ova-local-,,$@).json)" -except=esx -except=vsphere -only=vmware-iso $(ABSOLUTE_PACKER_VAR_FILES) packer/ova/packer-$(if $(findstring windows,$@),windows,node).json
+	packer validate $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="packer/ova/packer-common.json" -var-file="$(abspath packer/ova/$(subst validate-node-ova-local-,,$@).json)" -except=vsphere -only=vmware-iso $(ABSOLUTE_PACKER_VAR_FILES) packer/ova/packer-$(if $(findstring windows,$@),windows,node).json
 
 .PHONY: $(NODE_OVA_LOCAL_VMX_BUILD_TARGETS)
 $(NODE_OVA_LOCAL_VMX_BUILD_TARGETS): deps-ova
-	packer build $(PACKER_NODE_FLAGS) -var-file="packer/ova/packer-common.json" -var-file="$(abspath packer/ova/$(subst build-node-ova-local-vmx-,,$@).json)" -var-file="packer/ova/vmx.json" -except=esx -except=vsphere -except=vmware-iso -only=vmware-vmx $(ABSOLUTE_PACKER_VAR_FILES) packer/ova/packer-node.json
+	packer build $(PACKER_NODE_FLAGS) -var-file="packer/ova/packer-common.json" -var-file="$(abspath packer/ova/$(subst build-node-ova-local-vmx-,,$@).json)" -var-file="packer/ova/vmx.json" -except=vsphere -except=vmware-iso -only=vmware-vmx $(ABSOLUTE_PACKER_VAR_FILES) packer/ova/packer-node.json
 
 .PHONY: $(NODE_OVA_LOCAL_BASE_BUILD_TARGETS)
 $(NODE_OVA_LOCAL_BASE_BUILD_TARGETS): deps-ova
-	packer build $(PACKER_NODE_FLAGS) -var-file="packer/ova/packer-common.json" -var-file="$(abspath packer/ova/$(subst build-node-ova-local-base-,,$@).json)" -except=esx -except=vsphere -except=vmware-iso -except=vmware-vmx -only=vmware-iso-base $(ABSOLUTE_PACKER_VAR_FILES) packer/ova/packer-node.json
-
-.PHONY: $(NODE_OVA_ESX_BUILD_TARGETS)
-$(NODE_OVA_ESX_BUILD_TARGETS): deps-ova
-	packer build $(PACKER_NODE_FLAGS) -var-file="packer/ova/packer-common.json" -var-file="$(abspath packer/ova/$(subst build-node-ova-esx-,,$@).json)" -var-file="packer/ova/esx.json" -except=local -except=vsphere -only=vmware-iso $(ABSOLUTE_PACKER_VAR_FILES) packer/ova/packer-node.json
+	packer build $(PACKER_NODE_FLAGS) -var-file="packer/ova/packer-common.json" -var-file="$(abspath packer/ova/$(subst build-node-ova-local-base-,,$@).json)"  -except=vsphere -except=vmware-iso -except=vmware-vmx -only=vmware-iso-base $(ABSOLUTE_PACKER_VAR_FILES) packer/ova/packer-node.json
 
 .PHONY: $(NODE_OVA_VSPHERE_BUILD_TARGETS)
 $(NODE_OVA_VSPHERE_BUILD_TARGETS): deps-ova
     # This uses a packer file builder to input unattend variables into a json file to be consumed by the python script before running the vsphere provisioner
 	$(if $(findstring windows,$@),packer build $(PACKER_WINDOWS_NODE_FLAGS) -var-file="packer/ova/packer-common.json" -var-file="$(abspath packer/ova/$(subst build-node-ova-vsphere-,,$@).json)" -only=file $(ABSOLUTE_PACKER_VAR_FILES) packer/ova/packer-windows.json,)
 	$(if $(findstring windows,$@),hack/windows-ova-unattend.py --unattend-file='./packer/ova/windows/$(subst build-node-ova-vsphere-,,$@)/autounattend.xml',)
-	packer build $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS))  -var-file="packer/ova/packer-common.json" -var-file="$(abspath packer/ova/$(subst build-node-ova-vsphere-,,$@).json)" -var-file="packer/ova/vsphere.json" -except=esx -except=local -only=vsphere-iso $(ABSOLUTE_PACKER_VAR_FILES) -only=vsphere packer/ova/packer-$(if $(findstring windows,$@),windows,node).json
-
+	packer build $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS))  -var-file="packer/ova/packer-common.json" -var-file="$(abspath packer/ova/$(subst build-node-ova-vsphere-,,$@).json)" -var-file="packer/ova/vsphere.json"  -except=local -only=vsphere-iso $(ABSOLUTE_PACKER_VAR_FILES) -only=vsphere packer/ova/packer-$(if $(findstring windows,$@),windows,node).json
 
 .PHONY: $(NODE_OVA_VSPHERE_BASE_BUILD_TARGETS)
 $(NODE_OVA_VSPHERE_BASE_BUILD_TARGETS): deps-ova
-	packer build $(PACKER_NODE_FLAGS) -var-file="packer/ova/packer-common.json" -var-file="$(abspath packer/ova/$(subst build-node-ova-vsphere-base-,,$@).json)" -var-file="packer/ova/vsphere.json" -except=esx -except=local -except=manifest -except=vsphere -only=vsphere-iso-base $(ABSOLUTE_PACKER_VAR_FILES) packer/ova/packer-node.json
+	packer build $(PACKER_NODE_FLAGS) -var-file="packer/ova/packer-common.json" -var-file="$(abspath packer/ova/$(subst build-node-ova-vsphere-base-,,$@).json)" -var-file="packer/ova/vsphere.json" -except=local -except=manifest -except=vsphere -only=vsphere-iso-base $(ABSOLUTE_PACKER_VAR_FILES) packer/ova/packer-node.json
 
 .PHONY: $(NODE_OVA_VSPHERE_CLONE_BUILD_TARGETS)
 $(NODE_OVA_VSPHERE_CLONE_BUILD_TARGETS): deps-ova
-	packer build $(PACKER_NODE_FLAGS) -var-file="packer/ova/packer-common.json" -var-file="$(abspath packer/ova/$(subst build-node-ova-vsphere-clone-,,$@).json)" -var-file="packer/ova/vsphere.json" -except=esx -except=local -only=vsphere-clone $(ABSOLUTE_PACKER_VAR_FILES) packer/ova/packer-node.json
+	packer build $(PACKER_NODE_FLAGS) -var-file="packer/ova/packer-common.json" -var-file="$(abspath packer/ova/$(subst build-node-ova-vsphere-clone-,,$@).json)" -var-file="packer/ova/vsphere.json" -except=local -only=vsphere-clone $(ABSOLUTE_PACKER_VAR_FILES) packer/ova/packer-node.json
 
 .PHONY: $(HAPROXY_OVA_LOCAL_BUILD_TARGETS)
 $(HAPROXY_OVA_LOCAL_BUILD_TARGETS): deps-ova
-	packer build $(PACKER_HAPROXY_FLAGS) -var-file="packer/ova/packer-common.json" -var-file="$(abspath packer/ova/$(subst build-haproxy-ova-local-,,$@).json)" -except=esx -except=vsphere -only=vmware-iso $(ABSOLUTE_PACKER_VAR_FILES) packer/ova/packer-haproxy.json
+	packer build $(PACKER_HAPROXY_FLAGS) -var-file="packer/ova/packer-common.json" -var-file="$(abspath packer/ova/$(subst build-haproxy-ova-local-,,$@).json)"  -except=vsphere -only=vmware-iso $(ABSOLUTE_PACKER_VAR_FILES) packer/ova/packer-haproxy.json
 
 .PHONY: $(HAPROXY_OVA_LOCAL_VALIDATE_TARGETS)
 $(HAPROXY_OVA_LOCAL_VALIDATE_TARGETS): deps-ova
-	packer validate $(PACKER_HAPROXY_FLAGS) -var-file="packer/ova/packer-common.json" -var-file="$(abspath packer/ova/$(subst validate-haproxy-ova-local-,,$@).json)" -except=esx -except=vsphere -only=vmware-iso $(ABSOLUTE_PACKER_VAR_FILES) packer/ova/packer-haproxy.json
-
-.PHONY: $(HAPROXY_OVA_ESX_BUILD_TARGETS)
-$(HAPROXY_OVA_ESX_BUILD_TARGETS): deps-ova
-	packer build $(PACKER_HAPROXY_FLAGS) -var-file="packer/ova/packer-common.json" -var-file="$(abspath packer/ova/$(subst build-haproxy-ova-esx-,,$@).json)" -var-file="packer/ova/esx.json" -except=local -except=vsphere -only=vmware-iso $(ABSOLUTE_PACKER_VAR_FILES) packer/ova/packer-haproxy.json
+	packer validate $(PACKER_HAPROXY_FLAGS) -var-file="packer/ova/packer-common.json" -var-file="$(abspath packer/ova/$(subst validate-haproxy-ova-local-,,$@).json)"  -except=vsphere -only=vmware-iso $(ABSOLUTE_PACKER_VAR_FILES) packer/ova/packer-haproxy.json
 
 .PHONY: $(HAPROXY_OVA_VSPHERE_BUILD_TARGETS)
 $(HAPROXY_OVA_VSPHERE_BUILD_TARGETS): deps-ova
-	packer build $(PACKER_HAPROXY_FLAGS) -var-file="packer/ova/packer-common.json" -var-file="$(abspath packer/ova/$(subst build-haproxy-ova-vsphere-,,$@).json)" -var-file="packer/ova/vsphere.json" -except=esx -except=local -only=vsphere-iso $(ABSOLUTE_PACKER_VAR_FILES) -only=vsphere packer/ova/packer-haproxy.json
+	packer build $(PACKER_HAPROXY_FLAGS) -var-file="packer/ova/packer-common.json" -var-file="$(abspath packer/ova/$(subst build-haproxy-ova-vsphere-,,$@).json)" -var-file="packer/ova/vsphere.json" -except=local -only=vsphere-iso $(ABSOLUTE_PACKER_VAR_FILES) -only=vsphere packer/ova/packer-haproxy.json
 
 .PHONY: $(AMI_BUILD_TARGETS)
 $(AMI_BUILD_TARGETS): deps-ami
@@ -417,6 +426,22 @@ $(RAW_BUILD_TARGETS): deps-raw
 $(RAW_VALIDATE_TARGETS): deps-raw
 	packer validate $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/raw/$(subst validate-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) -except=flatcar packer/raw/packer.json
 
+.PHONY: $(OCI_BUILD_TARGETS)
+$(OCI_BUILD_TARGETS): deps-oci
+	packer build $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/oci/$(subst build-oci-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/oci/packer.json
+
+.PHONY: $(OCI_VALIDATE_TARGETS)
+$(OCI_VALIDATE_TARGETS): deps-oci
+	packer validate $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/oci/$(subst validate-oci-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/oci/packer.json
+
+.PHONY: $(VBOX_BUILD_TARGETS)
+$(VBOX_BUILD_TARGETS): deps-vbox
+	packer build $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="packer/vbox/packer-common.json" -var-file="$(abspath packer/vbox/$(subst build-vbox-,,$@).json)" -only=virtualbox-iso $(ABSOLUTE_PACKER_VAR_FILES) packer/vbox/packer-$(if $(findstring windows,$@),windows).json
+
+.PHONY: $(VBOX_VALIDATE_TARGETS)
+$(VBOX_VALIDATE_TARGETS): deps-vbox
+	packer validate $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="packer/vbox/packer-common.json" -var-file="$(abspath packer/vbox/$(subst validate-vbox-,,$@).json)" -only=virtualbox-iso $(ABSOLUTE_PACKER_VAR_FILES) packer/vbox/packer-$(if $(findstring windows,$@),windows).json
+
 
 ## --------------------------------------
 ## Dynamic clean targets
@@ -436,10 +461,15 @@ QEMU_CLEAN_TARGETS := $(subst build-,clean-,$(QEMU_BUILD_TARGETS))
 $(QEMU_CLEAN_TARGETS):
 	rm -fr output/$(subst clean-qemu-,,$@)-kube*
 
-RAW_CLEAN_TARGETS := $(subst build-,clean-,$(RAW_CLEAN_TARGETS))
+RAW_CLEAN_TARGETS := $(subst build-,clean-,$(RAW_BUILD_TARGETS))
 .PHONY: $(RAW_CLEAN_TARGETS)
 $(RAW_CLEAN_TARGETS):
 	rm -fr output/$(subst clean-raw-,,$@)-kube*
+
+VBOX_CLEAN_TARGETS := $(subst build-,clean-,$(VBOX_BUILD_TARGETS))
+.PHONY: $(VBOX_CLEAN_TARGETS)
+$(VBOX_CLEAN_TARGETS):
+	rm -fr output/$(subst clean-vbox-,,$@)-kube*
 
 ## --------------------------------------
 ## Document dynamic build targets
@@ -475,7 +505,6 @@ build-azure-sig-ubuntu-2004-gen2: ## Builds Ubuntu 20.04 Gen2 managed image in S
 build-azure-vhds: $(AZURE_BUILD_VHD_TARGETS) ## Builds all Azure VHDs
 build-azure-sigs: $(AZURE_BUILD_SIG_TARGETS) $(AZURE_BUILD_SIG_GEN2_TARGETS) ## Builds all Azure Shared Image Gallery images
 
-
 build-do-ubuntu-1804: ## Builds Ubuntu 18.04 DigitalOcean Snapshot
 build-do-ubuntu-2004: ## Builds Ubuntu 20.04 DigitalOcean Snapshot
 build-do-centos-7: ## Builds Centos 7 DigitalOcean Snapshot
@@ -495,15 +524,6 @@ build-node-ova-local-windows-2019: ## Builds for Windows Server 2019 Node OVA w 
 build-node-ova-local-windows-2004: ## Builds for Windows Server 2004 SAC Node OVA w local hypervisor
 build-node-ova-local-all: $(NODE_OVA_LOCAL_BUILD_TARGETS) ## Builds all Node OVAs w local hypervisor
 build-haproxy-ova-local-photon-3: ## Builds Photon 3 HAProxy OVA w local hypervisor
-
-build-node-ova-esx-centos-7: ## Builds CentOS 7 Node OVA w remote hypervisor
-build-node-ova-esx-photon-3: ## Builds Photon 3 Node OVA w remote hypervisor
-build-node-ova-esx-rhel-7: ## Builds RHEL 7 Node OVA w remote hypervisor
-build-node-ova-esx-rockylinux-8: ## Builds RockyLinux 8 Node OVA w remote hypervisor
-build-node-ova-esx-ubuntu-1804: ## Builds Ubuntu 18.04 Node OVA w remote hypervisor
-build-node-ova-esx-ubuntu-2004: ## Builds Ubuntu 20.04 Node OVA w remote hypervisor
-build-node-ova-esx-all: $(NODE_OVA_ESX_BUILD_TARGETS) ## Builds all Node OVAs w remote hypervisor
-build-haproxy-ova-esx-photon-3: ## Builds Photon 3 HAProxy OVA w remote hypervisor
 
 build-node-ova-vsphere-centos-7: ## Builds CentOS 7 Node OVA and template on vSphere
 build-node-ova-vsphere-photon-3: ## Builds Photon 3 Node OVA and template on vSphere
@@ -535,7 +555,6 @@ build-node-ova-vsphere-base-ubuntu-1804: ## Builds base Ubuntu 18.04 Node OVA an
 build-node-ova-vsphere-base-ubuntu-2004: ## Builds base Ubuntu 20.04 Node OVA and template on vSphere
 build-node-ova-vsphere-base-all: $(NODE_OVA_VSPHERE_BASE_BUILD_TARGETS) ## Builds all base Node OVAs and templates on vSphere
 
-
 build-node-ova-local-vmx-photon-3: ## Builds Photon 3 Node OVA from VMX file w local hypervisor
 build-node-ova-local-vmx-centos-7: ## Builds Centos 7 Node OVA from VMX file w local hypervisor
 build-node-ova-local-vmx-rhel-7: ## Builds RHEL 7 Node OVA from VMX file w local hypervisor
@@ -555,12 +574,22 @@ build-qemu-ubuntu-1804: ## Builds Ubuntu 18.04 QEMU image
 build-qemu-ubuntu-2004: ## Builds Ubuntu 20.04 QEMU image
 build-qemu-ubuntu-2004-efi: ## Builds Ubuntu 20.04 QEMU image that EFI boots
 build-qemu-centos-7: ## Builds CentOS 7 QEMU image
+build-qemu-rhel-8: ## Builds RHEL 8 QEMU image
+build-qemu-rockylinux-8: ## Builds Rocky 8 QEMU image
 build-qemu-all: $(QEMU_BUILD_TARGETS) ## Builds all Qemu images
 
 build-raw-ubuntu-1804: ## Builds Ubuntu 18.04 RAW image
 build-raw-ubuntu-2004: ## Builds Ubuntu 20.04 RAW image
 build-raw-ubuntu-2004-efi: ## Builds Ubuntu 20.04 RAW image that EFI boots
 build-raw-all: $(RAW_BUILD_TARGETS) ## Builds all RAW images
+
+build-oci-ubuntu-1804: ## Builds the OCI ubuntu-1804 image
+build-oci-ubuntu-2004: ## Builds the OCI ubuntu-2004 image
+build-oci-oracle-linux-8: ## Builds the OCI Oracle Linux 8.x image
+build-oci-all: $(OCI_BUILD_TARGETS) ## Builds all OCI image
+
+build-vbox-windows-2019: ## Builds for Windows Server 2019 Node VirtualBox w local hypervisor
+build-vbox-all: $(VBOX_BUILD_TARGETS) ## Builds all Qemu images
 
 ## --------------------------------------
 ## Document dynamic validate targets
@@ -593,14 +622,14 @@ validate-azure-sig-ubuntu-1804-gen2: ## Validates Ubuntu 18.04 Azure managed ima
 validate-azure-sig-ubuntu-2004-gen2: ## Validates Ubuntu 20.04 Azure managed image in Shared Image Gallery Packer config
 validate-azure-all: $(AZURE_VALIDATE_SIG_TARGETS) $(AZURE_VALIDATE_VHD_TARGETS) ## Validates all VHD images Azure Packer config
 
-validate-do-ubuntu-1804: ## Valdiates Ubuntu 18.04 DigitalOcean Snapshot Packer config
-validate-do-ubuntu-2004: ## Valdiates Ubuntu 20.04 DigitalOcean Snapshot Packer config
-validate-do-centos-7: ## Valdiates Centos 7 DigitalOcean Snapshot Packer config
-validate-do-all: $(DO_VALIDATE_TARGETS) ## Valdiates all DigitalOcean Snapshot Packer config
+validate-do-ubuntu-1804: ## Validates Ubuntu 18.04 DigitalOcean Snapshot Packer config
+validate-do-ubuntu-2004: ## Validates Ubuntu 20.04 DigitalOcean Snapshot Packer config
+validate-do-centos-7: ## Validates Centos 7 DigitalOcean Snapshot Packer config
+validate-do-all: $(DO_VALIDATE_TARGETS) ## Validates all DigitalOcean Snapshot Packer config
 
-validate-gce-ubuntu-1804: ## Valdiates Ubuntu 18.04 GCE Snapshot Packer config
-validate-gce-ubuntu-2004: ## Valdiates Ubuntu 20.04 GCE Snapshot Packer config
-validate-gce-all: $(GCE_VALIDATE_TARGETS) ## Valdiates all GCE Snapshot Packer config
+validate-gce-ubuntu-1804: ## Validates Ubuntu 18.04 GCE Snapshot Packer config
+validate-gce-ubuntu-2004: ## Validates Ubuntu 20.04 GCE Snapshot Packer config
+validate-gce-all: $(GCE_VALIDATE_TARGETS) ## Validates all GCE Snapshot Packer config
 
 validate-node-ova-local-centos-7: ## Validates CentOS 7 Node OVA Packer config w local hypervisor
 validate-node-ova-local-photon-3: ## Validates Photon 3 Node OVA Packer config w local hypervisor
@@ -633,12 +662,22 @@ validate-qemu-ubuntu-1804: ## Validates Ubuntu 18.04 QEMU image packer config
 validate-qemu-ubuntu-2004: ## Validates Ubuntu 20.04 QEMU image packer config
 validate-qemu-ubuntu-2004-efi: ## Validates Ubuntu 20.04 QEMU EFI image packer config
 validate-qemu-centos-7: ## Validates CentOS 7 QEMU image packer config
+validate-qemu-rhel-8: ## Validates RHEL 8 QEMU image
+validate-qemu-rockylinux-8: ## Validates Rocky Linux 8 QEMU image packer config
 validate-qemu-all: $(QEMU_VALIDATE_TARGETS) validate-qemu-flatcar ## Validates all Qemu Packer config
 
 validate-raw-ubuntu-1804: ## Validates Ubuntu 18.04 RAW image packer config
 validate-raw-ubuntu-2004: ## Validates Ubuntu 20.04 RAW image packer config
 validate-raw-ubuntu-2004-efi: ## Validates Ubuntu 20.04 RAW EFI image packer config
 validate-raw-all: $(RAW_VALIDATE_TARGETS) ## Validates all RAW Packer config
+
+validate-oci-ubuntu-1804: ## Validates the OCI ubuntu-1804 image packer config
+validate-oci-ubuntu-2004: ## Validates the OCI ubuntu-2004 image packer config
+validate-oci-oracle-linux-8: ## Validates the OCI Oracle Linux 8.x image packer config
+validate-oci-all: $(OCI_VALIDATE_TARGETS) ## Validates all OCI image packer config
+
+validate-vbox-windows-2019: ## Validates Windows Server 2019 Node VirtualBox Packer config w local hypervisor
+validate-vbox-all: $(VBOX_VALIDATE_TARGETS) ## Validates all RAW Packer config
 
 validate-all: validate-ami-all \
 	validate-azure-all \
@@ -648,7 +687,9 @@ validate-all: validate-ami-all \
 	validate-haproxy-ova-local-photon-3 \
 	validate-qemu-flatcar \
 	validate-qemu-all \
-	validate-raw-all
+	validate-raw-all \
+	validate-oci-all \
+	validate-vbox-all
 validate-all: ## Validates the Packer config for all build targets
 
 ## --------------------------------------
@@ -657,7 +698,7 @@ validate-all: ## Validates the Packer config for all build targets
 ##@ Cleaning
 .PHONY: clean
 clean: ## Removes all image output directories and packer image cache
-clean: $(NODE_OVA_LOCAL_CLEAN_TARGETS) $(HAPROXY_OVA_LOCAL_CLEAN_TARGETS) $(QEMU_CLEAN_TARGETS) clean-packer-cache
+clean: $(NODE_OVA_LOCAL_CLEAN_TARGETS) $(HAPROXY_OVA_LOCAL_CLEAN_TARGETS) $(QEMU_CLEAN_TARGETS) $(VBOX_CLEAN_TARGETS) clean-packer-cache
 
 .PHONY: clean-ova
 clean-ova: ## Removes all ova image output directories (see NOTE at top of help)
@@ -670,6 +711,10 @@ clean-qemu: $(QEMU_CLEAN_TARGETS)
 .PHONY: clean-raw
 clean-raw: ## Removes all raw image output directories (see NOTE at top of help)
 clean-raw: $(RAW_CLEAN_TARGETS)
+
+.PHONY: clean-vbox
+clean-vbox: ## Removes all vbox image output directories (see NOTE at top of help)
+clean-vbox: $(VBOX_CLEAN_TARGETS)
 
 .PHONY: clean-packer-cache
 clean-packer-cache: ## Removes the packer cache

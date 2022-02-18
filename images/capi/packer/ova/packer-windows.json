@@ -67,7 +67,6 @@
         "./packer/ova/windows/disable-network-discovery.cmd",
         "./packer/ova/windows/disable-winrm.ps1",
         "./packer/ova/windows/enable-winrm.ps1",
-        "./packer/ova/windows/install-vm-tools.cmd",
         "./packer/ova/windows/sysprep.ps1"
       ],
       "folder": "{{user `folder`}}",
@@ -115,6 +114,7 @@
         "build_type": "node",
         "containerd_version": "{{user `containerd_version`}}",
         "custom_role": "{{user `custom_role`}}",
+        "debug_tools": "{{user `debug_tools`}}",
         "disable_hypervisor": "{{user `disable_hypervisor`}}",
         "disk_size": "{{user `disk_size`}}",
         "distro_arch": "{{user `distro_arch` }}",
@@ -136,19 +136,6 @@
       "output": "{{user `output_dir`}}/packer-manifest.json",
       "strip_path": true,
       "type": "manifest"
-    },
-    {
-      "except": [
-        "file"
-      ],
-      "inline": [
-        "cd {{user `output_dir`}}",
-        "tar xf {{user `build_version`}}.ova",
-        "rm {{user `build_version`}}.ova",
-        "../../hack/image-build-ova.py --stream_vmdk --node --vmx {{user `vmx_version`}} --eula ../../hack/ovf_eula.txt --ovf_template ../../hack/ovf_template.xml  --vmdk_file {{user `build_version`}}-disk1.vmdk"
-      ],
-      "name": "esx",
-      "type": "shell-local"
     },
     {
       "except": [
@@ -231,6 +218,12 @@
         "runtime": "{{user `runtime`}}"
       },
       "version": "{{user `goss_version`}}"
+    },
+    {
+      "inline": [
+        "rm -Force -Recurse C:\\var\\log\\kubelet\\*"
+      ],
+      "type": "powershell"
     }
   ],
   "variables": {

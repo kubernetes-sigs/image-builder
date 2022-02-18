@@ -68,6 +68,30 @@ command:
 {{end}} #End linux only 
 
 {{ if eq .Vars.OS "windows" }} # Windows
+  automatic updates set to notify:
+    exit-status: 0
+    exec: powershell -command "(Get-ItemPropertyValue 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU' -name AUOptions) -eq '2'"
+    stdout:
+    - "True"
+    timeout: 30000
+  automatic updates set to notify with correct type:
+    exit-status: 0
+    exec: powershell -command "(Get-ItemPropertyValue 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU' -name AUOptions).GetType().Name -eq 'Int32'"
+    stdout:
+    - "True"
+    timeout: 30000
+  automatic updates are disabled:
+    exit-status: 0
+    exec: powershell -command "(Get-ItemPropertyValue 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU' -name NoAutoUpdate) -eq '1'"
+    stdout:
+    - "True"
+    timeout: 30000
+  automatic updates are disabled with correct type:
+    exit-status: 0
+    exec: powershell -command "(Get-ItemPropertyValue 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU' -name NoAutoUpdate).GetType().Name -eq 'Int32'"
+    stdout:
+    - "True"
+    timeout: 30000
   kubectl version --client:
     exit-status: 0
     stdout:
@@ -127,6 +151,13 @@ command:
     exec: powershell -command "(Get-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Services\hns\State' -Name EnableCompartmentNamespace).EnableCompartmentNamespace -eq 1"
     stdout:
     - True
+    timeout: 30000
+  Windows Port Range is Expanded:
+    exit-status: 0
+    exec: netsh int ipv4 show dynamicportrange tcp
+    stdout:
+    - "Start Port      : 33000"
+    - "Number of Ports : 32536"
     timeout: 30000
 {{end}}
 

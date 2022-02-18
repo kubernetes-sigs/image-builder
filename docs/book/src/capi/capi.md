@@ -20,6 +20,7 @@ If any needed binaries are not present, they can be installed to `images/capi/.b
 * [GCP](./providers/gcp.md)
 * [OpenStack](./providers/openstack.md)
 * [Raw](./providers/raw.md)
+* [VirtualBox](./providers/virtualbox.md)
 * [vSphere](./providers/vsphere.md)
 
 ## Make targets
@@ -39,7 +40,7 @@ The `images/capi/packer/config` directory includes several JSON files that defin
 | `packer/config/containerd.json` | The version of containerd to install and customizations specific to the containerd runtime |
 | `packer/config/kubernetes.json` | The version of Kubernetes to install. The default version is kept at n-2. See [Customization](#customization) section below for overriding this value |
 
-Due to OS differences, Windows images has additional configuration in the `packer/config/windows` folder.  See [Windows documentation](windows/windows.md) for more details.
+Due to OS differences, Windows images has additional configuration in the `packer/config/windows` folder.  See [Windows documentation](./windows/windows.md) for more details.
 
 ### Customization
 
@@ -55,6 +56,10 @@ Several variables can be used to customize the image build.
 | `extra_rpms` | This can be set to a space delimited string containing the names of additional RPM packages to install | `""` |
 | `http_proxy` | This can be set to URL to use as an HTTP proxy during the Ansible stage of building | `""` |
 | `https_proxy` | This can be set to URL to use as an HTTPS proxy during the Ansible stage of building | `""` |
+| `kubernetes_deb_version` | This can be set to the version of kubernetes which will be installed in debian based image | `"1.21.9-00"` |
+| `kubernetes_rpm_version` | This can be set to the version of kubernetes which will be installed in rpm based image | `"1.21.9-0"` |
+| `kubernetes_semver` | This can be set to semantic verion of kubernetes which will be installed in the image | `"v1.21.9"` |
+| `kubernetes_series` | This can be set to series version kubernetes which will be installed in the image | `"v1.21"` |
 | `no_proxy` | This can be set to a comma-delimited list of domains that should be exluded from proxying during the Ansible stage of building | `""` |
 | `reenable_public_repos` | If set to `"false"`, the package repositories disabled by setting `disable_public_repos` will remain disabled at the end of the build. | `"true"` |
 | `remove_extra_repos` | If set to `"true"`, the package repositories added to the OS through the use of `extra_repos` will be removed at the end of the build. | `"false"` |
@@ -65,7 +70,7 @@ Several variables can be used to customize the image build.
 | `additional_registry_images` | Set this to `"true"` to load addtional container images using their registry url. `additional_registry_images_list` var should be set to a comma seperated string of registry urls of the container images. | `"false"` |
 | `additional_executables` | Set this to `"true"` to load addtional executables from a url. `additional_executables_list` var should be set to a comma seperated string of urls. `additional_executables_destination_path` should be set to the destination path of the executables. | `"false"` |
 | `ansible_user_vars` | A space delimited string that the user can pass to use in the ansible roles  | `""` |
-| `containerd_config_file` | Custom containerd config file a user can pass to override the default. Use `ansible_user_vars` to pass this var  | `""` |
+| `containerd_config_file` | Custom containerd config file a user can pass to override the default. Use `ansible_user_vars` to pass this var | `""` |
 
 The variables found in `packer/config/*.json` or `packer/<provider>/*.json` should not need to be modified directly. For customization it is better to create a JSON file with your changes and provide it via the `PACKER_VAR_FILES` environment variable. Variables set in this file will override any previous values. Multiple files can be passed via `PACKER_VAR_FILES`, with the last file taking precedence over any others.
 

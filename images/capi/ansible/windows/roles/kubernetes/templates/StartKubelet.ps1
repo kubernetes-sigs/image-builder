@@ -15,12 +15,6 @@
 # From https://github.com/kubernetes-sigs/sig-windows-tools/blob/master/kubeadm/scripts/PrepareNode.ps1
 $FileContent = Get-Content -Path "/var/lib/kubelet/kubeadm-flags.env"
 $kubeAdmArgs = $FileContent.TrimStart('KUBELET_KUBEADM_ARGS=').Trim('"')
-{% raw %}
-$netId = docker network ls -f name=host --format "{{ .ID }}"
-{% endraw %}
-if ($netId.Length -lt 1) {
-    docker network create -d nat host
-}
 
 $args = "--cert-dir=$env:SYSTEMDRIVE/var/lib/kubelet/pki",
         "--config=$env:SYSTEMDRIVE/var/lib/kubelet/config.yaml",
@@ -31,12 +25,19 @@ $args = "--cert-dir=$env:SYSTEMDRIVE/var/lib/kubelet/pki",
         "--enable-debugging-handlers",
         "--cgroups-per-qos=false",
         "--enforce-node-allocatable=`"`"",
-        "--network-plugin=cni",
-        "--resolv-conf=`"`"",
-        "--log-dir=$env:SYSTEMDRIVE/var/log/kubelet",
-        "--logtostderr=false",
-       	"--image-pull-progress-deadline=20m"
+        "--resolv-conf=`"`""
+
+{% if runtime == "docker-ee" and kubernetes_semver is version('v1.24.0', '<') %}
+{% raw %}
+$netId = docker network ls -f name=host --format "{{ .ID }}"
+{% endraw %}
+if ($netId.Length -lt 1) {
+    docker network create -d nat host
+}
+
+$args += "--image-pull-progress-deadline=20m",
+        "--network-plugin=cni"
+{% endif %}
 
 $kubeletCommandLine = "{{ kubernetes_install_path }}\kubelet.exe " + ($args -join " ") + " $kubeAdmArgs"
-
 Invoke-Expression $kubeletCommandLine
