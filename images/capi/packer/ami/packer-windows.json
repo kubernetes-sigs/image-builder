@@ -53,6 +53,7 @@
         "kubernetes_version": "{{user `kubernetes_semver`}}",
         "source_ami": "{{user `source_ami`}}"
       },
+      "temporary_security_group_source_cidrs": "{{ user `temporary_security_group_source_cidrs` }}",
       "type": "amazon-ebs",
       "user_data_file": "packer/ami/scripts/winrm_bootstrap.txt",
       "vpc_id": "{{ user `vpc_id` }}",
@@ -182,6 +183,7 @@
     "snapshot_groups": "all",
     "snapshot_users": "",
     "subnet_id": "",
+    "temporary_security_group_source_cidrs": "",
     "volume_size": "40",
     "vpc_id": "",
     "windows_service_manager": null,

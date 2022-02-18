@@ -54,6 +54,7 @@
         "kubernetes_version": "{{user `kubernetes_semver`}}",
         "source_ami": "{{user `source_ami`}}"
       },
+      "temporary_security_group_source_cidrs": "{{ user `temporary_security_group_source_cidrs` }}",
       "type": "amazon-ebs",
       "vpc_id": "{{ user `vpc_id` }}"
     }
@@ -186,6 +187,7 @@
     "snapshot_groups": "all",
     "snapshot_users": "",
     "subnet_id": "",
+    "temporary_security_group_source_cidrs": "",
     "throughput": "125",
     "volume_size": "8",
     "vpc_id": ""
