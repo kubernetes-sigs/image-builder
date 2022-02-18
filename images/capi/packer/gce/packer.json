@@ -56,7 +56,9 @@
       "remote_folder": "{{user `goss_remote_folder`}}",
       "remote_path": "{{user `goss_remote_path`}}",
       "skip_install": "{{user `goss_skip_install`}}",
-      "tests": ["{{user `goss_tests_dir`}}"],
+      "tests": [
+        "{{user `goss_tests_dir`}}"
+      ],
       "type": "goss",
       "url": "{{user `goss_url`}}",
       "use_sudo": true,
