@@ -79,6 +79,7 @@ deps-gce: ## Installs/checks dependencies for GCE builds
 deps-gce:
 	hack/ensure-ansible.sh
 	hack/ensure-packer.sh
+	hack/ensure-goss.sh
 
 .PHONY: deps-ova
 deps-ova: ## Installs/checks dependencies for OVA builds
