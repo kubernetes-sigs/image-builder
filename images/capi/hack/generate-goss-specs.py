@@ -43,7 +43,8 @@ def generate_goss(provider, system, versions, runtime, dryrun=False, save=False)
             'kubernetes_cni_rpm_version': versions['cni_rpm'],
             'kubernetes_cni_source_type': 'pkg',
             'runtime': runtime,
-            'pause_image': versions['pause']}
+            'pause_image': versions['pause'],
+            'ssh_source_url': versions['ssh_url']}
 
 
     # Build command
@@ -112,6 +113,9 @@ def main():
 
     docker = read_json_file(os.path.join(root_path, 'packer', 'config', 'windows', 'docker.json'))
     versions['docker'] = docker['docker_ee_version']
+
+    wincommon = read_json_file(os.path.join(root_path, 'packer', 'config', 'windows', 'common.json'))
+    versions['ssh_url'] = wincommon['ssh_source_url']
 
     common = read_json_file(os.path.join(root_path, 'packer', 'config', 'common.json'))
     versions['pause'] = common['pause_image']

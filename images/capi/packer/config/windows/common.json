@@ -9,6 +9,7 @@
   "nssm_url": "https://azurek8scishared.blob.core.windows.net/nssm/nssm.exe",
   "prepull": "true",
   "runtime": "docker-ee",
+  "ssh_source_url": "",
   "windows_service_manager": "nssm",
   "windows_updates_categories": "",
   "windows_updates_kbs": "",

@@ -201,4 +201,25 @@ command:
     - "ICcgDomainAuthCredentials"
     timeout: 30000
 {{end}}
+
+{{ if ne .Vars.ssh_source_url "" }}
+  Check permission of OpenSSH directory for SYSTEM:
+    exec: powershell -command "((Get-Acl 'C:\Program Files\OpenSSH').Access | Where-Object{$_.IdentityReference -eq 'NT AUTHORITY\SYSTEM' -and $_.FileSystemRights -eq 'FullControl'}) -ne $null"
+    exit-status: 0
+    stdout:
+    - True
+    timeout: 30000
+  Check permission of OpenSSH directory for Administrators:
+    exec: powershell -command "((Get-Acl 'C:\Program Files\OpenSSH').Access | Where-Object{$_.IdentityReference -eq 'BUILTIN\Administrators' -and $_.FileSystemRights -eq 'FullControl'}) -ne $null"
+    exit-status: 0
+    stdout:
+    - True
+    timeout: 30000
+  Check permission of OpenSSH directory for Users:
+    exec: powershell -command "((Get-Acl 'C:\Program Files\OpenSSH').Access | Where-Object{$_.IdentityReference -eq 'BUILTIN\Users' -and $_.FileSystemRights -eq 'ReadAndExecute, Synchronize'}) -eq $null"
+    exit-status: 0
+    stdout:
+    - True
+    timeout: 30000
+{{end}}
 {{end}} #end windows
