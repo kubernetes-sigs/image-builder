@@ -7,14 +7,14 @@ service:
     enabled: false
     running: false
   kubelet:
-    enabled: true
+    enabled: false
     running: false
   conntrackd:
     enabled: false
     running: false
   auditd:
-    enabled: true
-    running: true
+    enabled: false
+    running: false
   chronyd:
     enabled: true
     running: true
