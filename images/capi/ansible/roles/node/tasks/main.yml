@@ -71,11 +71,11 @@
     enabled: false
   when: ansible_os_family != "Debian" and ansible_os_family != "Flatcar"
 
-- name: Ensure auditd is stopped and disabled
+- name: Ensure auditd is running and comes on at reboot
   service:
     name: auditd
-    state: stopped
-    enabled: false
+    state: started
+    enabled: yes
   when: ansible_os_family != "Flatcar"
 
 - name: configure auditd rules for containerd

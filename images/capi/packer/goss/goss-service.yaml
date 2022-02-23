@@ -13,8 +13,8 @@ service:
     enabled: false
     running: false
   auditd:
-    enabled: false
-    running: false
+    enabled: true
+    running: true
   chronyd:
     enabled: true
     running: true
