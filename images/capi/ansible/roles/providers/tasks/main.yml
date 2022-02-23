@@ -22,9 +22,6 @@
   when: packer_builder_type is search('vmware') or
     packer_builder_type is search('vsphere')
 
-- include_tasks: qemu.yml
-  when: packer_builder_type | regex_search('qemu')
-
 - include_tasks: googlecompute.yml
   when: packer_builder_type.startswith('googlecompute')
 
