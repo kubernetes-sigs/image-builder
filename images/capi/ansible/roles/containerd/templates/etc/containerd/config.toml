@@ -11,11 +11,15 @@ imports = ["/etc/containerd/conf.d/*.toml"]
 [plugins]
   [plugins."io.containerd.grpc.v1.cri"]
     sandbox_image = "{{ pause_image }}"
-  {% if kubernetes_semver is version('v1.21.0', '>=') %}
+{% if kubernetes_semver is version('v1.21.0', '>=') %}
   [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc]
     runtime_type = "io.containerd.runc.v2"
   [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options]
     SystemdCgroup = true
-  {% endif %}
+{% endif %}
+{% if packer_builder_type.startswith('azure') %}
+  [plugins."io.containerd.grpc.v1.cri".registry.headers]
+    X-Meta-Source-Client = ["azure/capz"]
+{% endif %}
 
 {{containerd_additional_settings | b64decode}}

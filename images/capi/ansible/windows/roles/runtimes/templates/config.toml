@@ -29,5 +29,9 @@ imports = ["{{ containerd_conf_dir }}\\conf.d\\*.toml"]
     [plugins."io.containerd.grpc.v1.cri".cni]
       bin_dir = "{{ plugin_bin_dir }}"
       conf_dir = "{{ plugin_conf_dir }}"
+{% if packer_builder_type.startswith('azure') %}
+    [plugins."io.containerd.grpc.v1.cri".registry.headers]
+      X-Meta-Source-Client = ["azure/capz"]
+{% endif %}
 
 {{containerd_additional_settings | b64decode}}
