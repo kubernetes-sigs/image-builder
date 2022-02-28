@@ -316,11 +316,11 @@ windows:
       exists: true
       filetype: directory
       contains:
-    c:/var/lib/kubelet/etc/kubernetes:
+    c:/etc/kubernetes:
       exists: true
       filetype: directory
       contains:
-    c:/var/lib/kubelet/etc/kubernetes/manifests:
+    c:/etc/kubernetes/manifests:
       exists: true
       filetype: directory
       contains:
