@@ -260,9 +260,15 @@ HAPROXY_OVA_VSPHERE_BUILD_NAMES		:=	$(addprefix haproxy-ova-vsphere-,$(PHOTON_VE
 
 AMI_BUILD_NAMES			   ?= ami-centos-7 ami-ubuntu-1804 ami-ubuntu-2004 ami-amazon-2 ami-flatcar ami-windows-2019 ami-windows-2004
 GCE_BUILD_NAMES			   ?= gce-ubuntu-1804 gce-ubuntu-2004
-AZURE_BUILD_VHD_NAMES	   ?= azure-vhd-ubuntu-1804 azure-vhd-ubuntu-2004 azure-vhd-centos-7 azure-vhd-windows-2019 azure-vhd-windows-2019-containerd azure-vhd-windows-2022-containerd
-AZURE_BUILD_SIG_NAMES	   ?= azure-sig-ubuntu-1804 azure-sig-ubuntu-2004 azure-sig-centos-7 azure-sig-windows-2019 azure-sig-windows-2019-containerd azure-sig-flatcar azure-sig-windows-2022-containerd
-AZURE_BUILD_SIG_GEN2_NAMES ?= azure-sig-ubuntu-1804-gen2 azure-sig-ubuntu-2004-gen2 azure-sig-centos-7-gen2
+
+# Make needs these lists to be space delimited, no quotes
+VHD_TARGETS := $(shell grep VHD_TARGETS azure_targets.sh | sed 's/VHD_TARGETS=//' | tr -d \")
+SIG_TARGETS := $(shell grep SIG_TARGETS azure_targets.sh | sed 's/SIG_TARGETS=//' | tr -d \")
+SIG_GEN2_TARGETS := $(shell grep SIG_GEN2_TARGETS azure_targets.sh | sed 's/SIG_GEN2_TARGETS=//' | tr -d \")
+AZURE_BUILD_VHD_NAMES	   ?= $(addprefix azure-vhd-,$(VHD_TARGETS))
+AZURE_BUILD_SIG_NAMES	   ?= $(addprefix azure-sig-,$(SIG_TARGETS))
+AZURE_BUILD_SIG_GEN2_NAMES ?= $(addsuffix -gen2,$(addprefix azure-sig-,$(SIG_GEN2_TARGETS)))
+
 OCI_BUILD_NAMES			   ?= oci-ubuntu-1804 oci-ubuntu-2004 oci-oracle-linux-8
 
 DO_BUILD_NAMES 			?=	do-centos-7 do-ubuntu-1804 do-ubuntu-2004
@@ -619,9 +625,10 @@ validate-azure-vhd-windows-2019: ## Validate Windows Server 2019 VHD image Azure
 validate-azure-vhd-windows-2019-containerd: ## Validate Windows Server 2019 VHD with containerd image Azure Packer config
 validate-azure-vhd-windows-2022-containerd: ## Validate Windows Server 2022 VHD with containerd image Azure Packer config
 validate-azure-vhd-windows-2004: ## Validate Windows Server 2004 SAC VHD image Azure Packer config
+validate-azure-sig-centos-7-gen2: ## Validates CentOS 7 Azure managed image in Shared Image Gallery Packer config
 validate-azure-sig-ubuntu-1804-gen2: ## Validates Ubuntu 18.04 Azure managed image in Shared Image Gallery Packer config
 validate-azure-sig-ubuntu-2004-gen2: ## Validates Ubuntu 20.04 Azure managed image in Shared Image Gallery Packer config
-validate-azure-all: $(AZURE_VALIDATE_SIG_TARGETS) $(AZURE_VALIDATE_VHD_TARGETS) ## Validates all VHD images Azure Packer config
+validate-azure-all: $(AZURE_VALIDATE_SIG_TARGETS) $(AZURE_VALIDATE_VHD_TARGETS) $(AZURE_VALIDATE_SIG_GEN2_TARGETS) ## Validates all images for Azure Packer config
 
 validate-do-ubuntu-1804: ## Validates Ubuntu 18.04 DigitalOcean Snapshot Packer config
 validate-do-ubuntu-2004: ## Validates Ubuntu 20.04 DigitalOcean Snapshot Packer config
