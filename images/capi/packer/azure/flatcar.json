@@ -5,7 +5,6 @@
   "distribution": "flatcar",
   "distribution_release": "{{env `FLATCAR_CHANNEL`}}",
   "distribution_version": "{{env `FLATCAR_CHANNEL`}}-{{env `FLATCAR_VERSION`}}",
-  "goss_entry_file": "goss/goss-flatcar.yaml",
   "image_offer": "flatcar-container-linux-free",
   "image_publisher": "kinvolk",
   "image_sku": "{{env `FLATCAR_CHANNEL`}}",

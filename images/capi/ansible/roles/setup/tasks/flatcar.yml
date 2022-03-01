@@ -57,3 +57,8 @@
     owner: root
     group: root
     mode: "0755"
+
+- name: Enable systemd-timesyncd unit
+  systemd:
+    enabled: yes
+    name: systemd-timesyncd.service
