@@ -37,7 +37,7 @@ func GetDistroByName(name string) (Distribution, error) {
 	if v, ok := Distributions[name]; ok {
 		return v, nil
 	}
-	return nil, fmt.Errorf("Unknown distro name: %s", name)
+	return nil, fmt.Errorf("unknown distro name %q", name)
 }
 
 func GetDistro(distro api.Distribution) (Distribution, error) {
