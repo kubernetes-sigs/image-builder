@@ -112,7 +112,7 @@ func getContext(cmd *cobra.Command, args []string) (*pkg.BuildContext, error) {
 
 	distro, err := distros.GetDistroByName(config.DistroName)
 	if err != nil {
-		return nil, fmt.Errorf("cannot find distro: %s", config.DistroName)
+		return nil, fmt.Errorf("cannot find distro %q: %w", config.DistroName, err)
 	}
 
 	// get the distribution details for the OS / Driver combo
