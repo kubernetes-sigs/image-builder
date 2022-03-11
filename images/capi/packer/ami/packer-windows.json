@@ -20,7 +20,8 @@
           "delete_on_termination": true,
           "device_name": "{{ user `root_device_name` }}",
           "volume_size": "{{ user `volume_size` }}",
-          "volume_type": "gp2"
+          "volume_type": "{{ user `volume_type` }}",
+          "throughput": "{{ user `throughput` }}"
         }
       ],
       "name": "{{user `build_name`}}",
@@ -187,6 +188,8 @@
     "subnet_id": "",
     "temporary_security_group_source_cidrs": "",
     "volume_size": "40",
+    "volume_type": "gp2",
+    "throughput": "",
     "vpc_id": "",
     "windows_service_manager": null,
     "windows_updates_kbs": null,
