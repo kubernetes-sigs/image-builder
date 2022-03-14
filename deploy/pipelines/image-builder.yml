@@ -24,7 +24,7 @@ stages:
     displayName: Build Docker image
     jobs:
       - ${{ each flavour in parameters.dockerFlavours }}:
-        - template: deploy/jobs/build-docker.yml
+        - template: /deploy/jobs/build-docker.yml
           parameters:
             containerRegistry: ${{ variables.containerRegistry }}
             dockerRegistryFqdn: ${{ variables.dockerRegistryFqdn }}
