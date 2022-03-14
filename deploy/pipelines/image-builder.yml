@@ -1,6 +1,7 @@
-
-# CI trigger on pushing to branches
-trigger: none
+trigger:
+  branches:
+    include:
+      - tags/*
 
 pool: Kubernetes Pool
 
