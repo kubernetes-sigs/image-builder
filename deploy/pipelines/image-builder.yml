@@ -1,0 +1,35 @@
+
+# CI trigger on pushing to branches
+trigger: none
+
+pool: Kubernetes Pool
+
+variables:
+  containerRegistry: acr-corp_locl_prd
+  dockerRegistryFqdn: loclcorp.azurecr.io
+
+parameters:
+  - name: dockerFlavours
+    type: object
+    default:
+      - name: ubuntu-x64
+        imageRepository: image-builder
+        dockerFile: ./images/capi/Dockerfile
+        tagPrefix: ubuntu-x64
+        jobName: Ubuntu_x64
+        buildContext: ./images/capi
+
+stages:
+  - stage: DockerBuild
+    displayName: Build Docker image
+    jobs:
+      - ${{ each flavour in parameters.dockerFlavours }}:
+        - template: deploy/jobs/build-docker.yml
+          parameters:
+            containerRegistry: ${{ variables.containerRegistry }}
+            dockerRegistryFqdn: ${{ variables.dockerRegistryFqdn }}
+            buildContext: ${{ flavour.buildContext }}
+            jobName: ${{ flavour.jobName }}
+            imageRepository: ${{ flavour.imageRepository }}
+            dockerfilePath: ${{ flavour.dockerFile }}
+            tagPrefix: ${{ flavour.tagPrefix }}

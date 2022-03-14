@@ -1,0 +1,75 @@
+parameters:
+  - name: containerRegistry
+    type: string
+  - name: dockerRegistryFqdn
+    type: string
+  - name: buildContext
+    type: string
+  - name: jobName
+    type: string
+  - name: imageRepository
+    type: string
+  - name: dockerfilePath
+    type: string
+  - name: tagPrefix
+    type: string
+
+jobs:
+  - job: ${{ parameters.jobName }}
+
+    variables:
+      - group: acr-build-variables
+      - name: tags
+        value: |
+          ${{parameters.tagPrefix}}-$(Build.BuildNumber)
+          ${{parameters.tagPrefix}}-$(short_hash)
+          $(current_tag)
+
+    steps:
+      - script: |
+          short_hash=`git rev-parse --short=7 HEAD`  ## At least 7 digits, more if needed for uniqueness
+          current_tag=`git tag --points-at HEAD | tr -s '\n' | head -1`
+          echo ""
+          echo "Full git hash:  $(Build.SourceVersion)"
+          echo "Short git hash: ${short_hash}"
+          echo "Tag: ${current_tag}"
+
+          # Store variables
+          echo "##vso[task.setvariable variable=short_hash]$short_hash"  ## Store variable for subsequent steps
+          echo "##vso[task.setvariable variable=current_tag]$current_tag"  ## Store variable for subsequent steps
+        workingDirectory: $(Build.SourcesDirectory)
+        displayName: Get Git short hash
+
+      - script: trivy fs --exit-code=1 --severity HIGH,CRITICAL .
+        displayName: Scan repository for vulnerabilities
+
+      - script: trivy config --severity HIGH,CRITICAL .
+        displayName: Scan Dockerfiles for vulnerabilities
+
+      - task: Docker@2
+        displayName: Login to ACR
+        inputs:
+          command: login
+          containerRegistry: ${{ parameters.containerRegistry }}
+
+      - task: Docker@2
+        displayName: Build Docker image
+        inputs:
+          buildContext: ${{ parameters.buildContext }}
+          command: build
+          repository: ${{ parameters.imageRepository }}
+          Dockerfile: ${{ parameters.dockerfilePath }}
+          tags: $(tags)
+          arguments: |
+            --build-arg PAT="$(azp-token)"
+
+      - script: trivy image --severity HIGH,CRITICAL ${{ parameters.dockerRegistryFqdn }}/${{ parameters.imageRepository }}:${{parameters.tagPrefix}}-$(short_hash)
+        displayName: Scan image built for vulnerabilities
+
+      - task: Docker@2
+        displayName: Push Docker image to registry
+        inputs:
+          command: push
+          repository: ${{ parameters.imageRepository }}
+          containerRegistry: ${{ parameters.containerRegistry }}
+          tags: $(tags)
