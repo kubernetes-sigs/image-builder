@@ -5,7 +5,7 @@ trigger: none
 pool: Kubernetes Pool
 
 variables:
-  containerRegistry: acr-corp_locl_prd
+  containerRegistry: acr-corp_locl_prd-loclcorp
   dockerRegistryFqdn: loclcorp.azurecr.io
 
 parameters:
