@@ -40,7 +40,7 @@ jobs:
         workingDirectory: $(Build.SourcesDirectory)
         displayName: Get Git short hash
 
-      - script: trivy fs --exit-code=1 --severity HIGH,CRITICAL .
+      - script: trivy fs --severity HIGH,CRITICAL .
         displayName: Scan repository for vulnerabilities
 
       - script: trivy config --severity HIGH,CRITICAL .
