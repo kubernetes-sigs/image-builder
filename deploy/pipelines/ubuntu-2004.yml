@@ -1,0 +1,61 @@
+trigger: none
+
+pool: Kubernetes Pool
+
+variables:
+
+  - group: cluster-api-image-builder-variables
+
+    # Azure DevOps build pool to use
+  - name: BUILD_POOL
+    value: "Kubernetes Pool"
+    # Dev container image URL to use. Should have Azure CLI, Packer and Ansible.
+  - name: CONTAINER_IMAGE
+    value: "loclcorp.azurecr.io/image-builder:latest"
+    # tenant ID to build the vhd
+  - name: AZURE_TENANT_ID_VHD
+    value: ""
+    # Service principal ID to build the vhd
+  - name: AZURE_CLIENT_ID_VHD
+    value: ""
+    # Service principal secret to build the vhd
+  - name: AZURE_CLIENT_SECRET_VHD
+    value: ""
+    # Subscription ID to build the vhd
+  - name: AZURE_SUBSCRIPTION_ID_VHD
+    value: ""
+    # tenant ID to PUT the SKU
+  - name: AZURE_TENANT_ID_SKU
+    value: ""
+    # Service principal ID to PUT the SKU
+  - name: AZURE_CLIENT_ID_SKU
+    value: ""
+    # Service principal secret to PUT the SKU
+  - name: AZURE_CLIENT_SECRET_SKU
+    value: ""
+    # the name of the publisher to create the sku for
+  - name: PUBLISHER
+    value: "FoodX Technologies"
+    # the name of the offer to create the sku for
+  - name: OFFER
+    value: ""
+    # the base template file to use for the sku
+  - name: SKU_TEMPLATE_FILE
+    value: /images/capi/packer/azure/sku-template.json
+
+parameters:
+  - name: imagesToBuild
+    type: object
+    default:
+      - name: ubuntu-2004
+        k8sVersion:
+        os: Ubuntu
+        osVersion: 2004
+
+stages:
+  - ${{ each build in parameters.imagesToBuild }}:
+    - template: /images/capi/packer/azure/.pipelines/stages.yaml
+      variables:
+        KUBERNETES_VERSION: ${{ build.k8sVersion }}
+        OS: ${{ build.os }}
+        OS_VERSION: ${{ build.osVersion }}
