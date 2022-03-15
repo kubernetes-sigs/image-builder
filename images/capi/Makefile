@@ -231,7 +231,7 @@ WINDOWS_VERSIONS		:=	windows-2019 windows-2004 windows-2022
 FLATCAR_CHANNEL ?= stable
 FLATCAR_VERSION ?= 2905.2.3
 ifeq ($(FLATCAR_VERSION),current)
-FLATCAR_VERSION := $(shell hack/image-grok-latest-flatcar-version.sh $(FLATCAR_CHANNEL))
+override FLATCAR_VERSION := $(shell hack/image-grok-latest-flatcar-version.sh $(FLATCAR_CHANNEL))
 endif
 
 export FLATCAR_CHANNEL FLATCAR_VERSION
