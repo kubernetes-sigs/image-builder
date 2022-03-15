@@ -469,6 +469,7 @@ build-azure-vhd-windows-2022-containerd: ## Builds for Windows Server 2022 with 
 build-azure-vhd-windows-2004: ## Builds for Windows Server 2004 SAC
 build-azure-sig-centos-7-gen2: ## Builds CentOS Gen2 managed image in Shared Image Gallery
 build-azure-sig-flatcar: ## Builds Flatcar Azure managed image in Shared Image Gallery
+build-azure-sig-flatcar-gen2: ## Builds Flatcar Azure Gen2 managed image in Shared Image Gallery
 build-azure-sig-ubuntu-1804-gen2: ## Builds Ubuntu 18.04 Gen2 managed image in Shared Image Gallery
 build-azure-sig-ubuntu-2004-gen2: ## Builds Ubuntu 20.04 Gen2 managed image in Shared Image Gallery
 build-azure-vhds: $(AZURE_BUILD_VHD_TARGETS) ## Builds all Azure VHDs

@@ -182,7 +182,7 @@
         "BUILD_NAME={{user `build_name`}}"
       ],
       "inline": [
-        "if [ $BUILD_NAME != \"flatcar\" ]; then exit 0; fi",
+        "if [[ $BUILD_NAME != \"flatcar\"* ]]; then exit 0; fi",
         "sudo bash -c \"/usr/share/oem/python/bin/python /usr/share/oem/bin/waagent -force -deprovision+user && sync\""
       ],
       "inline_shebang": "/bin/bash -x",
