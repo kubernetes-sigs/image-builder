@@ -153,6 +153,8 @@ flatcar:
       running: true
   amazon:
     command:
+  azure:
+    command:
 photon:
   common-service:
     apparmor:
