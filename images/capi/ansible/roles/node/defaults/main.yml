@@ -106,3 +106,4 @@ pause_image: "k8s.gcr.io/pause:3.6"
 containerd_additional_settings: null
 leak_local_mdns_to_dns: false
 build_target: "virt"
+cloud_cfg_file: "/etc/cloud/cloud.cfg"
