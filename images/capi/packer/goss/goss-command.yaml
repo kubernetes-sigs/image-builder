@@ -174,5 +174,31 @@ command:
     - True
     stderr: []
     timeout: 30000
+  
+  # this could be moved to place for other providers if they want to install it
+  Key Vault gMSA binary is installed:
+    exec: powershell -command "Test-Path -Path  C:\Windows\System32\CCGAKVPlugin.dll"
+    exit-status: 0
+    stdout:
+    - "True"
+    timeout: 30000
+  Key Vault gMSA binary COM is registered:
+    exec: powershell -command "(Get-Item 'HKLM:SYSTEM\CurrentControlSet\Control\CCG\COMClasses\{CCC2A336-D7F3-4818-A213-272B7924213E}')  | Ft -autosize -wrap"
+    exit-status: 0
+    stdout:
+    - "CCC2A336-D7F3-4818-A213-272B7924213E"
+    timeout: 30000
+  Key Vault gMSA binary is registered:
+    exec: powershell -command "Get-ItemProperty -Path 'HKLM:SOFTWARE\CLASSES\CLSID\{CCC2A336-D7F3-4818-A213-272B7924213E}\InprocServer32\'"
+    exit-status: 0
+    stdout:
+    - "C:\\Windows\\System32\\CCGAKVPlugin.dll"
+    timeout: 30000
+  Key Vault gMSA CCG interface is registered:
+    exec: powershell -command "(Get-Item 'HKLM:SOFTWARE\Classes\Interface\{6ECDA518-2010-4437-8BC3-46E752B7B172}') | Ft -autosize -wrap"
+    exit-status: 0
+    stdout:
+    - "ICcgDomainAuthCredentials"
+    timeout: 30000
 {{end}}
 {{end}} #end windows

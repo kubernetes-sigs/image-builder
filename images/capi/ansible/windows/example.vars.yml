@@ -16,6 +16,7 @@ kubernetes_base_url: https://dl.k8s.io/release/v1.19.2/bin/windows/amd64
 cloudbase_init_url: https://github.com/cloudbase/cloudbase-init/releases/download/1.1.2/CloudbaseInitSetup_1_1_2_x64.msi
 wins_url: https://github.com/rancher/wins/releases/download/v0.0.4/wins.exe
 nssm_url: https://azurek8scishared.blob.core.windows.net/nssm/nssm.exe
+gmsa_keyvault_url: https://kubernetesartifacts.azureedge.net/ccgakvplugin/v1.1.4/binaries/windows-gmsa-ccgakvplugin-v1.1.4.zip
 
 runtime: docker-ee
 docker_ee_version: "19.03.12"

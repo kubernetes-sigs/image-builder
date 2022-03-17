@@ -76,6 +76,8 @@
     - include_role:
         name: kubernetes
     - include_role:
+        name: gmsa
+    - include_role:
         name: load_additional_components
       when: load_additional_components | bool
     - include_role:
