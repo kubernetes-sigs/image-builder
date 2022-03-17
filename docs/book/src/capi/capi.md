@@ -18,6 +18,7 @@ If any needed binaries are not present, they can be installed to `images/capi/.b
 * [Azure](./providers/azure.md)
 * [DigitalOcean](./providers/digitalocean.md)
 * [GCP](./providers/gcp.md)
+* [OCI](./providers/oci.md)
 * [OpenStack](./providers/openstack.md)
 * [Raw](./providers/raw.md)
 * [VirtualBox](./providers/virtualbox.md)
