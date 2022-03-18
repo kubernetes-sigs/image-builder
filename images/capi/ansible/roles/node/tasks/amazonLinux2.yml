@@ -18,3 +18,11 @@
     name: sysstat
     state: started
     enabled: yes
+
+# images need to be immutable once built
+# https://aws.amazon.com/amazon-linux-ami/faqs/
+- name: Disable security updates on boot
+  lineinfile:
+    path: "{{ cloud_cfg_file }}"
+    regexp: "^repo_upgrade: security"
+    line: 'repo_upgrade: none'

@@ -57,6 +57,7 @@
       },
       "temporary_security_group_source_cidrs": "{{ user `temporary_security_group_source_cidrs` }}",
       "type": "amazon-ebs",
+      "user_data": "#cloud-config\nrepo_upgrade: none",
       "vpc_id": "{{ user `vpc_id` }}"
     }
   ],
