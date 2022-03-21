@@ -28,6 +28,23 @@ set -o pipefail
 CAPI_ROOT=$(dirname "${BASH_SOURCE[0]}")/..
 cd "${CAPI_ROOT}" || exit 1
 
+export ARTIFACTS="${ARTIFACTS:-${PWD}/_artifacts}"
+mkdir -p "${ARTIFACTS}/azure-sigs" "${ARTIFACTS}/azure-vhds"
+
+# Get list of Azure target names from common file
+source azure_targets.sh
+
+# Convert single line entries into arrays
+IFS=' ' read -r -a VHD_TARGETS <<< "${VHD_TARGETS}"
+IFS=' ' read -r -a SIG_TARGETS <<< "${SIG_TARGETS}"
+IFS=' ' read -r -a SIG_GEN2_TARGETS <<< "${SIG_GEN2_TARGETS}"
+
+# Append the "gen2" targets to the original SIG list
+for element in "${SIG_GEN2_TARGETS[@]}"
+do
+    SIG_TARGETS+=("${element}-gen2")
+done
+
 # shellcheck source=parse-prow-creds.sh
 source "packer/azure/scripts/parse-prow-creds.sh"
 
@@ -65,8 +82,34 @@ make deps-azure
 # Disable them for CI runs so don't run into timeouts
 export PACKER_VAR_FILES="packer/azure/scripts/disable-windows-prepull.json scripts/ci-disable-goss-inspect.json"
 
+declare -A PIDS
 if [[ "${AZURE_BUILD_FORMAT:-vhd}" == "sig" ]]; then
-    make -j build-azure-sigs
+    for target in ${SIG_TARGETS[@]};
+    do
+        make build-azure-sig-${target} > ${ARTIFACTS}/azure-sigs/${target}.log 2>&1 &
+        PIDS["sig-${target}"]=$!
+    done
 else
-    make -j build-azure-vhds
+    for target in ${VHD_TARGETS[@]};
+    do
+        make build-azure-vhd-${target} > ${ARTIFACTS}/azure-vhds/${target}.log 2>&1 &
+        PIDS["vhd-${target}"]=$!
+    done
+fi
+
+# need to unset errexit so that failed child tasks don't cause script to exit
+set +o errexit
+exit_err=false
+for target in "${!PIDS[@]}"; do
+  wait ${PIDS[$target]}
+  if [[ $? -ne 0 ]]; then
+    exit_err=true
+    echo "${target}: FAILED. See logs in the artifacts folder."
+  else
+    echo "${target}: SUCCESS"
+  fi
+done
+
+if [[ "${exit_err}" = true ]]; then
+  exit 1
 fi

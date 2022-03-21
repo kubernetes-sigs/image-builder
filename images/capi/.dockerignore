@@ -8,3 +8,4 @@
 !hack
 !packer
 !Makefile
+!azure_targets.sh
