@@ -175,6 +175,20 @@ photon:
       python3-netifaces:
 rockylinux:
   common-package: *common_rpms
+  amazon:
+    package:
+      amazon-ssm-agent:
+      <<: *rh8_rpms
+    command:
+      pip3 list --format=columns | grep 'awscli' | awk -F' ' '{print $1}':
+        exit-status: 0
+        stdout: [ "awscli" ]
+        stderr: [ ]
+        timeout: 0
+    service:
+      amazon-ssm-agent:
+        enabled: true
+        running: true
   ova:
     package:
       open-vm-tools:
@@ -264,6 +278,16 @@ ubuntu:
         stdout: ["awscli"]
         stderr: []
         timeout: 0
+  gcp:
+    package:
+      linux-cloud-tools-virtual:
+      linux-tools-virtual:
+    command:
+      find -L /bin -maxdepth 1 -type f -executable -printf "%f\n" | grep -Fx 'gcloud':
+        exit-status: 0
+        stdout: ["gcloud"]
+        stderr: []
+        timeout: 0
   ova:
     service:
       networkd-dispatcher:
@@ -306,11 +330,11 @@ windows:
       exists: true
       filetype: directory
       contains:
-    c:/var/lib/kubelet/etc/kubernetes:
+    c:/etc/kubernetes:
       exists: true
       filetype: directory
       contains:
-    c:/var/lib/kubelet/etc/kubernetes/manifests:
+    c:/etc/kubernetes/manifests:
       exists: true
       filetype: directory
       contains:

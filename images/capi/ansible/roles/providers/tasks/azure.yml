@@ -57,3 +57,14 @@
     state: restored
     path: /etc/iptables/rules.v4
   when: ansible_os_family == "Debian"
+
+- name: Install netbase and nfs-common
+  apt:
+    name: "{{ packages }}"
+    state: present
+    force_apt_get: yes
+  vars:
+    packages:
+    - netbase
+    - nfs-common
+  when: ansible_os_family == "Debian"

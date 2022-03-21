@@ -61,6 +61,7 @@ list, and greater explanation can be found in the
 | `kms_key_id` | ID, alias or ARN of the KMS key to use for boot volume encryption. | `""` |
 | `snapshot_groups` | A list of groups that have access to create volumes from the snapshot. | `""` |
 | `snapshot_users` | A list of groups that have access to create volumes from the snapshot. | `""` |
+| `skip_create_ami` |  If true, Packer will not create the AMI. Useful for setting to true during a build test stage. | `false` |
 
 In the below examples, the parameters can be set via variable file and the use
 of `PACKER_VAR_FILES`. See [Customization](../capi.md#customization) for

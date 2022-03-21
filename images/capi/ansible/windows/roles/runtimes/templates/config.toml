@@ -12,8 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-root = "{{ allusersprofile }}\\root"
-state = "{{ allusersprofile }}\\state"
+root = "{{ allusersprofile }}\\containerd\\root"
+state = "{{ allusersprofile }}\\containerd\\state"
 version = 2
 
 {% if 'imports' not in containerd_additional_settings | b64decode %}
@@ -29,5 +29,9 @@ imports = ["{{ containerd_conf_dir }}\\conf.d\\*.toml"]
     [plugins."io.containerd.grpc.v1.cri".cni]
       bin_dir = "{{ plugin_bin_dir }}"
       conf_dir = "{{ plugin_conf_dir }}"
+{% if packer_builder_type.startswith('azure') %}
+    [plugins."io.containerd.grpc.v1.cri".registry.headers]
+      X-Meta-Source-Client = ["azure/capz"]
+{% endif %}
 
 {{containerd_additional_settings | b64decode}}

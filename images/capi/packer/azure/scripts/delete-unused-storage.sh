@@ -14,9 +14,25 @@
 # limitations under the License.
 
 # This script deletes unused Azure storage accounts created in the process of
-# building CAPZ reference images.
-# By default, it will only print the commands it would have run. Remove the
-# "echo" statement near the bottom of the file to enable deletion.
+# building CAPZ reference images. It also archives existing accounts into one
+# main storage account to reduce the limited number of accounts in use.
+# Usage:
+#  <DRYRUN=true|false> delete-unused-storage.sh
+#
+# The `pub` tool (https://github.com/devigned/pub) and the `az` CLI tool
+# (https://docs.microsoft.com/en-us/cli/azure/install-azure-cli) must be found
+# in the PATH.
+#
+# In order to run this script, log in to the publishing account with the
+# `az account set -s <SUBSCRIPTION_ID>` command. Then export these environment
+# variables to enable access to the storage accounts:
+#   AZURE_CLIENT_ID
+#   AZURE_CLIENT_SECRET
+#   AZURE_SUBSCRIPTION_ID
+#   AZURE_TENANT_ID
+#
+# By default, the script will not modify any resources. Pass the environment variable
+# DRYRUN=false to enable the script to archive and to delete the storage accounts.
 
 set -o errexit
 set -o nounset
@@ -29,6 +45,17 @@ PUBLISHER=${PUBLISHER:-cncf-upstream}
 OFFERS=${OFFERS:-capi capi-windows}
 PREFIX=${PREFIX:-capi}
 LONG_PREFIX=${LONG_PREFIX:-${PREFIX}[0-9]{10\}}
+ARCHIVE_STORAGE_ACCOUNT=${ARCHIVE_STORAGE_ACCOUNT:-${PREFIX}archive}
+DRYRUN=${DRYRUN:-true}
+RED='\033[0;31m'
+NC='\033[0m' 
+
+if ${DRYRUN}; then
+  echo "DRYRUN: This script will not copy or delete any resources."
+  ECHO=echo
+else
+  ECHO=
+fi
 
 which pub &> /dev/null || (echo "Please install pub from https://github.com/devigned/pub/releases" && exit 1)
 
@@ -37,7 +64,8 @@ URLS=""
 for name in ${OFFERS}; do
   echo "Getting URLs for ${name}..."
   offer=$(pub offers show -p "$PUBLISHER" -o "$name")
-  urls=$(echo "${offer}" | jq '.definition["plans"][]."microsoft-azure-corevm.vmImagesPublicAzure"[]?.osVhdUrl')
+  # Capture "label" as well as "osVhdUrl" so we can archive storage accounts with something readable.
+  urls=$(echo "${offer}" | jq -r '.definition["plans"][]."microsoft-azure-corevm.vmImagesPublicAzure"[] | [.label, .osVhdUrl] | @csv')
   if [[ -z $URLS ]]; then
     URLS=${urls}
   else
@@ -46,7 +74,14 @@ for name in ${OFFERS}; do
 done
 NOW=$(date +%s)
 
+# ensure the existence of the archive storage account
+if ! az storage account show -g "${RESOURCE_GROUP}" -n "${ARCHIVE_STORAGE_ACCOUNT}" &> /dev/null; then
+  echo "Creating archive storage account ${ARCHIVE_STORAGE_ACCOUNT}..."
+  $ECHO az storage account create -g "${RESOURCE_GROUP}" -n "${ARCHIVE_STORAGE_ACCOUNT}" --access-tier Cool
+fi
+
 IFS=$'\n'
+archived=0
 deleted=0
 # For each storage account in the subscription,
 for account in $(az storage account list -g "${RESOURCE_GROUP}" -o tsv --query "[?starts_with(name, '${PREFIX}')].[name,creationTime]"); do
@@ -55,15 +90,67 @@ for account in $(az storage account list -g "${RESOURCE_GROUP}" -o tsv --query "
   age=$(( (NOW - created) / 86400 ))
   # if it's older than a month
   if [[ $age -gt 30 ]]; then
-    # and it has the right naming pattern but isn't referenced in the offer osVhdUrls
-    if [[ ${storage_account} =~ ^${LONG_PREFIX} ]] && [[ ! ${URLS} =~ ${storage_account} ]]; then
+    # and it has the right naming pattern
+    if [[ ${storage_account} =~ ^${LONG_PREFIX} ]]; then
+      # but isn't referenced in the offer osVhdUrls
+      if [[ ! ${URLS} =~ ${storage_account} ]]; then
         # delete it.
         echo "Deleting unreferenced storage account ${storage_account} that is ${age} days old"
-        # NOTE: Remove the "echo" to enable deletion of storage accounts.
-        echo az storage account delete -g "${RESOURCE_GROUP}" -n "${storage_account}" # -y
+        ${ECHO} az storage account delete -g "${RESOURCE_GROUP}" -n "${storage_account}" -y
         deleted=$((deleted+1))
+      else
+        # archive it.
+        for URL in ${URLS}; do
+          IFS=$',' read -r label url <<< "${URL}"
+          # container names are somewhat strict, so transform the label into a valid container name
+          # See https://github.com/MicrosoftDocs/azure-docs/blob/master/includes/storage-container-naming-rules-include.md
+          dest_label=${label//[ .]/-}
+          dest_label=${dest_label//[^a-zA-Z0-9-]/}
+          dest_label=$(echo "${dest_label}" | tr '[:upper:]' '[:lower:]')
+          if [[ ${url} =~ ${storage_account} ]]; then
+            echo "Archiving storage account ${storage_account} (${label}) that is ${age} days old"
+            # create a destination container
+            if [[ $(az storage container exists --account-name "${ARCHIVE_STORAGE_ACCOUNT}" -n "${dest_label}" -o tsv 2>/dev/null) != "True" ]]; then
+              ${ECHO} az storage container create --only-show-errors --public-access=container \
+                -n ${dest_label} -g "${RESOURCE_GROUP}" --account-name "${ARCHIVE_STORAGE_ACCOUNT}" 2>/dev/null
+            fi
+            # for each source container
+            for container in $(az storage container list --only-show-errors --account-name ${storage_account} --query "[].name" -o tsv 2>/dev/null); do
+              # copy it to the destination container
+              ${ECHO} az storage blob copy start-batch \
+                --account-name ${ARCHIVE_STORAGE_ACCOUNT} \
+                --destination-container ${dest_label} \
+                --destination-path ${container} \
+                --source-container ${container} \
+                --source-account-name ${storage_account} \
+                --pattern '*capi-*' \
+                2>/dev/null
+            done
+            # poll the target container until all blobs have "succeeded" copy status
+            for target in $(az storage blob list --account-name ${ARCHIVE_STORAGE_ACCOUNT} -c ${dest_label} --query '[].name' -o tsv 2>/dev/null); do
+              while true; do
+                status=$(az storage blob show --account-name ${ARCHIVE_STORAGE_ACCOUNT} --container-name ${dest_label} --name $target -o tsv --query 'properties.copy.status' 2>/dev/null)
+                if [[ ${status} == "success" ]]; then
+                  echo "Copied ${dest_label}/${target}"
+                  break
+                else
+                  echo "Copying ${dest_label}/${target} ..."
+                  sleep 20
+                fi
+              done
+            done
+            echo "Deleting source storage account ${storage_account}..."
+            ${ECHO} az storage account delete -g "${RESOURCE_GROUP}" -n "${storage_account}" -y
+            archived=$((archived+1))
+          fi
+        done
+        echo -e "Pausing for 10 seconds. ${RED}Hit Ctrl-C to stop.${NC}"
+        sleep 10
+        echo
+      fi
     fi
   fi
 done
 
 echo "Deleted ${deleted} storage accounts."
+echo "Archived ${archived} storage accounts."

@@ -8,7 +8,7 @@
   "disk_type_id": "0",
   "firmware": "bios",
   "format": "",
-  "guestinfo_datasource_ref": "v1.4.0",
+  "guestinfo_datasource_ref": "v1.4.1",
   "guestinfo_datasource_script": "{{user `guestinfo_datasource_slug`}}/{{user `guestinfo_datasource_ref`}}/install.sh",
   "guestinfo_datasource_slug": "https://raw.githubusercontent.com/vmware/cloud-init-vmware-guestinfo",
   "headless": "true",

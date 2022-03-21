@@ -26,6 +26,7 @@
       "profile": "{{ user `aws_profile`}}",
       "region": "{{ user `aws_region` }}",
       "secret_key": "{{user `aws_secret_key`}}",
+      "skip_create_ami": "{{ user `skip_create_ami`}}",
       "skip_profile_validation": "{{user `skip_profile_validation`}}",
       "snapshot_groups": "{{user `snapshot_groups`}}",
       "snapshot_users": "{{user `snapshot_users`}}",
@@ -54,7 +55,9 @@
         "kubernetes_version": "{{user `kubernetes_semver`}}",
         "source_ami": "{{user `source_ami`}}"
       },
+      "temporary_security_group_source_cidrs": "{{ user `temporary_security_group_source_cidrs` }}",
       "type": "amazon-ebs",
+      "user_data": "#cloud-config\nrepo_upgrade: none",
       "vpc_id": "{{ user `vpc_id` }}"
     }
   ],
@@ -182,10 +185,12 @@
     "kubernetes_source_type": null,
     "manifest_output": "manifest.json",
     "python_path": "",
+    "skip_create_ami": "false",
     "skip_profile_validation": "false",
     "snapshot_groups": "all",
     "snapshot_users": "",
     "subnet_id": "",
+    "temporary_security_group_source_cidrs": "",
     "throughput": "125",
     "volume_size": "8",
     "vpc_id": ""
