@@ -1,0 +1,22 @@
+---
+- name: Define file modes
+  set_fact:
+    last_log_mode: "0664"
+    machine_id_mode: "0444"
+
+
+- name: Disable swap service and ensure it is masked
+  systemd:
+    name: temp-disk-swapfile
+    enabled: false
+    masked: true
+  when:
+    - ansible_memory_mb.swap.total != 0
+    - "'temp-disk-swapfile' in ansible_facts.services"
+
+
+- name: Remove zypper package cache
+  command: zypper clean -a
+
+- name: Reset network interface IDs
+  shell: sed -i '/^\(HWADDR\|UUID\)=/d' /etc/sysconfig/network/ifcfg-*

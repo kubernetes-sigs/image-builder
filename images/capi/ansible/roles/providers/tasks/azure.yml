@@ -18,6 +18,9 @@
 - import_tasks: debian.yml
   when: ansible_os_family == "Debian"
 
+- import_tasks: suse.yml
+  when: ansible_os_family == "Suse"
+
 - name: Configure PTP
   lineinfile:
     path: /etc/chrony/chrony.conf

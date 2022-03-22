@@ -27,6 +27,9 @@
 - import_tasks: photon.yml
   when: ansible_os_family == "VMware Photon OS"
 
+- import_tasks: suse.yml
+  when: ansible_os_family == "Suse"
+
 # Copy in pip config file when defined
 - name: Install pip config file
   copy:

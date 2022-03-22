@@ -1,0 +1,19 @@
+- name: Import a key from a url
+  rpm_key:
+    state: present
+    key: "https://packages.microsoft.com/keys/microsoft.asc"
+
+- name: Add  azure-cli rpm repository
+  zypper_repository:
+    name: azure-cli
+    description: azure-cli package repository
+    repo: "https://packages.microsoft.com/yumrepos/azure-cli"
+    autorefresh: true
+  register: azure_cli_installation_rpm
+  until: azure_cli_installation_rpm is success
+  retries: 15
+  delay: 60
+- name: install azure-cli
+  zypper:
+    name: azure-cli
+    state: present

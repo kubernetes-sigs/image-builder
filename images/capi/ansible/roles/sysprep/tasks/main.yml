@@ -24,6 +24,9 @@
 - import_tasks: photon.yml
   when: ansible_os_family == "VMware Photon OS"
 
+- import_tasks: suse.yml
+  when: ansible_os_family == "Suse"
+
 - name: Remove containerd http proxy conf file if needed
   file:
     path: /etc/systemd/system/containerd.service.d/http-proxy.conf
