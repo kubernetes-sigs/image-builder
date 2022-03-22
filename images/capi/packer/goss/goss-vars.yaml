@@ -410,4 +410,4 @@ windows:
         - "cloudbaseinit.plugins.common.ephemeraldisk.EphemeralDiskPlugin"
         - "cloudbaseinit.plugins.common.mtu.MTUPlugin"
         - "cloudbaseinit.plugins.common.sethostname.SetHostNamePlugin"
-  
+        - "cloudbaseinit.plugins.common.sshpublickeys.SetUserSSHPublicKeysPlugin"
