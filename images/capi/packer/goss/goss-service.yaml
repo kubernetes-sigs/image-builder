@@ -7,7 +7,7 @@ service:
     enabled: false
     running: false
   kubelet:
-    enabled: false
+    enabled: {{ .Vars.install_kubernetes }}
     running: false
   conntrackd:
     enabled: false
@@ -57,7 +57,7 @@ command:
   "Windows Service - docker":
     exec: powershell -command "(Get-Service docker | select *)"
     exit-status: 0
-    stdout: 
+    stdout:
     - Automatic
     - Running
 {{end}}
@@ -66,7 +66,7 @@ command:
   "Windows Service - containerd":
     exec: powershell -command "(Get-Service containerd | select *)"
     exit-status: 0
-    stdout: 
+    stdout:
     - Automatic
     - Running
 {{end}}

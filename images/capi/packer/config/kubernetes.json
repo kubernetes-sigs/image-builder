@@ -2,6 +2,7 @@
   "crictl_sha256": "b754f83c80acdc75f93aba191ff269da6be45d0fc2d3f4079704e7d1424f1ca8",
   "crictl_source_type": "pkg",
   "crictl_version": "1.23.0",
+  "install_kubernetes": true,
   "kubeadm_template": "etc/kubeadm.yml",
   "kubernetes_container_registry": "k8s.gcr.io",
   "kubernetes_deb_gpg_key": "https://packages.cloud.google.com/apt/doc/apt-key.gpg",
