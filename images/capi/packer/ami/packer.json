@@ -19,7 +19,7 @@
           "iops": "{{ user `iops`}}",
           "throughput": "{{ user `throughput` }}",
           "volume_size": "{{ user `volume_size` }}",
-          "volume_type": "gp3"
+          "volume_type": "{{ user `volume_type` }}"
         }
       ],
       "name": "{{user `build_name`}}",
@@ -193,6 +193,7 @@
     "temporary_security_group_source_cidrs": "",
     "throughput": "125",
     "volume_size": "8",
+    "volume_type": "gp3",
     "vpc_id": ""
   }
 }

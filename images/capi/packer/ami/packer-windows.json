@@ -13,14 +13,15 @@
       "disable_stop_instance": true,
       "encrypt_boot": "{{user `encrypted`}}",
       "iam_instance_profile": "{{user `iam_instance_profile`}}",
-      "instance_type": "t3.large",
+      "instance_type": "{{user `builder_instance_type`}}",
       "kms_key_id": "{{user `kms_key_id`}}",
       "launch_block_device_mappings": [
         {
           "delete_on_termination": true,
           "device_name": "{{ user `root_device_name` }}",
+          "throughput": "{{ user `throughput` }}",
           "volume_size": "{{ user `volume_size` }}",
-          "volume_type": "gp2"
+          "volume_type": "{{ user `volume_type` }}"
         }
       ],
       "name": "{{user `build_name`}}",
@@ -164,6 +165,7 @@
     "aws_secret_key": "",
     "build_name": null,
     "build_timestamp": "{{timestamp}}",
+    "builder_instance_type": "t3.large",
     "cloudbase_init_url": "https://github.com/cloudbase/cloudbase-init/releases/download/{{user `cloudbase_init_version`}}/CloudbaseInitSetup_{{user `cloudbase_init_version` | replace_all `.` `_` }}_x64.msi",
     "cloudbase_metadata_services": "cloudbaseinit.metadata.services.ec2service.EC2Service",
     "cloudbase_metadata_services_unattend": "cloudbaseinit.metadata.services.base.EmptyMetadataService",
@@ -186,7 +188,9 @@
     "snapshot_users": "",
     "subnet_id": "",
     "temporary_security_group_source_cidrs": "",
+    "throughput": "125",
     "volume_size": "40",
+    "volume_type": "gp3",
     "vpc_id": "",
     "windows_service_manager": null,
     "windows_updates_kbs": null,
