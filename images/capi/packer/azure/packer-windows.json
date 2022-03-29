@@ -117,7 +117,9 @@
         "--extra-vars",
         "{{user `ansible_extra_vars`}}",
         "--extra-vars",
-        "{{user `ansible_user_vars`}}"
+        "{{user `ansible_user_vars`}}",
+        "--extra-vars",
+        "gmsa_keyvault_url={{user `gmsa_keyvault_url`}}"
       ],
       "playbook_file": "ansible/windows/node_windows.yml",
       "type": "ansible",
@@ -194,6 +196,7 @@
     "cloudbase_plugins_unattend": "cloudbaseinit.plugins.common.mtu.MTUPlugin",
     "containerd_url": "",
     "containerd_version": null,
+    "gmsa_keyvault_url": "https://kubernetesartifacts.azureedge.net/ccgakvplugin/v1.1.4/binaries/windows-gmsa-ccgakvplugin-v1.1.4.zip",
     "ib_version": "{{env `IB_VERSION`}}",
     "image_offer": null,
     "image_publisher": null,
