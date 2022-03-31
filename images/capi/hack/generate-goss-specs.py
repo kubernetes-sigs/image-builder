@@ -43,9 +43,10 @@ def generate_goss(provider, system, versions, runtime, dryrun=False, save=False)
             'kubernetes_cni_rpm_version': versions['cni_rpm'],
             'kubernetes_cni_source_type': 'pkg',
             'runtime': runtime,
-            'pause_image': versions['pause'],
-            'ssh_source_url': versions['ssh_url']}
+            'pause_image': versions['pause']}
 
+    if system == "windows" and versions.get('ssh_url') is not None:
+        vars['ssh_source_url'] = versions['ssh_url']
 
     # Build command
     cmd.extend(['--vars-inline', json.dumps(vars), 'render'])
