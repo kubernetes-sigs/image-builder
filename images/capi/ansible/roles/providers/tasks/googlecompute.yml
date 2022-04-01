@@ -38,3 +38,10 @@
     path: "/bin/{{ item.path | basename }}"
     state: link
   with_items: "{{ find.files }}"
+
+- name: Disable Hyper-V KVP protocol daemon on Ubuntu
+  systemd:
+    name: hv-kvp-daemon
+    state: stopped
+    enabled: false
+  when: ansible_os_family == "Debian"
