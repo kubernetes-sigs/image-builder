@@ -13,4 +13,5 @@
 # limitations under the License.
 ---
 extra_repos: ""
+pip_conf_file: ""
 remove_extra_repos: false

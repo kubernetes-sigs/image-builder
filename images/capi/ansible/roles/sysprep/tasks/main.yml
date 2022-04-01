@@ -30,6 +30,12 @@
     state: absent
   when: http_proxy is defined or https_proxy is defined
 
+- name: Remove pip conf file if needed
+  file:
+    path: /etc/pip.conf
+    state: absent
+  when: remove_extra_repos and pip_conf_file != ""
+
 - name: Truncate machine id
   file:
     state: "{{ item.state }}"
