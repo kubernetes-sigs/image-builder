@@ -121,7 +121,7 @@
       "vars_file": "{{user `goss_vars_file`}}",
       "vars_inline": {
         "OS": "{{user `distribution` | lower}}",
-        "PROVIDER": "ami",
+        "PROVIDER": "amazon",
         "containerd_version": "{{user `containerd_version`}}",
         "distribution_version": "{{user `distribution_version`}}",
         "docker_ee_version": "{{user `docker_ee_version`}}",
