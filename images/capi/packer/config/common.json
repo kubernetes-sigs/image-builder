@@ -8,6 +8,7 @@
   "https_proxy": "",
   "no_proxy": "",
   "pause_image": "k8s.gcr.io/pause:3.6",
+  "pip_conf_file": "",
   "redhat_epel_rpm": "https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm",
   "reenable_public_repos": "true",
   "remove_extra_repos": "false"
