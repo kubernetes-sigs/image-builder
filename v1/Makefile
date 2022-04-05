@@ -25,11 +25,11 @@ $(BIN): pack
 
 .PHONY: pack
 pack: setup
-	esc  --prefix resources/ --ignore "static.go"  -o pkg/resources/static.go --pkg resources resources
+	esc --prefix pkg/resources/ --ignore "static.go" -o pkg/resources/static.go --pkg resources pkg/resources
 
 clean:
 	rm -f dist/
 
 .PHONY: setup
 setup:
-		which esc 2>&1 > /dev/null || go get -u github.com/mjibson/esc
+	which esc 2>&1 > /dev/null || go get -u github.com/mjibson/esc
