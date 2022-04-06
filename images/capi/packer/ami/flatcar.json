@@ -4,7 +4,7 @@
   "ansible_extra_vars": "ansible_python_interpreter=/opt/bin/python",
   "build_name": "flatcar-{{env `FLATCAR_CHANNEL`}}",
   "crictl_source_type": "http",
-  "goss_entry_file": "goss/goss-flatcar.yaml",
+  "distribution": "flatcar",
   "kubernetes_cni_source_type": "http",
   "kubernetes_source_type": "http",
   "python_path": "/opt/bin/builder-env/site-packages",
