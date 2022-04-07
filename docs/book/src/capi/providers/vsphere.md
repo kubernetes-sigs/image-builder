@@ -41,7 +41,7 @@ This file must have the following format (`cluster` can be replace by `host`):
     "folder": "template_folder_on_vcenter",
     "cluster": "esxi_cluster_used_for_template_creation",
     "network": "network_attached_to_template",
-    "insecure_connection": "false"
+    "insecure_connection": "false",
     "template": "base_template_used_by_clone_builder",
     "create_snbapshot": "creates a snaphot on base OVA after building",
     "linked_clone": "Uses link cloning in vsphere-clone builder: true, by default"
