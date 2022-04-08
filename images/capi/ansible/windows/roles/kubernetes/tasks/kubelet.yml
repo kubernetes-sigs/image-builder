@@ -22,6 +22,12 @@
     - '{{ systemdrive.stdout | trim }}\etc\kubernetes\manifests'
     - '{{ systemdrive.stdout | trim }}\etc\kubernetes\pki'
 
+# this is required in 1.22 and below due to invalid absolute path handling
+# https://github.com/kubernetes-sigs/image-builder/issues/853
+- name: Symlink kubelet pki folder
+  win_shell: New-Item -path $env:SystemDrive\var\lib\kubelet\etc\kubernetes\pki -type SymbolicLink -value  $env:SystemDrive\etc\kubernetes\pki\ -Force
+  when: kubernetes_semver is version('v1.23.0', '<')
+
 - import_tasks: nssm.yml
   when: windows_service_manager == "nssm"
 
