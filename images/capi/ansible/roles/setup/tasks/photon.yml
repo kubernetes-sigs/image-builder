@@ -33,6 +33,7 @@
 
 - name: install baseline dependencies
   command: tdnf install {{ photon_rpms }} -y
+  when: photon_rpms != ""
 
 - name: install extra RPMs
   command: tdnf install {{ extra_rpms }} -y
