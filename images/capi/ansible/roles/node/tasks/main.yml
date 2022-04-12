@@ -95,3 +95,11 @@
     sysctl_set: yes
     reload: yes
   when: ansible_distribution == "Ubuntu"
+
+- name: Set transparent huge pages to madvise
+  lineinfile:
+    path: /etc/default/grub
+    backrefs: yes
+    regexp: "^(?!.*transparent_hugepage=madvise)(GRUB_CMDLINE_LINUX=.*)(\"$)"
+    line: '\1 transparent_hugepage=madvise"'
+  when: ansible_os_family == "RedHat"

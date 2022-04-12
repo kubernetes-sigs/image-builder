@@ -59,6 +59,13 @@ command:
     stderr: []
     timeout: 0
 {{end}}
+{{if eq .Vars.OS "photon"}}
+  cat /sys/kernel/mm/transparent_hugepage/enabled:
+    exit-status: 0
+    stdout: ["always [madvise] never"]
+    stderr: []
+    timeout: 0
+{{end}}
 {{range $name, $vers := index .Vars .Vars.OS .Vars.PROVIDER "command"}}
   {{ $name }}:
   {{range $key, $val := $vers}}
