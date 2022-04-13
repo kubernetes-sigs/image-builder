@@ -48,7 +48,7 @@ version: ## Display version of image-builder
 
 .PHONY: deps
 deps: ## Installs/checks all dependencies
-deps: deps-ami deps-azure deps-do deps-gce deps-ova deps-qemu deps-raw deps-oci deps-vbox
+deps: deps-ami deps-azure deps-do deps-gce deps-ova deps-qemu deps-raw deps-oci deps-vbox deps-powervs
 
 .PHONY: deps-ami
 deps-ami: ## Installs/checks dependencies for AMI builds
@@ -118,6 +118,13 @@ deps-vbox:
 	hack/ensure-packer.sh
 	hack/ensure-goss.sh
 
+.PHONY: deps-powervs
+deps-powervs:
+deps-powervs:
+	hack/ensure-ansible.sh
+	hack/ensure-packer.sh
+	hack/ensure-goss.sh
+	hack/ensure-powervs.sh
 
 ## --------------------------------------
 ## Container variables
@@ -205,6 +212,18 @@ COMMON_WINDOWS_VAR_FILES :=	packer/config/kubernetes.json \
 					packer/config/goss-args.json \
 					packer/config/additional_components.json
 
+COMMON_POWERVS_VAR_FILES := packer/config/kubernetes.json \
+					packer/config/powervs/kubernetes.json \
+					packer/config/cni.json \
+					packer/config/powervs/cni.json \
+					packer/config/containerd.json \
+                    packer/config/powervs/containerd.json \
+                    packer/config/ansible-args.json \
+                    packer/config/goss-args.json \
+                    packer/config/common.json \
+                    packer/config/powervs/common.json \
+                    packer/config/additional_components.json
+
 # Initialize a list of flags to pass to Packer. This includes any existing flags
 # specified by PACKER_FLAGS, as well as prefixing the list with the variable
 # files from COMMON_VAR_FILES, with each file prefixed by -var-file=.
@@ -214,6 +233,8 @@ PACKER_NODE_FLAGS := $(foreach f,$(abspath $(COMMON_NODE_VAR_FILES)),-var-file="
 				$(PACKER_FLAGS)
 ABSOLUTE_PACKER_VAR_FILES := $(foreach f,$(abspath $(PACKER_VAR_FILES)),-var-file="$(f)" )
 PACKER_WINDOWS_NODE_FLAGS := $(foreach f,$(abspath $(COMMON_WINDOWS_VAR_FILES)),-var-file="$(f)" ) \
+				$(PACKER_FLAGS)
+PACKER_POWERVS_NODE_FLAGS := $(foreach f,$(abspath $(COMMON_POWERVS_VAR_FILES)),-var-file="$(f)" ) \
 				$(PACKER_FLAGS)
 
 ## --------------------------------------
@@ -270,6 +291,8 @@ QEMU_BUILD_NAMES			?=	qemu-ubuntu-1804 qemu-ubuntu-2004 qemu-centos-7 qemu-ubunt
 RAW_BUILD_NAMES                        ?=      raw-ubuntu-1804 raw-ubuntu-2004 raw-ubuntu-2004-efi
 VBOX_BUILD_NAMES			?=      vbox-windows-2019
 
+POWERVS_BUILD_NAMES         ?= powervs-centos-8
+
 ## --------------------------------------
 ## Dynamic build targets
 ## --------------------------------------
@@ -300,6 +323,8 @@ OCI_BUILD_TARGETS	:= $(addprefix build-,$(OCI_BUILD_NAMES))
 OCI_VALIDATE_TARGETS	:= $(addprefix validate-,$(OCI_BUILD_NAMES))
 VBOX_BUILD_TARGETS      := $(addprefix build-,$(VBOX_BUILD_NAMES))
 VBOX_VALIDATE_TARGETS   := $(addprefix validate-,$(VBOX_BUILD_NAMES))
+POWERVS_BUILD_TARGETS      := $(addprefix build-,$(POWERVS_BUILD_NAMES))
+POWERVS_VALIDATE_TARGETS   := $(addprefix validate-,$(POWERVS_BUILD_NAMES))
 
 .PHONY: $(NODE_OVA_LOCAL_BUILD_TARGETS)
 $(NODE_OVA_LOCAL_BUILD_TARGETS): deps-ova
@@ -415,6 +440,13 @@ $(VBOX_BUILD_TARGETS): deps-vbox
 $(VBOX_VALIDATE_TARGETS): deps-vbox
 	packer validate $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="packer/vbox/packer-common.json" -var-file="$(abspath packer/vbox/$(subst validate-vbox-,,$@).json)" -only=virtualbox-iso $(ABSOLUTE_PACKER_VAR_FILES) packer/vbox/packer-$(if $(findstring windows,$@),windows).json
 
+.PHONY: $(POWERVS_BUILD_TARGETS)
+$(POWERVS_BUILD_TARGETS): deps-powervs
+	packer build $(PACKER_POWERVS_NODE_FLAGS) -var-file="$(abspath packer/powervs/$(subst build-powervs-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) -except=flatcar packer/powervs/packer.json
+
+.PHONY: $(POWERVS_VALIDATE_TARGETS)
+$(POWERVS_VALIDATE_TARGETS): deps-powervs
+	packer validate $(PACKER_POWERVS_NODE_FLAGS) -var-file="$(abspath packer/powervs/$(subst validate-powervs-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) -except=flatcar packer/powervs/packer.json
 
 ## --------------------------------------
 ## Dynamic clean targets
@@ -647,6 +679,9 @@ validate-oci-all: $(OCI_VALIDATE_TARGETS) ## Validates all OCI image packer conf
 validate-vbox-windows-2019: ## Validates Windows Server 2019 Node VirtualBox Packer config w local hypervisor
 validate-vbox-all: $(VBOX_VALIDATE_TARGETS) ## Validates all RAW Packer config
 
+validate-powervs-centos-8: ## Validates the PowerVS CentOS image packer config
+validate-powervs-all: $(POWERVS_VALIDATE_TARGETS) ## Validates all PowerVS Packer config
+
 validate-all: validate-ami-all \
 	validate-azure-all \
 	validate-do-all \
@@ -655,7 +690,8 @@ validate-all: validate-ami-all \
 	validate-qemu-all \
 	validate-raw-all \
 	validate-oci-all \
-	validate-vbox-all
+	validate-vbox-all \
+	validate-powervs-all
 validate-all: ## Validates the Packer config for all build targets
 
 ## --------------------------------------

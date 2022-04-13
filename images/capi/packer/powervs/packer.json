@@ -1,0 +1,104 @@
+{
+  "builders":[
+    {
+      "type": "powervs",
+      "api_key": "{{user `apikey`}}",
+      "account_id": "{{user `account_id`}}",
+      "service_instance_id": "{{user `service_instance_id`}}",
+      "region": "{{user `region`}}",
+      "zone": "{{user `zone`}}",
+      "source": {
+        "cos": {
+          "bucket": "{{user `source_cos_bucket`}}",
+          "object": "{{user `source_cos_object`}}",
+          "region": "{{user `source_cos_region`}}"
+        }
+      },
+      "instance_name": "capibm-{{user `build_name`}}-{{user `build_timestamp`}}",
+      "key_pair_name": "{{user `key_pair_name`}}",
+      "ssh_username": "{{user `ssh_username`}}",
+      "ssh_private_key_file": "{{user `ssh_private_key_file`}}",
+      "ssh_timeout": "{{user `ssh_timeout`}}",
+      "capture": {
+        "name": "capibm-powervs-{{user `build_name`}}-{{user `kubernetes_rpm_version` | clean_resource_name}}-{{user `build_timestamp`}}",
+        "cos": {
+          "bucket": "{{user `capture_cos_bucket`}}",
+          "region": "{{user `capture_cos_region`}}",
+          "access_key": "{{user `capture_cos_access_key`}}",
+          "secret_key": "{{user `capture_cos_secret_key`}}"
+        }
+      }
+    }
+  ],
+  "post-processors": [
+    {
+      "custom_data": {
+        "containerd_version": "{{user `containerd_version`}}",
+        "kubernetes_cni_version": "{{user `kubernetes_cni_semver`}}",
+        "kubernetes_version": "{{user `kubernetes_semver`}}"
+      },
+      "output": "{{user `manifest_output`}}",
+      "type": "manifest"
+    }
+  ],
+  "provisioners":[
+    {
+      "ansible_env_vars": [
+        "ANSIBLE_SSH_ARGS='{{user `existing_ansible_ssh_args`}} -o IdentitiesOnly=yes'"
+      ],
+      "extra_arguments": [
+        "--extra-vars",
+        "{{user `ansible_common_vars`}}",
+        "--extra-vars",
+        "{{user `ansible_extra_vars`}}",
+        "--extra-vars",
+        "{{user `ansible_user_vars`}}"
+      ],
+      "playbook_file": "./ansible/node.yml",
+      "type": "ansible"
+    }
+  ],
+  "variables": {
+    "apikey": "",
+    "account_id": "",
+    "service_instance_id": "",
+    "region": "",
+    "zone": "",
+    "ssh_private_key_file": "",
+    "capture_cos_access_key": "",
+    "capture_cos_secret_key": "",
+    "capture_cos_bucket": "",
+    "capture_cos_region": "",
+    "key_pair_name": "",
+    "ssh_timeout": "30m",
+    "ansible_common_vars": "",
+    "ansible_extra_vars": "",
+    "ansible_user_vars": "",
+    "build_timestamp": "{{timestamp}}",
+    "containerd_sha256": null,
+    "containerd_url": "https://oplab9.parqtec.unicamp.br/pub/ppc64el/containerd-cri/containerd-cri-{{user `containerd_version`}}/cri-containerd-cni-{{user `containerd_version`}}-linux-ppc64le.tar.gz",
+    "containerd_version": null,
+    "crictl_url": "https://github.com/kubernetes-sigs/cri-tools/releases/download/v{{user `crictl_version`}}/crictl-v{{user `crictl_version`}}-linux-ppc64le.tar.gz",
+    "crictl_version": null,
+    "existing_ansible_ssh_args": "{{env `ANSIBLE_SSH_ARGS`}}",
+    "kubernetes_cni_deb_version": null,
+    "kubernetes_cni_http_source": null,
+    "kubernetes_cni_rpm_version": null,
+    "kubernetes_cni_semver": null,
+    "kubernetes_cni_source_type": null,
+    "kubernetes_container_registry": null,
+    "kubernetes_deb_gpg_key": null,
+    "kubernetes_deb_repo": null,
+    "kubernetes_deb_version": null,
+    "kubernetes_http_source": null,
+    "kubernetes_load_additional_imgs": null,
+    "kubernetes_rpm_gpg_check": null,
+    "kubernetes_rpm_gpg_key": null,
+    "kubernetes_rpm_repo": null,
+    "kubernetes_rpm_version": null,
+    "kubernetes_semver": null,
+    "kubernetes_source_type": null,
+    "manifest_output": "manifest.json",
+    "python_path": ""
+  }
+}
