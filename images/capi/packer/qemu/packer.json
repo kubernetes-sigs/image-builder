@@ -4,7 +4,7 @@
       "accelerator": "{{user `accelerator`}}",
       "boot_command": [
         "{{user `boot_command_prefix`}}",
-        "http://{{ .HTTPIP }}:{{ .HTTPPort }}",
+        "{{user `boot_media_path`}}",
         "{{user `boot_command_suffix`}}"
       ],
       "boot_wait": "{{user `boot_wait`}}",
@@ -16,41 +16,10 @@
       "firmware": "{{user `firmware`}}",
       "format": "{{user `format`}}",
       "headless": "{{user `headless`}}",
-      "http_directory": "./packer/qemu/linux/{{user `distro_name`}}/http/",
+      "http_directory": "{{user `http_directory`}}",
       "iso_checksum": "{{user `iso_checksum_type`}}:{{user `iso_checksum`}}",
       "iso_url": "{{user `iso_url`}}",
       "memory": "{{user `memory`}}",
-      "net_device": "virtio-net",
-      "output_directory": "{{user `output_directory`}}",
-      "qemu_binary": "{{user `qemu_binary`}}",
-      "shutdown_command": "echo '{{user `ssh_password`}}' | sudo -S -E sh -c 'usermod -L {{user `ssh_username`}} && {{user `shutdown_command`}}'",
-      "ssh_password": "{{user `ssh_password`}}",
-      "ssh_timeout": "2h",
-      "ssh_username": "{{user `ssh_username`}}",
-      "type": "qemu",
-      "vm_name": "{{user `build_name`}}-kube-{{user `kubernetes_semver`}}"
-    },
-    {
-      "accelerator": "{{user `accelerator`}}",
-      "boot_command": [
-        "{{user `boot_command_prefix`}}",
-        "http://{{ .HTTPIP }}:{{ .HTTPPort }}",
-        "{{user `boot_command_suffix`}}"
-      ],
-      "boot_wait": "{{user `boot_wait`}}",
-      "cpus": "{{user `cpus`}}",
-      "disk_compression": "{{ user `disk_compression`}}",
-      "disk_discard": "{{user `disk_discard`}}",
-      "disk_interface": "virtio-scsi",
-      "disk_size": "{{user `disk_size`}}",
-      "firmware": "{{user `firmware`}}",
-      "format": "{{user `format`}}",
-      "headless": "{{user `headless`}}",
-      "http_directory": "./packer/qemu/linux/{{user `distro_name`}}/http/",
-      "iso_checksum": "{{user `iso_checksum_type`}}:{{user `iso_checksum`}}",
-      "iso_url": "{{user `iso_url`}}",
-      "memory": "{{user `memory`}}",
-      "name": "flatcar",
       "net_device": "virtio-net",
       "output_directory": "{{user `output_directory`}}",
       "qemu_binary": "{{user `qemu_binary`}}",
@@ -63,12 +32,6 @@
     }
   ],
   "post-processors": [
-    {
-      "only": [
-        "flatcar"
-      ],
-      "type": "vagrant"
-    },
     {
       "environment_vars": [
         "CUSTOM_POST_PROCESSOR={{user `custom_post_processor`}}"
@@ -87,9 +50,6 @@
         "BUILD_NAME={{user `build_name`}}"
       ],
       "execute_command": "BUILD_NAME={{user `build_name`}}; if [[ \"${BUILD_NAME}\" == *\"flatcar\"* ]]; then sudo {{.Vars}} -S -E bash '{{.Path}}'; fi",
-      "only": [
-        "flatcar"
-      ],
       "script": "./packer/files/bootstrap-flatcar.sh",
       "type": "shell"
     },
@@ -141,6 +101,7 @@
     "accelerator": "kvm",
     "ansible_common_vars": "",
     "ansible_extra_vars": "ansible_python_interpreter=/usr/bin/python3",
+    "boot_media_path": "http://{{ .HTTPIP }}:{{ .HTTPPort }}",
     "boot_wait": "10s",
     "build_timestamp": "{{timestamp}}",
     "containerd_sha256": null,
@@ -156,6 +117,7 @@
     "firmware": "",
     "format": "qcow2",
     "headless": "true",
+    "http_directory": "./packer/qemu/linux/{{user `distro_name`}}/http/",
     "kubernetes_cni_deb_version": null,
     "kubernetes_cni_http_source": null,
     "kubernetes_cni_semver": null,

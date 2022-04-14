@@ -155,6 +155,8 @@ flatcar:
     command:
   azure:
     command:
+  qemu:
+    command:
 photon:
   common-service:
     apparmor:
