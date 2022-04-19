@@ -20,6 +20,36 @@
     - '{{ programfiles.stdout | trim }}\OpenSSH'
     - '{{ alluserprofile.stdout | trim }}\ssh'
 
+# Win32-OpenSSH requires SYSTEM and Administrator groups having Write
+# permissions on directory 'C:\Program Files\OpenSSH', authenticated
+# users having only Read and Execute permissions on it, see:
+#   https://github.com/PowerShell/Win32-OpenSSH/wiki/Install-Win32-OpenSSH
+#
+#   "Make sure binary location has the Write permissions to just to SYSTEM,
+#   Administrator groups. Authenticated users should and only have Read and
+#   Execute."
+#
+# Folder 'C:\Program Files\OpenSSH' inherits users and permissions from its
+# parent folder when it is created, by default, SYSTEM and Administrator
+# already have Write permissions on it, the only exception is the inherited
+# user BUILTIN\Users has ReadAndExecute permission but only authenticated
+# users are allowed to have such permission, this prevent us from connecting
+# to the sshd server, just remove it.
+- name: Disable inheritance of OpenSSH directory
+  win_acl_inheritance:
+    path: '{{ programfiles.stdout | trim }}\OpenSSH'
+    state: absent
+    reorganize: yes
+- name: Remove permission for Users
+  win_acl:
+    path: '{{ programfiles.stdout | trim }}\OpenSSH'
+    user: BUILTIN\Users
+    rights: ReadAndExecute,Synchronize
+    type: allow
+    state: absent
+    inherit: 'None'
+    propagation: 'None'
+
 - name: Download OpenSSH Archive
   win_get_url:
     url: '{{ ssh_source_url }}'
@@ -41,4 +71,3 @@
     Get-ChildItem -Path "{{ tempdir.stdout | trim }}\OpenSSH-Win64\*" -Recurse | Move-Item -Destination "{{ programfiles.stdout | trim }}\OpenSSH"
     Get-ChildItem -Path "{{ programfiles.stdout | trim }}\OpenSSH" | Unblock-File
     & 'C:\Program Files\OpenSSH\install-sshd.ps1'
-    
