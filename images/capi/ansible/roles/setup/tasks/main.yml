@@ -16,7 +16,10 @@
   when: ansible_os_family == "Debian"
 
 - import_tasks: flatcar.yml
-  when: ansible_os_family == "Flatcar"
+  # This task overrides ansible_os_family to "Flatcar" as a workaround for
+  # regression between Flatcar and Ansible, so rest of the code can use just
+  # "Flatcar" for comparison, which is the correct value.
+  when: ansible_os_family in ["Flatcar", "Flatcar Container Linux by Kinvolk"]
 
 - import_tasks: redhat.yml
   when: ansible_os_family == "RedHat"
