@@ -13,6 +13,8 @@
 # limitations under the License.
 ---
 - hosts: all
+  # Gathering facts requires Python to be available, so it's a chicken and egg
+  # problem as this playbook installs Python.
   gather_facts: no
   become: yes
 
