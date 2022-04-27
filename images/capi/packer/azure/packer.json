@@ -49,6 +49,7 @@
       "image_offer": "{{user `image_offer` }}",
       "image_publisher": "{{user `image_publisher` }}",
       "image_sku": "{{user `image_sku`}}",
+      "image_version": "{{user `image_version`}}",
       "location": "{{user `azure_location`}}",
       "managed_image_name": "{{user `image_name`}}-{{user `build_timestamp`}}",
       "managed_image_resource_group_name": "{{user `resource_group_name`}}",

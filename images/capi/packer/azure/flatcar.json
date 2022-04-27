@@ -8,6 +8,7 @@
   "image_offer": "flatcar-container-linux-free",
   "image_publisher": "kinvolk",
   "image_sku": "{{env `FLATCAR_CHANNEL`}}",
+  "image_version": "{{env `FLATCAR_VERSION` }}",
   "kubernetes_cni_source_type": "http",
   "kubernetes_source_type": "http",
   "plan_image_offer": "{{user `image_offer`}}",
