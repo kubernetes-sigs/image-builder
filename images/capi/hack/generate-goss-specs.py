@@ -30,7 +30,7 @@ builds = {'amazon': ['amazon linux', 'centos', 'flatcar', 'ubuntu', 'windows'],
 
 def generate_goss(provider, system, versions, runtime, dryrun=False, save=False):
     cmd = ['goss', '-g', 'packer/goss/goss.yaml', '--vars', 'packer/goss/goss-vars.yaml']
-    vars = {'OS': system, 'PROVIDER': provider,
+    vars = {'OS': system, 'OS_DISTRO_VERSION': versions["os"], 'PROVIDER': provider,
             'containerd_version': versions['containerd'],
             'docker_ee_version': versions['docker'],
             'distribution_version': versions['os'],

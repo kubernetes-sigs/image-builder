@@ -56,6 +56,21 @@ package:
   {{end}}
 {{end}}
 
+# Looping over provider specific packages for an OS that differ by version
+# For example, between RHEL 7 and RHEL 8 
+{{$distro_version := .Vars.OS_DISTRO_VERSION}}
+{{range $component := index .Vars .Vars.OS .Vars.PROVIDER "versioned"}}
+{{if eq $distro_version (index $component "distro_version")}}
+  {{ range $name, $vers := index $component "package"}}
+  {{$name}}:
+    installed: true
+  {{range $key, $val := $vers}}
+    {{$key}}: {{$val}}
+  {{end}}
+  {{end}}
+{{end}}
+{{end}}
+
 {{end}}
 {{ if eq .Vars.OS "windows"}} # Windows
 # Workaround until windows features are added to goss

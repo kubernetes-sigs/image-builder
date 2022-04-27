@@ -115,7 +115,10 @@ centos:
   amazon:
     package:
       amazon-ssm-agent:
-      <<: *rh7_rpms
+    versioned:
+    - distro_version: "7"
+      package:
+        <<: *rh7_rpms
     command:
       pip3 list --format=columns | grep 'awscli' | awk -F' ' '{print $1}':
         exit-status: 0
@@ -130,14 +133,20 @@ centos:
     package:
       python2-pip:
       open-vm-tools:
-      <<: *rh7_rpms
+    versioned:
+    - distro_version: "7"
+      package:
+        <<: *rh7_rpms
   qemu:
     package:
       open-vm-tools:
       cloud-init:
       cloud-utils-growpart:
       python2-pip:
-      <<: *rh7_rpms
+    versioned:
+    - distro_version: "7"
+      package:
+        <<: *rh7_rpms
   raw:
     package:
       cloud-init:
@@ -189,7 +198,10 @@ rockylinux:
   amazon:
     package:
       amazon-ssm-agent:
-      <<: *rh8_rpms
+    versioned:
+    - distro_version: "8"
+      package:
+        <<: *rh8_rpms
     command:
       pip3 list --format=columns | grep 'awscli' | awk -F' ' '{print $1}':
         exit-status: 0
@@ -204,40 +216,67 @@ rockylinux:
     package:
       open-vm-tools:
       python2-pip:
-      <<: *rh8_rpms
+    versioned:
+    - distro_version: "8"
+      package:
+        <<: *rh8_rpms
   qemu:
     package:
       open-vm-tools:
       cloud-init:
       cloud-utils:
       python3-netifaces:
-      <<: *rh8_rpms
+    versioned:
+    - distro_version: "8"
+      package:
+        <<: *rh8_rpms
   raw:
     package:
       cloud-init:
       cloud-utils:
       python3-netifaces:
-      <<: *rh8_rpms
+    versioned:
+      - distro_version: "8"
+        package:
+          <<: *rh8_rpms
 rhel:
   common-package: *common_rpms
   ova:
     package:
       python2-pip:
       open-vm-tools:
-      <<: *rh7_rpms
+    versioned:
+    - distro_version: "7"
+      package:
+        <<: *rh7_rpms
+    - distro_version: "8"
+      package:
+        <<: *rh8_rpms
   qemu:
     package:
       open-vm-tools:
       cloud-init:
       cloud-utils-growpart:
       python2-pip:
-      <<: *rh7_rpms
+    versioned:
+    - distro_version: "7"
+      package:
+        <<: *rh7_rpms
+    - distro_version: "8"
+      package:
+        <<: *rh8_rpms
   raw:
     package:
       cloud-init:
       cloud-utils-growpart:
       python2-pip:
-      <<: *rh7_rpms
+    versioned:
+    - distro_version: "7"
+      package:
+        <<: *rh7_rpms
+    - distro_version: "8"
+      package:
+        <<: *rh8_rpms
 ubuntu:
   common-kernel-param:
     net.ipv4.conf.all.rp_filter:
