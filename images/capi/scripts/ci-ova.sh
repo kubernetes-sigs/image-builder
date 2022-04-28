@@ -21,17 +21,10 @@ set -o pipefail # any non-zero exit code in a piped command causes the pipeline 
 CAPI_ROOT=$(dirname "${BASH_SOURCE[0]}")/..
 cd "${CAPI_ROOT}" || exit 1
 
+export ARTIFACTS="${ARTIFACTS:-${PWD}/_artifacts}"
 TARGETS=("ubuntu-1804" "ubuntu-2004" "photon-3" "centos-7")
 
 on_exit() {
-  for target in ${TARGETS[@]};
-  do
-    echo "----------------------"
-    echo "${target} build logs"
-    echo "----------------------"
-    cat ${target}-${TIMESTAMP}.log
-  done
-
   # kill the VPN
   docker kill vpn
 }
@@ -89,6 +82,7 @@ docker logs vpn
 # install deps and build all images
 make deps-ova
 
+declare -A PIDS
 for target in ${TARGETS[@]};
 do
   if [[ "${target}" == 'photon-3' ]]; then
@@ -99,7 +93,7 @@ cat << EOF > ci-${target}.json
 "template": "base-photon-3-20220314"
 }
 EOF
-    PACKER_VAR_FILES="ci-${target}.json" make build-node-ova-vsphere-clone-${target} > ${target}-${TIMESTAMP}.log 2>&1 &
+    PACKER_VAR_FILES="ci-${target}.json" make build-node-ova-vsphere-clone-${target} > ${ARTIFACTS}/${target}.log 2>&1 &
 
   else
 cat << EOF > ci-${target}.json
@@ -107,18 +101,21 @@ cat << EOF > ci-${target}.json
 "build_version": "capv-ci-${target}-${TIMESTAMP}"
 }
 EOF
-    PACKER_VAR_FILES="ci-${target}.json" make build-node-ova-vsphere-${target} > ${target}-${TIMESTAMP}.log 2>&1 &
+    PACKER_VAR_FILES="ci-${target}.json" make build-node-ova-vsphere-${target} > ${ARTIFACTS}/${target}.log 2>&1 &
   fi
-  PIDS+=($!)
+  PIDS["${target}"]=$!
 done
 
 # need to unset errexit so that failed child tasks don't cause script to exit
 set +o errexit
 exit_err=false
-for pid in "${PIDS[@]}"; do
-  wait "${pid}"
+for target in "${!PIDS[@]}"; do
+  wait "${PIDS[$target]}"
   if [[ $? -ne 0 ]]; then
     exit_err=true
+    echo "${target}: FAILED. See logs in the artifacts folder."
+  else
+    echo "${target}: SUCCESS"
   fi
 done
 set -o errexit
