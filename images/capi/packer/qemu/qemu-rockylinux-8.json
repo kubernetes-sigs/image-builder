@@ -8,7 +8,6 @@
   "distro_version": "8",
   "epel_rpm_gpg_key": "https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-8",
   "guest_os_type": "centos8-64",
-  "http_directory": "./packer/qemu/linux/{{user `distro_name`}}/http/",
   "iso_checksum": "4eb2ae6b06876205f2209e4504110fe4115b37540c21ecfbbc0ebc11084cb779",
   "iso_checksum_type": "sha256",
   "iso_url": "https://download.rockylinux.org/pub/rocky/8/isos/x86_64/Rocky-8.5-x86_64-minimal.iso",
