@@ -111,7 +111,6 @@
         "build_date": "{{isotime}}",
         "build_name": "{{user `build_name`}}",
         "build_timestamp": "{{user `build_timestamp`}}",
-        "build_type": "node",
         "containerd_version": "{{user `containerd_version`}}",
         "custom_role": "{{user `custom_role`}}",
         "debug_tools": "{{user `debug_tools`}}",
@@ -143,7 +142,7 @@
       ],
       "inline": [
         "cd {{user `output_dir`}}",
-        "../../hack/image-build-ova.py --node --vmx {{user `vmx_version`}} --eula ../../hack/ovf_eula.txt --ovf_template ../../hack/ovf_template.xml --vmdk_file {{user `build_version`}}-disk-0.vmdk"
+        "../../hack/image-build-ova.py --vmx {{user `vmx_version`}} --eula ../../hack/ovf_eula.txt --ovf_template ../../hack/ovf_template.xml --vmdk_file {{user `build_version`}}-disk-0.vmdk"
       ],
       "name": "vsphere",
       "type": "shell-local"
@@ -153,7 +152,7 @@
         "file"
       ],
       "inline": [
-        "./hack/image-build-ova.py --stream_vmdk --node --vmx {{user `vmx_version`}} --eula ./hack/ovf_eula.txt --ovf_template ./hack/ovf_template.xml {{user `output_dir`}}",
+        "./hack/image-build-ova.py --stream_vmdk --vmx {{user `vmx_version`}} --eula ./hack/ovf_eula.txt --ovf_template ./hack/ovf_template.xml {{user `output_dir`}}",
         "./hack/image-post-create-config.sh {{user `output_dir`}}"
       ],
       "name": "local",

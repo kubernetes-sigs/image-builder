@@ -29,6 +29,7 @@ import subprocess
 from string import Template
 import tarfile
 
+
 def main():
     parser = argparse.ArgumentParser(
         description="Builds an OVA using the artifacts from a Packer build")
@@ -36,9 +37,6 @@ def main():
                         dest='stream_vmdk',
                         action='store_true',
                         help='Compress vmdk file')
-    image_type = parser.add_mutually_exclusive_group(required=True)
-    image_type.add_argument('--node', action='store_true')
-    image_type.add_argument('--haproxy', action='store_true')
     parser.add_argument('--vmx',
                         dest='vmx_version',
                         default='15',
@@ -89,12 +87,8 @@ def main():
     build = data['builds'][0]
     build_data = build['custom_data']
 
-    if args.node:
-        print("image-build-ova: loaded %s-kube-%s" % (build_data['build_name'],
-                                                      build_data['kubernetes_semver']))
-    elif args.haproxy:
-        print("image-build-ova: loaded %s-haproxy-%s" % (build_data['build_name'],
-                                                      build_data['dataplaneapi_version']))
+    print("image-build-ova: loaded %s-kube-%s" % (build_data['build_name'],
+                                                  build_data['kubernetes_semver']))
 
     if args.vmdk_file is None:
         # Get a list of the VMDK files from the packer manifest.
@@ -147,47 +141,39 @@ def main():
 
     capv_url = "https://github.com/kubernetes-sigs/cluster-api-provider-vsphere"
 
-    if args.node:
-        data['CNI_VERSION'] = build_data['kubernetes_cni_semver']
-        data['CONTAINERD_VERSION'] = build_data['containerd_version']
-        data['KUBERNETES_SEMVER'] = build_data['kubernetes_semver']
-        data['KUBERNETES_SOURCE_TYPE'] = build_data['kubernetes_source_type']
-        data['PRODUCT'] = "%s and Kubernetes %s" % (build_data['os_name'], build_data['kubernetes_semver'])
-        data['ANNOTATION'] = "Cluster API vSphere image - %s - %s" % (data['PRODUCT'], capv_url)
-        data['WAKEONLANENABLED'] = "false"
-        data['TYPED_VERSION'] = build_data['kubernetes_typed_version']
+    data['CNI_VERSION'] = build_data['kubernetes_cni_semver']
+    data['CONTAINERD_VERSION'] = build_data['containerd_version']
+    data['KUBERNETES_SEMVER'] = build_data['kubernetes_semver']
+    data['KUBERNETES_SOURCE_TYPE'] = build_data['kubernetes_source_type']
+    data['PRODUCT'] = "%s and Kubernetes %s" % (
+        build_data['os_name'], build_data['kubernetes_semver'])
+    data['ANNOTATION'] = "Cluster API vSphere image - %s - %s" % (data['PRODUCT'], capv_url)
+    data['WAKEONLANENABLED'] = "false"
+    data['TYPED_VERSION'] = build_data['kubernetes_typed_version']
 
-        data['PROPERTIES'] = Template('''
-      <Property ovf:userConfigurable="false" ovf:value="${DISTRO_NAME}" ovf:type="string" ovf:key="DISTRO_NAME"/>
-      <Property ovf:userConfigurable="false" ovf:value="${DISTRO_VERSION}" ovf:type="string" ovf:key="DISTRO_VERSION"/>
-      <Property ovf:userConfigurable="false" ovf:value="${DISTRO_ARCH}" ovf:type="string" ovf:key="DISTRO_ARCH"/>
-      <Property ovf:userConfigurable="false" ovf:value="${CNI_VERSION}" ovf:type="string" ovf:key="CNI_VERSION"/>
-      <Property ovf:userConfigurable="false" ovf:value="${CONTAINERD_VERSION}" ovf:type="string" ovf:key="CONTAINERD_VERSION"/>
-      <Property ovf:userConfigurable="false" ovf:value="${KUBERNETES_SEMVER}" ovf:type="string" ovf:key="KUBERNETES_SEMVER"/>
-      <Property ovf:userConfigurable="false" ovf:value="${KUBERNETES_SOURCE_TYPE}" ovf:type="string" ovf:key="KUBERNETES_SOURCE_TYPE"/>\n''').substitute(data)
+    data['PROPERTIES'] = Template('''
+  <Property ovf:userConfigurable="false" ovf:value="${DISTRO_NAME}" ovf:type="string" ovf:key="DISTRO_NAME"/>
+  <Property ovf:userConfigurable="false" ovf:value="${DISTRO_VERSION}" ovf:type="string" ovf:key="DISTRO_VERSION"/>
+  <Property ovf:userConfigurable="false" ovf:value="${DISTRO_ARCH}" ovf:type="string" ovf:key="DISTRO_ARCH"/>
+  <Property ovf:userConfigurable="false" ovf:value="${CNI_VERSION}" ovf:type="string" ovf:key="CNI_VERSION"/>
+  <Property ovf:userConfigurable="false" ovf:value="${CONTAINERD_VERSION}" ovf:type="string" ovf:key="CONTAINERD_VERSION"/>
+  <Property ovf:userConfigurable="false" ovf:value="${KUBERNETES_SEMVER}" ovf:type="string" ovf:key="KUBERNETES_SEMVER"/>
+  <Property ovf:userConfigurable="false" ovf:value="${KUBERNETES_SOURCE_TYPE}" ovf:type="string" ovf:key="KUBERNETES_SOURCE_TYPE"/>\n''').substitute(data)
 
-        # Check if OVF_CUSTOM_PROPERTIES environment Variable is set.
-        # If so, load the json file & add the properties to the OVF
+    # Check if OVF_CUSTOM_PROPERTIES environment Variable is set.
+    # If so, load the json file & add the properties to the OVF
 
-        if os.environ.get("OVF_CUSTOM_PROPERTIES"):
-            with open(os.environ.get("OVF_CUSTOM_PROPERTIES"), 'r') as f:
-                custom_properties = json.loads(f.read())
-            if custom_properties:
-                for k, v in custom_properties.items():
-                    data['PROPERTIES'] = data['PROPERTIES'] + f'''      <Property ovf:userConfigurable="false" ovf:value="{v}" ovf:type="string" ovf:key="{k}"/>\n'''
+    if os.environ.get("OVF_CUSTOM_PROPERTIES"):
+        with open(os.environ.get("OVF_CUSTOM_PROPERTIES"), 'r') as f:
+            custom_properties = json.loads(f.read())
+        if custom_properties:
+            for k, v in custom_properties.items():
+                data['PROPERTIES'] = data['PROPERTIES'] + \
+                    f'''      <Property ovf:userConfigurable="false" ovf:value="{v}" ovf:type="string" ovf:key="{k}"/>\n'''
 
-        if "windows" in OS_id_map[build_data['guest_os_type']]['type']:
-            if build_data['disable_hypervisor'] != "true":
-                data['NESTEDHV'] = "true"
-    elif args.haproxy:
-        data['DATAPLANEAPI_VERSION'] = build_data['dataplaneapi_version']
-        data['PRODUCT'] = "CAPV HAProxy Load Balancer"
-        data['ANNOTATION'] = "Cluster API vSphere HAProxy Load Balancer - %s and HAProxy dataplane API %s - %s" % (build_data['os_name'], build_data['dataplaneapi_version'], capv_url)
-        data['WAKEONLANENABLED'] = "true"
-        data['TYPED_VERSION'] = "haproxy-%s" % (build_data['dataplaneapi_version'])
-        data['PROPERTIES'] = Template('''
-      <Property ovf:userConfigurable="false" ovf:value="${DATAPLANEAPI_VERSION}" ovf:type="string" ovf:key="DATAPLANEAPI_VERSION"/>
-        ''').substitute(data)
+    if "windows" in OS_id_map[build_data['guest_os_type']]['type']:
+        if build_data['disable_hypervisor'] != "true":
+            data['NESTEDHV'] = "true"
 
     ovf = "%s-%s.ovf" % (build_data['build_name'], data['TYPED_VERSION'])
     mf = "%s-%s.mf" % (build_data['build_name'], data['TYPED_VERSION'])
@@ -279,6 +265,7 @@ def stream_optimize_vmdk_files(inlist):
         subprocess.check_call(args)
         f['stream_name'] = outfile
         f['stream_size'] = os.path.getsize(outfile)
+
 
 if __name__ == "__main__":
     main()

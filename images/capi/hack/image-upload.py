@@ -62,14 +62,9 @@ def main():
     # Get the first build.
     build = data['builds'][0]
     build_data = build['custom_data']
-    build_type = build_data['build_type']
 
-    if build_type == "node":
-        version = build_data['kubernetes_semver']
-        build_name = "%s-kube-%s" % (build_data['build_name'], version)
-    else:
-        version = build_data['dataplaneapi_version']
-        build_name = "%s-haproxy-%s" % (build_data['build_name'], version)
+    version = build_data['kubernetes_semver']
+    build_name = "%s-kube-%s" % (build_data['build_name'], version)
     print("image-upload-ova: loaded %s" % build_name)
 
     # Get the OVA and its checksum.
@@ -82,12 +77,8 @@ def main():
         upload_dir = 'release'
 
     # Get the path to the GCS OVA and its checksum.
-    if build_type == "node":
-        gcs_ova = "gs://capv-images/%s/%s/%s" % (
-            upload_dir, version, ova)
-    else:
-        gcs_ova = "gs://capv-images/extra/haproxy/%s/%s/%s" % (
-            upload_dir, version, ova)
+    gcs_ova = "gs://capv-images/%s/%s/%s" % (
+        upload_dir, version, ova)
     gcs_ova_sum = "%s.sha256" % gcs_ova
 
     # Get the URL of the OVA and its checksum.
