@@ -57,7 +57,7 @@
       },
       "temporary_security_group_source_cidrs": "{{ user `temporary_security_group_source_cidrs` }}",
       "type": "amazon-ebs",
-      "user_data": "#cloud-config\nrepo_upgrade: none",
+      "user_data": "{{ user `user_data` }}",
       "vpc_id": "{{ user `vpc_id` }}"
     }
   ],
@@ -192,6 +192,7 @@
     "subnet_id": "",
     "temporary_security_group_source_cidrs": "",
     "throughput": "125",
+    "user_data": "#cloud-config\nrepo_upgrade: none",
     "volume_size": "8",
     "volume_type": "gp3",
     "vpc_id": ""
