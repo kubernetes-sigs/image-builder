@@ -65,7 +65,7 @@
 
 # Find KB Article numbers:
 #  - WS 2019 https://support.microsoft.com/en-us/help/4464619
-#  - WS 2022 https://support.microsoft.com/en-us/topic/windows-server-2022-update-history-e1caa597-00c5-4ab9-9f3e-8212fe80b2ee
+#  - WS 2022 https://support.microsoft.com/topic/windows-server-2022-update-history-e1caa597-00c5-4ab9-9f3e-8212fe80b2ee
 # Task to install specific updates by KB. All categories are specified as the module
 # won't install the update unless the category matches. Setting windows_updates_kbs_numbers to []
 # will skip this task.
