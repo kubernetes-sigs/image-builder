@@ -376,7 +376,7 @@ windows:
         exists: true
         filetype: file
         contains:
-        - "COM1,115200,N,8"
+        - "COM2,115200,N,8"
         - "metadata_services=cloudbaseinit.metadata.services.azureservice.AzureService"
         - "cloudbaseinit.plugins.common.ephemeraldisk.EphemeralDiskPlugin"
         - "cloudbaseinit.plugins.windows.azureguestagent.AzureGuestAgentPlugin"
