@@ -35,7 +35,8 @@ if ! command -v ansible >/dev/null 2>&1; then
     ensure_py3_bin ansible-playbook
 fi
 
-ansible-galaxy collection install community.general
-ansible-galaxy collection install ansible.posix
-ansible-galaxy collection install 'ansible.windows:>=1.7.0'
-ansible-galaxy collection install community.windows
+ansible-galaxy collection install \
+  community.general \
+  ansible.posix \
+  'ansible.windows:>=1.7.0' \
+  community.windows
