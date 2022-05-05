@@ -12,5 +12,6 @@
   "ssh_username": "core",
   "systemd_prefix": "/etc/systemd",
   "sysusr_prefix": "/opt",
-  "sysusrlocal_prefix": "/opt"
+  "sysusrlocal_prefix": "/opt",
+  "user_data": ""
 }
