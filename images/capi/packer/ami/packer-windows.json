@@ -28,6 +28,7 @@
       "profile": "{{ user `aws_profile`}}",
       "region": "{{ user `aws_region` }}",
       "secret_key": "{{user `aws_secret_key`}}",
+      "security_group_ids": "{{user `aws_security_group_ids`}}",
       "skip_create_ami": "{{ user `skip_create_ami`}}",
       "skip_profile_validation": "{{user `skip_profile_validation`}}",
       "snapshot_groups": "{{user `snapshot_groups`}}",
@@ -43,6 +44,8 @@
         "most_recent": true,
         "owners": "{{user `ami_filter_owners`}}"
       },
+      "ssh_keypair_name": "{{user `ssh_keypair_name`}}",
+      "ssh_private_key_file": "{{user `ssh_private_key_file`}}",
       "subnet_id": "{{ user `subnet_id` }}",
       "tags": {
         "build_date": "{{isotime}}",
@@ -164,6 +167,7 @@
     "aws_profile": "",
     "aws_region": "us-east-1",
     "aws_secret_key": "",
+    "aws_security_group_ids": "",
     "build_name": null,
     "build_timestamp": "{{timestamp}}",
     "builder_instance_type": "t3.large",
@@ -187,6 +191,8 @@
     "skip_profile_validation": "false",
     "snapshot_groups": "all",
     "snapshot_users": "",
+    "ssh_keypair_name": "",
+    "ssh_private_key_file": "",
     "subnet_id": "",
     "temporary_security_group_source_cidrs": "",
     "throughput": "125",
