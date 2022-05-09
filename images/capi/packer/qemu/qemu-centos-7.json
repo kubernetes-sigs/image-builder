@@ -2,7 +2,6 @@
   "ansible_extra_vars": "ansible_python_interpreter=/usr/bin/python extra_arguments =vvvv",
   "boot_command_prefix": "<tab> text ks=",
   "boot_command_suffix": "/7/ks.cfg<enter><wait>",
-  "boot_media_path": "http://{{ .HTTPIP }}:{{ .HTTPPort }}",
   "build_name": "centos-7",
   "distro_arch": "amd64",
   "distro_name": "centos",
