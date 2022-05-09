@@ -1,7 +1,6 @@
 {
   "boot_command_prefix": "<up><tab> text inst.ks=",
   "boot_command_suffix": "/8/ks.cfg<enter><wait><enter>",
-  "boot_media_path": "http://{{ .HTTPIP }}:{{ .HTTPPort }}",
   "build_name": "rockylinux-8",
   "distro_arch": "amd64",
   "distro_name": "rockylinux",
