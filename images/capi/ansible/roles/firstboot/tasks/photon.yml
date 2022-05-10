@@ -14,4 +14,11 @@
 
 # no-op task just to have something for the role to do. Right now
 # all the work happens in the setup role
-- meta: noop
+# - meta: noop
+
+- name: Set transparent huge pages to madvise
+  lineinfile:
+    path: /boot/photon.cfg
+    backrefs: yes
+    regexp: "^(?!.*transparent_hugepage=madvise)(photon_cmdline.*)"
+    line: '\1 transparent_hugepage=madvise'
