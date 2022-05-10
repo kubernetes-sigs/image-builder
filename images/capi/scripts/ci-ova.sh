@@ -85,6 +85,7 @@ make deps-ova
 declare -A PIDS
 for target in ${TARGETS[@]};
 do
+  export PACKER_VAR_FILES="ci-${target}.json scripts/ci-disable-goss-inspect.json"
   if [[ "${target}" == 'photon-3' ]]; then
 cat << EOF > ci-${target}.json
 {
@@ -93,7 +94,7 @@ cat << EOF > ci-${target}.json
 "template": "base-photon-3-20220314"
 }
 EOF
-    PACKER_VAR_FILES="ci-${target}.json" make build-node-ova-vsphere-clone-${target} > ${ARTIFACTS}/${target}.log 2>&1 &
+    make build-node-ova-vsphere-clone-${target} > ${ARTIFACTS}/${target}.log 2>&1 &
 
   else
 cat << EOF > ci-${target}.json
@@ -101,7 +102,7 @@ cat << EOF > ci-${target}.json
 "build_version": "capv-ci-${target}-${TIMESTAMP}"
 }
 EOF
-    PACKER_VAR_FILES="ci-${target}.json" make build-node-ova-vsphere-${target} > ${ARTIFACTS}/${target}.log 2>&1 &
+    make build-node-ova-vsphere-${target} > ${ARTIFACTS}/${target}.log 2>&1 &
   fi
   PIDS["${target}"]=$!
 done
