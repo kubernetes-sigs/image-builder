@@ -25,17 +25,6 @@
     - cloud-initramfs-dyn-netconf
   when: ansible_os_family == "Debian"
 
-- name: Download cloud-init_21.1-19 from launchpad
-  get_url:
-    url: "{{ cloud_init_deb_download_url }}"
-    dest: /tmp
-  register: cloud_init_deb_file
-  when: ansible_os_family == "Debian" and ansible_distribution_version == "20.04"
-
-- name: Install cloud-init v21.1-19 deb
-  command: "dpkg -i {{ cloud_init_deb_file.dest }}"
-  when: ansible_os_family == "Debian" and ansible_distribution_version == "20.04"
-
 - name: Install cloud-init packages
   yum:
     name: "{{ packages }}"
@@ -53,15 +42,12 @@
     packages: "cloud-init cloud-utils python3-netifaces"
   when: ansible_os_family == "VMware Photon OS"
 
-- name: Downgrade to cloud-init 21.2-4.ph3
-  command: "tdnf downgrade cloud-init=21.2-4.ph3 -y"
-  when: ansible_os_family == "VMware Photon OS"
-
 - name: Download cloud-init datasource for VMware Guestinfo
   get_url:
     url:  '{{ guestinfo_datasource_script }}'
     dest: /tmp/cloud-init-vmware.sh
     mode: 0700
+  when: ansible_os_family == "RedHat"
 
 # pip on CentOS needs to be upgraded, but since it's still
 # Python 2.7, need < 21.0
@@ -76,11 +62,13 @@
   environment:
     REPO_SLUG: '{{ guestinfo_datasource_slug }}'
     GIT_REF:   '{{ guestinfo_datasource_ref }}'
+  when: ansible_os_family == "RedHat"
 
 - name: Remove cloud-init-vmware.sh
   file:
     path:  /tmp/cloud-init-vmware.sh
     state: absent
+  when: ansible_os_family == "RedHat"
 
 - name: Remove cloud-init /etc/cloud/cloud.cfg.d/99-disable-networking-config.cfg
   file:
