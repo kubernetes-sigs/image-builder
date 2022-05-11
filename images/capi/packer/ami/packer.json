@@ -91,7 +91,7 @@
       "environment_vars": [
         "BUILD_NAME={{user `build_name`}}"
       ],
-      "execute_command": "if [[ \"${BUILD_NAME}\" == *\"flatcar\"* ]]; then sudo {{.Vars}} -S -E bash '{{.Path}}'; fi",
+      "execute_command": "BUILD_NAME={{user `build_name`}}; if [[ \"${BUILD_NAME}\" == *\"flatcar\"* ]]; then sudo {{.Vars}} -S -E bash '{{.Path}}'; fi",
       "script": "./packer/files/bootstrap-flatcar.sh",
       "type": "shell"
     },
