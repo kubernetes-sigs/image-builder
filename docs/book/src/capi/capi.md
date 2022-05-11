@@ -193,3 +193,14 @@ PACKER_VAR_FILES=proxy.json make build-node-ova-local-photon-3
   "myvar2": "value2"
 }
 ```
+
+##### Enabling `custom_role` on Ansible
+
+Put the Ansible role files in the `ansible/roles` directory.
+
+```json
+{
+  "custom_role": "true",
+  "custom_role_names": "role1,role2,role3"
+}
+```
