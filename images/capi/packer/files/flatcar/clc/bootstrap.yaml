@@ -1,0 +1,26 @@
+# This file is used for initial provisioning of a Flatcar machine, before Packer provisioners (e.g.
+# Ansible) are executed.
+passwd:
+  users:
+  - name: builder
+    # "BUILDERPASSWORDHASH" gets overwritten by Packer on platforms where SSH password auth is used.
+    password_hash: BUILDERPASSWORDHASH
+    # "BUILDERSSHAUTHKEY" gets overwritten by Packer on platforms where SSH key auth is used.
+    # TODO: Once https://github.com/kubernetes-sigs/image-builder/pull/882 is merged we can remove
+    # the ssh_authorized_keys key altogether since the QEMU and raw targets would be using password
+    # auth and the rest of the targets have provider-specific authorization mechanisms, meaning SSH
+    # keys don't have to be specified in this CLC file.
+    ssh_authorized_keys: ["BUILDERSSHAUTHKEY"]
+    groups:
+    - wheel
+    - sudo
+    - docker
+systemd:
+  units:
+  - name: docker.service
+    enable: true
+  # Mask update-engine and locksmithd to disable automatic updates during image creation.
+  - name: update-engine.service
+    mask: true
+  - name: locksmithd.service
+    mask: true
