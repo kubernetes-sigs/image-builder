@@ -13,6 +13,24 @@
 # limitations under the License.
 
 ---
+- name: Install cloud-init packages
+  apt:
+    name: "{{ packages }}"
+    state: present
+    force_apt_get: yes
+  vars:
+    packages:
+    - cloud-init
+    - cloud-guest-utils
+    - cloud-initramfs-copymods
+    - cloud-initramfs-dyn-netconf
+
+- name: Disable Hyper-V KVP protocol daemon on Ubuntu
+  systemd:
+    name: hv-kvp-daemon
+    state: stopped
+    enabled: false
+
 - name: Copy networkd-dispatcher scripts to add DHCP provided NTP servers
   template:
     src: "{{ item.src }}"

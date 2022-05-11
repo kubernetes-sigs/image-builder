@@ -13,6 +13,15 @@
 # limitations under the License.
 
 ---
+- name: Install cloud-init and tools for VMware Photon OS
+  command: tdnf install {{ packages }} -y
+  vars:
+    packages: "cloud-init cloud-utils python3-netifaces"
+
+- name: Remove cloud-init /etc/cloud/cloud.cfg.d/99-disable-networking-config.cfg
+  file:
+    path: /etc/cloud/cloud.cfg.d/99-disable-networking-config.cfg
+    state: absent
 
 - name: Install networkd-dispatcher service (Download from source)
   unarchive:
