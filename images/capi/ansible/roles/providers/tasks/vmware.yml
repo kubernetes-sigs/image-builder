@@ -12,94 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- name: Install cloud-init packages
-  apt:
-    name: "{{ packages }}"
-    state: present
-    force_apt_get: yes
-  vars:
-    packages:
-    - cloud-init
-    - cloud-guest-utils
-    - cloud-initramfs-copymods
-    - cloud-initramfs-dyn-netconf
+- include_tasks: vmware-photon.yml
+  when: ansible_os_family == "VMware Photon OS"
+
+- include_tasks: vmware-ubuntu.yml
   when: ansible_os_family == "Debian"
 
-- name: Download cloud-init_21.1-19 from launchpad
-  get_url:
-    url: "{{ cloud_init_deb_download_url }}"
-    dest: /tmp
-  register: cloud_init_deb_file
-  when: ansible_os_family == "Debian" and ansible_distribution_version == "20.04"
-
-- name: Install cloud-init v21.1-19 deb
-  command: "dpkg -i {{ cloud_init_deb_file.dest }}"
-  when: ansible_os_family == "Debian" and ansible_distribution_version == "20.04"
-
-- name: Install cloud-init packages
-  yum:
-    name: "{{ packages }}"
-    state: present
-  vars:
-    packages:
-    - cloud-init
-    - cloud-utils-growpart
-    - python2-pip
+- include_tasks: vmware-redhat.yml
   when: ansible_os_family == "RedHat"
-
-- name: Install cloud-init and tools for VMware Photon OS
-  command: tdnf install {{ packages }} -y
-  vars:
-    packages: "cloud-init cloud-utils python3-netifaces"
-  when: ansible_os_family == "VMware Photon OS"
-
-- name: Downgrade to cloud-init 21.2-4.ph3
-  command: "tdnf downgrade cloud-init=21.2-4.ph3 -y"
-  when: ansible_os_family == "VMware Photon OS"
-
-- name: Download cloud-init datasource for VMware Guestinfo
-  get_url:
-    url:  '{{ guestinfo_datasource_script }}'
-    dest: /tmp/cloud-init-vmware.sh
-    mode: 0700
-
-# pip on CentOS needs to be upgraded, but since it's still
-# Python 2.7, need < 21.0
-- name: Upgrade pip
-  pip:
-    name: pip<21.0
-    state: forcereinstall
-  when: ansible_os_family == "RedHat" and ansible_distribution_major_version == '7'
-
-- name: Execute cloud-init-vmware.sh
-  shell: bash -o errexit -o pipefail /tmp/cloud-init-vmware.sh
-  environment:
-    REPO_SLUG: '{{ guestinfo_datasource_slug }}'
-    GIT_REF:   '{{ guestinfo_datasource_ref }}'
-
-- name: Remove cloud-init-vmware.sh
-  file:
-    path:  /tmp/cloud-init-vmware.sh
-    state: absent
-
-- name: Remove cloud-init /etc/cloud/cloud.cfg.d/99-disable-networking-config.cfg
-  file:
-    path: /etc/cloud/cloud.cfg.d/99-disable-networking-config.cfg
-    state: absent
-  when: ansible_os_family == "VMware Photon OS"
-
-#- name: Unlock password
-#  replace:
-#    path: /etc/cloud/cloud.cfg
-#    regexp: '(?i)lock_passwd: True'
-#    replace: 'lock_passwd: False'
-
-- name: Disable Hyper-V KVP protocol daemon on Ubuntu
-  systemd:
-    name: hv-kvp-daemon
-    state: stopped
-    enabled: false
-  when: ansible_os_family == "Debian"
 
 - name: Create provider vmtools config drop-in file
   copy:
