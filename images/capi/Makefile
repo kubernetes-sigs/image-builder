@@ -126,6 +126,13 @@ deps-powervs:
 	hack/ensure-goss.sh
 	hack/ensure-powervs.sh
 
+.PHONY: deps-ignition
+deps-ignition: ## Installs/checks dependencies for generating Ignition files
+deps-ignition:
+	hack/ensure-jq.sh
+	hack/ensure-ct.sh
+
+
 ## --------------------------------------
 ## Container variables
 ## --------------------------------------
@@ -768,3 +775,13 @@ release-staging: ## Builds and push container images to the staging bucket.
 json_files = $(shell find . -type f -name "*.json" | sort -u)
 json-sort: ## Sort all JSON files alphabetically
 	@for f in $(json_files); do (cat "$$f" | jq -S '.' >> "$$f".sorted && mv "$$f".sorted "$$f") || exit 1 ; done
+
+
+## --------------------------------------
+## Ignition
+## --------------------------------------
+##@ Ignition
+.PHONY: gen-ignition
+ignition_files = bootstrap
+gen-ignition: deps-ignition ## Generates Ignition files from CLC
+	for f in $(ignition_files); do (ct < packer/files/flatcar/clc/$$f.yaml | jq '.' > packer/files/flatcar/ignition/$$f.json) || exit 1; done
