@@ -2,18 +2,20 @@
 
 OS=${OS:-"Ubuntu"}
 OS_VERSION=${OS_VERSION:-"18.04"}
+VM_GENERATION=${VM_GENERATION:-"gen1"}
 [[ -n ${DEBUG:-} ]] && set -o xtrace
 
 required_env_vars=(
-    "KUBERNETES_VERSION"
-    "SKU_TEMPLATE_FILE"
-    "AZURE_TENANT_ID"
     "AZURE_CLIENT_ID"
     "AZURE_CLIENT_SECRET"
-    "PUBLISHER"
+    "AZURE_TENANT_ID"
+    "KUBERNETES_VERSION"
     "OFFER"
     "OS"
     "OS_VERSION"
+    "PUBLISHER"
+    "SKU_TEMPLATE_FILE"
+    "VM_GENERATION"
 )
 
 for v in "${required_env_vars[@]}"
@@ -29,17 +31,9 @@ if [ ! -f "$SKU_TEMPLATE_FILE" ]; then
     exit 1
 fi
 
-IFS='.' # set period (.) as delimiter
-read -ra ADDR <<< "${KUBERNETES_VERSION}" # str is read into an array as tokens separated by IFS
-IFS=' ' # reset to default value after usage
-
-major=${ADDR[0]}
-minor=${ADDR[1]}
-patch=${ADDR[2]}
-
 os=$(echo "$OS" | tr '[:upper:]' '[:lower:]')
 version=$(echo "$OS_VERSION" | tr '[:upper:]' '[:lower:]' | tr -d .)
-sku_id="k8s-${major}dot${minor}dot${patch}-${os}-${version}"
+sku_id="${os}-${version}-${VM_GENERATION}"
 
 if [ "$OS" == "Ubuntu" ]; then
     os_type="Ubuntu"

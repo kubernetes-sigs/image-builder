@@ -50,8 +50,18 @@ echo "VHD publishing info:"
 cat $VHD_INFO
 echo
 
+
+# get Kubernetes version and split into major, minor, and patch
+k8s_version=$(< $SKU_INFO jq -r ".k8s_version")
+IFS='.' # set period (.) as delimiter
+read -ra ADDR <<< "${k8s_version}" # str is read into an array as tokens separated by IFS
+IFS=' ' # reset to default value after usage
+major=${ADDR[0]}
+minor=${ADDR[1]}
+patch=${ADDR[2]}
+
 # generate image version
-image_version=$(date +"%Y.%m.%d")
+image_version=${major}${minor}.${patch}.$(date +"%Y%m%d")
 
 # generate media name
 sku_id=$(< $SKU_INFO jq -r ".sku_id")
@@ -63,8 +73,6 @@ published_date=$(date +"%m/%d/%Y")
 # get vhd url
 vhd_url=$(< $VHD_INFO jq -r ".vhd_url")
 
-# get Kubernetes version
-k8s_version=$(< $SKU_INFO jq -r ".k8s_version")
 label="Kubernetes $k8s_version $OS $OS_VERSION"
 description="Kubernetes $k8s_version $OS $OS_VERSION"
 
