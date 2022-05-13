@@ -1,5 +1,5 @@
 {
   "containerd_sha256": "dc4301a4a24b747765efab925e9e8edaec4c09862fb4a51066bea0138562e103",
-  "containerd_version": "1.5.7",
-  "containerd_url": "https://oplab9.parqtec.unicamp.br/pub/ppc64el/containerd-cri/containerd-cri-{{user `containerd_version`}}/cri-containerd-cni-{{user `containerd_version`}}-linux-ppc64le.tar.gz"
+  "containerd_url": "https://oplab9.parqtec.unicamp.br/pub/ppc64el/containerd-cri/containerd-cri-{{user `containerd_version`}}/cri-containerd-cni-{{user `containerd_version`}}-linux-ppc64le.tar.gz",
+  "containerd_version": "1.5.7"
 }

@@ -1,12 +1,21 @@
 {
-  "builders":[
+  "builders": [
     {
-      "type": "powervs",
-      "api_key": "{{user `apikey`}}",
       "account_id": "{{user `account_id`}}",
-      "service_instance_id": "{{user `service_instance_id`}}",
+      "api_key": "{{user `apikey`}}",
+      "capture": {
+        "cos": {
+          "access_key": "{{user `capture_cos_access_key`}}",
+          "bucket": "{{user `capture_cos_bucket`}}",
+          "region": "{{user `capture_cos_region`}}",
+          "secret_key": "{{user `capture_cos_secret_key`}}"
+        },
+        "name": "capibm-powervs-{{user `build_name`}}-{{user `kubernetes_rpm_version` | clean_resource_name}}-{{user `build_timestamp`}}"
+      },
+      "instance_name": "capibm-{{user `build_name`}}-{{user `build_timestamp`}}",
+      "key_pair_name": "{{user `key_pair_name`}}",
       "region": "{{user `region`}}",
-      "zone": "{{user `zone`}}",
+      "service_instance_id": "{{user `service_instance_id`}}",
       "source": {
         "cos": {
           "bucket": "{{user `source_cos_bucket`}}",
@@ -14,20 +23,11 @@
           "region": "{{user `source_cos_region`}}"
         }
       },
-      "instance_name": "capibm-{{user `build_name`}}-{{user `build_timestamp`}}",
-      "key_pair_name": "{{user `key_pair_name`}}",
-      "ssh_username": "{{user `ssh_username`}}",
       "ssh_private_key_file": "{{user `ssh_private_key_file`}}",
       "ssh_timeout": "{{user `ssh_timeout`}}",
-      "capture": {
-        "name": "capibm-powervs-{{user `build_name`}}-{{user `kubernetes_rpm_version` | clean_resource_name}}-{{user `build_timestamp`}}",
-        "cos": {
-          "bucket": "{{user `capture_cos_bucket`}}",
-          "region": "{{user `capture_cos_region`}}",
-          "access_key": "{{user `capture_cos_access_key`}}",
-          "secret_key": "{{user `capture_cos_secret_key`}}"
-        }
-      }
+      "ssh_username": "{{user `ssh_username`}}",
+      "type": "powervs",
+      "zone": "{{user `zone`}}"
     }
   ],
   "post-processors": [
@@ -41,7 +41,7 @@
       "type": "manifest"
     }
   ],
-  "provisioners":[
+  "provisioners": [
     {
       "ansible_env_vars": [
         "ANSIBLE_SSH_ARGS='{{user `existing_ansible_ssh_args`}} -o IdentitiesOnly=yes'"
@@ -59,28 +59,23 @@
     }
   ],
   "variables": {
-    "apikey": "",
     "account_id": "",
-    "service_instance_id": "",
-    "region": "",
-    "zone": "",
-    "ssh_private_key_file": "",
-    "capture_cos_access_key": "",
-    "capture_cos_secret_key": "",
-    "capture_cos_bucket": "",
-    "capture_cos_region": "",
-    "key_pair_name": "",
-    "ssh_timeout": "30m",
     "ansible_common_vars": "",
     "ansible_extra_vars": "",
     "ansible_user_vars": "",
+    "apikey": "",
     "build_timestamp": "{{timestamp}}",
+    "capture_cos_access_key": "",
+    "capture_cos_bucket": "",
+    "capture_cos_region": "",
+    "capture_cos_secret_key": "",
     "containerd_sha256": null,
     "containerd_url": null,
     "containerd_version": null,
     "crictl_url": null,
     "crictl_version": null,
     "existing_ansible_ssh_args": "{{env `ANSIBLE_SSH_ARGS`}}",
+    "key_pair_name": "",
     "kubernetes_cni_deb_version": null,
     "kubernetes_cni_http_source": null,
     "kubernetes_cni_rpm_version": null,
@@ -99,6 +94,11 @@
     "kubernetes_semver": null,
     "kubernetes_source_type": null,
     "manifest_output": "manifest.json",
-    "python_path": ""
+    "python_path": "",
+    "region": "",
+    "service_instance_id": "",
+    "ssh_private_key_file": "",
+    "ssh_timeout": "30m",
+    "zone": ""
   }
 }
