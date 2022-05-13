@@ -1,6 +1,6 @@
 {
   "ansible_extra_vars": "ansible_python_interpreter=/opt/bin/python",
-  "boot_command_prefix": "curl -sLo /tmp/ignition.json https://raw.githubusercontent.com/flatcar-linux/flatcar-packer-qemu/917f209e1afd262e71f41c65c1295f29c08cb8c6/ignition-builder.json<enter>sudo flatcar-install -d /dev/sda -C {{user `channel_name`}} -V {{user `release_version`}} -i /tmp/ignition.json<enter>sudo reboot<enter><wait{{user `install_wait`}}>",
+  "boot_command_prefix": "sudo systemctl mask sshd.socket --now<enter>curl -sLo /tmp/ignition.json https://raw.githubusercontent.com/flatcar-linux/flatcar-packer-qemu/917f209e1afd262e71f41c65c1295f29c08cb8c6/ignition-builder.json<enter>sudo flatcar-install -d /dev/sda -C {{user `channel_name`}} -V {{user `release_version`}} -i /tmp/ignition.json<enter>sudo reboot<enter>",
   "boot_media_path": "",
   "boot_wait": "120s",
   "build_name": "flatcar-{{env `FLATCAR_CHANNEL`}}-{{env `FLATCAR_VERSION`}}",
@@ -9,7 +9,6 @@
   "distro_name": "flatcar",
   "guest_os_type": "linux-64",
   "http_directory": "",
-  "install_wait": "3m",
   "iso_checksum": "https://{{env `FLATCAR_CHANNEL`}}.release.flatcar-linux.net/amd64-usr/{{env `FLATCAR_VERSION`}}/flatcar_production_iso_image.iso.DIGESTS.asc",
   "iso_checksum_type": "file",
   "iso_url": "https://{{env `FLATCAR_CHANNEL`}}.release.flatcar-linux.net/amd64-usr/{{env `FLATCAR_VERSION`}}/flatcar_production_iso_image.iso",
