@@ -213,15 +213,15 @@ COMMON_WINDOWS_VAR_FILES :=	packer/config/kubernetes.json \
 					packer/config/additional_components.json
 
 COMMON_POWERVS_VAR_FILES := packer/config/kubernetes.json \
-					packer/config/powervs/kubernetes.json \
+					packer/config/ppc64le/kubernetes.json \
 					packer/config/cni.json \
-					packer/config/powervs/cni.json \
+					packer/config/ppc64le/cni.json \
 					packer/config/containerd.json \
-                    packer/config/powervs/containerd.json \
+                    packer/config/ppc64le/containerd.json \
                     packer/config/ansible-args.json \
                     packer/config/goss-args.json \
                     packer/config/common.json \
-                    packer/config/powervs/common.json \
+                    packer/config/ppc64le/common.json \
                     packer/config/additional_components.json
 
 # Initialize a list of flags to pass to Packer. This includes any existing flags

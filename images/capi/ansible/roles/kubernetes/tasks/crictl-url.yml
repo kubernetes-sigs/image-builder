@@ -15,7 +15,7 @@
 - name: download crictl
   get_url:
     url: "{{ crictl_url }}"
-    checksum: "sha256:{{ crictl_sha256 }}"
+    checksum: "{{ crictl_sha256 }}"
     dest: /tmp/crictl.tar.gz
     mode: 0600
 

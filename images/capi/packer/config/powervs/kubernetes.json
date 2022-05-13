@@ -1,5 +1,0 @@
-{
-  "crictl_sha256": "da0c052983ba884f9605b14bf627664df67fcdb41c7f6908368bf4745f889b26",
-  "crictl_version": "1.20.0",
-  "kubernetes_rpm_repo": "https://packages.cloud.google.com/yum/repos/kubernetes-el7-ppc64le"
-}
