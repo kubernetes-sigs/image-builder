@@ -22,7 +22,7 @@ SHELL := /usr/bin/env bash
 
 # This option is for running docker manifest command
 export DOCKER_CLI_EXPERIMENTAL := enabled
-export PATH := $(PATH):$(PWD)/.local/bin
+export PATH := $(PATH):$(CURDIR)/.local/bin
 
 export IB_VERSION ?= $(shell git describe --dirty)
 
@@ -229,9 +229,9 @@ WINDOWS_VERSIONS		:=	windows-2019 windows-2004 windows-2022
 
 # Set Flatcar Container Linux channel and version if not supplied
 FLATCAR_CHANNEL ?= stable
-FLATCAR_VERSION ?= 2905.2.3
+FLATCAR_VERSION ?= 3033.2.4
 ifeq ($(FLATCAR_VERSION),current)
-FLATCAR_VERSION := $(shell hack/image-grok-latest-flatcar-version.sh $(FLATCAR_CHANNEL))
+override FLATCAR_VERSION := $(shell hack/image-grok-latest-flatcar-version.sh $(FLATCAR_CHANNEL))
 endif
 
 export FLATCAR_CHANNEL FLATCAR_VERSION
@@ -469,6 +469,7 @@ build-azure-vhd-windows-2022-containerd: ## Builds for Windows Server 2022 with 
 build-azure-vhd-windows-2004: ## Builds for Windows Server 2004 SAC
 build-azure-sig-centos-7-gen2: ## Builds CentOS Gen2 managed image in Shared Image Gallery
 build-azure-sig-flatcar: ## Builds Flatcar Azure managed image in Shared Image Gallery
+build-azure-sig-flatcar-gen2: ## Builds Flatcar Azure Gen2 managed image in Shared Image Gallery
 build-azure-sig-ubuntu-1804-gen2: ## Builds Ubuntu 18.04 Gen2 managed image in Shared Image Gallery
 build-azure-sig-ubuntu-2004-gen2: ## Builds Ubuntu 20.04 Gen2 managed image in Shared Image Gallery
 build-azure-vhds: $(AZURE_BUILD_VHD_TARGETS) ## Builds all Azure VHDs

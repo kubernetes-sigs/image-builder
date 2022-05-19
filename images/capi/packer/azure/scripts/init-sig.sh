@@ -62,6 +62,10 @@ case ${SIG_TARGET} in
   centos-7-gen2)
     create_image_definition "centos-7.7-gen2" "centos-7.7-gen2" "V2" "Linux"
   ;;
+  flatcar-gen2)
+    SKU="flatcar-${FLATCAR_CHANNEL}-${FLATCAR_VERSION}-gen2"
+    create_image_definition "${SKU}" "${SKU}" "V2" "Linux"
+  ;;
   *)
     >&2 echo "Unsupported SIG target: '${SIG_TARGET}'"
     exit 1

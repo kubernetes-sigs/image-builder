@@ -1,0 +1,23 @@
+{
+  "ansible_extra_vars": "ansible_python_interpreter=/opt/pypy/bin/pypy",
+  "build_name": "flatcar-gen2",
+  "crictl_source_type": "http",
+  "distribution": "flatcar",
+  "distribution_release": "{{env `FLATCAR_CHANNEL`}}",
+  "distribution_version": "{{env `FLATCAR_CHANNEL`}}-{{env `FLATCAR_VERSION`}}",
+  "image_offer": "flatcar-container-linux-free",
+  "image_publisher": "kinvolk",
+  "image_sku": "{{env `FLATCAR_CHANNEL`}}-gen2",
+  "image_version": "{{env `FLATCAR_VERSION` }}",
+  "kubernetes_cni_source_type": "http",
+  "kubernetes_source_type": "http",
+  "plan_image_offer": "{{user `image_offer`}}",
+  "plan_image_publisher": "{{user `image_publisher`}}",
+  "plan_image_sku": "{{user `image_sku`}}",
+  "python_path": "/opt/pypy/site-packages",
+  "root_device_name": "/dev/sda",
+  "ssh_username": "core",
+  "systemd_prefix": "/etc/systemd",
+  "sysusr_prefix": "/opt",
+  "sysusrlocal_prefix": "/opt"
+}
