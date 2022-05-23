@@ -103,3 +103,15 @@
     regexp: "^(?!.*transparent_hugepage=madvise)(GRUB_CMDLINE_LINUX=.*)(\"$)"
     line: '\1 transparent_hugepage=madvise"'
   when: ansible_os_family == "RedHat"
+
+- name: Copy udev etcd network tuning rules
+  copy:
+    src: etc/udev/rules.d/90-etcd-tuning.rules
+    dest: /etc/udev/rules.d/90-etcd-tuning.rules
+    mode: 0744
+
+- name: Copy etcd network tuning script
+  copy:
+    src: usr/local/bin/etcd-network-tuning.sh
+    dest: /usr/local/bin/etcd-network-tuning.sh
+    mode: 0755
