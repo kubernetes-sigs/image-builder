@@ -1,0 +1,12 @@
+[Unit]
+Description=Modify cloud-init config
+After=cloud-final.service
+AssertFileIsExecutable=/usr/local/bin/modify-cloud-init-cfg.sh
+
+[Install]
+WantedBy=cloud-init.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/modify-cloud-init-cfg.sh
+SuccessExitStatus=0
