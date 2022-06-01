@@ -198,6 +198,22 @@ ifneq (,$(strip $(SSH_PUBLIC_KEY_FILE)))
 PACKER_FLAGS += -var ssh_public_key="$(shell cat ${SSH_PUBLIC_KEY_FILE})"
 endif
 
+# Since OpenSSH 9.0+ 'scp' uses SFTP protocol instead of legacy SCP protocol, which causes building errors like:
+#
+# bash: line 1: /usr/lib/sftp-server: No such file or directory\nscp: Connection closed\r\n""
+#
+# However, -O option is not available in older OpenSSH version, so we cannot always set it as an option to use.
+# To provide better out-of-the-box experience for users with newer versions of OpenSSH, we conditionally ensure
+# -O is used when used OpenSSH version requires it.
+#
+# See https://github.com/kubernetes-sigs/image-builder/issues/859 and
+# https://github.com/hashicorp/packer-plugin-ansible/issues/100 for more details.
+ifeq ($(shell test $$(ssh -V 2>&1 | cut -d _ -f2 | cut -d . -f1) -ge 9; echo $$?),0)
+	# Use ?= to retain possible existing value of environment variable. If it is already declared, we assume user to be
+	# aware of OpenSSH version they use and it is up to the user to specify "-O" option as well if needed.
+  export ANSIBLE_SCP_EXTRA_ARGS ?= "-O"
+endif
+
 # If DEBUG=1 then Packer will set -debug, enabling debug mode for builds, providing
 # more verbose logging
 ifeq (1,$(strip $(DEBUG)))
