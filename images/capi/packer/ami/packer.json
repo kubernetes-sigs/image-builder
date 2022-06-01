@@ -102,7 +102,9 @@
         "--extra-vars",
         "{{user `ansible_extra_vars`}}",
         "--extra-vars",
-        "{{user `ansible_user_vars`}}"
+        "{{user `ansible_user_vars`}}",
+        "--scp-extra-args",
+        "{{user `ansible_scp_extra_args`}}"
       ],
       "playbook_file": "./ansible/node.yml",
       "type": "ansible"
@@ -148,6 +150,7 @@
     "ami_users": "",
     "ansible_common_vars": "",
     "ansible_extra_vars": "",
+    "ansible_scp_extra_args": "",
     "ansible_user_vars": "",
     "aws_access_key": "",
     "aws_profile": "",

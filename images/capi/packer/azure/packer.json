@@ -121,7 +121,9 @@
         "--extra-vars",
         "{{user `ansible_extra_vars`}}",
         "--extra-vars",
-        "{{user `ansible_user_vars`}}"
+        "{{user `ansible_user_vars`}}",
+        "--scp-extra-args",
+        "{{user `ansible_scp_extra_args`}}"
       ],
       "playbook_file": "./ansible/python.yml",
       "type": "ansible",
@@ -137,7 +139,9 @@
         "--extra-vars",
         "{{user `ansible_extra_vars`}}",
         "--extra-vars",
-        "{{user `ansible_user_vars`}}"
+        "{{user `ansible_user_vars`}}",
+        "--scp-extra-args",
+        "{{user `ansible_scp_extra_args`}}"
       ],
       "playbook_file": "./ansible/node.yml",
       "type": "ansible",
@@ -192,6 +196,7 @@
   "variables": {
     "ansible_common_vars": "",
     "ansible_extra_vars": "",
+    "ansible_scp_extra_args": "",
     "ansible_user_vars": "",
     "azure_location": null,
     "build_name": null,

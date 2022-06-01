@@ -336,7 +336,9 @@
         "--extra-vars",
         "{{user `ansible_extra_vars`}}",
         "--extra-vars",
-        "{{user `ansible_user_vars`}}"
+        "{{user `ansible_user_vars`}}",
+        "--scp-extra-args",
+        "{{user `ansible_scp_extra_args`}}"
       ],
       "playbook_file": "./ansible/firstboot.yml",
       "type": "ansible",
@@ -367,7 +369,9 @@
         "--extra-vars",
         "{{user `ansible_extra_vars`}}",
         "--extra-vars",
-        "{{user `ansible_user_vars`}}"
+        "{{user `ansible_user_vars`}}",
+        "--scp-extra-args",
+        "{{user `ansible_scp_extra_args`}}"
       ],
       "playbook_file": "./ansible/node.yml",
       "type": "ansible",
@@ -414,6 +418,7 @@
   "variables": {
     "ansible_common_vars": "",
     "ansible_extra_vars": "guestinfo_datasource_slug={{user `guestinfo_datasource_slug`}} guestinfo_datasource_ref={{user `guestinfo_datasource_ref`}} guestinfo_datasource_script={{user `guestinfo_datasource_script`}}",
+    "ansible_scp_extra_args": "",
     "ansible_user_vars": "",
     "base_build_version": "base-{{user `build_name`}}",
     "base_output_dir": "./output/{{user `base_build_version`}}",

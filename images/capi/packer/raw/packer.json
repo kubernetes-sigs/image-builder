@@ -64,7 +64,9 @@
         "--extra-vars",
         "{{user `ansible_extra_vars`}}",
         "--extra-vars",
-        "{{user `ansible_user_vars`}}"
+        "{{user `ansible_user_vars`}}",
+        "--scp-extra-args",
+        "{{user `ansible_scp_extra_args`}}"
       ],
       "playbook_file": "./ansible/firstboot.yml",
       "type": "ansible",
@@ -88,7 +90,9 @@
         "--extra-vars",
         "{{user `ansible_extra_vars`}}",
         "--extra-vars",
-        "{{user `ansible_user_vars`}}"
+        "{{user `ansible_user_vars`}}",
+        "--scp-extra-args",
+        "{{user `ansible_scp_extra_args`}}"
       ],
       "playbook_file": "./ansible/node.yml",
       "type": "ansible",
@@ -130,6 +134,7 @@
     "ansible_extra_vars": "ansible_python_interpreter=/usr/bin/python3",
     "ansible_user_vars": "",
     "boot_media_path": "http://{{ .HTTPIP }}:{{ .HTTPPort }}",
+    "ansible_scp_extra_args": "",
     "boot_wait": "10s",
     "build_timestamp": "{{timestamp}}",
     "containerd_sha256": null,
