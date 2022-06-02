@@ -1,0 +1,9 @@
+{
+  "build_name": "centos-streams8",
+  "epel_rpm_gpg_key": "https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-8",
+  "redhat_epel_rpm": "https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm",
+  "source_cos_bucket": "power-oss-bucket",
+  "source_cos_object": "centos-streams-8.ova.gz",
+  "source_cos_region": "us-south",
+  "ssh_username": "root"
+}
