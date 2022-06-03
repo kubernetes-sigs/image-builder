@@ -16,6 +16,7 @@ If any needed binaries are not present, they can be installed to `images/capi/.b
 
 * [AWS](./providers/aws.md)
 * [Azure](./providers/azure.md)
+* [CloudStack](./providers/cloudstack.md)
 * [DigitalOcean](./providers/digitalocean.md)
 * [GCP](./providers/gcp.md)
 * [OCI](./providers/oci.md)
