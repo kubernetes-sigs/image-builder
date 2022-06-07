@@ -2,7 +2,10 @@
 
 approvers:
   - cluster-api-openstack-maintainers
+  - cluster-api-cloudstack-maintainers
 
 reviewers:
   - cluster-api-openstack-maintainers
   - image-builder-openstack-reviewers
+  - cluster-api-cloudstack-maintainers
+  - image-builder-cloudstack-reviewers

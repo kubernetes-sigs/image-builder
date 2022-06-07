@@ -16,6 +16,9 @@ aliases:
     - jsturtevant
   image-builder-openstack-reviewers:
     - hidekazuna
+  image-builder-cloudstack-reviewers:
+    - rohityadavcloud
+    - davidjumani
   image-builder-raw-maintainers:
     - detiber
     - thebsdbox
@@ -60,6 +63,10 @@ aliases:
     - mdbooth
     - seanschneeweiss
     - tobiasgiese
+  cluster-api-cloudstack-maintainers:
+    - rohityadavcloud
+    - davidjumani
+    - Pearl1594
   cluster-api-vsphere-maintainers:
     - frapposelli
     - gab-satchi

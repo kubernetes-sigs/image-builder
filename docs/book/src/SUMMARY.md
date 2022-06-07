@@ -5,6 +5,7 @@
   - [Quick Start](./capi/quickstart.md)
   - [AWS](./capi/providers/aws.md)
   - [Azure](./capi/providers/azure.md)
+  - [CloudStack](./capi/providers/cloudstack.md)
   - [DigitalOcean](./capi/providers/digitalocean.md)
   - [GCP](./capi/providers/gcp.md)
   - [OpenStack](./capi/providers/openstack.md)
