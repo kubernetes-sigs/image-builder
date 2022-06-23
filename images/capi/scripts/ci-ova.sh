@@ -22,7 +22,7 @@ CAPI_ROOT=$(dirname "${BASH_SOURCE[0]}")/..
 cd "${CAPI_ROOT}" || exit 1
 
 export ARTIFACTS="${ARTIFACTS:-${PWD}/_artifacts}"
-TARGETS=("ubuntu-1804" "ubuntu-2004" "photon-3" "centos-7")
+TARGETS=("ubuntu-1804" "ubuntu-2004" "photon-3" "centos-7" "rockylinux-8")
 
 on_exit() {
   # kill the VPN
@@ -95,7 +95,15 @@ cat << EOF > ci-${target}.json
 }
 EOF
     make build-node-ova-vsphere-clone-${target} > ${ARTIFACTS}/${target}.log 2>&1 &
-
+  elif [[ "${target}" == 'rockylinux-8' ]]; then
+    cat << EOF > ci-${target}.json
+{
+"build_version": "capv-ci-${target}-${TIMESTAMP}",
+"linked_clone": "true",
+"template": "base-rockylinux-8-20220623"
+}
+EOF
+    make build-node-ova-vsphere-clone-${target} > ${ARTIFACTS}/${target}.log 2>&1 &
   else
 cat << EOF > ci-${target}.json
 {
