@@ -86,7 +86,6 @@
         "build_timestamp": "{{user `build_timestamp`}}",
         "build_type": "node",
         "containerd_version": "{{user `containerd_version`}}",
-        "custom_role": "{{user `custom_role`}}",
         "kubernetes_cni_semver": "{{user `kubernetes_cni_semver`}}",
         "kubernetes_semver": "{{user `kubernetes_semver`}}",
         "kubernetes_source_type": "{{user `kubernetes_source_type`}}",

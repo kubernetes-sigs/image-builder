@@ -14,6 +14,10 @@
 
 ---
 - hosts: all
+  vars:
+    node_custom_roles_pre: ""
+    node_custom_roles_post: ""
+    custom_role_names: ""
 
   tasks:
     - name: Check if cloudbase-init url is set
@@ -21,7 +25,7 @@
         install_cloudbase_init: '{{ true if (cloudbase_init_url is defined) and (cloudbase_init_url|length > 0) else false }}'
     - name: Check if wins url is set
       set_fact:
-        use_wins: '{{ true if (wins_url is defined) and (wins_url|length > 0) else false }}'  
+        use_wins: '{{ true if (wins_url is defined) and (wins_url|length > 0) else false }}'
 
     # https://docs.ansible.com/ansible/latest/user_guide/windows_performance.html
     - name: Optimise powershell
@@ -59,11 +63,17 @@
     - name: Get All Users profile path
       win_shell: $env:ALLUSERSPROFILE.Replace("\", "\\")
       register: alluserprofile
-      
+
     - name: Get TEMP Directory
       win_shell: $env:TEMP
       register: tempdir
 
+    - include_role:
+        name: "{{ role }}"
+      loop: "{{ node_custom_roles_pre.split() }}"
+      loop_control:
+        loop_var: role
+      when: node_custom_roles_pre != ""
     - include_role:
         name: systemprep
     - include_role:
@@ -84,11 +94,11 @@
         name: debug
     - include_role:
         name: "{{ role }}"
-      loop: "{{ custom_role_names.split() }}"
+      loop: "{{ custom_role_names.split() + node_custom_roles_post.split() }}"
       loop_control:
         loop_var: role
-      when: custom_role | default(false)|bool
-  
+      when: custom_role_names != "" or node_custom_roles_post != ""
+
   environment:
     HTTP_PROXY: "{{ http_proxy | default('') }}"
     HTTPS_PROXY: "{{ https_proxy | default('') }}"
