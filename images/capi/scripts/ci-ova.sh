@@ -91,7 +91,7 @@ cat << EOF > ci-${target}.json
 {
 "build_version": "capv-ci-${target}-${TIMESTAMP}",
 "linked_clone": "true",
-"template": "base-photon-3-20220314"
+"template": "base-photon-3-20220623"
 }
 EOF
     make build-node-ova-vsphere-clone-${target} > ${ARTIFACTS}/${target}.log 2>&1 &
