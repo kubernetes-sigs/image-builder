@@ -56,6 +56,9 @@
     autoremove: yes
     force_apt_get: yes
 
+- name: apt-mark all installed packages
+  shell: dpkg-query -f '${binary:Package}\n' -W | xargs apt-mark hold
+
 - name: Remove apt package lists
   file:
     state: "{{ item.state }}"
