@@ -139,6 +139,12 @@ deps-ignition:
 	hack/ensure-jq.sh
 	hack/ensure-ct.sh
 
+.PHONY: deps-nutanix
+deps-nutanix: ## Installs/checks dependencies for Nutanix builds
+deps-nutanix:
+	hack/ensure-ansible.sh
+	hack/ensure-packer.sh
+	hack/ensure-goss.sh
 
 ## --------------------------------------
 ## Container variables
