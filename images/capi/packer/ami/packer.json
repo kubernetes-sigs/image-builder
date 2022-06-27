@@ -4,7 +4,7 @@
       "access_key": "{{user `aws_access_key`}}",
       "ami_description": "{{user `ami_description`}}",
       "ami_groups": "{{user `ami_groups`}}",
-      "ami_name": "capa-ami-{{user `build_name`}}-{{user `kubernetes_deb_version` | clean_resource_name}}-{{user `build_timestamp`}}",
+      "ami_name": "capa-ami-{{user `build_name`}}-{{user `kubernetes_semver` | clean_resource_name}}-{{user `build_timestamp`}}",
       "ami_product_codes": "",
       "ami_regions": "{{user `ami_regions`}}",
       "ami_users": "{{user `ami_users`}}",
