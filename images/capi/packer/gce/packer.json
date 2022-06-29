@@ -1,6 +1,8 @@
 {
   "builders": [
     {
+      "accelerator_count": "{{user `accelerator_count`}}",
+      "accelerator_type": "{{user `accelerator_type`}}",
       "disable_default_service_account": "{{ user `disable_default_service_account` }}",
       "image_family": "{{user `image_family` | clean_resource_name}}",
       "image_name": "{{user `image_name` | clean_resource_name}}",
@@ -13,6 +15,7 @@
       },
       "machine_type": "{{ user `machine_type` }}",
       "name": "{{user `build_name`}}",
+      "on_host_maintenance": "{{user `on_host_maintenance`}}",
       "project_id": "{{ user `project_id` }}",
       "service_account_email": "{{ user `service_account_email` }}",
       "source_image_family": "{{ user `source_image_family` }}",
@@ -24,10 +27,17 @@
   ],
   "provisioners": [
     {
+      "execute_command": "BUILD_NAME={{ user `build_name` }}; if [[ \"${BUILD_NAME}\" == *\"ubuntu-1804-gpu\"* || \"${BUILD_NAME}\" == *\"ubuntu-2004-gpu\"* ]]; then sudo {{.Vars}} -S -E bash '{{.Path}}'; fi",
+      "script": "./packer/gce/files/bootstrap-ubuntu-gpu.sh",
+      "type": "shell"
+    },
+    {
       "ansible_env_vars": [
         "ANSIBLE_SSH_ARGS='{{user `existing_ansible_ssh_args`}} {{user `ansible_common_ssh_args`}}'"
       ],
       "extra_arguments": [
+        "--scp-extra-args",
+        "{{user `ansible_scp_extra_args`}}",
         "--extra-vars",
         "{{user `ansible_common_vars`}}",
         "--extra-vars",

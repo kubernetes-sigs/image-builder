@@ -1,4 +1,5 @@
 {
+  "base_image": "ubuntu-2004",
   "build_name": "ubuntu-2004",
   "distribution": "ubuntu",
   "distribution_release": "focal",

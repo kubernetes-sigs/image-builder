@@ -1,0 +1,11 @@
+{
+  "accelerator_name": "nvidia-tesla-t4",
+  "accelerator_type": "projects/{{ user `project_id` }}/zones/{{ user `zone` }}/acceleratorTypes/{{ user `accelerator_name` }}",
+  "base_image": "ubuntu-2004",
+  "build_name": "ubuntu-2004-gpu",
+  "distribution": "Ubuntu",
+  "distribution_release": "focal",
+  "distribution_version": "2004",
+  "on_host_maintenance": "TERMINATE",
+  "zone": "us-central1-a"
+}

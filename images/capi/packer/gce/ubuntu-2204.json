@@ -1,4 +1,5 @@
 {
+  "base_image": "ubuntu-2204",
   "build_name": "ubuntu-2204",
   "distribution": "ubuntu",
   "distribution_release": "jammy",
