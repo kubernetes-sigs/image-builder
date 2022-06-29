@@ -37,5 +37,3 @@ chown -R core ${BUILDER_ENV}
 ln -s builder-env/bin/pip ${BINDIR}/pip
 # need to have symlink pip3 required by ansible/roles/providers/tasks/aws.yml
 ln -s builder-env/bin/pip ${BINDIR}/pip3
-
-touch ${BINDIR}/.bootstrapped

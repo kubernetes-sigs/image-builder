@@ -18,7 +18,11 @@
       "source_image_family": "{{ user `source_image_family` }}",
       "ssh_username": "ubuntu",
       "type": "googlecompute",
-      "zone": "{{ user `zone` }}"
+      "zone": "{{ user `zone` }}",
+      "accelerator_type": "projects/{{user `project_id`}}/zones/{{user `zone`}}/acceleratorTypes/{{user `accelerator_type`}}",
+      "accelerator_count": "1",
+      "on_host_maintenance": "TERMINATE"
+
     }
   ],
   "provisioners": [
@@ -34,8 +38,13 @@
       "type": "shell"
     },
     {
+      "execute_command": "BUILD_NAME={{user `build_name`}}; if [[ \"${BUILD_NAME}\" == *\"ubuntu-2004-gpu\"* ]]; then sudo {{.Vars}} -S -E bash '{{.Path}}'; fi", 
+        "script": "./packer/files/bootstrap-ubuntu-2004-gpu.sh",
+        "type": "shell"
+    },
+    {
       "ansible_env_vars": [
-        "ANSIBLE_SSH_ARGS='{{user `existing_ansible_ssh_args`}} -o IdentitiesOnly=yes'"
+        "ANSIBLE_SSH_ARGS='{{user `existing_ansible_ssh_args`}} {{user `ansible_ssh_args`}}'"
       ],
       "extra_arguments": [
         "--extra-vars",
@@ -83,6 +92,7 @@
   "variables": {
     "ansible_common_vars": "",
     "ansible_extra_vars": "",
+    "ansible_scp_extra_args": "",
     "build_timestamp": "{{timestamp}}",
     "containerd_sha256": null,
     "containerd_url": "https://github.com/containerd/containerd/releases/download/v{{user `containerd_version`}}/cri-containerd-cni-{{user `containerd_version`}}-linux-amd64.tar.gz",
@@ -113,7 +123,9 @@
     "machine_type": "n1-standard-1",
     "project_id": "{{env `GCP_PROJECT_ID`}}",
     "service_account_email": "",
-    "source_image_family": "{{user `build_name`}}-lts",
-    "zone": null
+    "source_image_family": "{{user `base_image`}}-lts",
+    "zone": null,
+    "accelerator_type": "nvidia-tesla-t4"
+
   }
 }

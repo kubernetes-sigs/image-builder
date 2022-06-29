@@ -279,7 +279,7 @@ NODE_OVA_VSPHERE_BASE_BUILD_NAMES		:=	$(addprefix node-ova-vsphere-base-,$(PLATF
 NODE_OVA_VSPHERE_CLONE_BUILD_NAMES		:=	$(addprefix node-ova-vsphere-clone-,$(PLATFORMS_AND_VERSIONS))
 
 AMI_BUILD_NAMES			   ?= ami-centos-7 ami-ubuntu-1804 ami-ubuntu-2004 ami-amazon-2 ami-flatcar ami-windows-2019 ami-windows-2004 ami-rockylinux-8
-GCE_BUILD_NAMES			   ?= gce-ubuntu-1804 gce-ubuntu-2004
+GCE_BUILD_NAMES			   ?= gce-ubuntu-1804 gce-ubuntu-2004 gce-ubuntu-2004-gpu 
 
 # Make needs these lists to be space delimited, no quotes
 VHD_TARGETS := $(shell grep VHD_TARGETS azure_targets.sh | sed 's/VHD_TARGETS=//' | tr -d \")
@@ -288,6 +288,8 @@ SIG_GEN2_TARGETS := $(shell grep SIG_GEN2_TARGETS azure_targets.sh | sed 's/SIG_
 AZURE_BUILD_VHD_NAMES	   ?= $(addprefix azure-vhd-,$(VHD_TARGETS))
 AZURE_BUILD_SIG_NAMES	   ?= $(addprefix azure-sig-,$(SIG_TARGETS))
 AZURE_BUILD_SIG_GEN2_NAMES ?= $(addsuffix -gen2,$(addprefix azure-sig-,$(SIG_GEN2_TARGETS)))
+
+GCE_BUILD_NAMES_GPU			   ?= $(addprefix gce-ubuntu-2004-gpu,$(GCE_BUILD_NAMES))
 
 OCI_BUILD_NAMES			   ?= oci-ubuntu-1804 oci-ubuntu-2004 oci-oracle-linux-8
 
@@ -521,6 +523,7 @@ build-do-all: $(DO_BUILD_TARGETS) ## Builds all DigitalOcean Snapshot
 
 build-gce-ubuntu-1804: ## Builds the GCE ubuntu-1804 image
 build-gce-ubuntu-2004: ## Builds the GCE ubuntu-2004 image
+build-gce-ubuntu-2004-gpu: ## Builds the GCE ubuntu-2004-gpu image
 build-gce-all: $(GCE_BUILD_TARGETS) ## Builds all GCE image
 
 build-node-ova-local-centos-7: ## Builds CentOS 7 Node OVA w local hypervisor
@@ -637,6 +640,7 @@ validate-do-all: $(DO_VALIDATE_TARGETS) ## Validates all DigitalOcean Snapshot P
 
 validate-gce-ubuntu-1804: ## Validates Ubuntu 18.04 GCE Snapshot Packer config
 validate-gce-ubuntu-2004: ## Validates Ubuntu 20.04 GCE Snapshot Packer config
+validate-gce-ubuntu-2004-gpu: ## Validates Ubuntu 20.04 with GPU driver GCE Snapshot Packer config
 validate-gce-all: $(GCE_VALIDATE_TARGETS) ## Validates all GCE Snapshot Packer config
 
 validate-node-ova-local-centos-7: ## Validates CentOS 7 Node OVA Packer config w local hypervisor

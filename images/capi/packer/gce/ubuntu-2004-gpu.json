@@ -1,0 +1,8 @@
+{
+    "build_name": "ubuntu-2004-gpu",
+    "distribution": "Ubuntu",
+    "distribution_release": "focal",
+    "distribution_version": "2004",
+    "zone": "us-central1-a",
+    "base_image": "ubuntu-2004"
+  }
