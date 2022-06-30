@@ -27,6 +27,20 @@
 
 - import_tasks: rpm_repos.yml
 
+- name: Get installed packages
+  shell: tdnf list installed | cut -d ' ' -f 1
+  register: packages
+
+- name: create a package list
+  set_fact:
+    package_list: "{{ packages.stdout_lines | join(' ') }}"
+
+- name: exclude packages from upgrade
+  lineinfile:
+    path: /etc/tdnf/tdnf.conf
+    regexp: '^excludepkgs='
+    line: excludepkgs={{ package_list }}
+
 - name: Remove tdnf package caches
   command: /usr/bin/tdnf -y clean all
 
