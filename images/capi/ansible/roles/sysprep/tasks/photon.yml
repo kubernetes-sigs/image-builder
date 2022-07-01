@@ -25,8 +25,6 @@
     state: absent
     path: /root/anaconda-ks.cfg
 
-- import_tasks: rpm_repos.yml
-
 - name: Get installed packages
   shell: tdnf list installed | cut -d ' ' -f 1
   register: packages
@@ -40,6 +38,8 @@
     path: /etc/tdnf/tdnf.conf
     regexp: '^excludepkgs='
     line: excludepkgs={{ package_list }}
+
+- import_tasks: rpm_repos.yml
 
 - name: Remove tdnf package caches
   command: /usr/bin/tdnf -y clean all

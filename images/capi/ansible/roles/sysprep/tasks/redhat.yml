@@ -17,6 +17,19 @@
     last_log_mode:   "0644"
     machine_id_mode: "0444"
 
+- name: Get installed packages
+  package_facts:
+
+- name: create the package list
+  set_fact:
+    package_list: "{{ ansible_facts.packages.keys() | join(' ') }}"
+
+- name: exclude the packages from upgrades
+  lineinfile:
+    path: /etc/yum.conf
+    regexp: '^exclude='
+    line: exclude={{ package_list }}
+
 - import_tasks: rpm_repos.yml
 
 # Oracle Linux does not have temp-disk-swapfile service
@@ -33,19 +46,6 @@
     enabled: no
     masked: yes
   when: ansible_memory_mb.swap.total != 0 and ansible_distribution_major_version|int == 8
-
-- name: Get installed packages
-  package_facts:
-
-- name: create the package list
-  set_fact:
-    package_list: "{{ ansible_facts.packages.keys() | join(' ') }}"
-
-- name: exclude the packages from upgrades
-  lineinfile:
-    path: /etc/yum.conf
-    regexp: '^exclude='
-    line: exclude={{ package_list }}
 
 - name: Remove RHEL subscription
   block:
