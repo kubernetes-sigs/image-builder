@@ -120,7 +120,6 @@ def main():
         'BUILD_DATE': build_data['build_date'],
         'ARTIFACT_ID': build['artifact_id'],
         'BUILD_TIMESTAMP': build_data['build_timestamp'],
-        'CUSTOM_ROLE': 'true' if build_data['custom_role'] == 'true' else 'false',
         'EULA': eula,
         'OS_NAME': build_data['os_name'],
         'OS_ID': OS_id_map[build_data['guest_os_type']]['id'],

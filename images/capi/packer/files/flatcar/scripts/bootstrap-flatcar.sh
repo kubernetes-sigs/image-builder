@@ -1,4 +1,7 @@
 #!/bin/bash
+#
+# This script installs PyPy as a Python interpreter on a Flatcar instance.
+
 set -e
 
 [[ -n ${DEBUG:-} ]] && set -o xtrace

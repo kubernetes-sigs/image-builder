@@ -112,7 +112,6 @@
         "build_name": "{{user `build_name`}}",
         "build_timestamp": "{{user `build_timestamp`}}",
         "containerd_version": "{{user `containerd_version`}}",
-        "custom_role": "{{user `custom_role`}}",
         "debug_tools": "{{user `debug_tools`}}",
         "disable_hypervisor": "{{user `disable_hypervisor`}}",
         "disk_size": "{{user `disk_size`}}",
