@@ -24,7 +24,7 @@ on_exit() {
 }
 
 if [ "$#" -ne 1 ]; then
-    echo "Error: Usage: /usr/local/bin/etcd-network-tuning.sh <dev>" | systemd-cat -p emerg -t etcd-tuning
+    echo "Error: Usage: $0 <dev>" | systemd-cat -p emerg -t etcd-tuning
     exit 1
 fi
 

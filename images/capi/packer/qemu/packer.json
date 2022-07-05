@@ -47,7 +47,7 @@
   "provisioners": [
     {
       "execute_command": "BUILD_NAME={{user `build_name`}}; if [[ \"${BUILD_NAME}\" == *\"flatcar\"* ]]; then sudo {{.Vars}} -S -E bash '{{.Path}}'; fi",
-      "script": "./packer/files/bootstrap-flatcar.sh",
+      "script": "./packer/files/flatcar/scripts/bootstrap-flatcar.sh",
       "type": "shell"
     },
     {

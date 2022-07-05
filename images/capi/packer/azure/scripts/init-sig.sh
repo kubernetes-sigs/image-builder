@@ -10,7 +10,9 @@ eval "$tracestate"
 
 export RESOURCE_GROUP_NAME="${RESOURCE_GROUP_NAME:-cluster-api-images}"
 export AZURE_LOCATION="${AZURE_LOCATION:-southcentralus}"
-az group create -n ${RESOURCE_GROUP_NAME} -l ${AZURE_LOCATION} --tags ${TAGS:-}
+if ! az group show -n ${RESOURCE_GROUP_NAME} -o none 2>/dev/null; then
+  az group create -n ${RESOURCE_GROUP_NAME} -l ${AZURE_LOCATION} --tags ${TAGS:-}
+fi
 CREATE_TIME="$(date +%s)"
 RANDOM_SUFFIX="$(head /dev/urandom | LC_ALL=C tr -dc a-z | head -c 4 ; echo '')"
 export GALLERY_NAME="${GALLERY_NAME:-ClusterAPI${CREATE_TIME}${RANDOM_SUFFIX}}"

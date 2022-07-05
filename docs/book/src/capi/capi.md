@@ -51,8 +51,7 @@ Several variables can be used to customize the image build.
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `custom_role` | If set to `"true"`, this will cause `image-builder` to run a custom Ansible role right before the `sysprep` role to allow for further customization. | `"false"` |
-| `custom_role_names` | This must be set if `custom_role` is set to `"true"`, and is the space delimited string of the roles to run. If the role is placed in the `ansible/roles` directory, it can be referenced by name. Otherwise, it must be a fully qualified path to the role. | `""` |
+| `firstboot_custom_roles_pre`<br />`firstboot_custom_roles_post`<br />`node_custom_roles_pre`<br />`node_custom_roles_post` | Each of these four variables allows for giving a space delimited string of custom Ansible roles to run at different times. The "pre" roles run as the very first thing in the playbook (useful for setting up environment specifics like networking changes), and the "post" roles as the very last (useful for undoing those changes, custom additions, etc). Note that the "post" role does run before the "sysprep" role in the "node" playbook, as the "sysprep" role seals the image. If the role is placed in the `ansible/roles` directory, it can be referenced by name. Otherwise, it must be a fully qualified path to the role. | `""` |
 | `disable_public_repos` | If set to `"true"`, this will disable all existing package repositories defined in the OS before doing any package installs. The `extra_repos` variable *must* be set for package installs to succeed. | `"false"` |
 | `extra_debs` | This can be set to a space delimited string containing the names of additional deb packages to install | `""` |
 | `extra_repos` | A space delimited string containing the names of files to add to the image containing repository definitions. The files should be given as absolute paths. | `""` |
@@ -196,13 +195,15 @@ PACKER_VAR_FILES=proxy.json make build-node-ova-local-photon-3
 }
 ```
 
-##### Enabling `custom_role` on Ansible
+##### Enabling Ansible custom roles
 
 Put the Ansible role files in the `ansible/roles` directory.
 
 ```json
 {
-  "custom_role": "true",
-  "custom_role_names": "role1,role2,role3"
+  "firstboot_custom_roles_pre": "setupRole",
+  "node_custom_roles_post": "role1 role2"
 }
 ```
+
+Note, for backwards compatibility reasons, the variable `custom_role_names` is still accepted as an alternative to `node_custom_roles_post`, and they are functionally equivalent.
