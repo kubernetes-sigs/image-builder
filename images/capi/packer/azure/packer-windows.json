@@ -65,9 +65,7 @@
         "gallery_name": "{{user `shared_image_gallery_name`}}",
         "image_name": "{{user `image_name`}}-{{user `runtime`}}",
         "image_version": "{{user `sig_image_version`}}",
-        "replication_regions": [
-          "{{user `replication_regions`}}"
-        ],
+        "replication_regions": "{{user `replication_regions`}}",
         "resource_group": "{{user `resource_group_name`}}",
         "storage_account_type": "{{user `storage_account_type`}}"
       },
