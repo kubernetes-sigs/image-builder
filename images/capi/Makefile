@@ -126,13 +126,6 @@ deps-powervs:
 	hack/ensure-goss.sh
 	hack/ensure-powervs.sh
 
-.PHONY: deps-nutanix
-deps-nutanix: ## Installs/checks dependencies for Nutanix builds
-deps-nutanix:
-	hack/ensure-ansible.sh
-	hack/ensure-packer.sh
-	hack/ensure-goss.sh
-
 .PHONY: deps-ignition
 deps-ignition: ## Installs/checks dependencies for generating Ignition files
 deps-ignition:
