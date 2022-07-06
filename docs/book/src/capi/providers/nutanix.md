@@ -12,7 +12,7 @@ $ make deps-nutanix
 ```
 ## Prerequisites for Nutanix builder
 
-Complete the `nutanix.json` configuration file with credentials and informations specific to the Nutanix Prism Central used to build the image.
+Complete the `packer/nutanix/nutanix.json` configuration file with credentials and informations specific to the Nutanix Prism Central used to build the image.
 This file must have the following format:
 ```
 {
