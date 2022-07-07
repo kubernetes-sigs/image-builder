@@ -1,26 +1,23 @@
 {
   "builders": [
     {
-
-      "cluster": "{{user `nutanix_cluster`}}",     
-      "image_name": "{{user `image_name`}}",    
-      "vm_disks" :{
-          "image_type": "DISK_IMAGE",
-          "source_image_name": "{{user `source_image_name`}}",
-          "disk_size_gb": "{{user `disk_size_gb`}}"
+      "cluster_name": "{{user `nutanix_cluster_name`}}",
+      "image_name": "{{user `image_name`}}",
+      "vm_disks": {
+        "image_type": "DISK_IMAGE",
+        "source_image_name": "{{user `source_image_name`}}",
+        "disk_size_gb": "{{user `disk_size_gb`}}"
       },
-    
-      "vm_nics" :{
-        "subnet_name": "{{user `nutanix_subnet`}}"
+      "vm_nics": {
+        "subnet_name": "{{user `nutanix_subnet_name`}}"
       },
-    
-      "user_data":  "{{user `user_data`}}",
+      "user_data": "{{user `user_data`}}",
       "nutanix_endpoint": "{{user `nutanix_endpoint`}}",
-      "nutanix_insecure": "{{user `nutanix_insecure`}}", 
-      "nutanix_password": "{{user `nutanix_password`}}", 
-      "nutanix_port": "{{user `nutanix_port`}}",  
+      "nutanix_insecure": "{{user `nutanix_insecure`}}",
+      "nutanix_password": "{{user `nutanix_password`}}",
+      "nutanix_port": "{{user `nutanix_port`}}",
       "nutanix_username": "{{user `nutanix_username`}}",
-      "os_type": "{{user `guest_os_type`}}",    
+      "os_type": "{{user `guest_os_type`}}",
       "memory_mb": "{{user `memory`}}",
       "shutdown_command": "echo '{{user `ssh_password`}}' | sudo -S -E sh -c 'usermod -L {{user `ssh_username`}} && {{user `shutdown_command`}}'",
       "ssh_password": "{{user `ssh_password`}}",

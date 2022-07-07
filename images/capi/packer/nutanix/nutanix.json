@@ -1,11 +1,11 @@
 {
-    "nutanix_cluster": "0005c1c1-3229-119b-0000-000000013768",
-    "image_name": "capi-image",
-    "source_image_name": "03540293-87bc-474e-bf53-7c0d4fce7669",
-    "nutanix_endpoint": "",
-    "nutanix_insecure": "true",
-    "nutanix_port": "9440",
-    "nutanix_username": "",
-    "nutanix_password": "",
-    "nutanix_subnet": "40fb7f46-62e6-4f1c-805d-75df5897913d"
-  }
+  "nutanix_cluster_name": "",
+  "image_name": "",
+  "source_image_name": "",
+  "nutanix_endpoint": "",
+  "nutanix_insecure": "",
+  "nutanix_port": "9440",
+  "nutanix_username": "",
+  "nutanix_password": "",
+  "nutanix_subnet_name": ""
+}
