@@ -163,7 +163,6 @@ ${EULA}
       <Category>Cluster API Provider (CAPI)</Category>
       <Property ovf:userConfigurable="false" ovf:value="${BUILD_TIMESTAMP}" ovf:type="string" ovf:key="BUILD_TIMESTAMP"/>
       <Property ovf:userConfigurable="false" ovf:value="${BUILD_DATE}" ovf:type="string" ovf:key="BUILD_DATE"/>
-      <Property ovf:userConfigurable="false" ovf:value="${CUSTOM_ROLE}" ovf:type="string" ovf:key="CUSTOM_ROLE"/>
       <Property ovf:userConfigurable="false" ovf:value="${IB_VERSION}" ovf:type="string" ovf:key="IMAGE_BUILDER_VERSION"/>
       ${PROPERTIES}
     </ProductSection>
