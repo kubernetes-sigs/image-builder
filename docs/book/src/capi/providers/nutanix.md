@@ -16,10 +16,10 @@ Complete the `packer/nutanix/nutanix.json` configuration file with credentials a
 This file must have the following format:
 ```
 {
-    "nutanix_cluster": "UUID of PE Cluster",
-    "source_image_name": "UUID of Source Image/ISO",
+    "nutanix_cluster_name": "Name of PE Cluster",
+    "source_image_name": "Name of Source Image/ISO",
     "image_name": "Name of Destination Image",
-    "nutanix_subnet": "UUID of Subnet",
+    "nutanix_subnet_name": "Name of Subnet",
     "nutanix_endpoint": "Prism Central IP / FQDN",
     "nutanix_insecure": "false",
     "nutanix_port": "9440",

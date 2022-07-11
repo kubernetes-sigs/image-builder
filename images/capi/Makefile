@@ -48,7 +48,7 @@ version: ## Display version of image-builder
 
 .PHONY: deps
 deps: ## Installs/checks all dependencies
-deps: deps-ami deps-azure deps-do deps-gce deps-ova deps-qemu deps-raw deps-oci deps-vbox deps-powervs
+deps: deps-ami deps-azure deps-do deps-gce deps-ova deps-qemu deps-raw deps-oci deps-vbox deps-powervs deps-nutanix
 
 .PHONY: deps-ami
 deps-ami: ## Installs/checks dependencies for AMI builds
