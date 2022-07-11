@@ -2,9 +2,7 @@
 
 approvers:
   - cluster-api-nutanix-maintainers
-  - deepakm-ntnx
 
 reviewers:
   - cluster-api-nutanix-maintainers
   - image-builder-nutanix-reviewers
-  - deepakm-ntnx
