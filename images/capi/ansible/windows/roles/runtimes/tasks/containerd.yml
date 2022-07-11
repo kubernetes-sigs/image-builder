@@ -18,6 +18,7 @@
     dest: '{{ tempdir.stdout | trim }}\containerd.tar.gz'
     checksum: '{{ containerd_sha256 }}'
     checksum_algorithm: "sha256"
+    url_timeout: 300
   register: containerd
   retries: 5
   delay: 3
@@ -108,4 +109,3 @@
   when: (prepull | bool)
   vars:
     images: "{{ prepull_images[distribution_version] | default([]) }}"
-  
