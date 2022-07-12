@@ -17,6 +17,9 @@
     last_log_mode:   "0664"
     machine_id_mode: "0644"
 
+- name: apt-mark all installed packages
+  shell: dpkg-query -f '${binary:Package}\n' -W | xargs apt-mark hold
+
 - name: Remove extra repos
   file:
     path: "/etc/apt/sources.list.d/{{ item | basename }}"
@@ -55,9 +58,6 @@
     autoclean: yes
     autoremove: yes
     force_apt_get: yes
-
-- name: apt-mark all installed packages
-  shell: dpkg-query -f '${binary:Package}\n' -W | xargs apt-mark hold
 
 - name: Remove apt package lists
   file:
