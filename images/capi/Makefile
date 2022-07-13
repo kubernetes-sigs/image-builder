@@ -295,7 +295,7 @@ DO_BUILD_NAMES 			?=	do-centos-7 do-ubuntu-1804 do-ubuntu-2004
 
 QEMU_BUILD_NAMES			?=	qemu-ubuntu-1804 qemu-ubuntu-2004 qemu-centos-7 qemu-ubuntu-2004-efi qemu-rhel-8 qemu-rockylinux-8 qemu-flatcar
 
-RAW_BUILD_NAMES                        ?=      raw-ubuntu-1804 raw-ubuntu-2004 raw-ubuntu-2004-efi
+RAW_BUILD_NAMES                        ?=      raw-ubuntu-1804 raw-ubuntu-2004 raw-ubuntu-2004-efi raw-flatcar
 VBOX_BUILD_NAMES			?=      vbox-windows-2019
 
 POWERVS_BUILD_NAMES         ?= powervs-centos-8
@@ -584,6 +584,7 @@ build-qemu-rhel-8: ## Builds RHEL 8 QEMU image
 build-qemu-rockylinux-8: ## Builds Rocky 8 QEMU image
 build-qemu-all: $(QEMU_BUILD_TARGETS) ## Builds all Qemu images
 
+build-raw-flatcar: ## Builds Flatcar RAW image
 build-raw-ubuntu-1804: ## Builds Ubuntu 18.04 RAW image
 build-raw-ubuntu-2004: ## Builds Ubuntu 20.04 RAW image
 build-raw-ubuntu-2004-efi: ## Builds Ubuntu 20.04 RAW image that EFI boots
@@ -673,6 +674,7 @@ validate-qemu-rhel-8: ## Validates RHEL 8 QEMU image
 validate-qemu-rockylinux-8: ## Validates Rocky Linux 8 QEMU image packer config
 validate-qemu-all: $(QEMU_VALIDATE_TARGETS) ## Validates all Qemu Packer config
 
+validate-raw-flatcar: ## Validates Flatcar RAW image packer config
 validate-raw-ubuntu-1804: ## Validates Ubuntu 18.04 RAW image packer config
 validate-raw-ubuntu-2004: ## Validates Ubuntu 20.04 RAW image packer config
 validate-raw-ubuntu-2004-efi: ## Validates Ubuntu 20.04 RAW EFI image packer config
