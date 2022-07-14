@@ -72,6 +72,7 @@
         "KUBEVIRT={{user `kubevirt`}}"
       ],
       "extra_arguments": [
+        "--scp-extra-args", "'-O'",
         "--extra-vars",
         "{{user `ansible_common_vars`}}",
         "--extra-vars",
@@ -99,6 +100,7 @@
         "KUBEVIRT={{user `kubevirt`}}"
       ],
       "extra_arguments": [
+        "--scp-extra-args", "'-O'",
         "--extra-vars",
         "{{user `ansible_common_vars`}}",
         "--extra-vars",
