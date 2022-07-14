@@ -10,6 +10,7 @@
       "networks": "{{user `networks`}}",
       "floating_ip_network": "{{user `floating_ip_network`}}",
       "use_floating_ip": "{{user `use_floating_ip`}}",
+      "config_drive":  "{{user `attach_config_drive`}}",
       "use_blockstorage_volume": true,
       "volume_size": "10",
       "image_disk_format": "raw",
