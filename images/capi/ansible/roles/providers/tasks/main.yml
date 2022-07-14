@@ -28,6 +28,9 @@
 - include_tasks: googlecompute.yml
   when: packer_builder_type.startswith('googlecompute')
 
+- include_tasks: openstack.yml
+  when: packer_builder_type.startswith('openstack')
+
 - include_tasks: oci.yml
   when: packer_builder_type.startswith('oracle-oci')
 
