@@ -385,7 +385,7 @@ $(GCE_VALIDATE_TARGETS): deps-gce
 
 .PHONY: $(AZURE_BUILD_VHD_TARGETS)
 $(AZURE_BUILD_VHD_TARGETS): deps-azure
-	. $(abspath packer/azure/scripts/init-vhd.sh) && packer build $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="$(abspath packer/azure/azure-config.json)" -var-file="$(abspath packer/azure/azure-vhd.json)" -var-file="$(abspath packer/azure/$(subst build-azure-vhd-,,$@).json)" -only="$(subst build-azure-,,$@)" $(ABSOLUTE_PACKER_VAR_FILES) packer/azure/packer$(findstring -windows,$@).json
+	. $(abspath packer/azure/scripts/init-vhd.sh) && packer build $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="$(abspath packer/azure/azure-config.json)" -var-file="$(abspath packer/azure/azure-vhd.json)" -var-file="$(abspath packer/azure/$(subst build-azure-vhd-,,$@).json)" -only="$(subst build-azure-,,$@)" $(ABSOLUTE_PACKER_VAR_FILES) -var-file="$(abspath packer/azure/common.json)" packer/azure/packer$(findstring -windows,$@).json 
 
 .PHONY: $(AZURE_VALIDATE_VHD_TARGETS)
 $(AZURE_VALIDATE_VHD_TARGETS): deps-azure

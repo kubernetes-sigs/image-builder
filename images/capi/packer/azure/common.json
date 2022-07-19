@@ -1,0 +1,3 @@
+{
+  "pause_image": "mcr.microsoft.com/oss/kubernetes/pause:3.8"
+}
