@@ -157,6 +157,8 @@ flatcar:
     command:
   qemu:
     command:
+  raw:
+    command:
 photon:
   common-service:
     apparmor:
