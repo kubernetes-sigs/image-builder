@@ -467,10 +467,12 @@ $(POWERVS_VALIDATE_TARGETS): deps-powervs
 
 .PHONY: $(NUTANIX_BUILD_TARGETS)
 $(NUTANIX_BUILD_TARGETS): deps-nutanix
+	packer init packer/nutanix/config.pkr.hcl
 	packer build $(PACKER_NODE_FLAGS) -var-file="packer/nutanix/nutanix.json" -var-file="$(abspath packer/nutanix/$(subst build-nutanix-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/nutanix/packer.json
 
 .PHONY: $(NUTANIX_VALIDATE_TARGETS)
 $(NUTANIX_VALIDATE_TARGETS): deps-nutanix
+	packer init packer/nutanix/config.pkr.hcl
 	packer validate $(PACKER_NODE_FLAGS) -var-file="packer/nutanix/nutanix.json" -var-file="$(abspath packer/nutanix/$(subst validate-nutanix-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/nutanix/packer.json
 ## --------------------------------------
 ## Dynamic clean targets
