@@ -77,6 +77,17 @@
       },
       "output": "{{user `manifest_output`}}",
       "type": "manifest"
+    },
+    {
+      "environment_vars": [
+        "CUSTOM_POST_PROCESSOR={{user `custom_post_processor`}}"
+      ],
+      "inline": [
+        "if [ \"$CUSTOM_POST_PROCESSOR\" != \"true\" ]; then exit 0; fi",
+        "{{user `custom_post_processor_command`}}"
+      ],
+      "name": "custom-post-processor",
+      "type": "shell-local"
     }
   ],
   "provisioners": [
