@@ -320,6 +320,8 @@ OPENSTACK_BUILD_NAMES	?=	openstack-ubuntu-2004
 
 OSC_BUILD_NAMES 			?=	osc-centos-7 osc-ubuntu-2004
 
+OPENSTACK_BUILD_NAMES	?=	openstack-ubuntu-2004
+
 QEMU_BUILD_NAMES			?=	qemu-ubuntu-1804 qemu-ubuntu-2004 qemu-centos-7 qemu-ubuntu-2004-efi qemu-rhel-8 qemu-rockylinux-8 qemu-flatcar
 QEMU_KUBEVIRT_BUILD_NAMES	:= $(addprefix kubevirt-,$(QEMU_BUILD_NAMES))
 
