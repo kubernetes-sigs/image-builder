@@ -48,7 +48,7 @@ version: ## Display version of image-builder
 
 .PHONY: deps
 deps: ## Installs/checks all dependencies
-deps: deps-ami deps-azure deps-do deps-gce deps-ova deps-qemu deps-raw deps-oci deps-osc deps-vbox deps-powervs deps-nutanix
+deps: deps-ami deps-azure deps-do deps-gce deps-ova deps-openstack deps-qemu deps-raw deps-oci deps-osc deps-vbox deps-powervs deps-nutanix
 
 .PHONY: deps-ami
 deps-ami: ## Installs/checks dependencies for AMI builds
@@ -81,7 +81,7 @@ deps-osc:
 	hack/ensure-packer.sh
 	hack/ensure-goss.sh
 	packer plugins install github.com/outscale/outscale
-   
+
 .PHONY: deps-gce
 deps-gce: ## Installs/checks dependencies for GCE builds
 deps-gce:
@@ -97,6 +97,14 @@ deps-ova:
 	hack/ensure-packer.sh
 	hack/ensure-goss.sh
 	hack/ensure-ovftool.sh
+
+.PHONY: deps-openstack
+deps-openstack: ## Installs/checks dependencies for OpenStack builds
+deps-openstack:
+	hack/ensure-ansible.sh
+	hack/ensure-packer.sh
+	hack/ensure-goss.sh
+#TODO    hack/ensure-openstack.sh
 
 .PHONY: deps-qemu
 deps-qemu: ## Installs/checks dependencies for QEMU builds
@@ -360,6 +368,7 @@ AZURE_VALIDATE_SIG_TARGETS	:= $(addprefix validate-,$(AZURE_BUILD_SIG_NAMES))
 AZURE_VALIDATE_SIG_GEN2_TARGETS	:= $(addprefix validate-,$(AZURE_BUILD_SIG_GEN2_NAMES))
 DO_BUILD_TARGETS 	:= $(addprefix build-,$(DO_BUILD_NAMES))
 DO_VALIDATE_TARGETS 	:= $(addprefix validate-,$(DO_BUILD_NAMES))
+OPENSTACK_BUILD_TARGETS	:= $(addprefix build-,$(OPENSTACK_BUILD_NAMES))
 QEMU_BUILD_TARGETS	:= $(addprefix build-,$(QEMU_BUILD_NAMES))
 QEMU_VALIDATE_TARGETS	:= $(addprefix validate-,$(QEMU_BUILD_NAMES))
 QEMU_KUBEVIRT_BUILD_TARGETS := $(addprefix build-,$(QEMU_KUBEVIRT_BUILD_NAMES))
@@ -458,6 +467,10 @@ $(DO_BUILD_TARGETS): deps-do
 .PHONY: $(DO_VALIDATE_TARGETS)
 $(DO_VALIDATE_TARGETS): deps-do
 	packer validate $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/digitalocean/$(subst validate-do-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/digitalocean/packer.json
+
+.PHONY: $(OPENSTACK_BUILD_TARGETS)
+$(OPENSTACK_BUILD_TARGETS): deps-openstack
+	packer build $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/openstack/$(subst build-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/openstack/packer.json
 
 .PHONY: $(QEMU_BUILD_TARGETS)
 $(QEMU_BUILD_TARGETS): deps-qemu
@@ -671,6 +684,9 @@ build-node-ova-local-base-rhel-8: ## Builds RHEL 8 Base Node OVA w local hypervi
 build-node-ova-local-base-rockylinux-8: ## Builds RockyLinux 8 Base Node OVA w local hypervisor
 build-node-ova-local-base-ubuntu-1804: ## Builds Ubuntu 18.04 Base Node OVA w local hypervisor
 build-node-ova-local-base-ubuntu-2004: ## Builds Ubuntu 20.04 Base Node OVA w local hypervisor
+
+build-openstack-ubuntu-2004: ## Builds OpenStack 20.04 image
+build-openstack-all: $(OPENSTACK_BUILD_TARGETS)
 
 build-qemu-flatcar: ## Builds Flatcar QEMU image
 build-qemu-ubuntu-1804: ## Builds Ubuntu 18.04 QEMU image
