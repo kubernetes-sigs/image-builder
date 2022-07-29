@@ -1,0 +1,12 @@
+{
+  "build_name": "ubuntu-2004",
+  "distro_name": "ubuntu",
+  "guest_os_type": "ubuntu-64",
+  "os_display_name": "Ubuntu 20.04",
+  "shutdown_command": "shutdown -P now",
+  "ssh_username": "ubuntu",
+  "source_image": "c5eb4dd2-a35f-4c7f-8095-c28f2c64b924",
+  "networks": "dbbcf56d-940d-42e1-a550-3c38c5999dee",
+  "flavor": "vgpu.mig.1g10gb",
+  "floating_ip_pool": "public1"
+}
