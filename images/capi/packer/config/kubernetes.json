@@ -3,7 +3,7 @@
   "crictl_sha256": "https://github.com/kubernetes-sigs/cri-tools/releases/download/v{{user `crictl_version`}}/crictl-v{{user `crictl_version`}}-linux-{{user `crictl_arch`}}.tar.gz.sha256",
   "crictl_source_type": "pkg",
   "crictl_url": "https://github.com/kubernetes-sigs/cri-tools/releases/download/v{{user `crictl_version`}}/crictl-v{{user `crictl_version`}}-linux-{{user `crictl_arch`}}.tar.gz",
-  "crictl_version": "1.23.0",
+  "crictl_version": "1.24.3",
   "kubeadm_template": "etc/kubeadm.yml",
   "kubernetes_container_registry": "registry.k8s.io",
   "kubernetes_deb_gpg_key": "https://packages.cloud.google.com/apt/doc/apt-key.gpg",
