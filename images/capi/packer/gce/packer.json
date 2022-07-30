@@ -1,9 +1,11 @@
 {
   "builders": [
     {
+      "account_file": "{{ user `service_account_key_file` }}",
       "disable_default_service_account": "{{ user `disable_default_service_account` }}",
       "image_family": "capi-{{user `build_name`}}-k8s-{{user `kubernetes_series` | clean_resource_name}}",
       "image_name": "cluster-api-{{user `build_name`}}-{{user `kubernetes_semver` | clean_resource_name}}-{{user `build_timestamp`}}",
+      "impersonate_service_account": "{{ user `impersonate_service_account` }}",
       "labels": {
         "build_timestamp": "{{user `build_timestamp`}}",
         "distribution": "ubuntu",
@@ -13,10 +15,13 @@
       },
       "machine_type": "{{ user `machine_type` }}",
       "name": "{{user `build_name`}}",
+      "network": "{{ user `network` }}",
+      "network_project_id": "{{ user `network_project_id` }}",
       "project_id": "{{ user `project_id` }}",
       "service_account_email": "{{ user `service_account_email` }}",
       "source_image_family": "{{ user `source_image_family` }}",
       "ssh_username": "ubuntu",
+      "subnetwork": "{{ user `subnetwork` }}",
       "type": "googlecompute",
       "zone": "{{ user `zone` }}"
     }
@@ -92,6 +97,7 @@
     "disable_default_service_account": "",
     "encrypted": "false",
     "existing_ansible_ssh_args": "{{env `ANSIBLE_SSH_ARGS`}}",
+    "impersonate_service_account": "{{ env `GOOGLE_IMPERSONATE_SERVICE_ACCOUNT` }}",
     "kubernetes_cni_deb_version": null,
     "kubernetes_cni_http_source": null,
     "kubernetes_cni_rpm_version": null,
@@ -111,9 +117,13 @@
     "kubernetes_series": null,
     "kubernetes_source_type": null,
     "machine_type": "n1-standard-1",
+    "network": "",
+    "network_project_id": "",
     "project_id": "{{env `GCP_PROJECT_ID`}}",
     "service_account_email": "",
+    "service_account_key_file": "",
     "source_image_family": "{{user `build_name`}}-lts",
+    "subnetwork": "",
     "zone": null
   }
 }
