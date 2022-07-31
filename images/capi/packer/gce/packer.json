@@ -1,6 +1,7 @@
 {
   "builders": [
     {
+      "access_token": "{{ user `oauth_token` }}",
       "account_file": "{{ user `service_account_key_file` }}",
       "disable_default_service_account": "{{ user `disable_default_service_account` }}",
       "image_family": "capi-{{user `build_name`}}-k8s-{{user `kubernetes_series` | clean_resource_name}}",
@@ -18,6 +19,9 @@
       "network": "{{ user `network` }}",
       "network_project_id": "{{ user `network_project_id` }}",
       "project_id": "{{ user `project_id` }}",
+      "scopes": [
+        "https://www.googleapis.com/auth/cloud-platform"
+      ],
       "service_account_email": "{{ user `service_account_email` }}",
       "source_image_family": "{{ user `source_image_family` }}",
       "ssh_username": "ubuntu",
@@ -119,6 +123,7 @@
     "machine_type": "n1-standard-1",
     "network": "",
     "network_project_id": "",
+    "oauth_token": "",
     "project_id": "{{env `GCP_PROJECT_ID`}}",
     "service_account_email": "",
     "service_account_key_file": "",
