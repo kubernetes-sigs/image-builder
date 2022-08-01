@@ -159,6 +159,8 @@ flatcar:
     command:
   raw:
     command:
+  ova:
+    command:
 photon:
   common-service:
     apparmor:

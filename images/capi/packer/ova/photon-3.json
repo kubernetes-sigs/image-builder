@@ -7,7 +7,6 @@
   "distro_name": "photon",
   "distro_version": "3",
   "guest_os_type": "vmware-photon-64",
-  "http_directory": "./packer/ova/linux/{{user `distro_name`}}/http/",
   "iso_checksum": "c2883a42e402a2330d9c39b4d1e071cf9b3b5898",
   "iso_checksum_type": "sha1",
   "iso_url": "https://packages.vmware.com/photon/3.0/Rev3/iso/photon-minimal-3.0-a383732.iso",
