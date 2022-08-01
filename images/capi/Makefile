@@ -250,7 +250,7 @@ PACKER_POWERVS_NODE_FLAGS := $(foreach f,$(abspath $(COMMON_POWERVS_VAR_FILES)),
 CENTOS_VERSIONS			:=	centos-7
 FLATCAR_VERSIONS		:=	flatcar
 PHOTON_VERSIONS			:=	photon-3
-RHEL_VERSIONS			:=	rhel-7
+RHEL_VERSIONS			:=	rhel-7 rhel-8
 ROCKYLINUX_VERSIONS     :=  rockylinux-8
 UBUNTU_VERSIONS			:=	ubuntu-1804 ubuntu-2004 ubuntu-2004-efi
 WINDOWS_VERSIONS		:=	windows-2019 windows-2004 windows-2022
@@ -528,6 +528,7 @@ build-node-ova-local-centos-7: ## Builds CentOS 7 Node OVA w local hypervisor
 build-node-ova-local-flatcar: ## Builds Flatcar stable Node OVA w local hypervisor
 build-node-ova-local-photon-3: ## Builds Photon 3 Node OVA w local hypervisor
 build-node-ova-local-rhel-7: ## Builds RHEL 7 Node OVA w local hypervisor
+build-node-ova-local-rhel-8: ## Builds RHEL 8 Node OVA w local hypervisor
 build-node-ova-local-rockylinux-8: ## Builds RockyLinux 8 Node OVA w local hypervisor
 build-node-ova-local-ubuntu-1804: ## Builds Ubuntu 18.04 Node OVA w local hypervisor
 build-node-ova-local-ubuntu-2004: ## Builds Ubuntu 20.04 Node OVA w local hypervisor
@@ -539,6 +540,7 @@ build-node-ova-vsphere-centos-7: ## Builds CentOS 7 Node OVA and template on vSp
 build-node-ova-vsphere-flatcar: ## Builds Flatcar stable Node OVA and template on vSphere
 build-node-ova-vsphere-photon-3: ## Builds Photon 3 Node OVA and template on vSphere
 build-node-ova-vsphere-rhel-7: ## Builds RHEL 7 Node OVA and template on vSphere
+build-node-ova-vsphere-rhel-8: ## Builds RHEL 8 Node OVA and template on vSphere
 build-node-ova-vsphere-rockylinux-8: ## Builds RockyLinux 8 Node OVA and template on vSphere
 build-node-ova-vsphere-ubuntu-1804: ## Builds Ubuntu 18.04 Node OVA and template on vSphere
 build-node-ova-vsphere-ubuntu-2004: ## Builds Ubuntu 20.04 Node OVA and template on vSphere
@@ -551,6 +553,7 @@ build-node-ova-vsphere-all: $(NODE_OVA_VSPHERE_BUILD_TARGETS) ## Builds all Node
 build-node-ova-vsphere-clone-centos-7: ## Builds CentOS 7 Node OVA and template on vSphere
 build-node-ova-vsphere-clone-photon-3: ## Builds Photon 3 Node OVA and template on vSphere
 build-node-ova-vsphere-clone-rhel-7: ## Builds RHEL 7 Node OVA and template on vSphere
+build-node-ova-vsphere-clone-rhel-8: ## Builds RHEL 8 Node OVA and template on vSphere
 build-node-ova-vsphere-clone-rockylinux-8: ## Builds RockyLinux 8 Node OVA and template on vSphere
 build-node-ova-vsphere-clone-ubuntu-1804: ## Builds Ubuntu 18.04 Node OVA and template on vSphere
 build-node-ova-vsphere-clone-ubuntu-2004: ## Builds Ubuntu 20.04 Node OVA and template on vSphere
@@ -559,6 +562,7 @@ build-node-ova-vsphere-clone-all: $(NODE_OVA_VSPHERE_CLONE_BUILD_TARGETS) ## Bui
 build-node-ova-vsphere-base-centos-7: ## Builds base CentOS 7 Node OVA and template on vSphere
 build-node-ova-vsphere-base-photon-3: ## Builds base Photon 3 Node OVA and template on vSphere
 build-node-ova-vsphere-base-rhel-7: ## Builds base RHEL 7 Node OVA and template on vSphere
+build-node-ova-vsphere-base-rhel-8: ## Builds base RHEL 8 Node OVA and template on vSphere
 build-node-ova-vsphere-base-rockylinux-8: ## Builds base RockyLinux 8 Node OVA and template on vSphere
 build-node-ova-vsphere-base-ubuntu-1804: ## Builds base Ubuntu 18.04 Node OVA and template on vSphere
 build-node-ova-vsphere-base-ubuntu-2004: ## Builds base Ubuntu 20.04 Node OVA and template on vSphere
@@ -567,6 +571,7 @@ build-node-ova-vsphere-base-all: $(NODE_OVA_VSPHERE_BASE_BUILD_TARGETS) ## Build
 build-node-ova-local-vmx-photon-3: ## Builds Photon 3 Node OVA from VMX file w local hypervisor
 build-node-ova-local-vmx-centos-7: ## Builds Centos 7 Node OVA from VMX file w local hypervisor
 build-node-ova-local-vmx-rhel-7: ## Builds RHEL 7 Node OVA from VMX file w local hypervisor
+build-node-ova-local-vmx-rhel-8: ## Builds RHEL 8 Node OVA from VMX file w local hypervisor
 build-node-ova-local-vmx-rockylinux-8: ## Builds RockyLinux 8 Node OVA from VMX file w local hypervisor
 build-node-ova-local-vmx-ubuntu-1804: ## Builds Ubuntu 18.04 Node OVA from VMX file w local hypervisor
 build-node-ova-local-vmx-ubuntu-2004: ## Builds Ubuntu 20.04 Node OVA from VMX file w local hypervisor
@@ -574,6 +579,7 @@ build-node-ova-local-vmx-ubuntu-2004: ## Builds Ubuntu 20.04 Node OVA from VMX f
 build-node-ova-local-base-photon-3: ## Builds Photon 3 Base Node OVA w local hypervisor
 build-node-ova-local-base-centos-7: ## Builds Centos 7 Base Node OVA w local hypervisor
 build-node-ova-local-base-rhel-7: ## Builds RHEL 7 Base Node OVA w local hypervisor
+build-node-ova-local-base-rhel-8: ## Builds RHEL 8 Base Node OVA w local hypervisor
 build-node-ova-local-base-rockylinux-8: ## Builds RockyLinux 8 Base Node OVA w local hypervisor
 build-node-ova-local-base-ubuntu-1804: ## Builds Ubuntu 18.04 Base Node OVA w local hypervisor
 build-node-ova-local-base-ubuntu-2004: ## Builds Ubuntu 20.04 Base Node OVA w local hypervisor
@@ -647,6 +653,7 @@ validate-node-ova-local-centos-7: ## Validates CentOS 7 Node OVA Packer config w
 validate-node-ova-local-flatcar: ## Validates Flatcar stable Node OVA Packer config w local hypervisor
 validate-node-ova-local-photon-3: ## Validates Photon 3 Node OVA Packer config w local hypervisor
 validate-node-ova-local-rhel-7: ## Validates RHEL 7 Node OVA Packer config w local hypervisor
+validate-node-ova-local-rhel-8: ## Validates RHEL 8 Node OVA Packer config w local hypervisor
 validate-node-ova-local-rockylinux-8: ## Validates RockyLinux 8 Node OVA Packer config w local hypervisor
 validate-node-ova-local-ubuntu-1804: ## Validates Ubuntu 18.04 Node OVA Packer config w local hypervisor
 validate-node-ova-local-ubuntu-2004: ## Validates Ubuntu 20.04 Node OVA Packer config w local hypervisor
@@ -658,6 +665,7 @@ validate-node-ova-local-all: $(NODE_OVA_LOCAL_VALIDATE_TARGETS) ## Validates all
 validate-node-ova-local-vmx-photon-3: ## Validates Photon 3 Node OVA from VMX file w local hypervisor
 validate-node-ova-local-vmx-centos-7: ## Validates Centos 7 Node OVA from VMX file w local hypervisor
 validate-node-ova-local-vmx-rhel-7: ## Validates RHEL 7 Node OVA from VMX file w local hypervisor
+validate-node-ova-local-vmx-rhel-8: ## Validates RHEL 8 Node OVA from VMX file w local hypervisor
 validate-node-ova-local-vmx-rockylinux-8: ## Validates RockyLinux 8 Node OVA from VMX file w local hypervisor
 validate-node-ova-local-vmx-ubuntu-1804: ## Validates Ubuntu 18.04 Node OVA from VMX file w local hypervisor
 validate-node-ova-local-vmx-ubuntu-2004: ## Validates Ubuntu 20.04 Node OVA from VMX file w local hypervisor
@@ -665,6 +673,7 @@ validate-node-ova-local-vmx-ubuntu-2004: ## Validates Ubuntu 20.04 Node OVA from
 validate-node-ova-local-base-photon-3: ## Validates Photon 3 Base Node OVA w local hypervisor
 validate-node-ova-local-base-centos-7: ## Validates Centos 7 Base Node OVA w local hypervisor
 validate-node-ova-local-base-rhel-7: ## Validates RHEL 7 Base Node OVA w local hypervisor
+validate-node-ova-local-base-rhel-8: ## Validates RHEL 8 Base Node OVA w local hypervisor
 validate-node-ova-local-base-rockylinux-8: ## Validates RockyLinux 8 Base Node OVA w local hypervisor
 validate-node-ova-local-base-ubuntu-1804: ## Validates Ubuntu 18.04 Base Node OVA w local hypervisor
 validate-node-ova-local-base-ubuntu-2004: ## Validates Ubuntu 20.04 Base Node OVA w local hypervisor

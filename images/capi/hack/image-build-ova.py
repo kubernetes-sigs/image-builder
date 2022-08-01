@@ -111,6 +111,7 @@ def main():
                  "centos7-64": {"id": "107", "version": "7", "type": "centos7-64"},
                  "centos8-64": {"id": "107", "version": "8", "type": "centos8-64"},
                  "rhel7-64": {"id": "80", "version": "7", "type": "rhel7_64guest"},
+                 "rhel8-64": {"id": "80", "version": "8", "type": "rhel8_64guest"},
                  "ubuntu-64": {"id": "94", "version": "", "type": "ubuntu64Guest"},
                  "flatcar-64": {"id": "100", "version": "", "type": "linux-64"},
                  "Windows2019Server-64": {"id": "112", "version": "", "type": "windows9srv-64"},
