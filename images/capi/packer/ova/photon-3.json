@@ -7,9 +7,9 @@
   "distro_name": "photon",
   "distro_version": "3",
   "guest_os_type": "vmware-photon-64",
-  "iso_checksum": "c2883a42e402a2330d9c39b4d1e071cf9b3b5898",
+  "iso_checksum": "76fbe13df3f7340c94cf5706a0ec33ffc377c47e",
   "iso_checksum_type": "sha1",
-  "iso_url": "https://packages.vmware.com/photon/3.0/Rev3/iso/photon-minimal-3.0-a383732.iso",
+  "iso_url": "https://packages.vmware.com/photon/3.0/Rev3/iso/Update1/photon-minimal-3.0-913b49438.iso",
   "os_display_name": "VMware Photon OS 64-bit",
   "shutdown_command": "shutdown now",
   "vsphere_guest_os_type": "vmwarePhoton64Guest"
