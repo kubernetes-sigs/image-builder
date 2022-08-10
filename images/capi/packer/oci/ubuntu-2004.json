@@ -1,5 +1,8 @@
 {
   "build_name": "ubuntu-2004",
+  "distribution": "Ubuntu",
+  "distribution_release": "focal",
+  "distribution_version": "20.04",
   "operating_system": "Canonical Ubuntu",
   "operating_system_version": "20.04",
   "ssh_username": "ubuntu"
