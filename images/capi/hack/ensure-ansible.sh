@@ -39,3 +39,4 @@ ansible-galaxy collection install community.general
 ansible-galaxy collection install ansible.posix
 ansible-galaxy collection install 'ansible.windows:>=1.7.0'
 ansible-galaxy collection install community.windows
+ansible-galaxy collection install devsec.hardening
