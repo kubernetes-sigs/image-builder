@@ -159,8 +159,8 @@ command:
     exit-status: 0
     exec: netsh int ipv4 show dynamicportrange tcp
     stdout:
-    - "Start Port      : 33000"
-    - "Number of Ports : 32536"
+    - "Start Port      : 34000"
+    - "Number of Ports : 31536"
     timeout: 30000
 {{end}}
 
