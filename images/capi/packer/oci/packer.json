@@ -15,25 +15,24 @@
       "shape_config": {
         "ocpus": "{{user `ocpus`}}"
       },
-      "ssh_username": "{{user `ssh_username`}}",
       "ssh_private_key_file": "{{ user `ssh_private_key_file`}}",
+      "ssh_username": "{{user `ssh_username`}}",
       "subnet_ocid": "{{user `subnet_ocid`}}",
-      "tenancy_ocid": "{{user `tenancy_ocid`}}",
-      "type": "oracle-oci",
-      "user_ocid": "{{user `user_ocid`}}",
-      "use_private_ip": "{{user `use_private_ip`}}",
-      "user_data": "{{user `user_data`}}",
       "tags": {
         "build_date": "{{isotime}}",
         "build_timestamp": "{{user `build_timestamp`}}",
         "containerd_version": "{{user `containerd_version`}}",
-        "distribution": "{{user `distribution`}}",
-        "distribution_release": "{{user `distribution_release`}}",
-        "distribution_version": "{{user `distribution_version`}}",
+        "distribution": "{{user `operating_system`}}",
+        "distribution_version": "{{user `operating_system_version`}}",
         "image_builder_version": "{{user `ib_version`}}",
         "kubernetes_cni_version": "{{user `kubernetes_cni_semver`}}",
         "kubernetes_version": "{{user `kubernetes_semver`}}"
-      }
+      },
+      "tenancy_ocid": "{{user `tenancy_ocid`}}",
+      "type": "oracle-oci",
+      "use_private_ip": "{{user `use_private_ip`}}",
+      "user_data": "{{user `user_data`}}",
+      "user_ocid": "{{user `user_ocid`}}"
     }
   ],
   "provisioners": [
@@ -80,6 +79,7 @@
     "encrypted": "false",
     "existing_ansible_ssh_args": "{{env `ANSIBLE_SSH_ARGS`}}",
     "fingerprint": "{{env `OCI_USER_FINGERPRINT`}}",
+    "ib_version": "{{env `IB_VERSION`}}",
     "key_file": "{{env `OCI_USER_KEY_FILE`}}",
     "kubernetes_cni_deb_version": null,
     "kubernetes_cni_http_source": null,
@@ -102,15 +102,14 @@
     "ocpus": "1",
     "operating_system": null,
     "operating_system_version": null,
-    "region": "us-phoenix-1",
+    "region": "us-ashburn-1",
     "shape": "VM.Standard.E4.Flex",
-    "ssh_username": null,
     "ssh_private_key_file": "",
+    "ssh_username": null,
     "subnet_ocid": "{{env `OCI_SUBNET_OCID`}}",
     "tenancy_ocid": "{{env `OCI_TENANCY_OCID`}}",
-    "user_ocid": "{{env `OCI_USER_OCID`}}",
     "use_private_ip": "false",
-    "ib_version": "{{env `IB_VERSION`}}",
-    "user_data": ""
+    "user_data": "",
+    "user_ocid": "{{env `OCI_USER_OCID`}}"
   }
 }
