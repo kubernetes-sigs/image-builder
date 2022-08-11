@@ -56,7 +56,23 @@ package:
   {{end}}
 {{end}}
 
+# Iterate thru different OS Versions like RHEL7/8, Photon 3/4(future) etc.
+{{ if eq .Vars.PROVIDER "ova"}}
+{{$distro_version := .Vars.OS_VERSION}}
+{{range $component := index .Vars .Vars.OS .Vars.PROVIDER "os_version"}}
+{{if eq $distro_version (index $component "distro_version")}}
+  {{ range $name, $vers := index $component "package"}}
+  {{$name}}:
+    installed: true
+  {{range $key, $val := $vers}}
+    {{$key}}: {{$val}}
+  {{end}}
+  {{end}}
 {{end}}
+{{end}}
+{{end}}
+{{end}}
+
 {{ if eq .Vars.OS "windows"}} # Windows
 # Workaround until windows features are added to goss
 command:

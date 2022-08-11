@@ -405,6 +405,7 @@
       "vars_inline": {
         "ARCH": "amd64",
         "OS": "{{user `distro_name` | lower}}",
+        "OS_VERSION": "{{user `distro_version` | lower}}",
         "PROVIDER": "ova",
         "containerd_version": "{{user `containerd_version`}}",
         "kubernetes_cni_deb_version": "{{ user `kubernetes_cni_deb_version` }}",

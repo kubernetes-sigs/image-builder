@@ -228,7 +228,13 @@ rhel:
     package:
       python2-pip:
       open-vm-tools:
-      <<: *rh7_rpms
+    os_version:
+    - distro_version: "7"
+      package:
+        <<: *rh7_rpms
+    - distro_version: "8"
+      package:
+        <<: *rh8_rpms
   qemu:
     package:
       open-vm-tools:
