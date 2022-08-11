@@ -21,6 +21,7 @@
       "image_version": "{{user `image_version`}}",
       "location": "{{user `azure_location`}}",
       "name": "vhd-{{user `build_name`}}",
+      "os_disk_size_gb": "{{user `os_disk_size_gb`}}",
       "os_type": "Linux",
       "private_virtual_network_with_public_ip": "{{user `private_virtual_network_with_public_ip`}}",
       "resource_group_name": "{{user `resource_group_name`}}",
@@ -54,6 +55,7 @@
       "managed_image_name": "{{user `image_name`}}-{{user `build_timestamp`}}",
       "managed_image_resource_group_name": "{{user `resource_group_name`}}",
       "name": "sig-{{user `build_name`}}",
+      "os_disk_size_gb": "{{user `os_disk_size_gb`}}",
       "os_type": "Linux",
       "plan_info": {
         "plan_name": "{{user `plan_image_sku`}}",
@@ -231,6 +233,7 @@
     "kubernetes_series": null,
     "kubernetes_source_type": null,
     "manifest_output": "manifest.json",
+    "os_disk_size_gb": "",
     "plan_image_offer": "",
     "plan_image_publisher": "",
     "plan_image_sku": "",
