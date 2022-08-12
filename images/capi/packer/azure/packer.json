@@ -54,6 +54,7 @@
       "location": "{{user `azure_location`}}",
       "managed_image_name": "{{user `image_name`}}-{{user `build_timestamp`}}",
       "managed_image_resource_group_name": "{{user `resource_group_name`}}",
+      "managed_image_storage_account_type": "{{user `storage_account_type`}}",
       "name": "sig-{{user `build_name`}}",
       "os_disk_size_gb": "{{user `os_disk_size_gb`}}",
       "os_type": "Linux",
@@ -70,7 +71,8 @@
         "replication_regions": [
           "{{user `replication_regions`}}"
         ],
-        "resource_group": "{{user `resource_group_name`}}"
+        "resource_group": "{{user `resource_group_name`}}",
+        "storage_account_type": "{{user `storage_account_type`}}"
       },
       "ssh_username": "packer",
       "subscription_id": "{{user `subscription_id`}}",
@@ -239,6 +241,7 @@
     "plan_image_sku": "",
     "private_virtual_network_with_public_ip": "",
     "provisioner_remote_folder": "/tmp",
+    "storage_account_type": "",
     "subscription_id": null,
     "virtual_network_name": "",
     "virtual_network_resource_group_name": "",
