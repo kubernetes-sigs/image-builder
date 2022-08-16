@@ -53,7 +53,7 @@
       "image_sku": "{{user `image_sku`}}",
       "image_version": "{{user `image_version`}}",
       "location": "{{user `azure_location`}}",
-      "managed_image_name": "{{user `image_name`}}-{{user `build_timestamp`}}",
+      "managed_image_name": "{{user `image_name`}}-{{user `runtime`}}-{{user `build_timestamp`}}",
       "managed_image_resource_group_name": "{{user `resource_group_name`}}",
       "name": "sig-{{user `build_name`}}",
       "os_disk_size_gb": "{{user `os_disk_size_gb`}}",
