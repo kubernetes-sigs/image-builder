@@ -10,14 +10,28 @@
       "fingerprint": "{{user `fingerprint`}}",
       "image_name": "cluster-api-{{user `build_name`}}-{{user `kubernetes_semver`}}-{{user `build_timestamp`}}",
       "key_file": "{{user `key_file`}}",
+      "region": "{{user `region`}}",
       "shape": "{{user `shape`}}",
       "shape_config": {
         "ocpus": "{{user `ocpus`}}"
       },
+      "ssh_private_key_file": "{{ user `ssh_private_key_file`}}",
       "ssh_username": "{{user `ssh_username`}}",
       "subnet_ocid": "{{user `subnet_ocid`}}",
+      "tags": {
+        "build_date": "{{isotime}}",
+        "build_timestamp": "{{user `build_timestamp`}}",
+        "containerd_version": "{{user `containerd_version`}}",
+        "distribution": "{{user `operating_system`}}",
+        "distribution_version": "{{user `operating_system_version`}}",
+        "image_builder_version": "{{user `ib_version`}}",
+        "kubernetes_cni_version": "{{user `kubernetes_cni_semver`}}",
+        "kubernetes_version": "{{user `kubernetes_semver`}}"
+      },
       "tenancy_ocid": "{{user `tenancy_ocid`}}",
       "type": "oracle-oci",
+      "use_private_ip": "{{user `use_private_ip`}}",
+      "user_data": "{{user `user_data`}}",
       "user_ocid": "{{user `user_ocid`}}"
     }
   ],
@@ -65,6 +79,7 @@
     "encrypted": "false",
     "existing_ansible_ssh_args": "{{env `ANSIBLE_SSH_ARGS`}}",
     "fingerprint": "{{env `OCI_USER_FINGERPRINT`}}",
+    "ib_version": "{{env `IB_VERSION`}}",
     "key_file": "{{env `OCI_USER_KEY_FILE`}}",
     "kubernetes_cni_deb_version": null,
     "kubernetes_cni_http_source": null,
@@ -89,9 +104,12 @@
     "operating_system_version": null,
     "region": "us-ashburn-1",
     "shape": "VM.Standard.E4.Flex",
+    "ssh_private_key_file": "",
     "ssh_username": null,
     "subnet_ocid": "{{env `OCI_SUBNET_OCID`}}",
     "tenancy_ocid": "{{env `OCI_TENANCY_OCID`}}",
+    "use_private_ip": "false",
+    "user_data": "",
     "user_ocid": "{{env `OCI_USER_OCID`}}"
   }
 }
