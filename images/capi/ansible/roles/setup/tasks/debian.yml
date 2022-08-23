@@ -56,6 +56,10 @@
     force_apt_get: True
     update_cache: True
     upgrade: dist
+  register: apt_lock_status
+  until: apt_lock_status is not failed
+  retries: 5
+  delay: 10
 
 - name: install baseline dependencies
   apt:
