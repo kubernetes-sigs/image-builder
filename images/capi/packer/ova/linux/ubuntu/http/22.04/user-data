@@ -83,6 +83,5 @@ autoinstall:
     - swapoff -a
     - rm -f /swapfile
     - sed -ri '/\sswap\s/s/^#?/#/' /etc/fstab
-    - rm -f /etc/udev/rules.d/70-persistent-net.rules
     - apt-get purge --auto-remove -y
     - rm -rf /var/lib/apt/lists/*
