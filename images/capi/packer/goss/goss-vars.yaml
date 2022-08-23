@@ -309,6 +309,11 @@ ubuntu:
         stdout: ["gcloud"]
         stderr: []
         timeout: 0
+  oci:
+    service:
+    package:
+    command:
+
   ova:
     service:
       networkd-dispatcher:
@@ -336,6 +341,18 @@ ubuntu:
       cloud-initramfs-dyn-netconf:
       linux-cloud-tools-generic:
       linux-tools-generic:
+
+oracle linux:
+  common-kernel-param:
+  common-package:
+    <<: *common_rpms
+  common-service:
+  oci:
+    command:
+    service:
+    package:
+      <<: *rh8_rpms
+
 # Windows specific variables
 windows:
   common-windows-features:

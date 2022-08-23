@@ -26,7 +26,8 @@ root_path = os.path.abspath(os.path.join(sys.argv[0], '..', '..'))
 # Define what OS's are supported on which providers
 builds = {'amazon': ['amazon linux', 'centos', 'flatcar', 'ubuntu', 'windows'],
           'azure':  ['centos', 'ubuntu', 'windows'],
-          'ova': ['centos', 'photon', 'rhel', 'ubuntu', 'windows']}
+          'ova': ['centos', 'photon', 'rhel', 'ubuntu', 'windows'],
+          'oci':['ubuntu', 'oracle linux']}
 
 def generate_goss(provider, system, versions, runtime, dryrun=False, save=False):
     cmd = ['goss', '-g', 'packer/goss/goss.yaml', '--vars', 'packer/goss/goss-vars.yaml']
@@ -81,7 +82,7 @@ def main():
         usage='%(prog)s [-h] [--provider {amazon,azure,ova}] '
               '[--os {al2,centos,flatcar,photon,rhel,ubuntu,windows}]')
     parser.add_argument('--provider',
-                        choices=['amazon', 'azure', 'ova'],
+                        choices=['amazon', 'azure', 'ova','oci'],
                         action='append',
                         default=None,
                         help='One provider. Can be used multiple times')
