@@ -28,6 +28,17 @@
     mode: 0644
   when: http_proxy is defined or https_proxy is defined
 
+- name: Ensure cloud-final is in a running state
+  service:
+    name: cloud-final
+    state: started
+  check_mode: yes
+  register: cloudfinalstatus
+  until: cloudfinalstatus.status.ActiveState == "active"
+  retries: 5
+  delay: 10
+  when: packer_builder_type == "oracle-oci" and extra_repos != ""
+
 - name: Find existing repo files
   find:
     depth: 1
