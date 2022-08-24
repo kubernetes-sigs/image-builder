@@ -5,7 +5,7 @@
   "crictl_url": "https://github.com/kubernetes-sigs/cri-tools/releases/download/v{{user `crictl_version`}}/crictl-v{{user `crictl_version`}}-linux-{{user `crictl_arch`}}.tar.gz",
   "crictl_version": "1.23.0",
   "kubeadm_template": "etc/kubeadm.yml",
-  "kubernetes_container_registry": "k8s.gcr.io",
+  "kubernetes_container_registry": "registry.k8s.io",
   "kubernetes_deb_gpg_key": "https://packages.cloud.google.com/apt/doc/apt-key.gpg",
   "kubernetes_deb_repo": "\"https://apt.kubernetes.io/ kubernetes-xenial\"",
   "kubernetes_deb_version": "1.22.9-00",
