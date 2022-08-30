@@ -2,6 +2,8 @@ apiVersion: kubeadm.k8s.io/v1beta2
 kind: ClusterConfiguration
 imageRepository: {{ kubernetes_container_registry }}
 kubernetesVersion: {{ kubernetes_semver }}
+dns:
+  imageRepository: {{ kubernetes_container_registry }}/coredns
 ---
 apiVersion: kubeadm.k8s.io/v1beta2
 kind: InitConfiguration
