@@ -561,6 +561,7 @@ build-ami-all: $(AMI_BUILD_TARGETS) ## Builds all AMIs
 
 build-azure-sig-ubuntu-1804: ## Builds Ubuntu 18.04 Azure managed image in Shared Image Gallery
 build-azure-sig-ubuntu-2004: ## Builds Ubuntu 20.04 Azure managed image in Shared Image Gallery
+build-azure-sig-ubuntu-2204: ## Builds Ubuntu 22.04 Azure managed image in Shared Image Gallery
 build-azure-sig-centos-7: ## Builds CentOS 7 Azure managed image in Shared Image Gallery
 build-azure-sig-windows-2019: ## Builds Windows Server 2019 Azure managed image in Shared Image Gallery
 build-azure-sig-windows-2019-containerd: ## Builds Windows Server 2019 with containerd Azure managed image in Shared Image Gallery
@@ -568,6 +569,7 @@ build-azure-sig-windows-2022-containerd: ## Builds Windows Server 2022 with cont
 build-azure-sig-windows-2004: ## Builds Windows Server 2004 SAC Azure managed image in Shared Image Gallery
 build-azure-vhd-ubuntu-1804: ## Builds Ubuntu 18.04 VHD image for Azure
 build-azure-vhd-ubuntu-2004: ## Builds Ubuntu 20.04 VHD image for Azure
+build-azure-vhd-ubuntu-2204: ## Builds Ubuntu 22.04 VHD image for Azure
 build-azure-vhd-centos-7: ## Builds CentOS 7 VHD image for Azure
 build-azure-vhd-windows-2019: ## Builds for Windows Server 2019
 build-azure-vhd-windows-2019-containerd: ## Builds for Windows Server 2019 with containerd
@@ -578,6 +580,7 @@ build-azure-sig-flatcar: ## Builds Flatcar Azure managed image in Shared Image G
 build-azure-sig-flatcar-gen2: ## Builds Flatcar Azure Gen2 managed image in Shared Image Gallery
 build-azure-sig-ubuntu-1804-gen2: ## Builds Ubuntu 18.04 Gen2 managed image in Shared Image Gallery
 build-azure-sig-ubuntu-2004-gen2: ## Builds Ubuntu 20.04 Gen2 managed image in Shared Image Gallery
+build-azure-sig-ubuntu-2204-gen2: ## Builds Ubuntu 22.04 Gen2 managed image in Shared Image Gallery
 build-azure-vhds: $(AZURE_BUILD_VHD_TARGETS) ## Builds all Azure VHDs
 build-azure-sigs: $(AZURE_BUILD_SIG_TARGETS) $(AZURE_BUILD_SIG_GEN2_TARGETS) ## Builds all Azure Shared Image Gallery images
 
@@ -700,6 +703,7 @@ validate-ami-all: $(AMI_VALIDATE_TARGETS) ## Validates all AMIs Packer config
 validate-azure-sig-centos-7: ## Validates CentOS 7 Azure managed image in Shared Image Gallery Packer config
 validate-azure-sig-ubuntu-1804: ## Validates Ubuntu 18.04 Azure managed image in Shared Image Gallery Packer config
 validate-azure-sig-ubuntu-2004: ## Validates Ubuntu 20.04 Azure managed image in Shared Image Gallery Packer config
+validate-azure-sig-ubuntu-2204: ## Validates Ubuntu 22.04 Azure managed image in Shared Image Gallery Packer config
 validate-azure-sig-windows-2019: ## Validate Windows Server 2019 Azure managed image in Shared Image Gallery Packer config
 validate-azure-sig-windows-2019-containerd: ## Validate Windows Server 2019 with containerd Azure managed image in Shared Image Gallery Packer config
 validate-azure-sig-windows-2022-containerd: ## Validate Windows Server 2022 with containerd Azure managed image in Shared Image Gallery Packer config
@@ -707,6 +711,7 @@ validate-azure-sig-windows-2004: ## Validate Windows Server 2004 SAC Azure manag
 validate-azure-vhd-centos-7: ## Validates CentOS 7 VHD image Azure Packer config
 validate-azure-vhd-ubuntu-1804: ## Validates Ubuntu 18.04 VHD image Azure Packer config
 validate-azure-vhd-ubuntu-2004: ## Validates Ubuntu 20.04 VHD image Azure Packer config
+validate-azure-vhd-ubuntu-2204: ## Validates Ubuntu 22.04 VHD image Azure Packer config
 validate-azure-vhd-windows-2019: ## Validate Windows Server 2019 VHD image Azure Packer config
 validate-azure-vhd-windows-2019-containerd: ## Validate Windows Server 2019 VHD with containerd image Azure Packer config
 validate-azure-vhd-windows-2022-containerd: ## Validate Windows Server 2022 VHD with containerd image Azure Packer config
@@ -714,6 +719,7 @@ validate-azure-vhd-windows-2004: ## Validate Windows Server 2004 SAC VHD image A
 validate-azure-sig-centos-7-gen2: ## Validates CentOS 7 Azure managed image in Shared Image Gallery Packer config
 validate-azure-sig-ubuntu-1804-gen2: ## Validates Ubuntu 18.04 Azure managed image in Shared Image Gallery Packer config
 validate-azure-sig-ubuntu-2004-gen2: ## Validates Ubuntu 20.04 Azure managed image in Shared Image Gallery Packer config
+validate-azure-sig-ubuntu-2204-gen2: ## Validates Ubuntu 22.04 Azure managed image in Shared Image Gallery Packer config
 validate-azure-all: $(AZURE_VALIDATE_SIG_TARGETS) $(AZURE_VALIDATE_VHD_TARGETS) $(AZURE_VALIDATE_SIG_GEN2_TARGETS) ## Validates all images for Azure Packer config
 
 validate-do-ubuntu-1804: ## Validates Ubuntu 18.04 DigitalOcean Snapshot Packer config
