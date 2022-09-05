@@ -257,7 +257,7 @@ WINDOWS_VERSIONS		:=	windows-2019 windows-2004 windows-2022
 
 # Set Flatcar Container Linux channel and version if not supplied
 FLATCAR_CHANNEL ?= stable
-FLATCAR_VERSION ?= 3033.2.4
+FLATCAR_VERSION ?= current
 ifeq ($(FLATCAR_VERSION),current)
 override FLATCAR_VERSION := $(shell hack/image-grok-latest-flatcar-version.sh $(FLATCAR_CHANNEL))
 endif
