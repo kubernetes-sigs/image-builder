@@ -161,6 +161,7 @@
     "kubernetes_source_type": null,
     "machine_id_mode": "444",
     "memory": "2048",
+    "oem_id": "",
     "output_directory": "./output/{{user `build_name`}}-kube-{{user `kubernetes_semver`}}",
     "python_path": "",
     "qemu_binary": "qemu-system-x86_64",
