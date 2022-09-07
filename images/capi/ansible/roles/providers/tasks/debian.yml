@@ -18,6 +18,12 @@
     executable: pip3
     state: latest
 
+- name: upgrade pyOpenSSL to latest
+  pip:
+    name: pyOpenSSL
+    executable: pip3
+    state: latest
+
 - name: install Azure clients
   pip:
     executable: pip3
