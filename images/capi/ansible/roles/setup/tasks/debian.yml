@@ -78,16 +78,28 @@
     update_cache: True
     name: "{{ debs }}"
     state: latest
-
+  register: apt_lock_status
+  until: apt_lock_status is not failed
+  retries: 5
+  delay: 10
+  
 - name: install extra debs
   apt:
     force_apt_get: True
     name: "{{ extra_debs.split() }}"
     state: latest
-
+  register: apt_lock_status
+  until: apt_lock_status is not failed
+  retries: 5
+  delay: 10
+  
 - name: install pinned debs
   apt:
     force_apt_get: True
     name: "{{ pinned_debs }}"
     state: present
     force: yes
+  register: apt_lock_status
+  until: apt_lock_status is not failed
+  retries: 5
+  delay: 10
