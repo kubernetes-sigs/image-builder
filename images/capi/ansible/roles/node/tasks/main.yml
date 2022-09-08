@@ -18,6 +18,14 @@
 - import_tasks: amazonLinux2.yml
   when: ansible_distribution == "Amazon"
 
+# This is required until https://github.com/ansible/ansible/issues/77537 is fixed and used.
+- name: Override Flatcar's OS family
+  set_fact:
+    ansible_os_family: Flatcar
+  when: ansible_os_family == "Flatcar Container Linux by Kinvolk"
+  tags:
+    - facts
+
 - name: Ensure overlay module is present
   modprobe:
     name: overlay
