@@ -10,15 +10,9 @@
   tags:
     - facts
 
-- name: Force binaries directory for Flatcar Container Linux
-  set_fact:
-    bin_dir: "/opt/bin"
-  tags:
-    - facts
-
 - name: Set the ansible_python_interpreter fact
   set_fact:
-    ansible_python_interpreter: "{{ bin_dir }}/python"
+    ansible_python_interpreter: "{{ external_binary_path }}/python"
   tags:
     - facts
 
