@@ -19,7 +19,7 @@ check_for_release() {
     channel="$1"
     release="$2"
     curl -L -s \
-         "https://www.flatcar-linux.org/releases-json/releases-$channel.json" \
+         "https://www.flatcar.org/releases-json/releases-$channel.json" \
         | jq -r 'to_entries[] | "\(.key)"' \
         | grep -q "$release"
 }
