@@ -57,10 +57,10 @@ Several variables can be used to customize the image build.
 | `extra_rpms` | This can be set to a space delimited string containing the names of additional RPM packages to install | `""` |
 | `http_proxy` | This can be set to URL to use as an HTTP proxy during the Ansible stage of building | `""` |
 | `https_proxy` | This can be set to URL to use as an HTTPS proxy during the Ansible stage of building | `""` |
-| `kubernetes_deb_version` | This can be set to the version of kubernetes which will be installed in debian based image | `"1.22.9-00"` |
-| `kubernetes_rpm_version` | This can be set to the version of kubernetes which will be installed in rpm based image | `"1.22.9-0"` |
-| `kubernetes_semver` | This can be set to semantic verion of kubernetes which will be installed in the image | `"v1.22.9"` |
-| `kubernetes_series` | This can be set to series version kubernetes which will be installed in the image | `"v1.22"` |
+| `kubernetes_deb_version` | This can be set to the version of kubernetes which will be installed in debian based image | `"1.23.10-00"` |
+| `kubernetes_rpm_version` | This can be set to the version of kubernetes which will be installed in rpm based image | `"1.23.10-0"` |
+| `kubernetes_semver` | This can be set to semantic verion of kubernetes which will be installed in the image | `"v1.23.10"` |
+| `kubernetes_series` | This can be set to series version kubernetes which will be installed in the image | `"v1.23"` |
 | `no_proxy` | This can be set to a comma-delimited list of domains that should be exluded from proxying during the Ansible stage of building | `""` |
 | `reenable_public_repos` | If set to `"false"`, the package repositories disabled by setting `disable_public_repos` will remain disabled at the end of the build. | `"true"` |
 | `remove_extra_repos` | If set to `"true"`, the package repositories added to the OS through the use of `extra_repos` will be removed at the end of the build. | `"false"` |
