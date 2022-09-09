@@ -35,7 +35,7 @@ fetch_vagrant_ssh_keys() {
 
 fetch_vagrantfile() {
     curl -sSL -o ${VAGRANT_VAGRANTFILE} \
-        https://raw.githubusercontent.com/flatcar-linux/flatcar-packer-qemu/builder-ignition/Vagrantfile.builder-flatcar
+        https://raw.githubusercontent.com/flatcar/flatcar-packer-qemu/builder-ignition/Vagrantfile.builder-flatcar
 }
 # --
 
