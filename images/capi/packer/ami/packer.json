@@ -59,6 +59,7 @@
         "source_ami": "{{user `source_ami`}}"
       },
       "temporary_security_group_source_cidrs": "{{ user `temporary_security_group_source_cidrs` }}",
+      "token": "{{ user `aws_session_token` }}",
       "type": "amazon-ebs",
       "user_data": "{{ user `user_data` }}",
       "vpc_id": "{{ user `vpc_id` }}"
@@ -154,6 +155,7 @@
     "aws_region": "us-east-1",
     "aws_secret_key": "",
     "aws_security_group_ids": "",
+    "aws_session_token": "",
     "build_timestamp": "{{timestamp}}",
     "builder_instance_type": "t3.small",
     "containerd_sha256": null,
