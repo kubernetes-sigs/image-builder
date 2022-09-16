@@ -1,9 +1,9 @@
 {
-  "kubernetes_cni_deb_version": "0.8.7-00",
-  "kubernetes_cni_http_checksum": "sha256:https://storage.googleapis.com/k8s-artifacts-cni/release/v0.8.7/cni-plugins-linux-{{user `kubernetes_cni_http_checksum_arch`}}-v0.8.7.tgz.sha256",
+  "kubernetes_cni_deb_version": "1.1.1-00",
+  "kubernetes_cni_http_checksum": "sha256:https://storage.googleapis.com/k8s-artifacts-cni/release/v1.1.1/cni-plugins-linux-{{user `kubernetes_cni_http_checksum_arch`}}-v1.1.1.tgz.sha256",
   "kubernetes_cni_http_checksum_arch": "amd64",
   "kubernetes_cni_http_source": "https://github.com/containernetworking/plugins/releases/download",
-  "kubernetes_cni_rpm_version": "0.8.7-0",
-  "kubernetes_cni_semver": "v0.8.7",
+  "kubernetes_cni_rpm_version": "1.1.1-0",
+  "kubernetes_cni_semver": "v1.1.1",
   "kubernetes_cni_source_type": "pkg"
 }
