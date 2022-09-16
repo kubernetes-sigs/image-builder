@@ -24,6 +24,7 @@
       "os_type": "Windows",
       "private_virtual_network_with_public_ip": "{{user `private_virtual_network_with_public_ip`}}",
       "resource_group_name": "{{user `resource_group_name`}}",
+      "shared_gallery_image_version_exclude_from_latest": "{{ user `exclude_from_latest`  }}",
       "storage_account": "{{user `storage_account_name`}}",
       "subscription_id": "{{user `subscription_id`}}",
       "type": "azure-arm",
@@ -64,9 +65,7 @@
         "gallery_name": "{{user `shared_image_gallery_name`}}",
         "image_name": "{{user `image_name`}}-{{user `runtime`}}",
         "image_version": "{{user `sig_image_version`}}",
-        "replication_regions": [
-          "{{user `replication_regions`}}"
-        ],
+        "replication_regions": "{{user `replication_regions`}}",
         "resource_group": "{{user `resource_group_name`}}",
         "storage_account_type": "{{user `storage_account_type`}}"
       },
@@ -202,6 +201,7 @@
     "cloudbase_plugins_unattend": "cloudbaseinit.plugins.common.mtu.MTUPlugin",
     "containerd_url": "",
     "containerd_version": null,
+    "exclude_from_latest": "false",
     "gmsa_keyvault_url": "https://kubernetesartifacts.azureedge.net/ccgakvplugin/v1.1.4/binaries/windows-gmsa-ccgakvplugin-v1.1.4.zip",
     "ib_version": "{{env `IB_VERSION`}}",
     "image_offer": null,

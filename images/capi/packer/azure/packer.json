@@ -64,13 +64,12 @@
         "plan_publisher": "{{user `plan_image_publisher`}}"
       },
       "private_virtual_network_with_public_ip": "{{user `private_virtual_network_with_public_ip`}}",
+      "shared_gallery_image_version_exclude_from_latest": "{{ user `exclude_from_latest` }}",
       "shared_image_gallery_destination": {
         "gallery_name": "{{user `shared_image_gallery_name`}}",
         "image_name": "{{user `image_name`}}",
         "image_version": "{{user `sig_image_version`}}",
-        "replication_regions": [
-          "{{user `replication_regions`}}"
-        ],
+        "replication_regions": "{{user `replication_regions`}}",
         "resource_group": "{{user `resource_group_name`}}",
         "storage_account_type": "{{user `storage_account_type`}}"
       },
@@ -210,6 +209,7 @@
     "distribution": null,
     "distribution_release": null,
     "distribution_version": null,
+    "exclude_from_latest": "false",
     "existing_ansible_ssh_args": "{{env `ANSIBLE_SSH_ARGS`}}",
     "ib_version": "{{env `IB_VERSION`}}",
     "image_offer": null,
