@@ -50,3 +50,8 @@
   shell: |
     echo 'set linux_append="$linux_append systemd.unified_cgroup_hierarchy=0 systemd.legacy_systemd_cgroup_controller"' >> /usr/share/oem/grub.cfg
   when: kubernetes_semver is version('v1.21.0', '<')
+
+- name: Set oem_id in grub
+  shell: |
+    echo 'set oem_id="{{oem_id}}"' >> /usr/share/oem/grub.cfg
+  when: (oem_id is defined) and (oem_id != "")
