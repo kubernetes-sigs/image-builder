@@ -6,6 +6,7 @@
         "operating_system": "{{user `operating_system`}}",
         "operating_system_version": "{{user `operating_system_version`}}"
       },
+      "base_image_ocid": "{{user `base_image_ocid`}}",
       "compartment_ocid": "{{user `compartment_ocid`}}",
       "fingerprint": "{{user `fingerprint`}}",
       "image_name": "cluster-api-{{user `build_name`}}-{{user `kubernetes_semver`}}-{{user `build_timestamp`}}",
@@ -101,6 +102,7 @@
     "ansible_extra_vars": "",
     "ansible_user_vars": "",
     "availability_domain": "{{env `OCI_AVAILABILITY_DOMAIN`}}",
+    "base_image_ocid": "",
     "build_timestamp": "{{timestamp}}",
     "compartment_ocid": "",
     "containerd_sha256": null,
