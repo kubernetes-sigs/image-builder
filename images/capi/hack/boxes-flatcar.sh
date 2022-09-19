@@ -6,7 +6,7 @@ export VAGRANT_VAGRANTFILE=${VAGRANT_VAGRANTFILE:-/tmp/Vagrantfile.builder-flatc
 
 fetch_vagrantfile() {
     curl -sSL -o ${VAGRANT_VAGRANTFILE} \
-        https://raw.githubusercontent.com/flatcar-linux/flatcar-packer-qemu/builder-ignition/Vagrantfile.builder-flatcar
+        https://raw.githubusercontent.com/flatcar/flatcar-packer-qemu/builder-ignition/Vagrantfile.builder-flatcar
 }
 
 list_boxes() {
