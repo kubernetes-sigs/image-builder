@@ -58,6 +58,7 @@ common_debs:
 - python3-netifaces
 - python3-pip
 - socat
+- qemu-guest-agent
 
 common_photon_rpms:
 - audit

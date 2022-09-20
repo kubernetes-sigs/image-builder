@@ -95,6 +95,12 @@
     mode: 0644
   when: ansible_os_family != "Flatcar"
 
+- name: Ensure qemu-guest-agent is running and comes on at reboot
+  service:
+    name: qemu-guest-agent
+    enabled: yes
+  when: ansible_os_family == "Debian"
+
 - name: Ensure reverse packet filtering is set as strict
   sysctl:
     name: net.ipv4.conf.all.rp_filter
