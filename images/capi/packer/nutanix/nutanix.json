@@ -1,0 +1,11 @@
+{
+  "nutanix_cluster_name": "",
+  "image_name": "",
+  "source_image_name": "",
+  "nutanix_endpoint": "",
+  "nutanix_insecure": "",
+  "nutanix_port": "9440",
+  "nutanix_username": "",
+  "nutanix_password": "",
+  "nutanix_subnet_name": ""
+}

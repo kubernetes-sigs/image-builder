@@ -48,7 +48,7 @@ version: ## Display version of image-builder
 
 .PHONY: deps
 deps: ## Installs/checks all dependencies
-deps: deps-ami deps-azure deps-do deps-gce deps-ova deps-qemu deps-raw deps-oci deps-vbox deps-powervs
+deps: deps-ami deps-azure deps-do deps-gce deps-ova deps-qemu deps-raw deps-oci deps-vbox deps-powervs deps-nutanix
 
 .PHONY: deps-ami
 deps-ami: ## Installs/checks dependencies for AMI builds
@@ -132,6 +132,12 @@ deps-ignition:
 	hack/ensure-jq.sh
 	hack/ensure-ct.sh
 
+.PHONY: deps-nutanix
+deps-nutanix: ## Installs/checks dependencies for Nutanix builds
+deps-nutanix:
+	hack/ensure-ansible.sh
+	hack/ensure-packer.sh
+	hack/ensure-goss.sh
 
 ## --------------------------------------
 ## Container variables
@@ -301,6 +307,8 @@ VBOX_BUILD_NAMES			?=      vbox-windows-2019
 
 POWERVS_BUILD_NAMES         ?= powervs-centos-8
 
+NUTANIX_BUILD_NAMES ?= nutanix-ubuntu-2004
+
 ## --------------------------------------
 ## Dynamic build targets
 ## --------------------------------------
@@ -333,6 +341,8 @@ VBOX_BUILD_TARGETS      := $(addprefix build-,$(VBOX_BUILD_NAMES))
 VBOX_VALIDATE_TARGETS   := $(addprefix validate-,$(VBOX_BUILD_NAMES))
 POWERVS_BUILD_TARGETS      := $(addprefix build-,$(POWERVS_BUILD_NAMES))
 POWERVS_VALIDATE_TARGETS   := $(addprefix validate-,$(POWERVS_BUILD_NAMES))
+NUTANIX_BUILD_TARGETS		:= $(addprefix build-,$(NUTANIX_BUILD_NAMES))
+NUTANIX_VALIDATE_TARGETS	:= $(addprefix validate-,$(NUTANIX_BUILD_NAMES))
 
 .PHONY: $(NODE_OVA_LOCAL_BUILD_TARGETS)
 $(NODE_OVA_LOCAL_BUILD_TARGETS): deps-ova
@@ -455,6 +465,16 @@ $(POWERVS_BUILD_TARGETS): deps-powervs
 .PHONY: $(POWERVS_VALIDATE_TARGETS)
 $(POWERVS_VALIDATE_TARGETS): deps-powervs
 	packer validate $(PACKER_POWERVS_NODE_FLAGS) -var-file="$(abspath packer/powervs/$(subst validate-powervs-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) -except=flatcar packer/powervs/packer.json
+
+.PHONY: $(NUTANIX_BUILD_TARGETS)
+$(NUTANIX_BUILD_TARGETS): deps-nutanix
+	packer init packer/nutanix/config.pkr.hcl
+	packer build $(PACKER_NODE_FLAGS) -var-file="packer/nutanix/nutanix.json" -var-file="$(abspath packer/nutanix/$(subst build-nutanix-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/nutanix/packer.json
+
+.PHONY: $(NUTANIX_VALIDATE_TARGETS)
+$(NUTANIX_VALIDATE_TARGETS): deps-nutanix
+	packer init packer/nutanix/config.pkr.hcl
+	packer validate $(PACKER_NODE_FLAGS) -var-file="packer/nutanix/nutanix.json" -var-file="$(abspath packer/nutanix/$(subst validate-nutanix-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/nutanix/packer.json
 
 ## --------------------------------------
 ## Dynamic clean targets
@@ -607,6 +627,9 @@ build-oci-all: $(OCI_BUILD_TARGETS) ## Builds all OCI image
 build-vbox-windows-2019: ## Builds for Windows Server 2019 Node VirtualBox w local hypervisor
 build-vbox-all: $(VBOX_BUILD_TARGETS) ## Builds all Qemu images
 
+build-nutanix-ubuntu-2004: ## Builds the Nutanix ubuntu-2004 image
+build-nutanix-all: $(NUTANIX_BUILD_TARGETS) ## Builds all Nutanix image
+
 ## --------------------------------------
 ## Document dynamic validate targets
 ## --------------------------------------
@@ -704,6 +727,9 @@ validate-vbox-all: $(VBOX_VALIDATE_TARGETS) ## Validates all RAW Packer config
 validate-powervs-centos-8: ## Validates the PowerVS CentOS image packer config
 validate-powervs-all: $(POWERVS_VALIDATE_TARGETS) ## Validates all PowerVS Packer config
 
+validate-nutanix-ubuntu-2004: ## Validates Ubuntu 20.04 Nutanix Snapshot Packer config
+validate-nutanix-all: $(NUTANIX_VALIDATE_TARGETS) ## Validates all Nutanix Snapshot Packer config
+
 validate-all: validate-ami-all \
 	validate-azure-all \
 	validate-do-all \
@@ -713,7 +739,8 @@ validate-all: validate-ami-all \
 	validate-raw-all \
 	validate-oci-all \
 	validate-vbox-all \
-	validate-powervs-all
+	validate-powervs-all \
+	validate-nutanix-all
 validate-all: ## Validates the Packer config for all build targets
 
 ## --------------------------------------
