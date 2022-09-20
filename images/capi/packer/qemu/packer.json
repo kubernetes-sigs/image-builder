@@ -42,6 +42,22 @@
       ],
       "name": "custom-post-processor",
       "type": "shell-local"
+    },
+    {
+      "environment_vars": [
+        "OUTPUT_DIR={{user `output_directory`}}",
+        "ARTIFACT_NAME={{user `artificat_name`}}",
+        "KUBEVIRT={{user `kubevirt`}}"
+      ],
+      "inline": [
+        "if [ \"$KUBEVIRT\" != \"true\" ]; then",
+        "exit 0",
+        "else",
+        "bash ./packer/qemu/scripts/build_kubevirt_image.sh {{user `build_name`}}-container-disk",
+        "fi"
+      ],
+      "name": "kubevirt",
+      "type": "shell-local"
     }
   ],
   "provisioners": [
@@ -125,6 +141,7 @@
     "ansible_common_vars": "",
     "ansible_extra_vars": "ansible_python_interpreter=/usr/bin/python3",
     "ansible_user_vars": "",
+    "artificat_name": "{{user `build_name`}}-kube-{{user `kubernetes_semver`}}",
     "boot_media_path": "http://{{ .HTTPIP }}:{{ .HTTPPort }}",
     "boot_wait": "10s",
     "build_timestamp": "{{timestamp}}",
