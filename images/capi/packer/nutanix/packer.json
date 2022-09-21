@@ -3,29 +3,29 @@
     {
       "cluster_name": "{{user `nutanix_cluster_name`}}",
       "image_name": "{{user `image_name`}}",
-      "vm_disks": {
-        "image_type": "DISK_IMAGE",
-        "source_image_name": "{{user `source_image_name`}}",
-        "disk_size_gb": "{{user `disk_size_gb`}}"
-      },
-      "vm_nics": {
-        "subnet_name": "{{user `nutanix_subnet_name`}}"
-      },
-      "user_data": "{{user `user_data`}}",
+      "memory_mb": "{{user `memory`}}",
       "nutanix_endpoint": "{{user `nutanix_endpoint`}}",
       "nutanix_insecure": "{{user `nutanix_insecure`}}",
       "nutanix_password": "{{user `nutanix_password`}}",
       "nutanix_port": "{{user `nutanix_port`}}",
       "nutanix_username": "{{user `nutanix_username`}}",
       "os_type": "{{user `guest_os_type`}}",
-      "memory_mb": "{{user `memory`}}",
       "shutdown_command": "echo '{{user `ssh_password`}}' | sudo -S -E sh -c 'usermod -L {{user `ssh_username`}} && {{user `shutdown_command`}}'",
+      "ssh_handshake_attempts": "100",
       "ssh_password": "{{user `ssh_password`}}",
       "ssh_timeout": "20m",
       "ssh_username": "{{user `ssh_username`}}",
-      "ssh_handshake_attempts": "100",
       "type": "nutanix",
-      "vm_name": "{{user `build_name`}}-kube-{{user `kubernetes_semver`}}"
+      "user_data": "{{user `user_data`}}",
+      "vm_disks": {
+        "disk_size_gb": "{{user `disk_size_gb`}}",
+        "image_type": "DISK_IMAGE",
+        "source_image_name": "{{user `source_image_name`}}"
+      },
+      "vm_name": "{{user `build_name`}}-kube-{{user `kubernetes_semver`}}",
+      "vm_nics": {
+        "subnet_name": "{{user `nutanix_subnet_name`}}"
+      }
     }
   ],
   "post-processors": [
@@ -96,6 +96,7 @@
     "cpus": "1",
     "crictl_url": "https://github.com/kubernetes-sigs/cri-tools/releases/download/v{{user `crictl_version`}}/crictl-v{{user `crictl_version`}}-linux-amd64.tar.gz",
     "crictl_version": null,
+    "disk_size_gb": "40",
     "existing_ansible_ssh_args": "{{env `ANSIBLE_SSH_ARGS`}}",
     "kubernetes_cni_deb_version": null,
     "kubernetes_cni_http_source": null,
@@ -116,7 +117,6 @@
     "kubernetes_source_type": null,
     "machine_id_mode": "444",
     "memory": "2048",
-    "disk_size_gb": "40",
     "python_path": "",
     "ssh_password": "builder",
     "ssh_username": "builder"
