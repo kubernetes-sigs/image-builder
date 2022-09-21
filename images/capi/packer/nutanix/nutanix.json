@@ -6,6 +6,6 @@
   "nutanix_password": "",
   "nutanix_port": "9440",
   "nutanix_subnet_name": "",
-  "nutanix_username": "",
+  "nutanix_username": "pc_user",
   "source_image_name": ""
 }
