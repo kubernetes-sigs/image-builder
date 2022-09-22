@@ -15,7 +15,7 @@ building OCI images are managed by running the following command from images/cap
 make deps-oci
 ```
 
-From the `images/capi` directory, run `make build-do-<OS>` where `<OS>` is
+From the `images/capi` directory, run `make build-oci-<OS>` where `<OS>` is
 the desired operating system. The available choices are listed via `make help`.
 
 ### Configuration
