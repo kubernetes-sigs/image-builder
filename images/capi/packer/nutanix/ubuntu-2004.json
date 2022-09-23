@@ -1,0 +1,7 @@
+{
+  "build_name": "ubuntu-2004",
+  "distro_name": "ubuntu",
+  "guest_os_type": "Linux",
+  "shutdown_command": "shutdown -P now",
+  "user_data": "I2Nsb3VkLWNvbmZpZwp1c2VyczoKICAtIG5hbWU6IGJ1aWxkZXIKICAgIHN1ZG86IFsnQUxMPShBTEwpIE5PUEFTU1dEOkFMTCddCmNocGFzc3dkOgogIGxpc3Q6IHwKICAgIGJ1aWxkZXI6YnVpbGRlcgogIGV4cGlyZTogRmFsc2UKc3NoX3B3YXV0aDogVHJ1ZQ=="
+}
