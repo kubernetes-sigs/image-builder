@@ -21,6 +21,7 @@ If any needed binaries are not present, they can be installed to `images/capi/.b
 * [GCP](./providers/gcp.md)
 * [Nutanix](./providers/nutanix.md)
 * [OCI](./providers/oci.md)
+* [3DSOutscale](./providers/3dsoutscale.md)
 * [OpenStack](./providers/openstack.md)
 * [Raw](./providers/raw.md)
 * [VirtualBox](./providers/virtualbox.md)
