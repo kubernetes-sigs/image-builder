@@ -313,7 +313,10 @@ ubuntu:
     service:
     package:
     command:
-
+  outscale:
+    package:
+      linux-cloud-tools-virtual:
+      linux-tools-virtual:
   ova:
     service:
       networkd-dispatcher:

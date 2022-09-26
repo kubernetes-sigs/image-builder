@@ -48,7 +48,7 @@ version: ## Display version of image-builder
 
 .PHONY: deps
 deps: ## Installs/checks all dependencies
-deps: deps-ami deps-azure deps-do deps-gce deps-ova deps-openstack deps-qemu deps-raw deps-oci deps-vbox deps-powervs deps-nutanix
+deps: deps-ami deps-azure deps-do deps-gce deps-ova deps-openstack deps-qemu deps-raw deps-oci deps-osc deps-vbox deps-powervs deps-nutanix
 
 .PHONY: deps-ami
 deps-ami: ## Installs/checks dependencies for AMI builds
@@ -73,6 +73,14 @@ deps-do: ## Installs/checks dependencies for DigitalOcean builds
 deps-do:
 	hack/ensure-ansible.sh
 	hack/ensure-packer.sh
+
+.PHONY: deps-osc
+deps-osc: ## Installs/checks dependencies for Outscale builds
+deps-osc:
+	hack/ensure-ansible.sh
+	hack/ensure-packer.sh
+	hack/ensure-goss.sh
+	packer plugins install github.com/outscale/outscale
 
 .PHONY: deps-gce
 deps-gce: ## Installs/checks dependencies for GCE builds
@@ -310,6 +318,8 @@ DO_BUILD_NAMES 			?=	do-centos-7 do-ubuntu-1804 do-ubuntu-2004
 
 OPENSTACK_BUILD_NAMES	?=	openstack-ubuntu-2004
 
+OSC_BUILD_NAMES 			?=	osc-centos-7 osc-ubuntu-2004
+
 QEMU_BUILD_NAMES			?=	qemu-ubuntu-1804 qemu-ubuntu-2004 qemu-centos-7 qemu-ubuntu-2004-efi qemu-rhel-8 qemu-rockylinux-8 qemu-flatcar
 QEMU_KUBEVIRT_BUILD_NAMES	:= $(addprefix kubevirt-,$(QEMU_BUILD_NAMES))
 
@@ -351,6 +361,8 @@ RAW_BUILD_TARGETS      := $(addprefix build-,$(RAW_BUILD_NAMES))
 RAW_VALIDATE_TARGETS   := $(addprefix validate-,$(RAW_BUILD_NAMES))
 OCI_BUILD_TARGETS	:= $(addprefix build-,$(OCI_BUILD_NAMES))
 OCI_VALIDATE_TARGETS	:= $(addprefix validate-,$(OCI_BUILD_NAMES))
+OSC_BUILD_TARGETS 	:= $(addprefix build-,$(OSC_BUILD_NAMES))
+OSC_VALIDATE_TARGETS       := $(addprefix validate-,$(OSC_BUILD_NAMES))
 VBOX_BUILD_TARGETS      := $(addprefix build-,$(VBOX_BUILD_NAMES))
 VBOX_VALIDATE_TARGETS   := $(addprefix validate-,$(VBOX_BUILD_NAMES))
 POWERVS_BUILD_TARGETS      := $(addprefix build-,$(POWERVS_BUILD_NAMES))
@@ -475,6 +487,14 @@ $(OCI_BUILD_TARGETS): deps-oci
 .PHONY: $(OCI_VALIDATE_TARGETS)
 $(OCI_VALIDATE_TARGETS): deps-oci
 	packer validate $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/oci/$(subst validate-oci-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/oci/packer.json
+
+.PHONY: $(OSC_BUILD_TARGETS)
+$(OSC_BUILD_TARGETS): deps-osc
+	packer build $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/outscale/$(subst build-osc-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/outscale/packer.json
+
+.PHONY: $(OSC_VALIDATE_TARGETS)
+$(OSC_VALIDATE_TARGETS): deps-osc
+	packer validate $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/outscale/$(subst validate-osc-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/outscale/packer.json
 
 .PHONY: $(VBOX_BUILD_TARGETS)
 $(VBOX_BUILD_TARGETS): deps-vbox
@@ -653,6 +673,10 @@ build-oci-ubuntu-2004: ## Builds the OCI ubuntu-2004 image
 build-oci-oracle-linux-8: ## Builds the OCI Oracle Linux 8.x image
 build-oci-all: $(OCI_BUILD_TARGETS) ## Builds all OCI image
 
+build-osc-ubuntu-2004: ## Builds Ubuntu 20.04 Outscale Snapshot
+build-osc-centos-7: ## Builds Centos 7 Outscale Snapshot
+build-osc-all: $(OSC_BUILD_TARGETS) ## Builds all Outscale Snapshot
+
 build-vbox-windows-2019: ## Builds for Windows Server 2019 Node VirtualBox w local hypervisor
 build-vbox-all: $(VBOX_BUILD_TARGETS) ## Builds all Qemu images
 
@@ -750,6 +774,10 @@ validate-oci-ubuntu-2004: ## Validates the OCI ubuntu-2004 image packer config
 validate-oci-oracle-linux-8: ## Validates the OCI Oracle Linux 8.x image packer config
 validate-oci-all: $(OCI_VALIDATE_TARGETS) ## Validates all OCI image packer config
 
+validate-osc-ubuntu-2004: ## Validates Ubuntu 20.04 Outscale Snapshot Packer config
+validate-osc-centos-7: ## Validates Centos 7 Outscale Snapshot Packer config
+validate-osc-all: $(OSC_VALIDATE_TARGETS) ## Validates all Outscale Snapshot Packer config
+
 validate-vbox-windows-2019: ## Validates Windows Server 2019 Node VirtualBox Packer config w local hypervisor
 validate-vbox-all: $(VBOX_VALIDATE_TARGETS) ## Validates all RAW Packer config
 
@@ -767,6 +795,7 @@ validate-all: validate-ami-all \
 	validate-qemu-all \
 	validate-raw-all \
 	validate-oci-all \
+        validate-osc-all \
 	validate-vbox-all \
 	validate-powervs-all \
 	validate-nutanix-all
