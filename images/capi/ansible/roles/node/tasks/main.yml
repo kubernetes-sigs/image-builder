@@ -112,6 +112,18 @@
     line: '\1 transparent_hugepage=madvise"'
   when: ansible_os_family == "RedHat"
 
+- name: Set console kernel params
+  lineinfile:
+    path: /etc/default/grub
+    backrefs: yes
+    regexp: "^(?!.*console=tty1 console=ttyS0)(GRUB_CMDLINE_LINUX_DEFAULT=.*)(\"$)"
+    line: '\1 console=tty1 console=ttyS0"'
+  when: ansible_os_family == "Debian"
+
+- name: Update grub after console kernel params
+  shell: update-grub
+  when: ansible_os_family == "Debian"
+
 - name: Copy udev etcd network tuning rules
   template:
     src: etc/udev/rules.d/90-etcd-tuning.rules
