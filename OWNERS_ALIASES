@@ -74,6 +74,9 @@ aliases:
     - randomvariable
     - srm09
     - yastij
+  cluster-api-nutanix-maintainers:
+    - tuxtof
+    - deepakm-ntnx
   kops-maintainers:
     - hakman
     - justinsb
