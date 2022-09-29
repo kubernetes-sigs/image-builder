@@ -217,3 +217,9 @@
     state: absent
     path: /usr/share/oem/config.ign
   when: ansible_os_family == "Flatcar"
+
+- name: start ssh
+  systemd:
+    name: ssh
+    enabled: yes
+  when: ansible_os_family == "Debian"
