@@ -35,14 +35,14 @@ mkdir -p "${ARTIFACTS}/azure-sigs" "${ARTIFACTS}/azure-vhds"
 source azure_targets.sh
 
 # Convert single line entries into arrays
-IFS=' ' read -r -a VHD_TARGETS <<< "${VHD_TARGETS}"
-IFS=' ' read -r -a SIG_TARGETS <<< "${SIG_TARGETS}"
-IFS=' ' read -r -a SIG_GEN2_TARGETS <<< "${SIG_GEN2_TARGETS}"
+IFS=' ' read -r -a VHD_CI_TARGETS <<< "${VHD_CI_TARGETS}"
+IFS=' ' read -r -a SIG_CI_TARGETS <<< "${SIG_CI_TARGETS}"
+IFS=' ' read -r -a SIG_GEN2_CI_TARGETS <<< "${SIG_GEN2_CI_TARGETS}"
 
 # Append the "gen2" targets to the original SIG list
-for element in "${SIG_GEN2_TARGETS[@]}"
+for element in "${SIG_GEN2_CI_TARGETS[@]}"
 do
-    SIG_TARGETS+=("${element}-gen2")
+    SIG_CI_TARGETS+=("${element}-gen2")
 done
 
 # shellcheck source=parse-prow-creds.sh
@@ -84,13 +84,13 @@ export PACKER_VAR_FILES="packer/azure/scripts/disable-windows-prepull.json scrip
 
 declare -A PIDS
 if [[ "${AZURE_BUILD_FORMAT:-vhd}" == "sig" ]]; then
-    for target in ${SIG_TARGETS[@]};
+    for target in ${SIG_CI_TARGETS[@]};
     do
         make build-azure-sig-${target} > ${ARTIFACTS}/azure-sigs/${target}.log 2>&1 &
         PIDS["sig-${target}"]=$!
     done
 else
-    for target in ${VHD_TARGETS[@]};
+    for target in ${VHD_CI_TARGETS[@]};
     do
         make build-azure-vhd-${target} > ${ARTIFACTS}/azure-vhds/${target}.log 2>&1 &
         PIDS["vhd-${target}"]=$!
