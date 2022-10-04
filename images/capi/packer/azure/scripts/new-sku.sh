@@ -2,6 +2,7 @@
 
 OS=${OS:-"Ubuntu"}
 OS_VERSION=${OS_VERSION:-"18.04"}
+PUB_VERSION=${PUB_VERSION:-"v0.3.3"}
 VM_GENERATION=${VM_GENERATION:-"gen1"}
 [[ -n ${DEBUG:-} ]] && set -o xtrace
 
@@ -13,6 +14,7 @@ required_env_vars=(
     "OFFER"
     "OS"
     "OS_VERSION"
+    "PUB_VERSION"
     "PUBLISHER"
     "SKU_TEMPLATE_FILE"
     "VM_GENERATION"
@@ -57,7 +59,7 @@ cat sku.json
 
 echo
 echo "Getting pub..."
-(set -x ; curl -fsSL https://github.com/devigned/pub/releases/download/v0.3.2/pub_v0.3.2_linux_amd64.tar.gz -o pub; tar -xzf pub)
+(set -x ; curl -fsSL https://github.com/devigned/pub/releases/download/${PUB_VERSION}/pub_${PUB_VERSION}_linux_amd64.tar.gz -o pub; tar -xzf pub)
 
 echo "Creating new SKU"
 set -x
