@@ -6,18 +6,33 @@
         "operating_system": "{{user `operating_system`}}",
         "operating_system_version": "{{user `operating_system_version`}}"
       },
+      "base_image_ocid": "{{user `base_image_ocid`}}",
       "compartment_ocid": "{{user `compartment_ocid`}}",
       "fingerprint": "{{user `fingerprint`}}",
       "image_name": "cluster-api-{{user `build_name`}}-{{user `kubernetes_semver`}}-{{user `build_timestamp`}}",
       "key_file": "{{user `key_file`}}",
+      "region": "{{user `region`}}",
       "shape": "{{user `shape`}}",
       "shape_config": {
         "ocpus": "{{user `ocpus`}}"
       },
+      "ssh_private_key_file": "{{ user `ssh_private_key_file`}}",
       "ssh_username": "{{user `ssh_username`}}",
       "subnet_ocid": "{{user `subnet_ocid`}}",
+      "tags": {
+        "build_date": "{{isotime}}",
+        "build_timestamp": "{{user `build_timestamp`}}",
+        "containerd_version": "{{user `containerd_version`}}",
+        "distribution": "{{user `operating_system`}}",
+        "distribution_version": "{{user `operating_system_version`}}",
+        "image_builder_version": "{{user `ib_version`}}",
+        "kubernetes_cni_version": "{{user `kubernetes_cni_semver`}}",
+        "kubernetes_version": "{{user `kubernetes_semver`}}"
+      },
       "tenancy_ocid": "{{user `tenancy_ocid`}}",
       "type": "oracle-oci",
+      "use_private_ip": "{{user `use_private_ip`}}",
+      "user_data": "{{user `user_data`}}",
       "user_ocid": "{{user `user_ocid`}}"
     }
   ],
@@ -47,6 +62,39 @@
       ],
       "playbook_file": "./ansible/node.yml",
       "type": "ansible"
+    },
+    {
+      "arch": "{{user `goss_arch`}}",
+      "download_path": "{{user `goss_download_path`}}",
+      "format": "{{user `goss_format`}}",
+      "format_options": "{{user `goss_format_options`}}",
+      "goss_file": "{{user `goss_entry_file`}}",
+      "inspect": "{{user `goss_inspect_mode`}}",
+      "remote_folder": "{{user `goss_remote_folder`}}",
+      "remote_path": "{{user `goss_remote_path`}}",
+      "skip_install": "{{user `goss_skip_install`}}",
+      "tests": [
+        "{{user `goss_tests_dir`}}"
+      ],
+      "type": "goss",
+      "url": "{{user `goss_url`}}",
+      "use_sudo": true,
+      "vars_file": "{{user `goss_vars_file`}}",
+      "vars_inline": {
+        "ARCH": "amd64",
+        "OS": "{{user `distribution` | lower }}",
+        "PROVIDER": "oci",
+        "containerd_version": "{{user `containerd_version`}}",
+        "kubernetes_cni_deb_version": "{{ user `kubernetes_cni_deb_version` }}",
+        "kubernetes_cni_rpm_version": "{{ split (user `kubernetes_cni_rpm_version`) \"-\" 0 }}",
+        "kubernetes_cni_source_type": "{{user `kubernetes_cni_source_type`}}",
+        "kubernetes_cni_version": "{{user `kubernetes_cni_semver` | replace \"v\" \"\" 1}}",
+        "kubernetes_deb_version": "{{ user `kubernetes_deb_version` }}",
+        "kubernetes_rpm_version": "{{ split (user `kubernetes_rpm_version`) \"-\" 0 }}",
+        "kubernetes_source_type": "{{user `kubernetes_source_type`}}",
+        "kubernetes_version": "{{user `kubernetes_semver` | replace \"v\" \"\" 1}}"
+      },
+      "version": "{{user `goss_version`}}"
     }
   ],
   "variables": {
@@ -54,6 +102,7 @@
     "ansible_extra_vars": "",
     "ansible_user_vars": "",
     "availability_domain": "{{env `OCI_AVAILABILITY_DOMAIN`}}",
+    "base_image_ocid": "",
     "build_timestamp": "{{timestamp}}",
     "compartment_ocid": "",
     "containerd_sha256": null,
@@ -65,6 +114,7 @@
     "encrypted": "false",
     "existing_ansible_ssh_args": "{{env `ANSIBLE_SSH_ARGS`}}",
     "fingerprint": "{{env `OCI_USER_FINGERPRINT`}}",
+    "ib_version": "{{env `IB_VERSION`}}",
     "key_file": "{{env `OCI_USER_KEY_FILE`}}",
     "kubernetes_cni_deb_version": null,
     "kubernetes_cni_http_source": null,
@@ -89,9 +139,12 @@
     "operating_system_version": null,
     "region": "us-ashburn-1",
     "shape": "VM.Standard.E4.Flex",
+    "ssh_private_key_file": "",
     "ssh_username": null,
     "subnet_ocid": "{{env `OCI_SUBNET_OCID`}}",
     "tenancy_ocid": "{{env `OCI_TENANCY_OCID`}}",
+    "use_private_ip": "false",
+    "user_data": "",
     "user_ocid": "{{env `OCI_USER_OCID`}}"
   }
 }

@@ -22,7 +22,7 @@ CAPI_ROOT=$(dirname "${BASH_SOURCE[0]}")/..
 cd "${CAPI_ROOT}" || exit 1
 
 export ARTIFACTS="${ARTIFACTS:-${PWD}/_artifacts}"
-TARGETS=("ubuntu-1804" "ubuntu-2004" "photon-3" "centos-7" "rockylinux-8")
+TARGETS=("ubuntu-1804" "ubuntu-2004" "photon-3" "centos-7" "rockylinux-8" "flatcar")
 
 on_exit() {
   # kill the VPN

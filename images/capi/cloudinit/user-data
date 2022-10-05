@@ -23,7 +23,7 @@ write_files:
       8qblFkiDwo/87cZoTr9z9qhitJI743UIEcrcoexMw+XhH7f0SsKa0gZn25PW63VO
       K9CPCsvRfOFctN/qdvQSD7NIy7eqExn+9KWlPRmZuy2fMawXLXyn1JIAJTq5eeQ=
       -----END CERTIFICATE-----
-      
+
 -   path: /etc/kubernetes/pki/ca.key
     owner: root:root
     permissions: '0600'
@@ -55,7 +55,7 @@ write_files:
       36y1hxWSj6vB2eJUhh/t8E9inU9fIj+Ak6Q3iAEvxeZZG3+x703Xd5e2YQSkiyDP
       ojNzyST6biuKzV8VQKOg4XZju69eK3POH7yJ04u6DpA0Z68E5YuV
       -----END RSA PRIVATE KEY-----
-      
+
 -   path: /etc/kubernetes/pki/etcd/ca.crt
     owner: root:root
     permissions: '0640'
@@ -77,7 +77,7 @@ write_files:
       c/NNZozZY5YNV+2riIDpINLw6qN6O8xKbCXZNA9D2yjoIjok3bX9MSvjkF/3voVu
       4lNx5D8KDzbyfSa9FSB5RkYAxwqYldzbnXVWtMXnsCPEhntEFzwfgfHzyterH38=
       -----END CERTIFICATE-----
-      
+
 -   path: /etc/kubernetes/pki/etcd/ca.key
     owner: root:root
     permissions: '0600'
@@ -109,7 +109,7 @@ write_files:
       pAclkp/91usp8RmHnwJP7KzXCCq3qiJhytQl9lgiW3QecnKp5q0t9d5ObZU0vLQH
       SJawb/BO0jqgG1R22DgSDqCsggOkqdG8Btm2i/rpuM4mnukUOtTQ
       -----END RSA PRIVATE KEY-----
-      
+
 -   path: /etc/kubernetes/pki/front-proxy-ca.crt
     owner: root:root
     permissions: '0640'
@@ -131,7 +131,7 @@ write_files:
       3cFdvcnSA+qxlrn2PUY2Pfsrm6faTFZJ3ESkeDBLLIq81SsJiXuuK7tzRignP3UN
       JL4aJZygxHqkLPFaTXZNYdJQeEOC5Kr6w+Rh/FeYRWVDyTo2+FDRC5v4WbjZqBc=
       -----END CERTIFICATE-----
-      
+
 -   path: /etc/kubernetes/pki/front-proxy-ca.key
     owner: root:root
     permissions: '0600'
@@ -163,7 +163,7 @@ write_files:
       PlwA2dPh5ZHwXzUNHXDMeKflDg+tEZJr7MV60zlKCP5rUHHhtzixkNoyW1b5BxOp
       WSmL3tHGg+NxwlifTGFm8a8WmSzZeS4uAwSGQUegvO7H8BClt+XrZk4=
       -----END RSA PRIVATE KEY-----
-      
+
 -   path: /etc/kubernetes/pki/sa.pub
     owner: root:root
     permissions: '0640'
@@ -177,7 +177,7 @@ write_files:
       lvH1T2Keo5+aV2YO9DeZzyFl/FRLGFfZ7MyxoRkaPBH4CQJMqYILFbVmGJZdLBrN
       xwIDAQAB
       -----END PUBLIC KEY-----
-      
+
 -   path: /etc/kubernetes/pki/sa.key
     owner: root:root
     permissions: '0600'
@@ -209,7 +209,7 @@ write_files:
       VxncpOw3yesIFtZgBZBZMgMkE0Alzxwxxz8v0PUv1MaPpeZGNvuIZ95hRbgaraHI
       rKEN7grrzL7sI/DvruWG+JjCKchlD80wlNmDMQmfWetvsyCQm18r9A==
       -----END RSA PRIVATE KEY-----
-      
+
 -   path: /tmp/kubeadm.yaml
     owner: root:root
     permissions: '0640'
@@ -228,7 +228,7 @@ write_files:
       dns:
         type: ""
       etcd: {}
-      imageRepository: k8s.gcr.io
+      imageRepository: registry.k8s.io
       kind: ClusterConfiguration
       kubernetesVersion: 1.17.11
       networking:
@@ -236,7 +236,7 @@ write_files:
         podSubnet: 100.96.0.0/11
         serviceSubnet: 100.64.0.0/13
       scheduler: {}
-      
+
       ---
       apiVersion: kubeadm.k8s.io/v1beta2
       kind: InitConfiguration

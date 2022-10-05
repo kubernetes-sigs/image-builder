@@ -6,6 +6,7 @@ echo "PWD: $PWD"
 
 OS=${OS:-"Ubuntu"}
 OS_VERSION=${OS_VERSION:-"18.04"}
+PUB_VERSION=${PUB_VERSION:-"v0.3.3"}
 
 required_env_vars=(
     "AZURE_CLIENT_ID"
@@ -13,6 +14,7 @@ required_env_vars=(
     "AZURE_TENANT_ID"
     "OS"
     "OS_VERSION"
+    "PUB_VERSION"
 )
 
 for v in "${required_env_vars[@]}"
@@ -40,7 +42,7 @@ do
 done
 
 echo "Getting pub..."
-(set -x ; curl -fsSL https://github.com/devigned/pub/releases/download/v0.3.2/pub_v0.3.2_linux_amd64.tar.gz -o pub; tar -xzf pub)
+(set -x ; curl -fsSL https://github.com/devigned/pub/releases/download/${PUB_VERSION}/pub_${PUB_VERSION}_linux_amd64.tar.gz -o pub; tar -xzf pub)
 
 echo "SKU publishing info:"
 cat $SKU_INFO

@@ -19,7 +19,7 @@ check_for_release() {
     channel="$1"
     release="$2"
     curl -L -s \
-         "https://www.flatcar-linux.org/releases-json/releases-$channel.json" \
+         "https://www.flatcar.org/releases-json/releases-$channel.json" \
         | jq -r 'to_entries[] | "\(.key)"' \
         | grep -q "$release"
 }
@@ -35,7 +35,7 @@ fetch_vagrant_ssh_keys() {
 
 fetch_vagrantfile() {
     curl -sSL -o ${VAGRANT_VAGRANTFILE} \
-        https://raw.githubusercontent.com/flatcar-linux/flatcar-packer-qemu/builder-ignition/Vagrantfile.builder-flatcar
+        https://raw.githubusercontent.com/flatcar/flatcar-packer-qemu/builder-ignition/Vagrantfile.builder-flatcar
 }
 # --
 

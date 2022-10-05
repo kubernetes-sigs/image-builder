@@ -28,6 +28,17 @@
     mode: 0644
   when: http_proxy is defined or https_proxy is defined
 
+- name: Ensure cloud-final is in a running state
+  service:
+    name: cloud-final
+    state: started
+  check_mode: yes
+  register: cloudfinalstatus
+  until: cloudfinalstatus.status.ActiveState == "active"
+  retries: 5
+  delay: 10
+  when: packer_builder_type == "oracle-oci" and extra_repos != ""
+
 - name: Find existing repo files
   find:
     depth: 1
@@ -56,6 +67,10 @@
     force_apt_get: True
     update_cache: True
     upgrade: dist
+  register: apt_lock_status
+  until: apt_lock_status is not failed
+  retries: 5
+  delay: 10
 
 - name: install baseline dependencies
   apt:
@@ -63,16 +78,28 @@
     update_cache: True
     name: "{{ debs }}"
     state: latest
-
+  register: apt_lock_status
+  until: apt_lock_status is not failed
+  retries: 5
+  delay: 10
+  
 - name: install extra debs
   apt:
     force_apt_get: True
     name: "{{ extra_debs.split() }}"
     state: latest
-
+  register: apt_lock_status
+  until: apt_lock_status is not failed
+  retries: 5
+  delay: 10
+  
 - name: install pinned debs
   apt:
     force_apt_get: True
     name: "{{ pinned_debs }}"
     state: present
     force: yes
+  register: apt_lock_status
+  until: apt_lock_status is not failed
+  retries: 5
+  delay: 10

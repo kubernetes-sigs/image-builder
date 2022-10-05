@@ -28,6 +28,7 @@
     owner: root
     group: root
     mode: 0644
+  when: ansible_os_family != "Flatcar"
 
 - name: Create service to modify cloud-init config
   copy:
@@ -36,6 +37,7 @@
     owner: root
     group: root
     mode: 0644
+  when: ansible_os_family != "Flatcar"
 
 - name: Copy cloud-init modification script
   copy:
@@ -44,6 +46,7 @@
     owner: root
     group: root
     mode: 0755
+  when: ansible_os_family != "Flatcar"
 
 - name: Enable modify-cloud-init-cfg.service
   systemd:
@@ -51,3 +54,4 @@
     daemon_reload: yes
     enabled: True
     state: stopped
+  when: ansible_os_family != "Flatcar"

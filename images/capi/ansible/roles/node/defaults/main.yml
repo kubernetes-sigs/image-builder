@@ -78,6 +78,7 @@ common_photon_rpms:
 - socat
 - tar
 - unzip
+- curl
 
 common_virt_rpms:
 - open-vm-tools

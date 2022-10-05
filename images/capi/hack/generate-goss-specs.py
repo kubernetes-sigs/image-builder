@@ -26,11 +26,13 @@ root_path = os.path.abspath(os.path.join(sys.argv[0], '..', '..'))
 # Define what OS's are supported on which providers
 builds = {'amazon': ['amazon linux', 'centos', 'flatcar', 'ubuntu', 'windows'],
           'azure':  ['centos', 'ubuntu', 'windows'],
-          'ova': ['centos', 'photon', 'rhel', 'ubuntu', 'windows']}
+          'ova': ['centos', 'photon', 'rhel', 'ubuntu', 'windows'],
+          'oci':['ubuntu', 'oracle linux']}
 
 def generate_goss(provider, system, versions, runtime, dryrun=False, save=False):
     cmd = ['goss', '-g', 'packer/goss/goss.yaml', '--vars', 'packer/goss/goss-vars.yaml']
     vars = {'OS': system, 'PROVIDER': provider,
+            'OS_VERSION': versions['os'],
             'containerd_version': versions['containerd'],
             'docker_ee_version': versions['docker'],
             'distribution_version': versions['os'],
@@ -80,7 +82,7 @@ def main():
         usage='%(prog)s [-h] [--provider {amazon,azure,ova}] '
               '[--os {al2,centos,flatcar,photon,rhel,ubuntu,windows}]')
     parser.add_argument('--provider',
-                        choices=['amazon', 'azure', 'ova'],
+                        choices=['amazon', 'azure', 'ova','oci'],
                         action='append',
                         default=None,
                         help='One provider. Can be used multiple times')
@@ -140,6 +142,9 @@ def main():
             if system == 'windows':
                 runtimes = ["docker-ee","containerd"]
                 os_versions = ["2019", "2004"]
+            elif system == 'rhel':
+                runtimes = ["containerd"]
+                os_versions = ["7", "8"]
             else: 
                 runtimes = ["containerd"]
                 os_versions = [""]

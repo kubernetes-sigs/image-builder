@@ -22,5 +22,6 @@ rpms: ""
 extra_rpms: ""
 
 disable_public_repos: false
+external_binary_path: "{{ '/opt/bin' if ansible_os_family == 'Flatcar' else '/usr/local/bin' }}"
 extra_repos: ""
 pip_conf_file: ""

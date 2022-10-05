@@ -48,7 +48,7 @@ version: ## Display version of image-builder
 
 .PHONY: deps
 deps: ## Installs/checks all dependencies
-deps: deps-ami deps-azure deps-do deps-gce deps-ova deps-openstack deps-qemu deps-raw deps-oci deps-vbox deps-powervs
+deps: deps-ami deps-azure deps-do deps-gce deps-ova deps-openstack deps-qemu deps-raw deps-oci deps-vbox deps-powervs deps-nutanix
 
 .PHONY: deps-ami
 deps-ami: ## Installs/checks dependencies for AMI builds
@@ -140,6 +140,12 @@ deps-ignition:
 	hack/ensure-jq.sh
 	hack/ensure-ct.sh
 
+.PHONY: deps-nutanix
+deps-nutanix: ## Installs/checks dependencies for Nutanix builds
+deps-nutanix:
+	hack/ensure-ansible.sh
+	hack/ensure-packer.sh
+	hack/ensure-goss.sh
 
 ## --------------------------------------
 ## Container variables
@@ -258,14 +264,14 @@ PACKER_POWERVS_NODE_FLAGS := $(foreach f,$(abspath $(COMMON_POWERVS_VAR_FILES)),
 CENTOS_VERSIONS			:=	centos-7
 FLATCAR_VERSIONS		:=	flatcar
 PHOTON_VERSIONS			:=	photon-3
-RHEL_VERSIONS			:=	rhel-7
+RHEL_VERSIONS			:=	rhel-7 rhel-8
 ROCKYLINUX_VERSIONS     :=  rockylinux-8
 UBUNTU_VERSIONS			:=	ubuntu-1804 ubuntu-2004 ubuntu-2004-efi
 WINDOWS_VERSIONS		:=	windows-2019 windows-2004 windows-2022
 
 # Set Flatcar Container Linux channel and version if not supplied
 FLATCAR_CHANNEL ?= stable
-FLATCAR_VERSION ?= 3033.2.4
+FLATCAR_VERSION ?= current
 ifeq ($(FLATCAR_VERSION),current)
 override FLATCAR_VERSION := $(shell hack/image-grok-latest-flatcar-version.sh $(FLATCAR_CHANNEL))
 endif
@@ -277,6 +283,7 @@ PLATFORMS_AND_VERSIONS	:=	$(CENTOS_VERSIONS) \
 							$(RHEL_VERSIONS) \
 							$(ROCKYLINUX_VERSIONS) \
 							$(UBUNTU_VERSIONS) \
+							$(FLATCAR_VERSIONS) \
 							$(WINDOWS_VERSIONS)
 
 NODE_OVA_LOCAL_BUILD_NAMES			:=	$(addprefix node-ova-local-,$(PLATFORMS_AND_VERSIONS))
@@ -304,11 +311,14 @@ DO_BUILD_NAMES 			?=	do-centos-7 do-ubuntu-1804 do-ubuntu-2004
 OPENSTACK_BUILD_NAMES	?=	openstack-ubuntu-2004
 
 QEMU_BUILD_NAMES			?=	qemu-ubuntu-1804 qemu-ubuntu-2004 qemu-centos-7 qemu-ubuntu-2004-efi qemu-rhel-8 qemu-rockylinux-8 qemu-flatcar
+QEMU_KUBEVIRT_BUILD_NAMES	:= $(addprefix kubevirt-,$(QEMU_BUILD_NAMES))
 
 RAW_BUILD_NAMES                        ?=      raw-ubuntu-1804 raw-ubuntu-2004 raw-ubuntu-2004-efi raw-flatcar
 VBOX_BUILD_NAMES			?=      vbox-windows-2019
 
 POWERVS_BUILD_NAMES         ?= powervs-centos-8
+
+NUTANIX_BUILD_NAMES ?= nutanix-ubuntu-2004
 
 ## --------------------------------------
 ## Dynamic build targets
@@ -335,6 +345,8 @@ DO_VALIDATE_TARGETS 	:= $(addprefix validate-,$(DO_BUILD_NAMES))
 OPENSTACK_BUILD_TARGETS	:= $(addprefix build-,$(OPENSTACK_BUILD_NAMES))
 QEMU_BUILD_TARGETS	:= $(addprefix build-,$(QEMU_BUILD_NAMES))
 QEMU_VALIDATE_TARGETS	:= $(addprefix validate-,$(QEMU_BUILD_NAMES))
+QEMU_KUBEVIRT_BUILD_TARGETS := $(addprefix build-,$(QEMU_KUBEVIRT_BUILD_NAMES))
+QEMU_KUBEVIRT_VALIDATE_TARGETS := $(addprefix validate-,$(QEMU_KUBEVIRT_BUILD_NAMES))
 RAW_BUILD_TARGETS      := $(addprefix build-,$(RAW_BUILD_NAMES))
 RAW_VALIDATE_TARGETS   := $(addprefix validate-,$(RAW_BUILD_NAMES))
 OCI_BUILD_TARGETS	:= $(addprefix build-,$(OCI_BUILD_NAMES))
@@ -343,6 +355,8 @@ VBOX_BUILD_TARGETS      := $(addprefix build-,$(VBOX_BUILD_NAMES))
 VBOX_VALIDATE_TARGETS   := $(addprefix validate-,$(VBOX_BUILD_NAMES))
 POWERVS_BUILD_TARGETS      := $(addprefix build-,$(POWERVS_BUILD_NAMES))
 POWERVS_VALIDATE_TARGETS   := $(addprefix validate-,$(POWERVS_BUILD_NAMES))
+NUTANIX_BUILD_TARGETS		:= $(addprefix build-,$(NUTANIX_BUILD_NAMES))
+NUTANIX_VALIDATE_TARGETS	:= $(addprefix validate-,$(NUTANIX_BUILD_NAMES))
 
 .PHONY: $(NODE_OVA_LOCAL_BUILD_TARGETS)
 $(NODE_OVA_LOCAL_BUILD_TARGETS): deps-ova
@@ -438,6 +452,14 @@ $(QEMU_BUILD_TARGETS): deps-qemu
 $(QEMU_VALIDATE_TARGETS): deps-qemu
 	packer validate $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/qemu/$(subst validate-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/qemu/packer.json
 
+.PHONY: $(QEMU_KUBEVIRT_BUILD_TARGETS)
+$(QEMU_KUBEVIRT_BUILD_TARGETS): deps-qemu
+	packer build $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/qemu/$(subst build-kubevirt-,,$@).json)" --var 'kubevirt=true' $(ABSOLUTE_PACKER_VAR_FILES) packer/qemu/packer.json
+
+.PHONY: $(QEMU_KUBEVIRT_VALIDATE_TARGETS)
+$(QEMU_KUBEVIRT_VALIDATE_TARGETS): deps-qemu
+	packer validate $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/qemu/$(subst validate-kubevirt-,,$@).json)" --var 'kubevirt=true' $(ABSOLUTE_PACKER_VAR_FILES) packer/qemu/packer.json
+
 .PHONY: $(RAW_BUILD_TARGETS)
 $(RAW_BUILD_TARGETS): deps-raw
 	packer build $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/raw/$(subst build-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/raw/packer.json
@@ -469,6 +491,16 @@ $(POWERVS_BUILD_TARGETS): deps-powervs
 .PHONY: $(POWERVS_VALIDATE_TARGETS)
 $(POWERVS_VALIDATE_TARGETS): deps-powervs
 	packer validate $(PACKER_POWERVS_NODE_FLAGS) -var-file="$(abspath packer/powervs/$(subst validate-powervs-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) -except=flatcar packer/powervs/packer.json
+
+.PHONY: $(NUTANIX_BUILD_TARGETS)
+$(NUTANIX_BUILD_TARGETS): deps-nutanix
+	packer init packer/nutanix/config.pkr.hcl
+	packer build $(PACKER_NODE_FLAGS) -var-file="packer/nutanix/nutanix.json" -var-file="$(abspath packer/nutanix/$(subst build-nutanix-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/nutanix/packer.json
+
+.PHONY: $(NUTANIX_VALIDATE_TARGETS)
+$(NUTANIX_VALIDATE_TARGETS): deps-nutanix
+	packer init packer/nutanix/config.pkr.hcl
+	packer validate $(PACKER_NODE_FLAGS) -var-file="packer/nutanix/nutanix.json" -var-file="$(abspath packer/nutanix/$(subst validate-nutanix-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/nutanix/packer.json
 
 ## --------------------------------------
 ## Dynamic clean targets
@@ -539,8 +571,10 @@ build-gce-ubuntu-2004: ## Builds the GCE ubuntu-2004 image
 build-gce-all: $(GCE_BUILD_TARGETS) ## Builds all GCE image
 
 build-node-ova-local-centos-7: ## Builds CentOS 7 Node OVA w local hypervisor
+build-node-ova-local-flatcar: ## Builds Flatcar stable Node OVA w local hypervisor
 build-node-ova-local-photon-3: ## Builds Photon 3 Node OVA w local hypervisor
 build-node-ova-local-rhel-7: ## Builds RHEL 7 Node OVA w local hypervisor
+build-node-ova-local-rhel-8: ## Builds RHEL 8 Node OVA w local hypervisor
 build-node-ova-local-rockylinux-8: ## Builds RockyLinux 8 Node OVA w local hypervisor
 build-node-ova-local-ubuntu-1804: ## Builds Ubuntu 18.04 Node OVA w local hypervisor
 build-node-ova-local-ubuntu-2004: ## Builds Ubuntu 20.04 Node OVA w local hypervisor
@@ -549,8 +583,10 @@ build-node-ova-local-windows-2004: ## Builds for Windows Server 2004 SAC Node OV
 build-node-ova-local-all: $(NODE_OVA_LOCAL_BUILD_TARGETS) ## Builds all Node OVAs w local hypervisor
 
 build-node-ova-vsphere-centos-7: ## Builds CentOS 7 Node OVA and template on vSphere
+build-node-ova-vsphere-flatcar: ## Builds Flatcar stable Node OVA and template on vSphere
 build-node-ova-vsphere-photon-3: ## Builds Photon 3 Node OVA and template on vSphere
 build-node-ova-vsphere-rhel-7: ## Builds RHEL 7 Node OVA and template on vSphere
+build-node-ova-vsphere-rhel-8: ## Builds RHEL 8 Node OVA and template on vSphere
 build-node-ova-vsphere-rockylinux-8: ## Builds RockyLinux 8 Node OVA and template on vSphere
 build-node-ova-vsphere-ubuntu-1804: ## Builds Ubuntu 18.04 Node OVA and template on vSphere
 build-node-ova-vsphere-ubuntu-2004: ## Builds Ubuntu 20.04 Node OVA and template on vSphere
@@ -563,6 +599,7 @@ build-node-ova-vsphere-all: $(NODE_OVA_VSPHERE_BUILD_TARGETS) ## Builds all Node
 build-node-ova-vsphere-clone-centos-7: ## Builds CentOS 7 Node OVA and template on vSphere
 build-node-ova-vsphere-clone-photon-3: ## Builds Photon 3 Node OVA and template on vSphere
 build-node-ova-vsphere-clone-rhel-7: ## Builds RHEL 7 Node OVA and template on vSphere
+build-node-ova-vsphere-clone-rhel-8: ## Builds RHEL 8 Node OVA and template on vSphere
 build-node-ova-vsphere-clone-rockylinux-8: ## Builds RockyLinux 8 Node OVA and template on vSphere
 build-node-ova-vsphere-clone-ubuntu-1804: ## Builds Ubuntu 18.04 Node OVA and template on vSphere
 build-node-ova-vsphere-clone-ubuntu-2004: ## Builds Ubuntu 20.04 Node OVA and template on vSphere
@@ -571,6 +608,7 @@ build-node-ova-vsphere-clone-all: $(NODE_OVA_VSPHERE_CLONE_BUILD_TARGETS) ## Bui
 build-node-ova-vsphere-base-centos-7: ## Builds base CentOS 7 Node OVA and template on vSphere
 build-node-ova-vsphere-base-photon-3: ## Builds base Photon 3 Node OVA and template on vSphere
 build-node-ova-vsphere-base-rhel-7: ## Builds base RHEL 7 Node OVA and template on vSphere
+build-node-ova-vsphere-base-rhel-8: ## Builds base RHEL 8 Node OVA and template on vSphere
 build-node-ova-vsphere-base-rockylinux-8: ## Builds base RockyLinux 8 Node OVA and template on vSphere
 build-node-ova-vsphere-base-ubuntu-1804: ## Builds base Ubuntu 18.04 Node OVA and template on vSphere
 build-node-ova-vsphere-base-ubuntu-2004: ## Builds base Ubuntu 20.04 Node OVA and template on vSphere
@@ -579,6 +617,7 @@ build-node-ova-vsphere-base-all: $(NODE_OVA_VSPHERE_BASE_BUILD_TARGETS) ## Build
 build-node-ova-local-vmx-photon-3: ## Builds Photon 3 Node OVA from VMX file w local hypervisor
 build-node-ova-local-vmx-centos-7: ## Builds Centos 7 Node OVA from VMX file w local hypervisor
 build-node-ova-local-vmx-rhel-7: ## Builds RHEL 7 Node OVA from VMX file w local hypervisor
+build-node-ova-local-vmx-rhel-8: ## Builds RHEL 8 Node OVA from VMX file w local hypervisor
 build-node-ova-local-vmx-rockylinux-8: ## Builds RockyLinux 8 Node OVA from VMX file w local hypervisor
 build-node-ova-local-vmx-ubuntu-1804: ## Builds Ubuntu 18.04 Node OVA from VMX file w local hypervisor
 build-node-ova-local-vmx-ubuntu-2004: ## Builds Ubuntu 20.04 Node OVA from VMX file w local hypervisor
@@ -586,6 +625,7 @@ build-node-ova-local-vmx-ubuntu-2004: ## Builds Ubuntu 20.04 Node OVA from VMX f
 build-node-ova-local-base-photon-3: ## Builds Photon 3 Base Node OVA w local hypervisor
 build-node-ova-local-base-centos-7: ## Builds Centos 7 Base Node OVA w local hypervisor
 build-node-ova-local-base-rhel-7: ## Builds RHEL 7 Base Node OVA w local hypervisor
+build-node-ova-local-base-rhel-8: ## Builds RHEL 8 Base Node OVA w local hypervisor
 build-node-ova-local-base-rockylinux-8: ## Builds RockyLinux 8 Base Node OVA w local hypervisor
 build-node-ova-local-base-ubuntu-1804: ## Builds Ubuntu 18.04 Base Node OVA w local hypervisor
 build-node-ova-local-base-ubuntu-2004: ## Builds Ubuntu 20.04 Base Node OVA w local hypervisor
@@ -615,6 +655,9 @@ build-oci-all: $(OCI_BUILD_TARGETS) ## Builds all OCI image
 
 build-vbox-windows-2019: ## Builds for Windows Server 2019 Node VirtualBox w local hypervisor
 build-vbox-all: $(VBOX_BUILD_TARGETS) ## Builds all Qemu images
+
+build-nutanix-ubuntu-2004: ## Builds the Nutanix ubuntu-2004 image
+build-nutanix-all: $(NUTANIX_BUILD_TARGETS) ## Builds all Nutanix image
 
 ## --------------------------------------
 ## Document dynamic validate targets
@@ -659,8 +702,10 @@ validate-gce-ubuntu-2004: ## Validates Ubuntu 20.04 GCE Snapshot Packer config
 validate-gce-all: $(GCE_VALIDATE_TARGETS) ## Validates all GCE Snapshot Packer config
 
 validate-node-ova-local-centos-7: ## Validates CentOS 7 Node OVA Packer config w local hypervisor
+validate-node-ova-local-flatcar: ## Validates Flatcar stable Node OVA Packer config w local hypervisor
 validate-node-ova-local-photon-3: ## Validates Photon 3 Node OVA Packer config w local hypervisor
 validate-node-ova-local-rhel-7: ## Validates RHEL 7 Node OVA Packer config w local hypervisor
+validate-node-ova-local-rhel-8: ## Validates RHEL 8 Node OVA Packer config w local hypervisor
 validate-node-ova-local-rockylinux-8: ## Validates RockyLinux 8 Node OVA Packer config w local hypervisor
 validate-node-ova-local-ubuntu-1804: ## Validates Ubuntu 18.04 Node OVA Packer config w local hypervisor
 validate-node-ova-local-ubuntu-2004: ## Validates Ubuntu 20.04 Node OVA Packer config w local hypervisor
@@ -672,6 +717,7 @@ validate-node-ova-local-all: $(NODE_OVA_LOCAL_VALIDATE_TARGETS) ## Validates all
 validate-node-ova-local-vmx-photon-3: ## Validates Photon 3 Node OVA from VMX file w local hypervisor
 validate-node-ova-local-vmx-centos-7: ## Validates Centos 7 Node OVA from VMX file w local hypervisor
 validate-node-ova-local-vmx-rhel-7: ## Validates RHEL 7 Node OVA from VMX file w local hypervisor
+validate-node-ova-local-vmx-rhel-8: ## Validates RHEL 8 Node OVA from VMX file w local hypervisor
 validate-node-ova-local-vmx-rockylinux-8: ## Validates RockyLinux 8 Node OVA from VMX file w local hypervisor
 validate-node-ova-local-vmx-ubuntu-1804: ## Validates Ubuntu 18.04 Node OVA from VMX file w local hypervisor
 validate-node-ova-local-vmx-ubuntu-2004: ## Validates Ubuntu 20.04 Node OVA from VMX file w local hypervisor
@@ -679,6 +725,7 @@ validate-node-ova-local-vmx-ubuntu-2004: ## Validates Ubuntu 20.04 Node OVA from
 validate-node-ova-local-base-photon-3: ## Validates Photon 3 Base Node OVA w local hypervisor
 validate-node-ova-local-base-centos-7: ## Validates Centos 7 Base Node OVA w local hypervisor
 validate-node-ova-local-base-rhel-7: ## Validates RHEL 7 Base Node OVA w local hypervisor
+validate-node-ova-local-base-rhel-8: ## Validates RHEL 8 Base Node OVA w local hypervisor
 validate-node-ova-local-base-rockylinux-8: ## Validates RockyLinux 8 Base Node OVA w local hypervisor
 validate-node-ova-local-base-ubuntu-1804: ## Validates Ubuntu 18.04 Base Node OVA w local hypervisor
 validate-node-ova-local-base-ubuntu-2004: ## Validates Ubuntu 20.04 Base Node OVA w local hypervisor
@@ -709,6 +756,9 @@ validate-vbox-all: $(VBOX_VALIDATE_TARGETS) ## Validates all RAW Packer config
 validate-powervs-centos-8: ## Validates the PowerVS CentOS image packer config
 validate-powervs-all: $(POWERVS_VALIDATE_TARGETS) ## Validates all PowerVS Packer config
 
+validate-nutanix-ubuntu-2004: ## Validates Ubuntu 20.04 Nutanix Snapshot Packer config
+validate-nutanix-all: $(NUTANIX_VALIDATE_TARGETS) ## Validates all Nutanix Snapshot Packer config
+
 validate-all: validate-ami-all \
 	validate-azure-all \
 	validate-do-all \
@@ -718,7 +768,8 @@ validate-all: validate-ami-all \
 	validate-raw-all \
 	validate-oci-all \
 	validate-vbox-all \
-	validate-powervs-all
+	validate-powervs-all \
+	validate-nutanix-all
 validate-all: ## Validates the Packer config for all build targets
 
 ## --------------------------------------

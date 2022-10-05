@@ -78,6 +78,7 @@ In addition to the configuration found in `images/capi/packer/config`, the `ova`
 | File               | Description                                                    |
 | ------------------ | -------------------------------------------------------------- |
 | `centos-7.json`    | The settings for the CentOS 7 image                            |
+| `flatcar.json`     | The settings for the Flatcar image                             |
 | `photon-3.json`    | The settings for the Photon 3 image                            |
 | `rhel-7.json`      | The settings for the RHEL 7 image                              |
 | `ubuntu-1804.json` | The settings for the Ubuntu 18.04 image                        |

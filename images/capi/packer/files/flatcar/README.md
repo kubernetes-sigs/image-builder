@@ -37,6 +37,6 @@ To change an existing Ignition file, do the following:
   `ignition`.
 1. Commit the changes and open a PR to merge them.
 
-[1]: https://flatcar-linux.org/docs/latest/provisioning/cl-config/
-[2]: https://flatcar-linux.org/docs/latest/provisioning/ignition/
-[3]: https://flatcar-linux.org/docs/latest/provisioning/config-transpiler/
+[1]: https://flatcar.org/docs/latest/provisioning/cl-config/
+[2]: https://flatcar.org/docs/latest/provisioning/ignition/
+[3]: https://flatcar.org/docs/latest/provisioning/config-transpiler/

@@ -1,34 +1,31 @@
 {
   "builders": [
     {
-      "accelerator": "{{user `accelerator`}}",
-      "boot_command": [
-        "{{user `boot_command_prefix`}}",
-        "{{user `boot_media_path`}}",
-        "{{user `boot_command_suffix`}}"
-      ],
-      "boot_wait": "{{user `boot_wait`}}",
-      "cpus": "{{user `cpus`}}",
-      "disk_compression": "{{ user `disk_compression`}}",
-      "disk_discard": "{{user `disk_discard`}}",
-      "disk_interface": "virtio-scsi",
-      "disk_size": "{{user `disk_size`}}",
-      "firmware": "{{user `firmware`}}",
-      "format": "{{user `format`}}",
-      "headless": "{{user `headless`}}",
-      "http_directory": "{{user `http_directory`}}",
-      "iso_checksum": "{{user `iso_checksum_type`}}:{{user `iso_checksum`}}",
-      "iso_url": "{{user `iso_url`}}",
-      "memory": "{{user `memory`}}",
-      "net_device": "virtio-net",
-      "output_directory": "{{user `output_directory`}}",
-      "qemu_binary": "{{user `qemu_binary`}}",
+      "cluster_name": "{{user `nutanix_cluster_name`}}",
+      "image_name": "{{user `image_name`}}",
+      "memory_mb": "{{user `memory`}}",
+      "nutanix_endpoint": "{{user `nutanix_endpoint`}}",
+      "nutanix_insecure": "{{user `nutanix_insecure`}}",
+      "nutanix_password": "{{user `nutanix_password`}}",
+      "nutanix_port": "{{user `nutanix_port`}}",
+      "nutanix_username": "{{user `nutanix_username`}}",
+      "os_type": "{{user `guest_os_type`}}",
       "shutdown_command": "echo '{{user `ssh_password`}}' | sudo -S -E sh -c 'usermod -L {{user `ssh_username`}} && {{user `shutdown_command`}}'",
+      "ssh_handshake_attempts": "100",
       "ssh_password": "{{user `ssh_password`}}",
-      "ssh_timeout": "2h",
+      "ssh_timeout": "20m",
       "ssh_username": "{{user `ssh_username`}}",
-      "type": "qemu",
-      "vm_name": "{{user `build_name`}}-kube-{{user `kubernetes_semver`}}"
+      "type": "nutanix",
+      "user_data": "{{user `user_data`}}",
+      "vm_disks": {
+        "disk_size_gb": "{{user `disk_size_gb`}}",
+        "image_type": "DISK_IMAGE",
+        "source_image_name": "{{user `source_image_name`}}"
+      },
+      "vm_name": "{{user `build_name`}}-kube-{{user `kubernetes_semver`}}",
+      "vm_nics": {
+        "subnet_name": "{{user `nutanix_subnet_name`}}"
+      }
     }
   ],
   "post-processors": [
@@ -42,67 +39,18 @@
       ],
       "name": "custom-post-processor",
       "type": "shell-local"
-    },
-    {
-      "environment_vars": [
-        "OUTPUT_DIR={{user `output_directory`}}",
-        "ARTIFACT_NAME={{user `artificat_name`}}",
-        "KUBEVIRT={{user `kubevirt`}}"
-      ],
-      "inline": [
-        "if [ \"$KUBEVIRT\" != \"true\" ]; then",
-        "exit 0",
-        "else",
-        "bash ./packer/qemu/scripts/build_kubevirt_image.sh {{user `build_name`}}-container-disk",
-        "fi"
-      ],
-      "name": "kubevirt",
-      "type": "shell-local"
     }
   ],
   "provisioners": [
     {
-      "execute_command": "BUILD_NAME={{user `build_name`}}; if [[ \"${BUILD_NAME}\" == *\"flatcar\"* ]]; then sudo {{.Vars}} -S -E bash '{{.Path}}'; fi",
-      "script": "./packer/files/flatcar/scripts/bootstrap-flatcar.sh",
-      "type": "shell"
-    },
-    {
       "ansible_env_vars": [
         "ANSIBLE_SSH_ARGS='{{user `existing_ansible_ssh_args`}} -o IdentitiesOnly=yes'"
       ],
       "extra_arguments": [
-        "--scp-extra-args", "'-O'",
         "--extra-vars",
         "{{user `ansible_common_vars`}}",
         "--extra-vars",
-        "{{user `ansible_extra_vars`}}",
-        "--extra-vars",
-        "{{user `ansible_user_vars`}}"
-      ],
-      "playbook_file": "./ansible/firstboot.yml",
-      "type": "ansible",
-      "user": "builder"
-    },
-    {
-      "expect_disconnect": true,
-      "inline": [
-        "sudo reboot now"
-      ],
-      "inline_shebang": "/bin/bash -e",
-      "type": "shell"
-    },
-    {
-      "ansible_env_vars": [
-        "ANSIBLE_SSH_ARGS='{{user `existing_ansible_ssh_args`}} -o IdentitiesOnly=yes'"
-      ],
-      "extra_arguments": [
-        "--scp-extra-args", "'-O'",
-        "--extra-vars",
-        "{{user `ansible_common_vars`}}",
-        "--extra-vars",
-        "{{user `ansible_extra_vars`}}",
-        "--extra-vars",
-        "{{user `ansible_user_vars`}}"
+        "{{user `ansible_extra_vars`}}"
       ],
       "playbook_file": "./ansible/node.yml",
       "type": "ansible",
@@ -139,13 +87,8 @@
     }
   ],
   "variables": {
-    "accelerator": "kvm",
     "ansible_common_vars": "",
     "ansible_extra_vars": "ansible_python_interpreter=/usr/bin/python3",
-    "ansible_user_vars": "",
-    "artificat_name": "{{user `build_name`}}-kube-{{user `kubernetes_semver`}}",
-    "boot_media_path": "http://{{ .HTTPIP }}:{{ .HTTPPort }}",
-    "boot_wait": "10s",
     "build_timestamp": "{{timestamp}}",
     "containerd_sha256": null,
     "containerd_url": "https://github.com/containerd/containerd/releases/download/v{{user `containerd_version`}}/cri-containerd-cni-{{user `containerd_version`}}-linux-amd64.tar.gz",
@@ -153,14 +96,8 @@
     "cpus": "1",
     "crictl_url": "https://github.com/kubernetes-sigs/cri-tools/releases/download/v{{user `crictl_version`}}/crictl-v{{user `crictl_version`}}-linux-amd64.tar.gz",
     "crictl_version": null,
-    "disk_compression": "false",
-    "disk_discard": "unmap",
-    "disk_size": "20480",
+    "disk_size_gb": "40",
     "existing_ansible_ssh_args": "{{env `ANSIBLE_SSH_ARGS`}}",
-    "firmware": "",
-    "format": "qcow2",
-    "headless": "true",
-    "http_directory": "./packer/qemu/linux/{{user `distro_name`}}/http/",
     "kubernetes_cni_deb_version": null,
     "kubernetes_cni_http_source": null,
     "kubernetes_cni_semver": null,
@@ -180,10 +117,7 @@
     "kubernetes_source_type": null,
     "machine_id_mode": "444",
     "memory": "2048",
-    "oem_id": "",
-    "output_directory": "./output/{{user `build_name`}}-kube-{{user `kubernetes_semver`}}",
     "python_path": "",
-    "qemu_binary": "qemu-system-x86_64",
     "ssh_password": "builder",
     "ssh_username": "builder"
   }

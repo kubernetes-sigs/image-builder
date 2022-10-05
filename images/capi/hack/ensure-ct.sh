@@ -37,7 +37,7 @@ if [[ ${HOSTOS} == "linux" ]]; then
 elif [[ ${HOSTOS} == "darwin" ]]; then
   _binfile="ct-${_version}-x86_64-apple-darwin"
 fi
-_bin_url="https://github.com/flatcar-linux/container-linux-config-transpiler/releases/download/${_version}/${_binfile}"
+_bin_url="https://github.com/flatcar/container-linux-config-transpiler/releases/download/${_version}/${_binfile}"
 curl -SsL "${_bin_url}" -o ct
 chmod 0755 ct
 echo "'ct' has been installed to $(pwd), make sure this directory is in your \$PATH"

@@ -1,6 +1,6 @@
 {
   "ami_filter_name": "CentOS Linux 7 x86_64 HVM EBS ENA*",
-  "ami_filter_owners": "410186602215",
+  "ami_filter_owners": "461800378586",
   "build_name": "centos-7",
   "distribution": "CentOS",
   "distribution_release": "Core",
