@@ -8,5 +8,5 @@
   "source_image": "6641b3e4-4b2d-409b-8340-067e50ec1ab7",
   "networks": "05cfe5ff-d25d-497e-bf3a-5699bc3cf17f",
   "flavor": "chorizo",
-  "floating_ip_pool": "legacy_internet"
+  "floating_ip_network": "legacy_internet"
 }

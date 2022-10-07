@@ -8,7 +8,7 @@
       "flavor": "{{user `flavor`}}",
       "source_image": "{{user `source_image`}}",
       "networks": "{{user `networks`}}",
-      "floating_ip_pool": "{{user `floating_ip_pool`}}",
+      "floating_ip_network": "{{user `floating_ip_network`}}",
       "use_floating_ip": true,
       "use_blockstorage_volume": true,
       "volume_size": "10",
