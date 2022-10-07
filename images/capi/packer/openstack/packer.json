@@ -1,20 +1,23 @@
 {
   "builders": [
     {
-      "type": "openstack",
+      "config_drive": "{{user `attach_config_drive`}}",
+      "flavor": "{{user `flavor`}}",
+      "floating_ip_network": "{{user `floating_ip_network`}}",
+      "image_disk_format": "raw",
+      "image_name": "{{user `image_name`}}",
+      "image_visibility": "{{user `image_visibility`}}",
+      "networks": "{{user `networks`}}",
+      "security_groups": [
+        "default"
+      ],
+      "source_image": "{{user `source_image`}}",
       "ssh_timeout": "2h",
       "ssh_username": "{{user `ssh_username`}}",
-      "image_visibility": "private",
-      "flavor": "{{user `flavor`}}",
-      "source_image": "{{user `source_image`}}",
-      "networks": "{{user `networks`}}",
-      "floating_ip_network": "{{user `floating_ip_network`}}",
-      "use_floating_ip": true,
+      "type": "openstack",
       "use_blockstorage_volume": true,
-      "volume_size": "10",
-      "image_disk_format": "raw",
-      "security_groups": ["default"],
-      "image_name": "{{user `build_name`}}-kube-{{user `kubernetes_semver`}}"
+      "use_floating_ip": "{{user `use_floating_ip`}}",
+      "volume_size": "10"
     }
   ],
   "post-processors": [
@@ -41,7 +44,8 @@
         "ANSIBLE_SSH_ARGS='{{user `existing_ansible_ssh_args`}} -oHostKeyAlgorithms=+ssh-rsa -oPubkeyAcceptedAlgorithms=+ssh-rsa -o IdentitiesOnly=yes'"
       ],
       "extra_arguments": [
-        "--scp-extra-args", "'-O'",
+        "--scp-extra-args",
+        "'-O'",
         "--extra-vars",
         "{{user `ansible_common_vars`}}",
         "--extra-vars",
@@ -66,7 +70,8 @@
         "ANSIBLE_SSH_ARGS='{{user `existing_ansible_ssh_args`}} -oHostKeyAlgorithms=+ssh-rsa -oPubkeyAcceptedAlgorithms=+ssh-rsa -o IdentitiesOnly=yes'"
       ],
       "extra_arguments": [
-        "--scp-extra-args", "'-O'",
+        "--scp-extra-args",
+        "'-O'",
         "--extra-vars",
         "{{user `ansible_common_vars`}}",
         "--extra-vars",
@@ -113,6 +118,7 @@
     "ansible_common_vars": "",
     "ansible_extra_vars": "ansible_python_interpreter=/usr/bin/python3",
     "ansible_user_vars": "",
+    "attach_config_drive": "false",
     "boot_wait": "10s",
     "build_timestamp": "{{timestamp}}",
     "containerd_sha256": null,
@@ -129,6 +135,8 @@
     "format": "qcow2",
     "headless": "true",
     "http_directory": "./packer/openstack/linux/{{user `distro_name`}}/http/",
+    "image_name": "{{user `build_name`}}-kube-{{user `kubernetes_semver`}}",
+    "image_visibility": "private",
     "kubernetes_cni_deb_version": null,
     "kubernetes_cni_http_source": null,
     "kubernetes_cni_semver": null,
@@ -150,6 +158,7 @@
     "memory": "2048",
     "python_path": "",
     "qemu_binary": "qemu-system-x86_64",
-    "ssh_username": "{{user `ssh_username`}}"
+    "ssh_username": "{{user `ssh_username`}}",
+    "use_floating_ip": "true"
   }
 }
