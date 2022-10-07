@@ -316,9 +316,9 @@ OCI_BUILD_NAMES			   ?= oci-ubuntu-1804 oci-ubuntu-2004 oci-oracle-linux-8
 
 DO_BUILD_NAMES 			?=	do-centos-7 do-ubuntu-1804 do-ubuntu-2004
 
-OSC_BUILD_NAMES 			?=	osc-centos-7 osc-ubuntu-2004
+OPENSTACK_BUILD_NAMES	?=	openstack-ubuntu-2004	openstack-ubuntu-2204
 
-OPENSTACK_BUILD_NAMES	?=	openstack-ubuntu-2004
+OSC_BUILD_NAMES 			?=	osc-centos-7 osc-ubuntu-2004
 
 QEMU_BUILD_NAMES			?=	qemu-ubuntu-1804 qemu-ubuntu-2004 qemu-centos-7 qemu-ubuntu-2004-efi qemu-rhel-8 qemu-rockylinux-8 qemu-flatcar
 QEMU_KUBEVIRT_BUILD_NAMES	:= $(addprefix kubevirt-,$(QEMU_BUILD_NAMES))
@@ -654,6 +654,7 @@ build-node-ova-local-base-ubuntu-1804: ## Builds Ubuntu 18.04 Base Node OVA w lo
 build-node-ova-local-base-ubuntu-2004: ## Builds Ubuntu 20.04 Base Node OVA w local hypervisor
 
 build-openstack-ubuntu-2004: ## Builds OpenStack 20.04 image
+build-openstack-ubuntu-2204: ## Builds OpenStack 22.04 image
 build-openstack-all: $(OPENSTACK_BUILD_TARGETS)
 
 build-qemu-flatcar: ## Builds Flatcar QEMU image
