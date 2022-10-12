@@ -39,6 +39,9 @@ case ${SIG_TARGET} in
   ubuntu-2004)
     create_image_definition ${SIG_TARGET} "20_04-lts" "V1" "Linux"
   ;;
+  ubuntu-2204)
+    create_image_definition ${SIG_TARGET} "22_04-lts" "V1" "Linux"
+  ;;
   centos-7)
     create_image_definition "centos-7.7" "centos-7.7" "V1" "Linux"
   ;;
@@ -60,6 +63,9 @@ case ${SIG_TARGET} in
   ;;
   ubuntu-2004-gen2)
     create_image_definition ${SIG_TARGET} "20_04-lts-gen2" "V2" "Linux"
+  ;;
+  ubuntu-2204-gen2)
+    create_image_definition ${SIG_TARGET} "22_04-lts-gen2" "V2" "Linux"
   ;;
   centos-7-gen2)
     create_image_definition "centos-7.7-gen2" "centos-7.7-gen2" "V2" "Linux"
