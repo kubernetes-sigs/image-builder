@@ -31,7 +31,7 @@ if ! (${SED} --version 2>&1 | grep -q GNU); then
   exit 1
 fi
 
-_version="0.1.2"
+_version="0.1.6"
 _chkfile="packer-plugin-powervs_v${_version}_SHA256SUMS"
 _chk_url="https://github.com/ppc64le-cloud/packer-plugin-powervs/releases/download/v${_version}/${_chkfile}"
 _bin_url="https://github.com/ppc64le-cloud/packer-plugin-powervs/releases/download/v${_version}/packer-plugin-powervs_v${_version}_x5.0_${HOSTOS}_${HOSTARCH}.zip"
