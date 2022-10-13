@@ -309,7 +309,7 @@ OCI_BUILD_NAMES			   ?= oci-ubuntu-1804 oci-ubuntu-2004 oci-ubuntu-2204 oci-orac
 
 DO_BUILD_NAMES 			?=	do-centos-7 do-ubuntu-1804 do-ubuntu-2004
 
-OSC_BUILD_NAMES 			?=	osc-centos-7 osc-ubuntu-2004
+OSC_BUILD_NAMES 			?=	osc-ubuntu-2004
 
 QEMU_BUILD_NAMES			?=	qemu-ubuntu-1804 qemu-ubuntu-2004 qemu-centos-7 qemu-ubuntu-2004-efi qemu-rhel-8 qemu-rockylinux-8 qemu-flatcar
 QEMU_KUBEVIRT_BUILD_NAMES	:= $(addprefix kubevirt-,$(QEMU_BUILD_NAMES))
@@ -661,7 +661,6 @@ build-oci-oracle-linux-8: ## Builds the OCI Oracle Linux 8.x image
 build-oci-all: $(OCI_BUILD_TARGETS) ## Builds all OCI image
 
 build-osc-ubuntu-2004: ## Builds Ubuntu 20.04 Outscale Snapshot
-build-osc-centos-7: ## Builds Centos 7 Outscale Snapshot
 build-osc-all: $(OSC_BUILD_TARGETS) ## Builds all Outscale Snapshot
 
 build-vbox-windows-2019: ## Builds for Windows Server 2019 Node VirtualBox w local hypervisor
@@ -766,7 +765,6 @@ validate-oci-oracle-linux-8: ## Validates the OCI Oracle Linux 8.x image packer 
 validate-oci-all: $(OCI_VALIDATE_TARGETS) ## Validates all OCI image packer config
 
 validate-osc-ubuntu-2004: ## Validates Ubuntu 20.04 Outscale Snapshot Packer config
-validate-osc-centos-7: ## Validates Centos 7 Outscale Snapshot Packer config
 validate-osc-all: $(OSC_VALIDATE_TARGETS) ## Validates all Outscale Snapshot Packer config
 
 validate-vbox-windows-2019: ## Validates Windows Server 2019 Node VirtualBox Packer config w local hypervisor
