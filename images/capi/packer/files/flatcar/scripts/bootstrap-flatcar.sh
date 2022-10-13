@@ -18,7 +18,7 @@ if [[ -e ${BINDIR}/.bootstrapped ]]; then
 fi
 
 PYPY_VERSION=7.2.0
-PYTHON3_VERSION=3.6
+PYTHON3_VERSION=3.8
 
 wget -O - https://github.com/squeaky-pl/portable-pypy/releases/download/pypy-${PYPY_VERSION}/pypy-${PYPY_VERSION}-linux_x86_64-portable.tar.bz2 | tar -xjf -
 mv -n pypy-${PYPY_VERSION}-linux_x86_64-portable pypy2
