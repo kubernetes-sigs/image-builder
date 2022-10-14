@@ -4,7 +4,10 @@ steps:
       RESOURCE_GROUP_NAME=$(jq -r '.builds[-1].custom_data.resource_group_name' manifest.json | cut -d ":" -f2)
       STORAGE_ACCOUNT_NAME=$(jq -r '.builds[-1].custom_data.storage_account_name' manifest.json | cut -d ":" -f2)
       OS_DISK_URI=$(cat packer/azure/packer.out | grep "OSDiskUri:" -m 1 | cut -d " " -f 2)
+      printf "${STORAGE_ACCOUNT_NAME}" | tee packer/azure/storage-account-name.out
+      printf "${OS_DISK_URI}" | tee packer/azure/vhd-base-url.out
       printf "${OS_DISK_URI}?" | tee packer/azure/vhd-url.out
+      printf "${RESOURCE_GROUP_NAME}" | tee packer/azure/resource-group-name.out
       az login --service-principal -u ${AZURE_CLIENT_ID} -p ${AZURE_CLIENT_SECRET} --tenant ${AZURE_TENANT_ID}
       az account set -s ${AZURE_SUBSCRIPTION_ID}
       ACCOUNT_KEY=$(az storage account keys list -g ${RESOURCE_GROUP_NAME} --subscription ${AZURE_SUBSCRIPTION_ID} --account-name ${STORAGE_ACCOUNT_NAME} --query '[0].value')

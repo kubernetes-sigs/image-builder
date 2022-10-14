@@ -28,6 +28,16 @@ stages:
       AZURE_CLIENT_SECRET: $(AZURE_CLIENT_SECRET_VHD)
       AZURE_SUBSCRIPTION_ID: $(AZURE_SUBSCRIPTION_ID_VHD)
 
+  - stage: test
+    condition: and(succeeded(), eq(variables.CLEANUP, 'False'))
+    jobs:
+    - template: test-vhd.yaml
+    variables:
+      AZURE_TENANT_ID: $(AZURE_TENANT_ID_VHD)
+      AZURE_CLIENT_ID: $(AZURE_CLIENT_ID_VHD)
+      AZURE_CLIENT_SECRET: $(AZURE_CLIENT_SECRET_VHD)
+      AZURE_SUBSCRIPTION_ID: $(AZURE_SUBSCRIPTION_ID_VHD)
+
   - stage: sku
     condition: and(succeeded(), eq(variables.CLEANUP, 'False'))
     jobs:

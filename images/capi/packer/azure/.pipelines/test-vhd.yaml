@@ -1,0 +1,143 @@
+# Required pipeline variables:
+# - BUILD_POOL - Azure DevOps build pool to use
+# - CONTAINER_IMAGE - Dev container image URL to use. Should have Azure CLI, Packer, and Ansible.
+# - AZ_CAPI_EXTENSION_URL - URL to the Azure CAPI extension build.
+# - AZURE_TENANT_ID - tenant ID
+# - AZURE_CLIENT_ID - Service principal ID
+# - AZURE_CLIENT_SECRET - Service principal secret
+# - AZURE_SUBSCRIPTION_ID - Subscription ID used by the pipeline
+# - KUBERNETES_VERSION - version of Kubernetes to build the image with, e.g. `1.16.2`
+# - OS - target of build e.g. `Ubuntu/Windows`
+# - OS_VERSION - target of build e.g. `18.04/2004/2019`
+
+jobs:
+- job: test_vhd
+  container: $[ variables['CONTAINER_IMAGE'] ]
+  timeoutInMinutes: 120
+  strategy:
+    maxParallel: 0
+  pool:
+    name: $(BUILD_POOL)
+  steps:
+  - task: DownloadPipelineArtifact@2
+    inputs:
+      source: current
+      artifact: publishing-info
+      path: $(system.defaultWorkingDirectory)/images/capi/packer/azure/vhd/
+  - script: |
+      set -x
+      set -e -o pipefail
+
+      VHD_RESOURCE_ID=$(jq -r .vhd_base_url $(system.defaultWorkingDirectory)/images/capi/packer/azure/vhd/vhd-publishing-info.json)
+      STORAGE_ACCOUNT_NAME=$(jq -r .storage_account_name $(system.defaultWorkingDirectory)/images/capi/packer/azure/vhd/vhd-publishing-info.json)
+      TAGS=$(jq -r .tags $(system.defaultWorkingDirectory)/images/capi/packer/azure/vhd/vhd-publishing-info.json)
+    
+      echo "##vso[task.setvariable variable=VHD_RESOURCE_ID]$VHD_RESOURCE_ID"
+      echo "##vso[task.setvariable variable=STORAGE_ACCOUNT_NAME]$STORAGE_ACCOUNT_NAME"
+      echo "##vso[task.setvariable variable=TAGS;]$TAGS"
+    displayName: Import variables from build vhd job
+    env:
+      AZURE_CLIENT_SECRET: $(AZURE_CLIENT_SECRET)
+  - script: |
+      set -x
+      set -e -o pipefail
+
+      RANDOM=$(bash -c 'echo $RANDOM')
+      RESOURCE_GROUP="capi-testvmimage-${RANDOM}"
+      echo "${RESOURCE_GROUP}" is the group
+
+      # Azure CLI login
+      az login -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET --service-principal --tenant $AZURE_TENANT_ID
+
+      # Find the VHD blob location from its storage account
+      AZURE_LOCATION=$(az storage account show --name "${STORAGE_ACCOUNT_NAME}" --query '[location]' -o tsv)
+
+      # Create the resource group
+      az group create --name "${RESOURCE_GROUP}" --location "${AZURE_LOCATION}" --tags "${TAGS}"
+
+      # Create a managed image from the VHD blob
+      OS_TYPE="Linux"
+      if [ "$OS" == "Windows" ]; then
+        OS_TYPE="Windows"
+      fi
+      az image create -n testvmimage -g "${RESOURCE_GROUP}" --os-type "${OS_TYPE}" --source "${VHD_RESOURCE_ID}"
+
+      # Pass the managed image resource ID on to the next step
+      IMAGE_ID=$(az image show -g "${RESOURCE_GROUP}" -n testvmimage --query '[id]' --output tsv)
+      echo "##vso[task.setvariable variable=RESOURCE_GROUP;]$RESOURCE_GROUP"
+      echo "##vso[task.setvariable variable=MANAGED_IMAGE_ID;]$IMAGE_ID"
+      echo "##vso[task.setvariable variable=AZURE_LOCATION;]$AZURE_LOCATION"
+    displayName: promote VHD blob to managed image
+    env:
+      AZURE_CLIENT_SECRET: $(AZURE_CLIENT_SECRET)
+  - template: k8s-config.yaml
+  - script: |
+      set -x
+      set -e -o pipefail
+
+      export PATH=${PATH}:.local/bin
+      ./packer/azure/scripts/ensure-kustomize.sh
+
+      # Generate cluster template with kustomize
+      if [ "$OS" == "Windows" ]; then
+        kustomize build --load-restrictor LoadRestrictionsNone $(system.defaultWorkingDirectory)/images/capi/packer/azure/scripts/test-templates/windows/ > $(system.defaultWorkingDirectory)/images/capi/packer/azure/scripts/test-templates/cluster-template.yaml
+      else
+        kustomize build --load-restrictor LoadRestrictionsNone $(system.defaultWorkingDirectory)/images/capi/packer/azure/scripts/test-templates/linux/ > $(system.defaultWorkingDirectory)/images/capi/packer/azure/scripts/test-templates/cluster-template.yaml
+      fi
+      TEST_TEMPLATE=$(system.defaultWorkingDirectory)/images/capi/packer/azure/scripts/test-templates/cluster-template.yaml
+      echo "##vso[task.setvariable variable=TEST_TEMPLATE;]$TEST_TEMPLATE"
+    displayName: generate cluster template
+    workingDirectory: '$(system.defaultWorkingDirectory)/images/capi'
+    env:
+      AZURE_CLIENT_SECRET: $(AZURE_CLIENT_SECRET)
+  - script: |
+      set -x
+      set -e -o pipefail
+
+      os=$(echo "$OS" | tr '[:upper:]' '[:lower:]')
+
+      # Set up the Azure CLI Cluster API extension
+      # https://github.com/Azure/azure-capi-cli-extension/releases/download/az-capi-nightly/capi-0.0.vnext-py2.py3-none-any.whl
+      az extension add --yes --source "${AZ_CAPI_EXTENSION_URL}"
+
+      # Install required binaries
+      mkdir ~/test-binaries
+      export PATH=${PATH}:~/test-binaries
+      az capi install -a -ip ~/test-binaries
+
+      echo "##vso[task.setvariable variable=PATH;]$PATH"
+    displayName: Install and configure az capi extension
+    env:
+      AZURE_CLIENT_SECRET: $(AZURE_CLIENT_SECRET)
+  - script: |
+      params=()
+      if [ "$OS" == "Windows" ]; then
+        params+=(--windows)
+      fi
+      
+      # Create a cluster
+      az capi create \
+        --yes \
+        --debug \
+        --name testvm \
+        --kubernetes-version="${KUBERNETES_VERSION}" \
+        --location="${AZURE_LOCATION}" \
+        --resource-group="${RESOURCE_GROUP}" \
+        --management-cluster-resource-group-name="${RESOURCE_GROUP}" \
+        --control-plane-machine-count=1 \
+        --node-machine-count=1 \
+        --template="${TEST_TEMPLATE}" \
+        --tags="${TAGS}" \
+        --wait-for-nodes=2 \
+        "${params[@]}"
+    displayName: Create a cluster
+    env:
+      AZURE_CLIENT_SECRET: $(AZURE_CLIENT_SECRET)
+  - script: |
+      set -x
+      set -e -o pipefail
+
+      # Clean up the test resource group
+      az group delete -n "${RESOURCE_GROUP}" --yes --no-wait
+    displayName: Clean up test resource group
+    condition: always()
