@@ -9,7 +9,7 @@
       "source_image": "{{user `source_image`}}",
       "networks": "{{user `networks`}}",
       "floating_ip_network": "{{user `floating_ip_network`}}",
-      "use_floating_ip": true,
+      "use_floating_ip": "{{user `use_floating_ip`}}",
       "use_blockstorage_volume": true,
       "volume_size": "10",
       "image_disk_format": "raw",
