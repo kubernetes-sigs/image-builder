@@ -77,7 +77,7 @@ NOW=$(date +%s)
 # ensure the existence of the archive storage account
 if ! az storage account show -g "${RESOURCE_GROUP}" -n "${ARCHIVE_STORAGE_ACCOUNT}" &> /dev/null; then
   echo "Creating archive storage account ${ARCHIVE_STORAGE_ACCOUNT}..."
-  $ECHO az storage account create -g "${RESOURCE_GROUP}" -n "${ARCHIVE_STORAGE_ACCOUNT}" --access-tier Cool
+  $ECHO az storage account create -g "${RESOURCE_GROUP}" -n "${ARCHIVE_STORAGE_ACCOUNT}" --access-tier Cool --allow-blob-public-access false
 fi
 
 IFS=$'\n'
