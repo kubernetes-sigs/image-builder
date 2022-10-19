@@ -30,6 +30,9 @@ cd "$(dirname "${BASH_SOURCE[0]}")/.."
 
 if command -v az >/dev/null 2>&1; then exit 0; fi
 
+# Disable pip's version check and root user warning
+export PIP_DISABLE_PIP_VERSION_CHECK=1 PIP_ROOT_USER_ACTION=ignore
+
 ensure_py3
 pip install -U pip setuptools
 pip3 install --user "azure-cli==${_version}"
