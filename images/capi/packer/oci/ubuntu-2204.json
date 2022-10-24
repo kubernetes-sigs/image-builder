@@ -1,0 +1,7 @@
+{
+  "build_name": "ubuntu-2204",
+  "distribution": "ubuntu",
+  "operating_system": "Canonical Ubuntu",
+  "operating_system_version": "22.04",
+  "ssh_username": "ubuntu"
+}
