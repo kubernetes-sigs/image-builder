@@ -38,9 +38,10 @@
     },
     {
       "ansible_env_vars": [
-        "ANSIBLE_SSH_ARGS='{{user `existing_ansible_ssh_args`}} -o IdentitiesOnly=yes'"
+        "ANSIBLE_SSH_ARGS='{{user `existing_ansible_ssh_args`}} -oHostKeyAlgorithms=+ssh-rsa -oPubkeyAcceptedAlgorithms=+ssh-rsa -o IdentitiesOnly=yes'"
       ],
       "extra_arguments": [
+        "--scp-extra-args", "'-O'",
         "--extra-vars",
         "{{user `ansible_common_vars`}}",
         "--extra-vars",
@@ -62,9 +63,10 @@
     },
     {
       "ansible_env_vars": [
-        "ANSIBLE_SSH_ARGS='{{user `existing_ansible_ssh_args`}} -o IdentitiesOnly=yes'"
+        "ANSIBLE_SSH_ARGS='{{user `existing_ansible_ssh_args`}} -oHostKeyAlgorithms=+ssh-rsa -oPubkeyAcceptedAlgorithms=+ssh-rsa -o IdentitiesOnly=yes'"
       ],
       "extra_arguments": [
+        "--scp-extra-args", "'-O'",
         "--extra-vars",
         "{{user `ansible_common_vars`}}",
         "--extra-vars",
@@ -111,7 +113,6 @@
     "ansible_common_vars": "",
     "ansible_extra_vars": "ansible_python_interpreter=/usr/bin/python3",
     "ansible_user_vars": "",
-    "boot_media_path": "http://{{ .HTTPIP }}:{{ .HTTPPort }}",
     "boot_wait": "10s",
     "build_timestamp": "{{timestamp}}",
     "containerd_sha256": null,
@@ -127,7 +128,7 @@
     "firmware": "",
     "format": "qcow2",
     "headless": "true",
-    "http_directory": "./packer/qemu/linux/{{user `distro_name`}}/http/",
+    "http_directory": "./packer/openstack/linux/{{user `distro_name`}}/http/",
     "kubernetes_cni_deb_version": null,
     "kubernetes_cni_http_source": null,
     "kubernetes_cni_semver": null,
@@ -147,10 +148,8 @@
     "kubernetes_source_type": null,
     "machine_id_mode": "444",
     "memory": "2048",
-    "output_directory": "./output/{{user `build_name`}}-kube-{{user `kubernetes_semver`}}",
     "python_path": "",
     "qemu_binary": "qemu-system-x86_64",
-    "ssh_password": "builder",
-    "ssh_username": "builder"
+    "ssh_username": "{{user `ssh_username`}}"
   }
 }
