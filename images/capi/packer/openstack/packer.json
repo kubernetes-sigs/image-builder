@@ -15,7 +15,7 @@
       "volume_size": "10",
       "image_disk_format": "raw",
       "security_groups": ["default"],
-      "image_name": "{{user `build_name`}}-kube-{{user `kubernetes_semver`}}"
+      "image_name": "{{user `image_name`}}"
     }
   ],
   "post-processors": [
@@ -114,6 +114,7 @@
     "ansible_common_vars": "",
     "ansible_extra_vars": "ansible_python_interpreter=/usr/bin/python3",
     "ansible_user_vars": "",
+    "attach_config_drive": "false",
     "boot_wait": "10s",
     "build_timestamp": "{{timestamp}}",
     "containerd_sha256": null,
@@ -130,6 +131,7 @@
     "format": "qcow2",
     "headless": "true",
     "http_directory": "./packer/openstack/linux/{{user `distro_name`}}/http/",
+    "image_name": "{{user `build_name`}}-kube-{{user `kubernetes_semver`}}",
     "kubernetes_cni_deb_version": null,
     "kubernetes_cni_http_source": null,
     "kubernetes_cni_semver": null,
@@ -151,6 +153,7 @@
     "memory": "2048",
     "python_path": "",
     "qemu_binary": "qemu-system-x86_64",
-    "ssh_username": "{{user `ssh_username`}}"
+    "ssh_username": "{{user `ssh_username`}}",
+    "use_floating_ip": "true"
   }
 }

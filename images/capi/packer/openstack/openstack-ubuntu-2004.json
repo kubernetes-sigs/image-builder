@@ -1,19 +1,8 @@
 {
-  "build_name": "ubuntu-2004",
+  "build_name": "ubuntu-2204",
   "distro_name": "ubuntu",
   "guest_os_type": "ubuntu-64",
-  "os_display_name": "Ubuntu 20.04",
+  "os_display_name": "Ubuntu 22.04",
   "shutdown_command": "shutdown -P now",
-  "ssh_username": "ubuntu",
-  "source_image": "4d3e97d7-25df-421a-868f-e314f5bef79f",
-  "networks": "152dd9b9-4f7c-429c-a1b0-2f63d78b4642",
-  "flavor": "c.medium",
-  "attach_config_drive": "false",
-  "use_floating_ip": "true",
-  "floating_ip_network": "Internet",
-  "crictl_version": "1.25.0",
-  "kubernetes_semver": "v1.25.3",
-  "kubernetes_rpm_version": "1.25.3-0",
-  "kubernetes_series": "v1.25",
-  "kubernetes_deb_version": "1.25.3-00"
+  "ssh_username": "ubuntu"
 }
