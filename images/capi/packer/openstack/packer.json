@@ -1,21 +1,23 @@
 {
   "builders": [
     {
-      "type": "openstack",
+      "config_drive": "{{user `attach_config_drive`}}",
+      "flavor": "{{user `flavor`}}",
+      "floating_ip_network": "{{user `floating_ip_network`}}",
+      "image_disk_format": "raw",
+      "image_name": "{{user `image_name`}}",
+      "image_visibility": "private",
+      "networks": "{{user `networks`}}",
+      "security_groups": [
+        "default"
+      ],
+      "source_image": "{{user `source_image`}}",
       "ssh_timeout": "2h",
       "ssh_username": "{{user `ssh_username`}}",
-      "image_visibility": "private",
-      "flavor": "{{user `flavor`}}",
-      "source_image": "{{user `source_image`}}",
-      "networks": "{{user `networks`}}",
-      "floating_ip_network": "{{user `floating_ip_network`}}",
-      "use_floating_ip": "{{user `use_floating_ip`}}",
-      "config_drive":  "{{user `attach_config_drive`}}",
+      "type": "openstack",
       "use_blockstorage_volume": true,
-      "volume_size": "10",
-      "image_disk_format": "raw",
-      "security_groups": ["default"],
-      "image_name": "{{user `image_name`}}"
+      "use_floating_ip": "{{user `use_floating_ip`}}",
+      "volume_size": "10"
     }
   ],
   "post-processors": [
@@ -42,7 +44,8 @@
         "ANSIBLE_SSH_ARGS='{{user `existing_ansible_ssh_args`}} -oHostKeyAlgorithms=+ssh-rsa -oPubkeyAcceptedAlgorithms=+ssh-rsa -o IdentitiesOnly=yes'"
       ],
       "extra_arguments": [
-        "--scp-extra-args", "'-O'",
+        "--scp-extra-args",
+        "'-O'",
         "--extra-vars",
         "{{user `ansible_common_vars`}}",
         "--extra-vars",
@@ -67,7 +70,8 @@
         "ANSIBLE_SSH_ARGS='{{user `existing_ansible_ssh_args`}} -oHostKeyAlgorithms=+ssh-rsa -oPubkeyAcceptedAlgorithms=+ssh-rsa -o IdentitiesOnly=yes'"
       ],
       "extra_arguments": [
-        "--scp-extra-args", "'-O'",
+        "--scp-extra-args",
+        "'-O'",
         "--extra-vars",
         "{{user `ansible_common_vars`}}",
         "--extra-vars",
