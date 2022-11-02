@@ -143,6 +143,7 @@
     }
   ],
   "variables": {
+    "amazon_ssm_agent_rpm": "https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm",
     "ami_description": "Cluster API base image designed for {{user `kubernetes_semver`}}",
     "ami_groups": "all",
     "ami_regions": "ap-south-1,eu-west-3,eu-west-2,eu-west-1,ap-northeast-2,ap-northeast-1,sa-east-1,ca-central-1,ap-southeast-1,ap-southeast-2,eu-central-1,us-east-1,us-east-2,us-west-1,us-west-2",

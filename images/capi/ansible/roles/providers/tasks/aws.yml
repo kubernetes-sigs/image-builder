@@ -26,7 +26,7 @@
     name: "{{ item }}"
     state: present
   with_items:
-    - https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
+    - "{{ amazon_ssm_agent_rpm }}"
   when:
     - ansible_os_family == "RedHat"
     - ansible_distribution != "Amazon"
@@ -39,7 +39,7 @@
     state: present
     disable_gpg_check: true
   with_items:
-    - https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
+    - "{{ amazon_ssm_agent_rpm }}"
   when:
     - ansible_distribution == "Rocky"
 
