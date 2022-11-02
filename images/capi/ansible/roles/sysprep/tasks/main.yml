@@ -134,6 +134,15 @@
   loop: "{{ netplan_files.files }}"
   when: netplan_files.files is defined and (netplan_files.files|length>0)
 
+- name: Create netplan for KubeVirt
+  vars:
+    kubevirt: "{{ lookup('env', 'KUBEVIRT') }}"
+  copy:
+    src: files/etc/netplan/51-kubevirt-netplan.yaml
+    dest: /etc/netplan/51-kubevirt-netplan.yaml
+    mode: "0644"
+  when: ansible_os_family == "Debian" and kubevirt == "true"
+
 - name: Find SSH host keys
   find:
     path: /etc/ssh
