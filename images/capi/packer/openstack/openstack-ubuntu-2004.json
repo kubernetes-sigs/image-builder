@@ -1,8 +1,8 @@
 {
-  "build_name": "ubuntu-2204",
+  "build_name": "ubuntu-2004",
   "distro_name": "ubuntu",
   "guest_os_type": "ubuntu-64",
-  "os_display_name": "Ubuntu 22.04",
+  "os_display_name": "Ubuntu 20.04",
   "shutdown_command": "shutdown -P now",
   "ssh_username": "ubuntu"
 }
