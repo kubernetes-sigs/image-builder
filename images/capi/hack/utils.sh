@@ -75,7 +75,7 @@ ensure_py3_bin() {
   if ! command -v "${1}" >/dev/null 2>&1; then
     echo "User's Python3 binary directory must be in \$PATH" 1>&2
     echo "Location of package is:" 1>&2
-    pip3 show ${2:-$1} | grep "Location"
+    pip3 show --disable-pip-version-check ${2:-$1} | grep "Location"
     echo "\$PATH is currently: $PATH" 1>&2
     exit 1
   fi

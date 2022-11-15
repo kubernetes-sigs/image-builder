@@ -28,6 +28,9 @@ _version="2.11.5"
 # script is located.
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
 
+# Disable pip's version check and root user warning
+export PIP_DISABLE_PIP_VERSION_CHECK=1 PIP_ROOT_USER_ACTION=ignore
+
 if ! command -v ansible >/dev/null 2>&1; then
     ensure_py3
     pip3 install --user "ansible-core==${_version}"

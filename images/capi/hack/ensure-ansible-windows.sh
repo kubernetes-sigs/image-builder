@@ -27,13 +27,16 @@ _version="0.4.2"
 if [[ ${HOSTOS} == "darwin" ]]; then
     echo "IMPORTANT: Winrm connection plugin for Ansible on MacOS causes connection issues."
     echo "See https://docs.ansible.com/ansible/latest/user_guide/windows_winrm.html#what-is-winrm for more details."
-    echo "To fix the issue provide the enviroment variable 'no_proxy=*'" 
+    echo "To fix the issue provide the enviroment variable 'no_proxy=*'"
     echo "Example call to build Windows images on MacOS: 'no_proxy=* make build-<target>'"
 fi
 
 # Change directories to the parent directory of the one in which this
 # script is located.
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
+
+# Disable pip's version check and root user warning
+export PIP_DISABLE_PIP_VERSION_CHECK=1 PIP_ROOT_USER_ACTION=ignore
 
 if pip3 show pywinrm >/dev/null 2>&1; then exit 0; fi
 
