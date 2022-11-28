@@ -61,7 +61,7 @@ Check out `images/capi/packer/openstack/packer.json` for more variables such as 
 
 From the `images/capi` directory, run `PACKER_VAR_FILES=var_file.json make build-openstack-ubuntu-xxxx`.
 
-An instance is built in Openstack from the source image defined and once completed, the instance is shutdown and the volume uploaded into an image that can then be used.
+An instance is built in Openstack from the source image defined and once completed, the instance is shutdown and the image gets created that can then be used afterwards.
 This image will default to private and will need to be set as shared or public to be used by other projects within Openstack.
 
 For building a ubuntu-2204 based capi image with Kubernetes 1.25.3, run the following commands:
