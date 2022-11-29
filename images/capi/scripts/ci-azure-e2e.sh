@@ -78,6 +78,13 @@ trap cleanup EXIT
 
 make deps-azure
 
+# Latest Flatcar version is often available on Azure with a delay, so resolve ourselves
+az login --service-principal -u ${AZURE_CLIENT_ID} -p ${AZURE_CLIENT_SECRET} --tenant ${AZURE_TENANT_ID}
+get_flatcar_version() {
+    az vm image show --urn kinvolk:flatcar-container-linux-free:stable:latest --query 'name' -o tsv
+}
+export FLATCAR_VERSION="$(get_flatcar_version)"
+
 # Pre-pulling windows images takes 10-20 mins
 # Disable them for CI runs so don't run into timeouts
 export PACKER_VAR_FILES="packer/azure/scripts/disable-windows-prepull.json scripts/ci-disable-goss-inspect.json"
