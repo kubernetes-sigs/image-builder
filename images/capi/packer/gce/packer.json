@@ -2,8 +2,8 @@
   "builders": [
     {
       "disable_default_service_account": "{{ user `disable_default_service_account` }}",
-      "image_family": "capi-{{user `build_name`}}-k8s-{{user `kubernetes_series` | clean_resource_name}}",
-      "image_name": "cluster-api-{{user `build_name`}}-{{user `kubernetes_semver` | clean_resource_name}}-{{user `build_timestamp`}}",
+      "image_family": "{{user `image_family` | clean_resource_name}}",
+      "image_name": "{{user `image_name` | clean_resource_name}}",
       "labels": {
         "build_timestamp": "{{user `build_timestamp`}}",
         "distribution": "ubuntu",
@@ -92,6 +92,8 @@
     "disable_default_service_account": "",
     "encrypted": "false",
     "existing_ansible_ssh_args": "{{env `ANSIBLE_SSH_ARGS`}}",
+    "image_family": "capi-{{user `build_name`}}-k8s-{{user `kubernetes_series`}}",
+    "image_name": "cluster-api-{{user `build_name`}}-{{user `kubernetes_semver`}}-{{user `build_timestamp`}}",
     "kubernetes_cni_deb_version": null,
     "kubernetes_cni_http_source": null,
     "kubernetes_cni_rpm_version": null,
