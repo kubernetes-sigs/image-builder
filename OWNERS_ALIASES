@@ -12,6 +12,7 @@ aliases:
   image-builder-reviewers:
     - EleanorRigby
     - randomvariable
+    - AverageMarcus
   image-builder-azure-reviewers:
     - jsturtevant
   image-builder-openstack-reviewers:
