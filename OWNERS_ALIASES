@@ -4,6 +4,7 @@ aliases:
   image-builder-maintainers:
     - jsturtevant
     - kkeshavamurthy
+    - mboersma
   image-builder-reviewers:
     - EleanorRigby
     - randomvariable
