@@ -2,13 +2,9 @@
 
 aliases:
   image-builder-maintainers:
-    - CecileRobertMichon
-    - codenrhoden
-    - detiber
     - jsturtevant
-    - justinsb
     - kkeshavamurthy
-    - moshloop
+    - mboersma
   image-builder-reviewers:
     - EleanorRigby
     - randomvariable
