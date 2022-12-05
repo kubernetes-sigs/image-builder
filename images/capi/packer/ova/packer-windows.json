@@ -23,6 +23,8 @@
         "./packer/ova/windows/sysprep.ps1"
       ],
       "guest_os_type": "{{user `local_guest_os_type`}}",
+      "http_port_max": "{{user `http_port_max`}}",
+      "http_port_min": "{{user `http_port_min`}}",
       "iso_checksum": "{{user `iso_checksum` }}",
       "iso_urls": [
         "{{user `os_iso_url`}}"
@@ -72,6 +74,8 @@
       "folder": "{{user `folder`}}",
       "guest_os_type": "{{user `vsphere_guest_os_type`}}",
       "host": "{{user `host`}}",
+      "http_port_max": "{{user `http_port_max`}}",
+      "http_port_min": "{{user `http_port_min`}}",
       "insecure_connection": "{{user `insecure_connection`}}",
       "iso_paths": [
         "{{user `os_iso_path`}}",
@@ -243,6 +247,8 @@
     "containerd_version": null,
     "disable_hypervisor": null,
     "disk_size": "81920",
+    "http_port_max": "",
+    "http_port_min": "",
     "ib_version": "{{env `IB_VERSION`}}",
     "kubernetes_base_url": "https://kubernetesreleases.blob.core.windows.net/kubernetes/{{user `kubernetes_semver`}}/binaries/node/windows/{{user `kubernetes_goarch`}}",
     "kubernetes_http_package_url": "",
