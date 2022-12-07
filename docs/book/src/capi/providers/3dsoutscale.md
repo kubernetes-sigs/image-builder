@@ -27,3 +27,13 @@ the different operating systems.
 | File | Description |
 |------|-------------|
 | `ubuntu-2004.json` | The settings for the Ubuntu 20.04 image |
+
+You must have your [Access Keys](https://docs.outscale.com/en/userguide/About-Access-Keys.html).
+You must have your [Account Id](https://docs.outscale.com/en/userguide/Getting-Information-About-Your-Account-and-Quotas.html).
+Please set the following enviroement variables before building image:
+```
+OSC_SECRET_KEY: Outscale Secret Key
+OSC_REGION: Outscale Region
+OSC_ACCESS_KEY: Outscale Access Key Id
+OSC_ACCOUNT_ID: Outscale Account Id 
+```
