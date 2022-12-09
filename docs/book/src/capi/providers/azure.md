@@ -52,6 +52,8 @@ list, and greater explanation can be found in the
 
 | Variable | Description | Default |
 |----------|-------------|---------|
+| `community_gallery_image_id` | Use image from a Community gallery as a base image instead of default one from the marketplace. Depending on the target distro, fields like `image_offer` etc. might need to be explicitly emptied. | `""` |
+| `direct_shared_gallery_image_id` | Use image from Directly shared gallery as a base image instead of default one from the marketplace. Depending on the target distro, fields like `image_offer` etc. might need to be explicitly emptied. | `""` |
 | `private_virtual_network_with_public_ip` | This value allows you to set a virtual_network_name and obtain a public IP. If this value is not set and virtual_network_name is defined Packer is only allowed to be executed from a host on the same subnet / virtual network. | `""` |
 | `virtual_network_name` | Use a pre-existing virtual network for the VM. This option enables private communication with the VM, no public IP address is used or provisioned (unless you set private_virtual_network_with_public_ip). | `""` |
 | `virtual_network_resource_group_name` | If virtual_network_name is set, this value may also be set. If virtual_network_name is set, and this value is not set the builder attempts to determine the resource group containing the virtual network. If the resource group cannot be found, or it cannot be disambiguated, this value should be set. | `""` |
