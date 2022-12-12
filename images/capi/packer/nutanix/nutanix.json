@@ -1,5 +1,5 @@
 {
-  "force_deregister": false,
+  "force_deregister": "false",
   "image_name": "",
   "nutanix_cluster_name": "",
   "nutanix_endpoint": "",
