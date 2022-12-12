@@ -24,7 +24,6 @@
       "os_type": "Windows",
       "private_virtual_network_with_public_ip": "{{user `private_virtual_network_with_public_ip`}}",
       "resource_group_name": "{{user `resource_group_name`}}",
-      "shared_gallery_image_version_exclude_from_latest": "{{ user `exclude_from_latest`  }}",
       "storage_account": "{{user `storage_account_name`}}",
       "subscription_id": "{{user `subscription_id`}}",
       "type": "azure-arm",
@@ -61,6 +60,7 @@
       "os_disk_size_gb": "{{user `os_disk_size_gb`}}",
       "os_type": "Windows",
       "private_virtual_network_with_public_ip": "{{user `private_virtual_network_with_public_ip`}}",
+      "shared_gallery_image_version_exclude_from_latest": "{{ user `exclude_from_latest` }}",
       "shared_image_gallery_destination": {
         "gallery_name": "{{user `shared_image_gallery_name`}}",
         "image_name": "{{user `image_name`}}-{{user `runtime`}}",
