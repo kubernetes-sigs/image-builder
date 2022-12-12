@@ -125,6 +125,18 @@ command:
     stdout:
     - "True"
     timeout: 30000
+  Check HNS Control Flag:
+    exit-status: 0
+    exec: powershell -command "(Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\hns\State" -Name HNSControlFlag).HNSControlFlag -eq 80"
+    stdout:
+    - True
+    timeout: 30000
+  Check WCIFS Flag:
+    exit-status: 0
+    exec: powershell -command "(Get-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Services\wcifs' -Name WcifsSOPCountDisabled).WcifsSOPCountDisabled -eq 0"
+    stdout:
+    - True
+    timeout: 30000
 {{end}}
 {{ if eq .Vars.runtime "containerd" }}
   Correct Containerd Version:
