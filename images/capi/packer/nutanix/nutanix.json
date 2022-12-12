@@ -1,4 +1,5 @@
 {
+  "force_deregister": false,
   "image_name": "",
   "nutanix_cluster_name": "",
   "nutanix_endpoint": "",
@@ -7,6 +8,5 @@
   "nutanix_port": "9440",
   "nutanix_subnet_name": "",
   "nutanix_username": "pc_user",
-  "source_image_name": "",
-  "force_deregister": false
+  "source_image_name": ""
 }
