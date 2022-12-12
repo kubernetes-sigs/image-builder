@@ -143,8 +143,8 @@
     type: dword
   when: distribution_version == "2019"
 
-- name: Expand dynamic port range to 33000-65535 to avoid port exhaustion
-  win_shell: netsh int ipv4 set dynamicportrange tcp 33000 32536
+- name: Expand dynamic port range to 34000-65535 to avoid port exhaustion
+  win_shell: netsh int ipv4 set dynamicportrange tcp 34000 31536
 
 - name: Add required Windows Features
   win_feature:
