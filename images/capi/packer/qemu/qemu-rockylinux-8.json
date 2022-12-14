@@ -7,9 +7,9 @@
   "distro_version": "8",
   "epel_rpm_gpg_key": "https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-8",
   "guest_os_type": "centos8-64",
-  "iso_checksum": "a9ece0e810275e881abfd66bb0e59ac05d567a5ec0bc2f108b9a3e90bef5bf94",
+  "iso_checksum": "13c3e7fca1fd32df61695584baafc14fa28d62816d0813116d23744f5394624b",
   "iso_checksum_type": "sha256",
-  "iso_url": "https://download.rockylinux.org/pub/rocky/8/isos/x86_64/Rocky-8.6-x86_64-minimal.iso",
+  "iso_url": "https://download.rockylinux.org/pub/rocky/8/isos/x86_64/Rocky-8.7-x86_64-minimal.iso",
   "os_display_name": "RockyLinux 8",
   "redhat_epel_rpm": "https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm",
   "shutdown_command": "/sbin/halt -h -p"
