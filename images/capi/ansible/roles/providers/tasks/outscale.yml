@@ -10,6 +10,8 @@
 - name: Install cloud-init outscale package
   apt:
     deb: /tmp/cloud-init_22.2-outscale.deb
+    force: True
+    force_apt_get: True
   when: ansible_distribution == "Ubuntu"
 
 - name: Change cloud-init metadata outscale config in Ubuntu
