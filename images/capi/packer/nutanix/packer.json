@@ -2,6 +2,7 @@
   "builders": [
     {
       "cluster_name": "{{user `nutanix_cluster_name`}}",
+      "force_deregister": "{{user `force_deregister`}}",
       "image_name": "{{user `image_name`}}",
       "memory_mb": "{{user `memory`}}",
       "nutanix_endpoint": "{{user `nutanix_endpoint`}}",
