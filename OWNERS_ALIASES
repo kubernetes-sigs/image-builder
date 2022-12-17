@@ -11,6 +11,7 @@ aliases:
     - AverageMarcus
   image-builder-azure-reviewers:
     - jsturtevant
+    - mboersma
   image-builder-openstack-reviewers:
     - hidekazuna
   image-builder-cloudstack-reviewers:
@@ -35,7 +36,6 @@ aliases:
     - richardcase
     - sedefsavas
   cluster-api-azure-maintainers:
-    - alexeldeib
     - CecileRobertMichon
     - devigned
     - jackfrancis
