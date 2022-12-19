@@ -1,0 +1,8 @@
+apiVersion: controlplane.cluster.x-k8s.io/v1beta1
+kind: KubeadmControlPlane
+metadata:
+  name: ${CLUSTER_NAME}-control-plane
+  namespace: default
+spec:
+  version: ${KUBERNETES_BOOTSTRAP_VERSION}
+---

@@ -1,9 +1,17 @@
 steps:
 - script: |
+      VHD_BASE_URL="$(cat packer/azure/vhd-base-url.out)"
       VHD_URL="$(cat packer/azure/vhd-url.out)"
+      STORAGE_ACCOUNT_NAME="$(cat packer/azure/storage-account-name.out)"
+      RESOURCE_GROUP_NAME="$(cat packer/azure/resource-group-name.out)"
+      TAGS="$(cat packer/azure/tags.out)"
       cat <<EOF > packer/azure/vhd-publishing-info.json
       {
-          "vhd_url" : "$VHD_URL"
+          "vhd_base_url": "${VHD_BASE_URL}",
+          "vhd_url": "${VHD_URL}",
+          "storage_account_name": "${STORAGE_ACCOUNT_NAME}",
+          "resource_group_name": "${RESOURCE_GROUP_NAME}",
+          "tags": "${TAGS}"
       }
       EOF
   displayName: Generating publishing info for VHD

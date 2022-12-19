@@ -22,8 +22,15 @@ jobs:
   - script: |
       set -o pipefail
       make deps-azure
-      os=$(echo "$OS" | tr '[:upper:]' '[:lower:]') 
-      version=$(echo "$OS_VERSION" | tr '[:upper:]' '[:lower:]' | tr -d .)
+      os=$(echo "${OS}" | tr '[:upper:]' '[:lower:]')
+      version=$(echo "${OS_VERSION}" | tr '[:upper:]' '[:lower:]' | tr -d .)
+      export RESOURCE_GROUP_NAME="cluster-api-images"
+
+      # timestamp is in RFC-3339 format to match kubetest
+      export TIMESTAMP="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+      export JOB_NAME="${JOB_NAME:-"image-builder-vhd"}"
+      export TAGS="creationTimestamp=${TIMESTAMP} jobName=${JOB_NAME}"
+      printf "${TAGS}" | tee packer/azure/tags.out
       make build-azure-vhd-$os-$version | tee packer/azure/packer.out
     displayName: Building VHD
     workingDirectory: '$(system.defaultWorkingDirectory)/images/capi'
@@ -39,5 +46,5 @@ jobs:
   - template: delete-storage-account.yaml
   - script: |
       chown -R $USER:$USER .
-    displayName: cleanup - chown all files in work directory 
+    displayName: cleanup - chown all files in work directory
     condition: always()
