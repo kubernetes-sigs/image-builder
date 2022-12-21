@@ -71,3 +71,13 @@
     Get-ChildItem -Path "{{ tempdir.stdout | trim }}\OpenSSH-Win64\*" -Recurse | Move-Item -Destination "{{ programfiles.stdout | trim }}\OpenSSH"
     Get-ChildItem -Path "{{ programfiles.stdout | trim }}\OpenSSH" | Unblock-File
     & 'C:\Program Files\OpenSSH\install-sshd.ps1'
+
+- name: Add OpenSSH firewall rule
+  win_firewall_rule:
+    name: sshd
+    localport: 22
+    action: allow
+    direction: in
+    protocol: tcp
+    state: present
+    enabled: yes
