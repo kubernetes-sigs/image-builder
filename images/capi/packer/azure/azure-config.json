@@ -2,6 +2,7 @@
   "azure_location": "{{env `AZURE_LOCATION`}}",
   "client_id": "{{env `AZURE_CLIENT_ID`}}",
   "client_secret": "{{env `AZURE_CLIENT_SECRET`}}",
+  "containerd_wasm_shims_runtimes": "spin,slight",
   "subscription_id": "{{env `AZURE_SUBSCRIPTION_ID`}}",
   "vm_size": "Standard_B2ms"
 }

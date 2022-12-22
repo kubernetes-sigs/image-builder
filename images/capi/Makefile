@@ -233,6 +233,7 @@ endif
 COMMON_NODE_VAR_FILES :=	packer/config/kubernetes.json \
 					packer/config/cni.json \
 					packer/config/containerd.json \
+					packer/config/wasm-shims.json \
 					packer/config/ansible-args.json \
 					packer/config/goss-args.json \
 					packer/config/common.json \
