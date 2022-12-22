@@ -125,7 +125,7 @@
     },
     {
       "ansible_env_vars": [
-        "ANSIBLE_SSH_ARGS='{{user `existing_ansible_ssh_args`}} -o IdentitiesOnly=yes'"
+        "ANSIBLE_SSH_ARGS='{{user `existing_ansible_ssh_args`}} {{user `ansible_common_ssh_args`}}'"
       ],
       "extra_arguments": [
         "--extra-vars",
@@ -133,7 +133,9 @@
         "--extra-vars",
         "{{user `ansible_extra_vars`}}",
         "--extra-vars",
-        "{{user `ansible_user_vars`}}"
+        "{{user `ansible_user_vars`}}",
+        "--scp-extra-args",
+        "{{user `ansible_scp_extra_args`}}"
       ],
       "playbook_file": "./ansible/python.yml",
       "type": "ansible",
@@ -141,7 +143,7 @@
     },
     {
       "ansible_env_vars": [
-        "ANSIBLE_SSH_ARGS='{{user `existing_ansible_ssh_args`}} -o IdentitiesOnly=yes'"
+        "ANSIBLE_SSH_ARGS='{{user `existing_ansible_ssh_args`}} {{user `ansible_common_ssh_args`}}'"
       ],
       "extra_arguments": [
         "--extra-vars",
@@ -149,7 +151,9 @@
         "--extra-vars",
         "{{user `ansible_extra_vars`}}",
         "--extra-vars",
-        "{{user `ansible_user_vars`}}"
+        "{{user `ansible_user_vars`}}",
+        "--scp-extra-args",
+        "{{user `ansible_scp_extra_args`}}"
       ],
       "playbook_file": "./ansible/node.yml",
       "type": "ansible",
@@ -204,6 +208,7 @@
   "variables": {
     "ansible_common_vars": "",
     "ansible_extra_vars": "",
+    "ansible_scp_extra_args": "",
     "ansible_user_vars": "",
     "azure_location": null,
     "build_name": null,
