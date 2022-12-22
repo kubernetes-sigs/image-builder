@@ -30,6 +30,14 @@
     dest: /tmp/containerd.tar.gz
     mode: 0600
 
+- name: download containerd-wasm-shims
+  get_url:
+    url: "{{ containerd_wasm_shims_url }}"
+    checksum: "sha256:{{ containerd_wasm_shims_sha256 }}"
+    dest: /tmp/containerd_wasm_shims.tar.gz
+    mode: 0600
+  when: containerd_wasm_shims_runtimes | length > 0
+
 - name: Create a directory if it does not exist
   file:
     path: "{{ sysusr_prefix }}/bin"
@@ -47,6 +55,17 @@
       - --no-overwrite-dir
   when: ansible_os_family != "Flatcar"
 
+# install containerd Wasm shims when the runtimes are not empty -- current known runtimes are 'slight' and 'spin'
+# see: https://github.com/kubernetes-sigs/image-builder/pull/1037
+- name: unpack containerd-wasm-shims
+  unarchive:
+    remote_src: True
+    src: /tmp/containerd_wasm_shims.tar.gz
+    dest: "{{ sysusr_prefix }}/bin"
+    extra_opts:
+      - --no-overwrite-dir
+  when: ansible_os_family != "Flatcar" and (containerd_wasm_shims_runtimes | length > 0)
+
 - name: unpack containerd for Flatcar to /opt/bin
   unarchive:
     remote_src: True
@@ -61,6 +80,17 @@
       - --transform
       - 's@opt/local@opt@'
   when: ansible_os_family == "Flatcar"
+
+# install containerd Wasm shims when the runtimes are not empty -- current known runtimes are 'slight' and 'spin'
+# see: https://github.com/kubernetes-sigs/image-builder/pull/1037
+- name: unpack containerd-wasm-shims for Flatcar to /opt/bin
+  unarchive:
+    remote_src: True
+    src: /tmp/containerd_wasm_shims.tar.gz
+    dest: "{{ sysusr_prefix }}/bin"
+    extra_opts:
+      - --no-overwrite-dir
+  when: ansible_os_family == "Flatcar" and (containerd_wasm_shims_runtimes | length > 0)
 
 # Remove /opt/cni directory, as we will install cni later
 - name: delete /opt/cni directory
@@ -131,4 +161,9 @@
 - name: delete tarball
   file:
     path: /tmp/containerd.tar.gz
+    state: absent
+
+- name: delete tarball
+  file:
+    path: /tmp/containerd_wasm_shims.tar.gz
     state: absent

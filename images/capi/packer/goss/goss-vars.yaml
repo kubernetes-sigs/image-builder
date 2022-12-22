@@ -71,6 +71,7 @@ common_photon_rpms: &common_photon_rpms
 
 arch: "amd64"
 containerd_version: ""
+containerd_wasm_shims_runtimes: ""
 kubernetes_cni_source_type: ""
 kubernetes_cni_version: ""
 kubernetes_source_type: ""
