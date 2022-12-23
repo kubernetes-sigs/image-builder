@@ -24,7 +24,7 @@ cd "${KUBE_ROOT}" || exit 1
 os=$(go env GOOS)
 arch=$(go env GOARCH)
 
-MDBOOK_VERSION="0.4.14"
+MDBOOK_VERSION="0.4.25"
 
 # translate arch to rust's conventions (if we can)
 if [[ ${arch} == "amd64" ]]; then
@@ -44,6 +44,8 @@ case ${os} in
         ;;
     darwin)
         target="apple-darwin"
+        # only x86_64 is published for darwin
+        arch="x86_64"
         ;;
     linux)
         # works for linux, too
