@@ -21,15 +21,15 @@ BIN := image-builder
 default: $(BIN)
 
 $(BIN): pack
-	GO111MODULE=on go build -o $(BIN) -ldflags "-X \"main.version=$(shell date "+%Y-%m-%d %H:%M:%S")\""  main.go
+	GO111MODULE=on go build -o $(BIN) -ldflags "-X \"main.version=$(shell date "+%Y-%m-%d %H:%M:%S")\"" main.go
 
 .PHONY: pack
 pack: setup
 	esc --prefix pkg/resources/ --ignore "static.go" -o pkg/resources/static.go --pkg resources pkg/resources
 
 clean:
-	rm -f dist/
+	rm image-builder pkg/resources/static.go
 
 .PHONY: setup
 setup:
-	which esc 2>&1 > /dev/null || go get -u github.com/mjibson/esc
+	which esc 2>&1 > /dev/null || go install github.com/mjibson/esc

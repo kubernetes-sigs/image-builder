@@ -22,10 +22,11 @@ BIN := image-builder
 default: $(BIN)
 
 $(BIN):
-	GO111MODULE=on go build
+	$(MAKE) -C v1
 
 clean:
 	rm -f dist/
+	$(MAKE) -C v1 clean
 
 .PHONY: build-book
 build-book:
