@@ -14,9 +14,9 @@
 ---
 - name: Create kubelet directory structure
   win_file:
-    path:  "{{ item }}"
+    path: "{{ item }}"
     state: directory
-  loop: 
+  loop:
     - '{{ systemdrive.stdout | trim }}\var\log\kubelet'
     - '{{ systemdrive.stdout | trim }}\etc\kubernetes'
     - '{{ systemdrive.stdout | trim }}\etc\kubernetes\manifests'
