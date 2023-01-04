@@ -1,0 +1,8 @@
+{
+  "build_name": "oracle-linux-9",
+  "distribution": "Oracle Linux",
+  "operating_system": "Oracle Linux",
+  "operating_system_version": "9",
+  "redhat_epel_rpm": "oracle-epel-release-el9",
+  "ssh_username": "opc"
+}

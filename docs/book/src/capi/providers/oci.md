@@ -27,6 +27,7 @@ the different operating systems.
 | File | Description |
 |------|-------------|
 | `oracle-linux-8.json` | The settings for the Oracle Linux 8 image |
+| `oracle-linux-9.json` | The settings for the Oracle Linux 9 image |
 | `ubuntu-1804.json` | The settings for the Ubuntu 18.04 image |
 | `ubuntu-2004.json` | The settings for the Ubuntu 20.04 image |
 | `ubuntu-2204.json` | The settings for the Ubuntu 22.04 image |
