@@ -44,6 +44,9 @@
   when: packer_builder_type is search('qemu') and
     build_target is search('raw')
 
+- include_tasks: nutanix.yml
+  when: packer_builder_type is search('nutanix')
+
 # Create a boot order configuration
 # b/w containerd and cloud final, cloud config services
 

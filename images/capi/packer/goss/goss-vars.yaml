@@ -161,6 +161,8 @@ flatcar:
     command:
   ova:
     command:
+  nutanix:
+    command:
 photon:
   common-service:
     apparmor:
@@ -222,6 +224,19 @@ rockylinux:
       cloud-utils:
       python3-netifaces:
       <<: *rh8_rpms
+  nutanix:
+    package:
+      cloud-init:
+      python3-netifaces:
+      iscsi-initiator-utils:
+      nfs-utils:
+      lvm2:
+      xfsprogs:
+      <<: *rh8_rpms
+    service:
+      iscsid:
+        enabled: true
+        running: true
 rhel:
   common-package: *common_rpms
   ova:
@@ -344,6 +359,21 @@ ubuntu:
       cloud-initramfs-dyn-netconf:
       linux-cloud-tools-generic:
       linux-tools-generic:
+  nutanix:
+    package:
+      linux-cloud-tools-virtual:
+      linux-tools-virtual:
+      cloud-guest-utils:
+      cloud-initramfs-copymods:
+      cloud-initramfs-dyn-netconf:
+      open-iscsi:
+      xfsprogs:
+      mdadm:
+      nfs-common:
+    service:
+      iscsid:
+        enabled: true
+        running: true
 
 oracle linux:
   common-kernel-param:
@@ -452,3 +482,27 @@ windows:
         - "cloudbaseinit.plugins.common.mtu.MTUPlugin"
         - "cloudbaseinit.plugins.common.sethostname.SetHostNamePlugin"
         - "cloudbaseinit.plugins.common.sshpublickeys.SetUserSSHPublicKeysPlugin"
+
+  nutanix:
+    windows-service:
+
+    files:
+      'c:/program files/Cloudbase Solutions/Cloudbase-init/conf/cloudbase-init.conf': 
+        exists: true
+        filetype: file
+        contains:
+        - "!/logging_serial_port=COM1,115200,N,8/"
+        - "cloudbaseinit.metadata.services.configdrive.ConfigDriveService"
+        - "cloudbaseinit.plugins.common.ephemeraldisk.EphemeralDiskPlugin"
+        - "cloudbaseinit.plugins.common.mtu.MTUPlugin"
+        - "cloudbaseinit.plugins.common.sethostname.SetHostNamePlugin"
+        - "cloudbaseinit.plugins.common.sshpublickeys.SetUserSSHPublicKeysPlugin"
+        - "cloudbaseinit.plugins.common.userdata.UserDataPlugin"
+        - "cloudbaseinit.plugins.common.localscripts.LocalScriptsPlugin"
+        - "cloudbaseinit.plugins.windows.createuser.CreateUserPlugin"
+        - "cloudbaseinit.plugins.windows.extendvolumes.ExtendVolumesPlugin"
+      'c:/program files/Cloudbase Solutions/Cloudbase-init/conf/cloudbase-init-unattend.conf': 
+        exists: true
+        filetype: file
+        contains:
+        - "metadata_services=cloudbaseinit.metadata.services.base.EmptyMetadataService"

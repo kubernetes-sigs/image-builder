@@ -16,15 +16,15 @@ Complete the `packer/nutanix/nutanix.json` configuration file with credentials a
 This file must have the following format:
 ```
 {
-    "nutanix_cluster_name": "Name of PE Cluster",
-    "source_image_name": "Name of Source Image/ISO",
-    "image_name": "Name of Destination Image",
-    "nutanix_subnet_name": "Name of Subnet",
     "nutanix_endpoint": "Prism Central IP / FQDN",
-    "nutanix_insecure": "false",
     "nutanix_port": "9440",
+    "nutanix_insecure": "false",
     "nutanix_username": "PrismCentral_Username",
     "nutanix_password": "PrismCentral_Password",
+    "nutanix_cluster_name": "Name of PE Cluster",
+    "nutanix_subnet_name": "Name of Subnet",
+    "force_deregister": "true",
+    "image_name": "Name of Destination Image"
 }
 ```
 
@@ -36,11 +36,11 @@ For more details refer to packer-plugin-nutanix Documentation.
 
 If you prefer to use a different configuration file, you can create it with the same format and export `PACKER_VAR_FILES` environment variable containing the full path to it.
 ## Run the Make target to generate Nutanix images.
-From `images/capi` directory, run `make build-nutanix-ubuntu-<version>` command depending on which ubuntu version you want to build the image for.
+From `images/capi` directory, run `make build-nutanix-<os>-<version>` command depending on which os and version you want to build the image for.
 
-For instance, to build an image for `ubuntu 20-04`, run
+For example, to build an image for `Ubuntu 22.04`, run
 ```bash
-$ make build-nutanix-ubuntu-2004
+$ make build-nutanix-ubuntu-2204
 ```
 
 To build all Nutanix ubuntu images, run
@@ -51,8 +51,13 @@ make build-nutanix-all
 
 ## Configuration
 
-The `nutanix` sub-directory inside `images/capi/packer` stores JSON configuration files for Ubuntu OS including necessary cloud-init.
+The `nutanix` sub-directory inside `images/capi/packer` stores JSON configuration files for each OS including necessary config.
 
-| File | Description
-| -------- | --------
-| `ubuntu-2004.json`     | Settings for Ubuntu 20-04 image     |
+| File                | Description                                   |
+|---------------------|-----------------------------------------------|
+| `ubuntu-2004.json`  | Settings for Ubuntu 20.04 image               |
+| `ubuntu-2204.json`  | Settings for Ubuntu 22.04 image               |
+| `rockylinux-8.json` | Settings for Rocky Linux 8 image (UEFI)       |
+| `rockylinux-9.json` | Settings for Rocky Linux 9 image              |
+| `flatcar.json`      | Settings for Flatcar Linux image (beta)       |
+| `windows-2022.json` | Settings for Windows Server 2022 image (beta) |
