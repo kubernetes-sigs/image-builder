@@ -71,6 +71,10 @@ aliases:
     - randomvariable
     - srm09
     - yastij
+  cluster-api-nutanix-maintainers:
+    - tuxtof
+  cluster-api-nutanix-reviewers:
+    - tuxtof
   kops-maintainers:
     - hakman
     - justinsb

@@ -62,7 +62,7 @@
 - name: Set hostname
   hostname:
     name: localhost.local
-  when: ansible_os_family != "VMware Photon OS" and ansible_os_family != "Flatcar"
+  when: ansible_os_family != "VMware Photon OS" and ansible_os_family != "Flatcar" and packer_build_name != "nutanix"
 
 - name: Reset hosts file
   copy:

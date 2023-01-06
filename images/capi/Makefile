@@ -336,7 +336,7 @@ VBOX_BUILD_NAMES			?=      vbox-windows-2019
 
 POWERVS_BUILD_NAMES         ?= powervs-centos-8
 
-NUTANIX_BUILD_NAMES ?= nutanix-ubuntu-2004
+NUTANIX_BUILD_NAMES ?= nutanix-ubuntu-2004 nutanix-ubuntu-2204 nutanix-rockylinux-8 nutanix-rockylinux-9 nutanix-flatcar nutanix-windows-2022
 
 ## --------------------------------------
 ## Dynamic build targets
@@ -518,12 +518,12 @@ $(POWERVS_VALIDATE_TARGETS): deps-powervs
 .PHONY: $(NUTANIX_BUILD_TARGETS)
 $(NUTANIX_BUILD_TARGETS): deps-nutanix
 	packer init packer/nutanix/config.pkr.hcl
-	packer build $(PACKER_NODE_FLAGS) -var-file="packer/nutanix/nutanix.json" -var-file="$(abspath packer/nutanix/$(subst build-nutanix-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/nutanix/packer.json
+	packer build $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="packer/nutanix/nutanix.json" -var-file="$(abspath packer/nutanix/$(subst build-nutanix-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/nutanix/packer$(if $(findstring windows,$@),-windows,).json
 
 .PHONY: $(NUTANIX_VALIDATE_TARGETS)
 $(NUTANIX_VALIDATE_TARGETS): deps-nutanix
 	packer init packer/nutanix/config.pkr.hcl
-	packer validate $(PACKER_NODE_FLAGS) -var-file="packer/nutanix/nutanix.json" -var-file="$(abspath packer/nutanix/$(subst validate-nutanix-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/nutanix/packer.json
+	packer validate $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="packer/nutanix/nutanix.json" -var-file="$(abspath packer/nutanix/$(subst validate-nutanix-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/nutanix/packer$(if $(findstring windows,$@),-windows,).json
 
 ## --------------------------------------
 ## Dynamic clean targets
@@ -687,6 +687,11 @@ build-vbox-windows-2019: ## Builds for Windows Server 2019 Node VirtualBox w loc
 build-vbox-all: $(VBOX_BUILD_TARGETS) ## Builds all Qemu images
 
 build-nutanix-ubuntu-2004: ## Builds the Nutanix ubuntu-2004 image
+build-nutanix-ubuntu-2204: ## Builds the Nutanix ubuntu-2204 image
+build-nutanix-rockylinux-8: ## Builds the Nutanix Rocky Linux 8 image
+build-nutanix-rockylinux-9: ## Builds the Nutanix Rocky Linux 9 image
+build-nutanix-flatcar: ## Builds the Nutanix Flatcar image
+build-nutanix-windows-2022: ## Builds the Nutanix Windows 2022 image
 build-nutanix-all: $(NUTANIX_BUILD_TARGETS) ## Builds all Nutanix image
 
 ## --------------------------------------
@@ -796,8 +801,13 @@ validate-vbox-all: $(VBOX_VALIDATE_TARGETS) ## Validates all RAW Packer config
 validate-powervs-centos-8: ## Validates the PowerVS CentOS image packer config
 validate-powervs-all: $(POWERVS_VALIDATE_TARGETS) ## Validates all PowerVS Packer config
 
-validate-nutanix-ubuntu-2004: ## Validates Ubuntu 20.04 Nutanix Snapshot Packer config
-validate-nutanix-all: $(NUTANIX_VALIDATE_TARGETS) ## Validates all Nutanix Snapshot Packer config
+validate-nutanix-ubuntu-2004: ## Validates Ubuntu 20.04 Nutanix Packer config
+validate-nutanix-ubuntu-2204: ## Validates Ubuntu 22.04 Nutanix Packer config
+validate-nutanix-rockylinux-8: ## Validates Rocky Linux 8 Nutanix Packer config
+validate-nutanix-rockylinux-9: ## Validates the Nutanix Rocky Linux 9 Nutanix Packer config
+validate-nutanix-flatcar: ## Validates the Nutanix Flatcar Nutanix Packer config
+validate-nutanix-windows-2022: ## Validates Windows Server 2022 Nutanix Packer config
+validate-nutanix-all: $(NUTANIX_VALIDATE_TARGETS) ## Validates all Nutanix Packer config
 
 validate-all: validate-ami-all \
 	validate-azure-all \

@@ -1,0 +1,149 @@
+{
+  "builders": [
+    {
+      "boot_type": "{{user `boot_type`}}",
+      "cd_files": [
+        "./packer/nutanix/windows/{{user `build_name`}}/autounattend.xml",
+        "./packer/nutanix/windows/disable-network-discovery.cmd",
+        "./packer/nutanix/windows/sysprep.ps1"
+      ],
+      "cd_label": "OEMDRV",
+      "cluster_name": "{{user `nutanix_cluster_name`}}",
+      "communicator": "winrm",
+      "force_deregister": "{{user `force_deregister`}}",
+      "image_description": "kube image-builder packer",
+      "image_name": "{{user `image_name`}}",
+      "memory_mb": "{{user `memory`}}",
+      "nutanix_endpoint": "{{user `nutanix_endpoint`}}",
+      "nutanix_insecure": "{{user `nutanix_insecure`}}",
+      "nutanix_password": "{{user `nutanix_password`}}",
+      "nutanix_port": "{{user `nutanix_port`}}",
+      "nutanix_username": "{{user `nutanix_username`}}",
+      "os_type": "{{user `guest_os_type`}}",
+      "shutdown_command": "powershell F:/sysprep.ps1",
+      "shutdown_timeout": "1h",
+      "type": "nutanix",
+      "vm_disks": [
+        {
+          "image_type": "ISO_IMAGE",
+          "source_image_name": "{{user `source_image_name`}}"
+        },
+        {
+          "image_type": "ISO_IMAGE",
+          "source_image_name": "{{user `virtio_image_name`}}"
+        },
+        {
+          "disk_size_gb": "{{user `disk_size_gb`}}",
+          "image_type": "DISK"
+        }
+      ],
+      "vm_name": "{{user `build_name`}}-kube-{{user `kubernetes_semver`}}",
+      "vm_nics": {
+        "subnet_name": "{{user `nutanix_subnet_name`}}"
+      },
+      "winrm_insecure": true,
+      "winrm_password": "S3cr3t0!",
+      "winrm_port": 5986,
+      "winrm_timeout": "4h",
+      "winrm_use_ssl": true,
+      "winrm_username": "Administrator"
+    }
+  ],
+  "provisioners": [
+    {
+      "extra_arguments": [
+        "-e",
+        "ansible_winrm_server_cert_validation=ignore",
+        "--extra-vars",
+        "{{user `ansible_common_vars`}}",
+        "--extra-vars",
+        "{{user `ansible_extra_vars`}}",
+        "--extra-vars",
+        "{{user `ansible_user_vars`}}"
+      ],
+      "playbook_file": "ansible/windows/node_windows.yml",
+      "type": "ansible",
+      "use_proxy": false,
+      "user": "Administrator"
+    },
+    {
+      "restart_timeout": "10m",
+      "type": "windows-restart"
+    },
+    {
+      "arch": "{{user `goss_arch`}}",
+      "download_path": "{{user `goss_download_path`}}",
+      "format": "{{user `goss_format`}}",
+      "format_options": "{{user `goss_format_options`}}",
+      "goss_file": "{{user `goss_entry_file`}}",
+      "inspect": "{{user `goss_inspect_mode`}}",
+      "remote_folder": "{{user `goss_remote_folder`}}",
+      "remote_path": "{{user `goss_remote_path`}}",
+      "skip_install": "{{user `goss_skip_install`}}",
+      "target_os": "Windows",
+      "tests": [
+        "{{user `goss_tests_dir`}}"
+      ],
+      "type": "goss",
+      "url": "{{user `goss_url`}}",
+      "use_sudo": false,
+      "vars_env": {
+        "GOSS_MAX_CONCURRENT": "1",
+        "GOSS_USE_ALPHA": "1"
+      },
+      "vars_file": "{{user `goss_vars_file`}}",
+      "vars_inline": {
+        "OS": "{{user `distro_name` | lower}}",
+        "PROVIDER": "nutanix",
+        "containerd_version": "{{user `containerd_version`}}",
+        "distribution_version": "{{user `distro_version`}}",
+        "docker_ee_version": "{{user `docker_ee_version`}}",
+        "kubernetes_version": "{{user `kubernetes_semver`}}",
+        "pause_image": "{{user `pause_image`}}",
+        "runtime": "{{user `runtime`}}",
+        "ssh_source_url": "{{user `ssh_source_url`}}"
+      },
+      "version": "{{user `goss_version`}}"
+    },
+    {
+      "inline": [
+        "rm -Force -Recurse C:\\var\\log\\kubelet\\*"
+      ],
+      "type": "powershell"
+    }
+  ],
+  "variables": {
+    "ansible_common_vars": "",
+    "ansible_extra_vars": "",
+    "ansible_user_vars": "",
+    "build_timestamp": "{{timestamp}}",
+    "cloudbase_init_url": "https://github.com/cloudbase/cloudbase-init/releases/download/{{user `cloudbase_init_version`}}/CloudbaseInitSetup_{{user `cloudbase_init_version` | replace_all `.` `_` }}_x64.msi",
+    "cloudbase_metadata_services": "cloudbaseinit.metadata.services.configdrive.ConfigDriveService",
+    "cloudbase_metadata_services_unattend": "cloudbaseinit.metadata.services.base.EmptyMetadataService",
+    "cloudbase_plugins": "cloudbaseinit.plugins.common.ephemeraldisk.EphemeralDiskPlugin, cloudbaseinit.plugins.common.mtu.MTUPlugin, cloudbaseinit.plugins.common.sethostname.SetHostNamePlugin, cloudbaseinit.plugins.common.sshpublickeys.SetUserSSHPublicKeysPlugin, cloudbaseinit.plugins.common.userdata.UserDataPlugin, cloudbaseinit.plugins.common.localscripts.LocalScriptsPlugin, cloudbaseinit.plugins.windows.createuser.CreateUserPlugin, cloudbaseinit.plugins.windows.extendvolumes.ExtendVolumesPlugin",
+    "cloudbase_plugins_unattend": "cloudbaseinit.plugins.common.mtu.MTUPlugin",
+    "containerd_sha256": null,
+    "containerd_url": "",
+    "containerd_version": null,
+    "cpus": "2",
+    "crictl_url": "",
+    "crictl_version": null,
+    "disk_size_gb": "40",
+    "existing_ansible_ssh_args": "{{env `ANSIBLE_SSH_ARGS`}}",
+    "image_name": "{{user `build_name`}}-kube-{{user `kubernetes_semver`}}",
+    "kubernetes_base_url": "https://kubernetesreleases.blob.core.windows.net/kubernetes/{{user `kubernetes_semver`}}/binaries/node/windows/{{user `kubernetes_goarch`}}",
+    "kubernetes_container_registry": null,
+    "kubernetes_http_package_url": "",
+    "kubernetes_http_source": null,
+    "kubernetes_install_path": "c:\\k",
+    "kubernetes_load_additional_imgs": null,
+    "kubernetes_semver": null,
+    "kubernetes_series": null,
+    "kubernetes_source_type": null,
+    "kubernetes_typed_version": "kube-{{user `kubernetes_semver`}}",
+    "machine_id_mode": "444",
+    "memory": "4096",
+    "scp_extra_vars": "",
+    "wins_url": null
+  }
+}

@@ -1,12 +1,11 @@
 {
-  "force_deregister": "false",
-  "image_name": "",
+  "force_deregister": "true",
   "nutanix_cluster_name": "",
   "nutanix_endpoint": "",
-  "nutanix_insecure": "",
+  "nutanix_insecure": "false",
   "nutanix_password": "",
   "nutanix_port": "9440",
   "nutanix_subnet_name": "",
-  "nutanix_username": "pc_user",
-  "source_image_name": ""
+  "nutanix_username": "admin",
+  "scp_extra_vars": ""
 }

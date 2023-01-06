@@ -1,0 +1,20 @@
+{
+  "ansible_extra_vars": "ansible_python_interpreter=/opt/bin/python3",
+  "build_name": "flatcar-{{env `FLATCAR_CHANNEL`}}-{{env `FLATCAR_VERSION`}}",
+  "channel_name": "{{env `FLATCAR_CHANNEL`}}",
+  "crictl_source_type": "http",
+  "distribution": "flatcar",
+  "distribution_release": "Core",
+  "distribution_version": "{{env `FLATCAR_CHANNEL`}}",
+  "distro_name": "flatcar",
+  "guest_os_type": "Linux",
+  "image_url": "flatcar_production_openstack_image.img",
+  "kubernetes_cni_source_type": "http",
+  "kubernetes_source_type": "http",
+  "python_path": "/opt/bin/builder-env/site-packages",
+  "shutdown_command": "shutdown -P now",
+  "systemd_prefix": "/etc/systemd",
+  "sysusr_prefix": "/opt",
+  "sysusrlocal_prefix": "/opt",
+  "user_data": "ewogICAgImlnbml0aW9uIjogewogICAgICAgICJjb25maWciOiB7fSwKICAgICAgICAic2VjdXJpdHkiOiB7CiAgICAgICAgICAgICJ0bHMiOiB7fQogICAgICAgIH0sCiAgICAgICAgInRpbWVvdXRzIjoge30sCiAgICAgICAgInZlcnNpb24iOiAiMi4zLjAiCiAgICB9LAogICAgIm5ldHdvcmtkIjoge30sCiAgICAicGFzc3dkIjogewogICAgICAgICJ1c2VycyI6IFsKICAgICAgICAgICAgewogICAgICAgICAgICAgICAgImdyb3VwcyI6IFsKICAgICAgICAgICAgICAgICAgICAid2hlZWwiLAogICAgICAgICAgICAgICAgICAgICJzdWRvIiwKICAgICAgICAgICAgICAgICAgICAiZG9ja2VyIgogICAgICAgICAgICAgICAgXSwKICAgICAgICAgICAgICAgICJuYW1lIjogImJ1aWxkZXIiLAogICAgICAgICAgICAgICAgInBhc3N3b3JkSGFzaCI6ICIkNSQydU9Kc3M1ekpOalFZJHpYSVc3VFNxcUROTXZEbXFseUVybWQveE5UaGNDT1ZwRjZFUTZvR2JmaDUiCiAgICAgICAgICAgIH0KICAgICAgICBdCiAgICB9LAogICAgInN0b3JhZ2UiOiB7fSwKICAgICJzeXN0ZW1kIjogewogICAgICAgICJ1bml0cyI6IFsKICAgICAgICAgICAgewogICAgICAgICAgICAgICAgIm5hbWUiOiAiZG9ja2VyLnNlcnZpY2UiCiAgICAgICAgICAgIH0sCiAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgICJuYW1lIjogImZsYXRjYXItb3BlbnN0YWNrLWhvc3RuYW1lLnNlcnZpY2UiCiAgICAgICAgICAgIH0sCiAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgICJtYXNrIjogdHJ1ZSwKICAgICAgICAgICAgICAgICJuYW1lIjogInVwZGF0ZS1lbmdpbmUuc2VydmljZSIKICAgICAgICAgICAgfSwKICAgICAgICAgICAgewogICAgICAgICAgICAgICAgIm1hc2siOiB0cnVlLAogICAgICAgICAgICAgICAgIm5hbWUiOiAibG9ja3NtaXRoZC5zZXJ2aWNlIgogICAgICAgICAgICB9CiAgICAgICAgXQogICAgfQp9"
+}

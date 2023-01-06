@@ -1,0 +1,15 @@
+{
+  "boot_type": "uefi",
+  "build_name": "rockylinux-8",
+  "distribution": "rockylinux",
+  "distribution_release": "Core",
+  "distribution_version": "8",
+  "distro_name": "rockylinux",
+  "epel_rpm_gpg_key": "https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-8",
+  "extra_rpms": "python3",
+  "guest_os_type": "Linux",
+  "image_url": "https://dl.rockylinux.org/pub/rocky/8/images/x86_64/Rocky-8-GenericCloud-Base-8.7-20221130.0.x86_64.qcow2",
+  "redhat_epel_rpm": "https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm",
+  "shutdown_command": "shutdown -P now",
+  "user_data": "I2Nsb3VkLWNvbmZpZwp1c2VyczoKICAtIG5hbWU6IGJ1aWxkZXIKICAgIHN1ZG86IFsnQUxMPShBTEwpIE5PUEFTU1dEOkFMTCddCmNocGFzc3dkOgogIGxpc3Q6IHwKICAgIGJ1aWxkZXI6YnVpbGRlcgogIGV4cGlyZTogRmFsc2UKc3NoX3B3YXV0aDogVHJ1ZQ=="
+}

@@ -1,8 +1,11 @@
 {
   "builders": [
     {
+      "boot_type": "{{user `boot_type`}}",
       "cluster_name": "{{user `nutanix_cluster_name`}}",
+      "cpu": "{{user `cpus`}}",
       "force_deregister": "{{user `force_deregister`}}",
+      "image_description": "kube image-builder packer",
       "image_name": "{{user `image_name`}}",
       "memory_mb": "{{user `memory`}}",
       "nutanix_endpoint": "{{user `nutanix_endpoint`}}",
@@ -21,7 +24,7 @@
       "vm_disks": {
         "disk_size_gb": "{{user `disk_size_gb`}}",
         "image_type": "DISK_IMAGE",
-        "source_image_name": "{{user `source_image_name`}}"
+        "source_image_uri": "{{user `image_url`}}"
       },
       "vm_name": "{{user `build_name`}}-kube-{{user `kubernetes_semver`}}",
       "vm_nics": {
@@ -44,6 +47,14 @@
   ],
   "provisioners": [
     {
+      "environment_vars": [
+        "BUILD_NAME={{user `build_name`}}"
+      ],
+      "execute_command": "BUILD_NAME={{user `build_name`}}; if [[ \"${BUILD_NAME}\" == *\"flatcar\"* ]]; then sudo {{.Vars}} -S -E bash '{{.Path}}'; fi",
+      "script": "./packer/files/flatcar/scripts/bootstrap-flatcar.sh",
+      "type": "shell"
+    },
+    {
       "ansible_env_vars": [
         "ANSIBLE_SSH_ARGS='{{user `existing_ansible_ssh_args`}} -o IdentitiesOnly=yes'"
       ],
@@ -53,7 +64,8 @@
         "--extra-vars",
         "{{user `ansible_extra_vars`}}",
         "--extra-vars",
-        "{{user `ansible_user_vars`}}"
+        "{{user `ansible_user_vars`}}",
+        "--scp-extra-args={{user `scp_extra_vars`}}"
       ],
       "playbook_file": "./ansible/node.yml",
       "type": "ansible",
@@ -75,7 +87,7 @@
       "vars_inline": {
         "ARCH": "amd64",
         "OS": "{{user `distro_name` | lower}}",
-        "PROVIDER": "qemu",
+        "PROVIDER": "nutanix",
         "containerd_version": "{{user `containerd_version`}}",
         "kubernetes_cni_deb_version": "{{ user `kubernetes_cni_deb_version` }}",
         "kubernetes_cni_rpm_version": "{{ split (user `kubernetes_cni_rpm_version`) \"-\" 0 }}",
@@ -91,7 +103,7 @@
   ],
   "variables": {
     "ansible_common_vars": "",
-    "ansible_extra_vars": "ansible_python_interpreter=/usr/bin/python3",
+    "ansible_extra_vars": "",
     "ansible_user_vars": "",
     "build_timestamp": "{{timestamp}}",
     "containerd_sha256": null,
@@ -100,8 +112,9 @@
     "cpus": "1",
     "crictl_url": "https://github.com/kubernetes-sigs/cri-tools/releases/download/v{{user `crictl_version`}}/crictl-v{{user `crictl_version`}}-linux-amd64.tar.gz",
     "crictl_version": null,
-    "disk_size_gb": "40",
+    "disk_size_gb": "10",
     "existing_ansible_ssh_args": "{{env `ANSIBLE_SSH_ARGS`}}",
+    "image_name": "{{user `build_name`}}-kube-{{user `kubernetes_semver`}}",
     "kubernetes_cni_deb_version": null,
     "kubernetes_cni_http_source": null,
     "kubernetes_cni_semver": null,
@@ -122,6 +135,7 @@
     "machine_id_mode": "444",
     "memory": "2048",
     "python_path": "",
+    "scp_extra_vars": "",
     "ssh_password": "builder",
     "ssh_username": "builder"
   }
