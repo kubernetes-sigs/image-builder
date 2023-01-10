@@ -22,8 +22,6 @@ set -o pipefail
 
 source hack/utils.sh
 
-_version="2.28.1"
-
 # Change directories to the parent directory of the one in which this
 # script is located.
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
@@ -35,5 +33,5 @@ export PIP_DISABLE_PIP_VERSION_CHECK=1 PIP_ROOT_USER_ACTION=ignore
 
 ensure_py3
 pip install -U pip setuptools
-pip3 install --user "azure-cli==${_version}"
+pip3 install --user azure-cli
 ensure_py3_bin az azure-cli
