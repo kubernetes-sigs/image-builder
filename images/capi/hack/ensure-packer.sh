@@ -20,7 +20,7 @@ set -o pipefail
 
 [[ -n ${DEBUG:-} ]] && set -o xtrace
 
-_version="1.8.3"
+_version="1.8.5"
 
 # Change directories to the parent directory of the one in which this
 # script is located.
