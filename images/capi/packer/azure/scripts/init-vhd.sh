@@ -21,7 +21,10 @@ get_random_region() {
   local REGIONS=("canadacentral" "eastus" "eastus2" "northeurope" "uksouth" "westeurope" "westus2" "westus3")
   echo "${REGIONS[${RANDOM} % ${#REGIONS[@]}]}"
 }
-export AZURE_LOCATION="$(get_random_region)"
+RANDOMIZE_STORAGE_ACCOUNT="${RANDOMIZE_STORAGE_ACCOUNT:-"false"}"
+if [ "$RANDOMIZE_STORAGE_ACCOUNT" == "true" ]; then
+  export AZURE_LOCATION="$(get_random_region)"
+fi
 export STORAGE_ACCOUNT_NAME="${STORAGE_ACCOUNT_NAME:-capi${CREATE_TIME}${RANDOM_SUFFIX}}"
 az storage account check-name --name ${STORAGE_ACCOUNT_NAME}
 az storage account create -n ${STORAGE_ACCOUNT_NAME} -g ${RESOURCE_GROUP_NAME} -l ${AZURE_LOCATION} --allow-blob-public-access false
