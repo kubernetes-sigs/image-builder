@@ -18,6 +18,7 @@
       "source_image_family": "{{ user `source_image_family` }}",
       "ssh_username": "ubuntu",
       "type": "googlecompute",
+      "use_internal_ip": "{{ user `use_internal_ip`}}",
       "zone": "{{ user `zone` }}"
     }
   ],
@@ -119,6 +120,7 @@
     "project_id": "{{env `GCP_PROJECT_ID`}}",
     "service_account_email": "",
     "source_image_family": "{{user `build_name`}}-lts",
+    "use_internal_ip": "false",
     "zone": null
   }
 }
