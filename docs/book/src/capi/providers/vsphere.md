@@ -75,15 +75,16 @@ IB_OVFTOOL=1 IB_OVFTOOL_ARGS="--allowExtraConfig" make build-node-ova-<hyperviso
 
 In addition to the configuration found in `images/capi/packer/config`, the `ova` directory includes several JSON files that define the configuration for the images:
 
-| File               | Description                                                    |
-| ------------------ | -------------------------------------------------------------- |
-| `centos-7.json`    | The settings for the CentOS 7 image                            |
-| `flatcar.json`     | The settings for the Flatcar image                             |
-| `photon-3.json`    | The settings for the Photon 3 image                            |
-| `rhel-7.json`      | The settings for the RHEL 7 image                              |
-| `ubuntu-1804.json` | The settings for the Ubuntu 18.04 image                        |
-| `ubuntu-2004.json` | The settings for the Ubuntu 20.04 image                        |
-| `vsphere.json`     | Additional settings needed when building on a remote vSphere   |
+| File               | Description                                                  |
+|--------------------|--------------------------------------------------------------|
+| `centos-7.json`    | The settings for the CentOS 7 image                          |
+| `flatcar.json`     | The settings for the Flatcar image                           |
+| `photon-3.json`    | The settings for the Photon 3 image                          |
+| `photon-4.json`    | The settings for the Photon 4 image                          |
+| `rhel-7.json`      | The settings for the RHEL 7 image                            |
+| `ubuntu-1804.json` | The settings for the Ubuntu 18.04 image                      |
+| `ubuntu-2004.json` | The settings for the Ubuntu 20.04 image                      |
+| `vsphere.json`     | Additional settings needed when building on a remote vSphere |
 
 ### Photon specific options
 

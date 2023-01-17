@@ -27,7 +27,12 @@ dependencies:
 
   - role: setup
     vars:
-      rpms: "{{ ( common_photon_rpms + lookup('vars', 'common_' + build_target + '_photon_rpms') ) if ansible_os_family == 'VMware Photon OS' else ( ( common_rpms + rh7_rpms + lookup('vars', 'common_' + build_target + '_rpms') ) if (ansible_os_family == 'RedHat' and ansible_distribution_major_version == '7') else ( common_rpms + rh8_rpms + lookup('vars', 'common_' + build_target + '_rpms') ) ) }}"
+      rpms: "{{ ( common_photon_rpms + photon_3_rpms + lookup('vars', 'common_' + build_target + '_photon_rpms') ) if (ansible_os_family == 'VMware Photon OS' and ansible_distribution_major_version == '3') else (common_photon_rpms + photon_4_rpms + lookup('vars', 'common_' + build_target + '_photon_rpms')) }}"
+    when: ansible_distribution == "VMware Photon OS"
+
+  - role: setup
+    vars:
+      rpms: "{{ ( ( common_rpms + rh7_rpms + lookup('vars', 'common_' + build_target + '_rpms') ) if (ansible_os_family == 'RedHat' and ansible_distribution_major_version == '7') else ( common_rpms + rh8_rpms + lookup('vars', 'common_' + build_target + '_rpms') ) ) }}"
       debs: "{{ common_debs +  lookup('vars', 'common_' + build_target + '_debs') }}"
-    when: ansible_distribution != "Amazon" and not (packer_builder_type == "oracle-oci" and ansible_architecture == "aarch64") and
+    when: ansible_distribution != "VMware Photon OS" and ansible_distribution != "Amazon" and not (packer_builder_type == "oracle-oci" and ansible_architecture == "aarch64") and
       not packer_builder_type is search('qemu')

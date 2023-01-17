@@ -58,16 +58,21 @@ common_photon_rpms: &common_photon_rpms
   chrony:
   distrib-compat:
   ebtables:
-  jq:
   net-tools:
   openssl-c_rehash:
-  python-netifaces:
   python3-pip:
-  python-requests:
   rng-tools:
   socat:
   tar:
   unzip:
+
+photon_3_rpms: &photon_3_rpms
+  python-netifaces:
+  python-requests:
+  jq:
+
+photon_4_rpms: &photon_4_rpms
+  jq:
 
 arch: "amd64"
 containerd_version: ""
@@ -191,6 +196,13 @@ photon:
       cloud-init:
       cloud-utils:
       python3-netifaces:
+    os_version:
+    - distro_version: "3"
+      package:
+        <<: *photon_3_rpms
+    - distro_version: "4"
+      package:
+        <<: *photon_4_rpms
 rockylinux:
   common-package: *common_rpms
   amazon:

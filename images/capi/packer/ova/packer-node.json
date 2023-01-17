@@ -364,11 +364,11 @@
     },
     {
       "environment_vars": [
-        "BUILD_NAME={{user `build_name`}}"
+        "DISTRO_NAME={{user `distro_name`}}"
       ],
       "expect_disconnect": true,
       "inline": [
-        "if [ $BUILD_NAME != \"photon-3\" ]; then exit 0; fi",
+        "if [ $DISTRO_NAME != \"photon\" ]; then exit 0; fi",
         "sudo reboot now"
       ],
       "type": "shell"
