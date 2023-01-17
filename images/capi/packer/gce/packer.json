@@ -13,12 +13,12 @@
       },
       "machine_type": "{{ user `machine_type` }}",
       "name": "{{user `build_name`}}",
-      "use_internal_ip": "{{ user `use_internal_ip`}}",
       "project_id": "{{ user `project_id` }}",
       "service_account_email": "{{ user `service_account_email` }}",
       "source_image_family": "{{ user `source_image_family` }}",
       "ssh_username": "ubuntu",
       "type": "googlecompute",
+      "use_internal_ip": "{{ user `use_internal_ip`}}",
       "zone": "{{ user `zone` }}"
     }
   ],
@@ -117,10 +117,10 @@
     "kubernetes_series": null,
     "kubernetes_source_type": null,
     "machine_type": "n1-standard-1",
-    "use_internal_ip": "false",
     "project_id": "{{env `GCP_PROJECT_ID`}}",
     "service_account_email": "",
     "source_image_family": "{{user `build_name`}}-lts",
+    "use_internal_ip": "false",
     "zone": null
   }
 }
