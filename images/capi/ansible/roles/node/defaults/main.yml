@@ -67,18 +67,25 @@ common_photon_rpms:
 - dbus-python3
 - distrib-compat
 - ebtables
-- jq
 - net-tools
 - openssl-c_rehash
 - python3-pygobject
-- python-netifaces
 - python3-pip
-- python-requests
 - rng-tools
 - socat
 - tar
 - unzip
 - curl
+
+photon_3_rpms:
+- python-netifaces
+- python-requests
+- jq
+
+# Creating photon_4_rpms for adding future packages if needed.
+# Since empty list errors out, jq is added.
+photon_4_rpms:
+- jq
 
 common_virt_rpms:
 - open-vm-tools

@@ -1,0 +1,16 @@
+{
+  "boot_command_prefix": "<esc><wait> vmlinuz initrd=initrd.img root/dev/ram0 loglevel=3 photon.media=cdrom ks=",
+  "boot_command_suffix": "/4/ks.json insecure_installation=1<enter><wait>",
+  "boot_media_path": "http://{{ .HTTPIP }}:{{ .HTTPPort }}",
+  "build_name": "photon-4",
+  "distro_arch": "amd64",
+  "distro_name": "photon",
+  "distro_version": "4",
+  "guest_os_type": "vmware-photon-64",
+  "iso_checksum": "4d5b9c6c59bbb7b6f501b7fa5e8af669332155ed",
+  "iso_checksum_type": "sha1",
+  "iso_url": "https://packages.vmware.com/photon/4.0/Rev2/iso/photon-minimal-4.0-c001795b8.iso",
+  "os_display_name": "VMware Photon OS 64-bit",
+  "shutdown_command": "shutdown now",
+  "vsphere_guest_os_type": "vmwarePhoton64Guest"
+}

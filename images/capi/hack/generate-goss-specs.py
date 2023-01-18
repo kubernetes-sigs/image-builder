@@ -145,6 +145,9 @@ def main():
             elif system == 'rhel':
                 runtimes = ["containerd"]
                 os_versions = ["7", "8"]
+            elif system == 'photon':
+                runtimes = ["containerd"]
+                os_versions = ["3", "4"]
             else: 
                 runtimes = ["containerd"]
                 os_versions = [""]
