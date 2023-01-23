@@ -252,6 +252,23 @@ rockylinux:
         running: true
 rhel:
   common-package: *common_rpms
+  amazon:
+    package:
+      amazon-ssm-agent:
+    os_version:
+      - distro_version: "8"
+        package:
+          <<: *rh8_rpms
+    command:
+      pip3 list --format=columns | grep 'awscli' | awk -F' ' '{print $1}':
+        exit-status: 0
+        stdout: [ "awscli" ]
+        stderr: [ ]
+        timeout: 0
+    service:
+      amazon-ssm-agent:
+        enabled: true
+        running: true
   ova:
     package:
       python2-pip:

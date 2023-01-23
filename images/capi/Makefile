@@ -311,7 +311,7 @@ NODE_OVA_VSPHERE_BUILD_NAMES		:=	$(addprefix node-ova-vsphere-,$(PLATFORMS_AND_V
 NODE_OVA_VSPHERE_BASE_BUILD_NAMES		:=	$(addprefix node-ova-vsphere-base-,$(PLATFORMS_AND_VERSIONS))
 NODE_OVA_VSPHERE_CLONE_BUILD_NAMES		:=	$(addprefix node-ova-vsphere-clone-,$(PLATFORMS_AND_VERSIONS))
 
-AMI_BUILD_NAMES			   ?= ami-centos-7 ami-ubuntu-1804 ami-ubuntu-2004 ami-ubuntu-2204 ami-amazon-2 ami-flatcar ami-windows-2019 ami-windows-2004 ami-rockylinux-8
+AMI_BUILD_NAMES			   ?= ami-centos-7 ami-ubuntu-1804 ami-ubuntu-2004 ami-ubuntu-2204 ami-amazon-2 ami-flatcar ami-windows-2019 ami-windows-2004 ami-rockylinux-8 ami-rhel-8
 GCE_BUILD_NAMES			   ?= gce-ubuntu-1804 gce-ubuntu-2004 gce-ubuntu-2204
 
 # Make needs these lists to be space delimited, no quotes
@@ -558,6 +558,7 @@ build-ami-ubuntu-1804: ## Builds Ubuntu 18.04 AMI
 build-ami-ubuntu-2004: ## Builds Ubuntu 20.04 AMI
 build-ami-ubuntu-2204: ## Builds Ubuntu 22.04 AMI
 build-ami-rockylinux-8: ## Builds RockyLinux 8 AMI
+build-ami-rhel-8: ## Builds RHEL-8 AMI
 build-ami-flatcar: ## Builds Flatcar
 build-ami-windows-2019: ## Build Windows Server 2019 AMI Packer config
 build-ami-windows-2004: ## Build Windows Server 2004 SAC AMI Packer config
@@ -707,6 +708,7 @@ build-nutanix-all: $(NUTANIX_BUILD_TARGETS) ## Builds all Nutanix image
 validate-ami-amazon-2: ## Validates Amazon-2 Linux AMI Packer config
 validate-ami-centos-7: ## Validates CentOS 7 AMI Packer config
 validate-ami-rockylinux-8: ## Validates RockyLinux 8 AMI Packer config
+validate-ami-rhel-8: ## Validates RHEL-8 AMI Packer config
 validate-ami-flatcar: ## Validates Flatcar AMI Packer config
 validate-ami-ubuntu-1804: ## Validates Ubuntu 18.04 AMI Packer config
 validate-ami-ubuntu-2004: ## Validates Ubuntu 20.04 AMI Packer config

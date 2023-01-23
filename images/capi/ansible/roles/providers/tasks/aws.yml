@@ -27,19 +27,8 @@
       - awscli
   when: ansible_distribution != "Amazon"
 
-- name: install aws agents RPM
-  package:
-    name: "{{ item }}"
-    state: present
-  with_items:
-    - "{{ amazon_ssm_agent_rpm }}"
-  when:
-    - ansible_os_family == "RedHat"
-    - ansible_distribution != "Amazon"
-    - ansible_distribution != "Rocky"
-
 # Remove after https://github.com/aws/amazon-ssm-agent/issues/235 is fixed.
-- name: install aws agents RPM on RockyLinux
+- name: install aws agents RPM on Redhat distributions
   package:
     name: "{{ item }}"
     state: present
@@ -47,7 +36,8 @@
   with_items:
     - "{{ amazon_ssm_agent_rpm }}"
   when:
-    - ansible_distribution == "Rocky"
+    - ansible_os_family == "RedHat"
+    - ansible_distribution != "Amazon"
 
 - name: install aws agents RPM
   package:

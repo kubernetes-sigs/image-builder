@@ -1,0 +1,15 @@
+{
+  "ami_filter_name": "RHEL-8.6.0_HVM-*",
+  "ami_filter_owners": "309956199498",
+  "build_name": "rhel-8",
+  "builder_instance_type": "m5.large",
+  "distribution": "rhel",
+  "distribution_release": "Enterprise",
+  "distribution_version": "8",
+  "epel_rpm_gpg_key": "https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-8",
+  "redhat_epel_rpm": "https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm",
+  "root_device_name": "/dev/sda1",
+  "source_ami": "",
+  "ssh_username": "ec2-user",
+  "volume_size": "10"
+}
