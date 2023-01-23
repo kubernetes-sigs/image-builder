@@ -49,6 +49,8 @@
 
 - name: Remove RHEL subscription
   block:
+    - name: enable repo mgmt with subscription-manager
+      command: subscription-manager config --rhsm.manage_repos=1
     - name: Remove subscriptions
       rhsm_repository:
         name: '*'
