@@ -269,6 +269,14 @@ rhel:
       amazon-ssm-agent:
         enabled: true
         running: true
+  azure:
+    package:
+      open-vm-tools:
+      azure-cli:
+    os_version:
+      - distro_version: "8"
+        package:
+          <<: *rh8_rpms
   ova:
     package:
       python2-pip:

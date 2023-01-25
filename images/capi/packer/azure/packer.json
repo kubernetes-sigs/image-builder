@@ -179,6 +179,7 @@
       "vars_inline": {
         "ARCH": "amd64",
         "OS": "{{user `distribution` | lower}}",
+        "OS_VERSION": "{{user `distribution_version` | lower}}",
         "PROVIDER": "azure",
         "containerd_version": "{{user `containerd_version`}}",
         "containerd_wasm_shims_runtimes": "{{user `containerd_wasm_shims_runtimes` }}",
