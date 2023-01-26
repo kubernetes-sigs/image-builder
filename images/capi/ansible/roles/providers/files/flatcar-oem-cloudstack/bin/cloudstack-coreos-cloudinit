@@ -1,0 +1,9 @@
+#!/bin/bash
+
+. /usr/share/oem/bin/cloudstack-dhcp
+
+DHCP_SERVER=$(get_dhcp_ip)
+USERDATA_URL="http://${DHCP_SERVER}/latest/user-data"
+
+block-until-url "${USERDATA_URL}"
+coreos-cloudinit --from-url="${USERDATA_URL}"

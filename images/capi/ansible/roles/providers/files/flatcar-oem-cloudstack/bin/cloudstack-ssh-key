@@ -1,0 +1,9 @@
+#!/bin/bash
+
+. /usr/share/oem/bin/cloudstack-dhcp
+
+DHCP_SERVER=$(get_dhcp_ip)
+KEY_URL="http://${DHCP_SERVER}/latest/meta-data/public-keys"
+
+block-until-url "${KEY_URL}"
+curl --fail -s "${KEY_URL}" | update-ssh-keys -a cloudstack

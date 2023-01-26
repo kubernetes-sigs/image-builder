@@ -24,6 +24,15 @@
     owner: root
     group: root
     mode: 0644
+  when: ansible_os_family != "Flatcar"
+
+# For Flatcar, copy the cloudstack support files into the oem partition
+- name: Copy Cloudstack support files into the oem partition
+  copy:
+    src: files/flatcar-oem-cloudstack/
+    dest: /usr/share/oem/
+    mode: preserve
+  when: ansible_os_family == "Flatcar"
 
 - name: Run dracut cmd to regenerate initramfs with all drivers - needed when converting to different hypervisor templates
   shell: dracut --force --no-hostonly

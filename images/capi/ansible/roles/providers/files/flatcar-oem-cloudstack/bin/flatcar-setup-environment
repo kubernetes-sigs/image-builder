@@ -1,0 +1,32 @@
+#!/bin/bash
+
+ENV=$1
+
+if [[ -z "$ENV" ]]; then
+    echo "usage: $0 /etc/environment" >&2
+    exit 1
+fi
+
+# Make sure that the file is writable
+touch $ENV
+if [[ $? -ne 0 ]]; then
+    echo "$0: unable to modify ${ENV}" >&2
+    exit 1
+fi
+
+sed -i -e '/^COREOS_PUBLIC_IPV4=/d' \
+    -e '/^COREOS_PRIVATE_IPV4=/d' \
+    "${ENV}"
+
+. /usr/share/oem/bin/cloudstack-dhcp
+
+DHCP_SERVER=$(get_dhcp_ip)
+METADATA_URL="http://${DHCP_SERVER}/latest/meta-data/"
+
+block-until-url "${METADATA_URL}"
+
+PUBLIC_IP=$(curl --fail -s "${METADATA_URL}public-ipv4")
+echo COREOS_PUBLIC_IPV4=${PUBLIC_IP} >> $ENV
+
+PRIVATE_IP=$(curl --fail -s "${METADATA_URL}local-ipv4")
+echo COREOS_PRIVATE_IPV4=${PRIVATE_IP} >> $ENV
