@@ -43,7 +43,10 @@ case ${SIG_TARGET} in
     create_image_definition ${SIG_TARGET} "22_04-lts" "V1" "Linux"
   ;;
   centos-7)
-    create_image_definition "centos-7.7" "centos-7.7" "V1" "Linux"
+    create_image_definition "centos-7" "centos-7" "V1" "Linux"
+  ;;
+  rhel-8)
+    create_image_definition "rhel-8" "rhel-8" "V1" "Linux"
   ;;
   windows-2019)
     create_image_definition "windows-2019-docker-ee" "win-2019-docker-ee" "V1" "Windows"
@@ -68,7 +71,7 @@ case ${SIG_TARGET} in
     create_image_definition ${SIG_TARGET} "22_04-lts-gen2" "V2" "Linux"
   ;;
   centos-7-gen2)
-    create_image_definition "centos-7.7-gen2" "centos-7.7-gen2" "V2" "Linux"
+    create_image_definition "centos-7-gen2" "centos-7-gen2" "V2" "Linux"
   ;;
   flatcar-gen2)
     SKU="flatcar-${FLATCAR_CHANNEL}-${FLATCAR_VERSION}-gen2"

@@ -57,7 +57,6 @@ package:
 {{end}}
 
 # Iterate thru different OS Versions like RHEL7/8, Photon 3/4(future) etc.
-{{ if eq .Vars.PROVIDER "ova"}}
 {{$distro_version := .Vars.OS_VERSION}}
 {{range $component := index .Vars .Vars.OS .Vars.PROVIDER "os_version"}}
 {{if eq $distro_version (index $component "distro_version")}}
@@ -68,7 +67,6 @@ package:
     {{$key}}: {{$val}}
   {{end}}
   {{end}}
-{{end}}
 {{end}}
 {{end}}
 {{end}}
