@@ -1,0 +1,7 @@
+{
+  "build_name": "windows-2022",
+  "operating_system": "Windows",
+  "operating_system_version": "Server 2022 Standard",
+  "runtime": "containerd",
+  "ssh_username": "opc"
+}

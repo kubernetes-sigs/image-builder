@@ -1,0 +1,148 @@
+{
+  "builders": [
+    {
+      "availability_domain": "{{user `availability_domain`}}",
+      "base_image_filter": {
+        "operating_system": "{{user `operating_system`}}",
+        "operating_system_version": "{{user `operating_system_version`}}"
+      },
+      "base_image_ocid": "{{user `base_image_ocid`}}",
+      "communicator": "winrm",
+      "compartment_ocid": "{{user `compartment_ocid`}}",
+      "image_name": "cluster-api-{{user `build_name`}}-{{user `kubernetes_semver`}}-{{user `build_timestamp`}}",
+      "shape": "{{user `shape`}}",
+      "shape_config": {
+        "ocpus": "{{user `ocpus`}}"
+      },
+      "subnet_ocid": "{{user `subnet_ocid`}}",
+      "tenancy_ocid": "{{user `tenancy_ocid`}}",
+      "type": "oracle-oci",
+      "user_data_file": "packer/oci/scripts/winrm_bootstrap.txt",
+      "user_ocid": "{{user `user_ocid`}}",
+      "winrm_insecure": true,
+      "winrm_password": "{{user `opc_user_password`}}",
+      "winrm_port": 5986,
+      "winrm_timeout": "10m",
+      "winrm_use_ntlm": true,
+      "winrm_use_ssl": true,
+      "winrm_username": "opc"
+    }
+  ],
+  "post-processors": [
+    {
+      "custom_data": {
+        "build_date": "{{isotime}}",
+        "build_name": "{{user `build_name`}}",
+        "build_timestamp": "{{user `build_timestamp`}}",
+        "build_type": "node",
+        "containerd_version": "{{user `containerd_version`}}",
+        "kubernetes_cni_semver": "{{user `kubernetes_cni_semver`}}",
+        "kubernetes_semver": "{{user `kubernetes_semver`}}",
+        "kubernetes_source_type": "{{user `kubernetes_source_type`}}",
+        "os_name": "{{user `distro_name`}}",
+        "resource_group_name": "{{user `resource_group_name`}}",
+        "storage_account_name": "{{user `storage_account_name`}}"
+      },
+      "output": "{{user `manifest_output`}}",
+      "strip_path": true,
+      "type": "manifest"
+    }
+  ],
+  "provisioners": [
+    {
+      "elevated_password": "{{.WinRMPassword}}",
+      "elevated_user": "opc",
+      "script": "ansible/windows/ansible_winrm.ps1",
+      "type": "powershell"
+    },
+    {
+      "extra_arguments": [
+        "-e",
+        "ansible_winrm_server_cert_validation=ignore ansible_winrm_operation_timeout_sec=120 ansible_winrm_read_timeout_sec=150",
+        "--extra-vars",
+        "{{user `ansible_common_vars`}}",
+        "--extra-vars",
+        "{{user `azure_extra_vars`}}",
+        "--extra-vars",
+        "{{user `ansible_extra_vars`}}",
+        "--extra-vars",
+        "{{user `ansible_user_vars`}}"
+      ],
+      "max_retries": 5,
+      "pause_before": "15s",
+      "playbook_file": "ansible/windows/node_windows.yml",
+      "type": "ansible",
+      "use_proxy": false,
+      "user": "opc"
+    },
+    {
+      "restart_timeout": "10m",
+      "type": "windows-restart"
+    },
+    {
+      "destination": "C:\\Users\\opc\\",
+      "source": "./packer/oci/scripts/sysprep.ps1",
+      "type": "file"
+    },
+    {
+      "destination": "C:\\Users\\opc\\",
+      "source": "./packer/oci/scripts/attach_secondary_vnic.ps1",
+      "type": "file"
+    },
+    {
+      "destination": "C:\\Windows\\Setup\\Scripts\\",
+      "source": "./packer/oci/scripts/enable_second_nic.ps1",
+      "type": "file"
+    },
+    {
+      "inline": [
+        "rm -Force -Recurse C:\\var\\log\\kubelet\\*"
+      ],
+      "type": "powershell"
+    },
+    {
+      "elevated_password": "{{.WinRMPassword}}",
+      "elevated_user": "opc",
+      "inline": [
+        "C:\\Users\\opc\\sysprep.ps1"
+      ],
+      "type": "powershell"
+    }
+  ],
+  "variables": {
+    "additional_debug_files": null,
+    "ansible_common_vars": "",
+    "ansible_extra_vars": "",
+    "ansible_user_vars": "",
+    "azure_extra_vars": "wire_server_users={{user `wire_server_users`}}",
+    "build_name": null,
+    "build_timestamp": "{{timestamp}}",
+    "cloudbase_init_url": "https://github.com/cloudbase/cloudbase-init/releases/download/{{user `cloudbase_init_version`}}/CloudbaseInitSetup_{{user `cloudbase_init_version` | replace_all `.` `_` }}_x64.msi",
+    "cloudbase_logging_serial_port": "COM1,9600,N,8",
+    "cloudbase_metadata_services": "cloudbaseinit.metadata.services.httpservice.HttpService",
+    "cloudbase_metadata_services_unattend": "cloudbaseinit.metadata.services.httpservice.HttpService",
+    "cloudbase_plugins": "cloudbaseinit.plugins.common.ephemeraldisk.EphemeralDiskPlugin, cloudbaseinit.plugins.common.mtu.MTUPlugin, cloudbaseinit.plugins.common.sethostname.SetHostNamePlugin",
+    "cloudbase_plugins_unattend": "cloudbaseinit.plugins.common.mtu.MTUPlugin",
+    "containerd_url": "",
+    "containerd_version": null,
+    "ib_version": "{{env `IB_VERSION`}}",
+    "image_version": "latest",
+    "kubernetes_base_url": "https://kubernetesreleases.blob.core.windows.net/kubernetes/{{user `kubernetes_semver`}}/binaries/node/windows/{{user `kubernetes_goarch`}}",
+    "manifest_output": "manifest.json",
+    "nssm_url": null,
+    "ocpus": "2",
+    "opc_user_password": "{{env `OPC_USER_PASSWORD`}}",
+    "prepull": null,
+    "private_virtual_network_with_public_ip": "",
+    "runtime": "containerd",
+    "shape": "VM.Standard.E4.Flex",
+    "virtual_network_name": "",
+    "virtual_network_resource_group_name": "",
+    "virtual_network_subnet_name": "",
+    "vm_size": "",
+    "windows_service_manager": null,
+    "windows_updates_kbs": null,
+    "wins_url": "",
+    "wire_server_users": ""
+  }
+}

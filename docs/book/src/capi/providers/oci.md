@@ -31,7 +31,8 @@ the different operating systems.
 | `ubuntu-1804.json` | The settings for the Ubuntu 18.04 image |
 | `ubuntu-2004.json` | The settings for the Ubuntu 20.04 image |
 | `ubuntu-2204.json` | The settings for the Ubuntu 22.04 image |
-
+| `windows-2019.json` | The settings for the Windows Server 2019 image |
+| `windows-2022.json` | The settings for the Windows Server 2022 image |
 
 #### Common options
 
@@ -42,6 +43,7 @@ list, and greater explanation can be found in the
 
 | Variable | Description | Default | Mandatory |
 |----------|-------------|---------|---------|
+| `base_image_ocid` | The OCID of an existing image to build upon. | | No |
 | `compartment_ocid` | The OCID of the compartment that the instance will run in. |  | Yes |
 | `subnet_ocid` |  The OCID of the subnet within which a new instance is launched and provisioned. |  | Yes |
 | `availability_domain` | The name of the Availability Domain within which a new instance is launched and provisioned. The names of the Availability Domains have a prefix that is specific to your tenancy. |  | Yes |
@@ -82,5 +84,40 @@ is defined in images/capi/packer/config/containerd.json.
   "crictl_url": "https://github.com/kubernetes-sigs/cri-tools/releases/download/v{{user `crictl_version`}}/crictl-v{{user `crictl_version`}}-linux-arm64.tar.gz",
   "kubernetes_rpm_repo": "https://packages.cloud.google.com/yum/repos/kubernetes-el7-aarch64",
   "containerd_sha256": "9ac616b5f23c1d10353bd45b26cb736efa75dfef31a2113baff2435dbc7becb8"
+}
+```
+
+### Building a Windows image
+
+> NOTE: In order to use Windows with CAPI a Baremetal instance is required. This means a Baremetal instance is required for building the image as well. The OCIDs for the 2019
+and 2022 Datacenter edition of Windows can be found in their respective documentation:
+>
+> - [Windows server 2019](https://docs.oracle.com/en-us/iaas/images/windows-server-2019-bm/)
+> - [Windows server 2022](https://docs.oracle.com/en-us/iaas/images/windows-server-2022-bm/)
+
+#### Windows environment variables
+
+| Variable | Description | Default | Mandatory |
+|----------|-------------|---------|---------|
+| `OPC_USER_PASSWORD` | The password to set the OPC user to when creating the image. This will be used for accessing instances using this image. |  | Yes |
+
+> NOTE: The `OPC_USER_PASSWORD` will be set in the `winrm_bootstrap.txt` file temporarily, while building the image.
+  This is required in order for winrm to access the instance building the image. Once the build process is complete
+  the password will be deleted along with the fil so the password isn't stored long term in a cleartext file.
+
+#### Build a Windows based image
+
+The following example json would use the [Windows Server 2019 Datacenter Edition BM E4 image in the us-ashburn-1 region](https://docs.oracle.com/en-us/iaas/images/image/4d56c93a-2165-49b0-9c6e-f9e9a9b05011/).
+
+```json
+{
+  "build_name": "windows",
+  "base_image_ocid": "<image_OCID>",
+  "ocpus": "128",
+  "shape": "BM.Standard.E4.128",
+  "region": "us-ashburn-1",
+  "compartment_ocid": "Fill compartment OCID here",
+  "subnet_ocid": "Fill Subnet OCID here",
+  "availability_domain": "Fill Availability Domain here"
 }
 ```

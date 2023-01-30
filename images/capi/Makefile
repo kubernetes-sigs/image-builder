@@ -322,7 +322,7 @@ AZURE_BUILD_VHD_NAMES	   ?= $(addprefix azure-vhd-,$(VHD_TARGETS))
 AZURE_BUILD_SIG_NAMES	   ?= $(addprefix azure-sig-,$(SIG_TARGETS))
 AZURE_BUILD_SIG_GEN2_NAMES ?= $(addsuffix -gen2,$(addprefix azure-sig-,$(SIG_GEN2_TARGETS)))
 
-OCI_BUILD_NAMES			   ?= oci-ubuntu-1804 oci-ubuntu-2004 oci-ubuntu-2204 oci-oracle-linux-8 oci-oracle-linux-9
+OCI_BUILD_NAMES			   ?= oci-ubuntu-1804 oci-ubuntu-2004 oci-ubuntu-2204 oci-oracle-linux-8 oci-oracle-linux-9 oci-windows-2019 oci-windows-2022
 
 DO_BUILD_NAMES 			?=	do-centos-7 do-ubuntu-1804 do-ubuntu-2004
 
@@ -485,7 +485,9 @@ $(RAW_VALIDATE_TARGETS): deps-raw
 
 .PHONY: $(OCI_BUILD_TARGETS)
 $(OCI_BUILD_TARGETS): deps-oci
-	packer build $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/oci/$(subst build-oci-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/oci/packer.json
+	$(if $(findstring windows,$@),./packer/oci/scripts/set_bootstrap.sh,)
+	packer build $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="$(abspath packer/oci/$(subst build-oci-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/oci/packer$(findstring -windows,$@).json
+	$(if $(findstring windows,$@),./packer/oci/scripts/unset_bootstrap.sh,)
 
 .PHONY: $(OCI_VALIDATE_TARGETS)
 $(OCI_VALIDATE_TARGETS): deps-oci
@@ -687,6 +689,8 @@ build-oci-ubuntu-2004: ## Builds the OCI ubuntu-2004 image
 build-oci-ubuntu-2204: ## Builds the OCI ubuntu-2204 image
 build-oci-oracle-linux-8: ## Builds the OCI Oracle Linux 8.x image
 build-oci-oracle-linux-9: ## Builds the OCI Oracle Linux 9.x image
+build-oci-windows-2019: ## Builds the OCI Windows Server 2019 image
+build-oci-windows-2022: ## Builds the OCI Windows Server 2022 image
 build-oci-all: $(OCI_BUILD_TARGETS) ## Builds all OCI image
 
 build-osc-ubuntu-2004: ## Builds Ubuntu 20.04 Outscale Snapshot
@@ -805,6 +809,8 @@ validate-oci-ubuntu-2004: ## Validates the OCI ubuntu-2004 image packer config
 validate-oci-ubuntu-2204: ## Validates the OCI ubuntu-2204 image packer config
 validate-oci-oracle-linux-8: ## Validates the OCI Oracle Linux 8.x image packer config
 validate-oci-oracle-linux-9: ## Validates the OCI Oracle Linux 9.x image packer config
+validate-oci-windows-2019: ## Validates the OCI Windows 2019 image packer config
+validate-oci-windows-2022: ## Validates the OCI Windows 2022 image packer config
 validate-oci-all: $(OCI_VALIDATE_TARGETS) ## Validates all OCI image packer config
 
 validate-osc-ubuntu-2004: ## Validates Ubuntu 20.04 Outscale Snapshot Packer config
