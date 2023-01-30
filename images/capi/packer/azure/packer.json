@@ -214,6 +214,7 @@
     "ansible_user_vars": "",
     "azure_location": null,
     "build_name": null,
+    "build_resource_group_name": "{{ env `BUILD_RESOURCE_GROUP_NAME` }}",
     "build_timestamp": "{{timestamp}}",
     "client_id": null,
     "client_secret": null,
