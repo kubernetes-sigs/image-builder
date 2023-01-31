@@ -110,7 +110,7 @@ common_raw_photon_rpms: []
 #as it uses systemd-sysctl. set this var so we can use for sysctl conf file value.
 sysctl_conf_file: "{{ '/etc/sysctl.d/99-sysctl.conf' if ansible_os_family == 'VMware Photon OS' else '/etc/sysctl.conf' }}"
 
-pause_image: "k8s.gcr.io/pause:3.6"
+pause_image: "registry.k8s.io/pause:3.9"
 containerd_additional_settings: null
 leak_local_mdns_to_dns: false
 build_target: "virt"

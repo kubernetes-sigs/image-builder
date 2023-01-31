@@ -11,7 +11,7 @@
   "no_proxy": "",
   "node_custom_roles_post": "",
   "node_custom_roles_pre": "",
-  "pause_image": "k8s.gcr.io/pause:3.6",
+  "pause_image": "registry.k8s.io/pause:3.9",
   "pip_conf_file": "",
   "redhat_epel_rpm": "https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm",
   "reenable_public_repos": "true",
