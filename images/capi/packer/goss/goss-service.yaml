@@ -12,15 +12,10 @@ service:
   conntrackd:
     enabled: false
     running: false
-  {{if ne .Vars.OS "flatcar"}}
-  # TODO: auditd was added to Flatcar in 
-  # https://github.com/flatcar/coreos-overlay/commit/b3194ee538bf7ddb8f699d37a8be81ab106079c3
-  # but isn't available in the various channels yet.
-  # Remove the conditional when auditd is available in Flatcar stable (supposed to happen
-  # once the major release number of the stable channel is larger than 3140).
   auditd:
     enabled: true
     running: true
+  {{if ne .Vars.OS "flatcar"}}
   # Flatcar uses systemd-timesyncd instead of chronyd.
   chronyd:
     enabled: true
