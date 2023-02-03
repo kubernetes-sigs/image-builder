@@ -84,7 +84,6 @@
     name: auditd
     state: started
     enabled: yes
-  when: ansible_os_family != "Flatcar"
 
 - name: configure auditd rules for containerd
   copy:
@@ -94,6 +93,15 @@
     group: root
     mode: 0644
   when: ansible_os_family != "Flatcar"
+
+- name: configure auditd rules for containerd (Flatcar)
+  copy:
+    src: etc/audit/rules.d/containerd.rules-flatcar
+    dest: /etc/audit/rules.d/containerd.rules
+    owner: root
+    group: root
+    mode: 0644
+  when: ansible_os_family == "Flatcar"
 
 - name: Ensure reverse packet filtering is set as strict
   sysctl:
