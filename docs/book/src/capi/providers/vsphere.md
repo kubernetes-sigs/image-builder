@@ -84,6 +84,7 @@ In addition to the configuration found in `images/capi/packer/config`, the `ova`
 | `rhel-7.json`      | The settings for the RHEL 7 image                            |
 | `ubuntu-1804.json` | The settings for the Ubuntu 18.04 image                      |
 | `ubuntu-2004.json` | The settings for the Ubuntu 20.04 image                      |
+| `ubuntu-2204.json` | The settings for the Ubuntu 22.04 image                        |
 | `vsphere.json`     | Additional settings needed when building on a remote vSphere |
 
 ### Photon specific options
