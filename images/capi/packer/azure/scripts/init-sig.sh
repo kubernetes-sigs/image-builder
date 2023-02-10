@@ -16,6 +16,22 @@ fi
 CREATE_TIME="$(date +%s)"
 RANDOM_SUFFIX="$(head /dev/urandom | LC_ALL=C tr -dc a-z | head -c 4 ; echo '')"
 export GALLERY_NAME="${GALLERY_NAME:-ClusterAPI${CREATE_TIME}${RANDOM_SUFFIX}}"
+
+# Hack to set only build_resource_group_name or location, a better solution is welcome
+# https://developer.hashicorp.com/packer/plugins/builders/azure/arm#build_resource_group_name
+PACKER_FILE_PATH=packer/azure/
+TMP_PACKER_FILE=$PACKER_FILE_PATH"packer.json.tmp"
+PACKER_FILE=$PACKER_FILE_PATH"packer.json"
+if [ ${BUILD_RESOURCE_GROUP_NAME} ]; then
+    if ! az group show -n ${BUILD_RESOURCE_GROUP_NAME} -o none 2>/dev/null; then
+        az group create -n ${BUILD_RESOURCE_GROUP_NAME} -l ${AZURE_LOCATION} --tags ${TAGS:-}
+    fi
+    jq '(.builders | map(if .name | contains("sig") then del(.location) + {"build_resource_group_name": "{{user `build_resource_group_name`}}"} else . end)) as $updated | .builders = $updated' $PACKER_FILE  > $TMP_PACKER_FILE
+    mv $TMP_PACKER_FILE $PACKER_FILE
+fi
+
+packer validate -syntax-only $PACKER_FILE || exit 1
+
 az sig create --resource-group ${RESOURCE_GROUP_NAME} --gallery-name ${GALLERY_NAME}
 
 create_image_definition() {
