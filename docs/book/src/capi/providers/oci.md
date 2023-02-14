@@ -95,6 +95,11 @@ and 2022 Datacenter edition of Windows can be found in their respective document
 > - [Windows server 2019](https://docs.oracle.com/en-us/iaas/images/windows-server-2019-bm/)
 > - [Windows server 2022](https://docs.oracle.com/en-us/iaas/images/windows-server-2022-bm/)
 
+> NOTE: It is important to make sure the shape used at image build time is used when launching an instance.
+>
+> Example: If `BM.Standard2.52` is used to build, then only `BM.Standard2.52` can be used for the newly
+> created image.
+
 #### Windows environment variables
 
 | Variable | Description | Default | Mandatory |
