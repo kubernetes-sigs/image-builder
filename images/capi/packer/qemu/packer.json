@@ -46,7 +46,7 @@
     {
       "environment_vars": [
         "OUTPUT_DIR={{user `output_directory`}}",
-        "ARTIFACT_NAME={{user `artificat_name`}}",
+        "ARTIFACT_NAME={{user `artifact_name`}}",
         "KUBEVIRT={{user `kubevirt`}}"
       ],
       "inline": [
@@ -147,7 +147,7 @@
     "ansible_common_vars": "",
     "ansible_extra_vars": "ansible_python_interpreter=/usr/bin/python3",
     "ansible_user_vars": "",
-    "artificat_name": "{{user `build_name`}}-kube-{{user `kubernetes_semver`}}",
+    "artifact_name": "{{user `build_name`}}-kube-{{user `kubernetes_semver`}}",
     "boot_media_path": "http://{{ .HTTPIP }}:{{ .HTTPPort }}",
     "boot_wait": "10s",
     "build_timestamp": "{{timestamp}}",
