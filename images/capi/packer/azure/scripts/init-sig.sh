@@ -38,10 +38,10 @@ create_image_definition() {
   az sig image-definition create \
     --resource-group ${RESOURCE_GROUP_NAME} \
     --gallery-name ${GALLERY_NAME} \
-    --gallery-image-definition capi-${1} \
-    --publisher capz \
-    --offer capz-demo \
-    --sku ${2} \
+    --gallery-image-definition capi-${SIG_SKU:-$1} \
+    --publisher ${SIG_PUBLISHER:-capz} \
+    --offer ${SIG_OFFER:-capz-demo} \
+    --sku ${SIG_SKU:-$2} \
     --hyper-v-generation ${3} \
     --os-type ${4}
 }
