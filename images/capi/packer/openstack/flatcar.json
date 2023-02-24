@@ -1,0 +1,11 @@
+{
+  "build_name": "flatcar",
+  "source_image": "flatcar",
+  "systemd_prefix": "/etc/systemd",
+  "sysusr_prefix": "/opt",
+  "sysusrlocal_prefix": "/opt",
+  "kubernetes_cni_source_type": "http",
+  "kubernetes_source_type": "http",
+  "crictl_source_type": "http",
+  "ansible_extra_vars": "ansible_python_interpreter=/opt/bin/python"
+}

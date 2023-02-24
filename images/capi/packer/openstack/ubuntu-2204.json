@@ -1,0 +1,5 @@
+{
+  "build_name": "ubuntu-2204",
+  "source_image": "ubuntu-22-04-x64",
+  "ssh_username": "ubuntu"
+}

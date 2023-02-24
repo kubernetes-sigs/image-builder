@@ -104,7 +104,6 @@ deps-openstack:
 	hack/ensure-ansible.sh
 	hack/ensure-packer.sh
 	hack/ensure-goss.sh
-#TODO    hack/ensure-openstack.sh
 
 .PHONY: deps-qemu
 deps-qemu: ## Installs/checks dependencies for QEMU builds
@@ -334,8 +333,9 @@ OCI_BUILD_NAMES			   ?= oci-ubuntu-1804 oci-ubuntu-2004 oci-ubuntu-2204 oci-orac
 
 DO_BUILD_NAMES 			?=	do-centos-7 do-ubuntu-1804 do-ubuntu-2004
 
+OPENSTACK_BUILD_NAMES	?=	openstack-ubuntu-2004	openstack-ubuntu-2204 openstack-flatcar
+
 OSC_BUILD_NAMES 			?=	osc-ubuntu-2004
-OPENSTACK_BUILD_NAMES	?=	openstack-ubuntu-2004	openstack-ubuntu-2204
 
 QEMU_BUILD_NAMES			?=	qemu-ubuntu-1804 qemu-ubuntu-2004 qemu-ubuntu-2204 qemu-centos-7 qemu-ubuntu-2004-efi qemu-rhel-8 qemu-rockylinux-8 qemu-flatcar
 QEMU_KUBEVIRT_BUILD_NAMES	:= $(addprefix kubevirt-,$(QEMU_BUILD_NAMES))
@@ -370,6 +370,7 @@ AZURE_VALIDATE_SIG_GEN2_TARGETS	:= $(addprefix validate-,$(AZURE_BUILD_SIG_GEN2_
 DO_BUILD_TARGETS 	:= $(addprefix build-,$(DO_BUILD_NAMES))
 DO_VALIDATE_TARGETS 	:= $(addprefix validate-,$(DO_BUILD_NAMES))
 OPENSTACK_BUILD_TARGETS	:= $(addprefix build-,$(OPENSTACK_BUILD_NAMES))
+OPENSTACK_VALIDATE_TARGETS := $(addprefix validate-,$(OPENSTACK_BUILD_NAMES))
 QEMU_BUILD_TARGETS	:= $(addprefix build-,$(QEMU_BUILD_NAMES))
 QEMU_VALIDATE_TARGETS	:= $(addprefix validate-,$(QEMU_BUILD_NAMES))
 QEMU_KUBEVIRT_BUILD_TARGETS := $(addprefix build-,$(QEMU_KUBEVIRT_BUILD_NAMES))
@@ -471,7 +472,11 @@ $(DO_VALIDATE_TARGETS): deps-do
 
 .PHONY: $(OPENSTACK_BUILD_TARGETS)
 $(OPENSTACK_BUILD_TARGETS): deps-openstack
-	packer build $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/openstack/$(subst build-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/openstack/packer.json
+	packer build $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/openstack/$(subst build-openstack-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/openstack/packer.json
+
+.PHONY: $(OPENSTACK_VALIDATE_TARGETS)
+$(OPENSTACK_VALIDATE_TARGETS): deps-openstack
+	packer validate $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/openstack/$(subst validate-do-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/openstack/packer.json
 
 .PHONY: $(QEMU_BUILD_TARGETS)
 $(QEMU_BUILD_TARGETS): deps-qemu
@@ -686,8 +691,9 @@ build-node-ova-local-base-rockylinux-8: ## Builds RockyLinux 8 Base Node OVA w l
 build-node-ova-local-base-ubuntu-1804: ## Builds Ubuntu 18.04 Base Node OVA w local hypervisor
 build-node-ova-local-base-ubuntu-2004: ## Builds Ubuntu 20.04 Base Node OVA w local hypervisor
 
-build-openstack-ubuntu-2004: ## Builds OpenStack 20.04 image
-build-openstack-ubuntu-2204: ## Builds OpenStack 22.04 image
+build-openstack-ubuntu-2004: ## Builds Ubuntu 20.04 OpenStack image
+build-openstack-ubuntu-2204: ## Builds Ubuntu 22.04 OpenStack image
+build-openstack-flatcar: ## Builds Flatcar OpenStack image
 build-openstack-all: $(OPENSTACK_BUILD_TARGETS)
 
 build-qemu-flatcar: ## Builds Flatcar QEMU image
@@ -773,6 +779,11 @@ validate-do-ubuntu-1804: ## Validates Ubuntu 18.04 DigitalOcean Snapshot Packer 
 validate-do-ubuntu-2004: ## Validates Ubuntu 20.04 DigitalOcean Snapshot Packer config
 validate-do-centos-7: ## Validates Centos 7 DigitalOcean Snapshot Packer config
 validate-do-all: $(DO_VALIDATE_TARGETS) ## Validates all DigitalOcean Snapshot Packer config
+
+validate-openstack-ubuntu-2004: ## Validates Ubuntu 18.04 Openstack Image Packer config
+validate-openstack-ubuntu-2204: ## Validates Ubuntu 20.04 Openstack Image Packer config
+validate-openstack-flatcar: ## Validates Flatcar Openstack Image Packer config
+validate-openstack-all: $(OPENSTACK_VALIDATE_TARGETS) ## Validates all Openstack Glance Image Packer config
 
 validate-gce-ubuntu-1804: ## Validates Ubuntu 18.04 GCE Snapshot Packer config
 validate-gce-ubuntu-2004: ## Validates Ubuntu 20.04 GCE Snapshot Packer config

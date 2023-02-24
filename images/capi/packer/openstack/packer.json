@@ -4,7 +4,7 @@
       "config_drive": "{{user `attach_config_drive`}}",
       "flavor": "{{user `flavor`}}",
       "floating_ip_network": "{{user `floating_ip_network`}}",
-      "image_disk_format": "raw",
+      "image_disk_format": "{{user `image_disk_format`}}",
       "image_name": "{{user `image_name`}}",
       "image_visibility": "{{user `image_visibility`}}",
       "networks": "{{user `networks`}}",
@@ -15,9 +15,11 @@
       "ssh_timeout": "2h",
       "ssh_username": "{{user `ssh_username`}}",
       "type": "openstack",
-      "use_blockstorage_volume": true,
+      "use_blockstorage_volume": "{{user `use_blockstorage_volume`}}",
       "use_floating_ip": "{{user `use_floating_ip`}}",
-      "volume_size": "10"
+      "volume_size": "{{user `volume_size`}}",
+      "ssh_keypair_name": "{{user `ssh_keypair_name`}}",
+      "ssh_private_key_file": "{{user `ssh_private_key_file`}}"
     }
   ],
   "post-processors": [
@@ -41,37 +43,9 @@
     },
     {
       "ansible_env_vars": [
-        "ANSIBLE_SSH_ARGS='{{user `existing_ansible_ssh_args`}} -oHostKeyAlgorithms=+ssh-rsa -oPubkeyAcceptedAlgorithms=+ssh-rsa -o IdentitiesOnly=yes'"
+        "ANSIBLE_SSH_ARGS='{{user `existing_ansible_ssh_args`}} -o IdentitiesOnly=yes'"
       ],
       "extra_arguments": [
-        "--scp-extra-args",
-        "'-O'",
-        "--extra-vars",
-        "{{user `ansible_common_vars`}}",
-        "--extra-vars",
-        "{{user `ansible_extra_vars`}}",
-        "--extra-vars",
-        "{{user `ansible_user_vars`}}"
-      ],
-      "playbook_file": "./ansible/firstboot.yml",
-      "type": "ansible",
-      "user": "builder"
-    },
-    {
-      "expect_disconnect": true,
-      "inline": [
-        "sudo reboot now"
-      ],
-      "inline_shebang": "/bin/bash -e",
-      "type": "shell"
-    },
-    {
-      "ansible_env_vars": [
-        "ANSIBLE_SSH_ARGS='{{user `existing_ansible_ssh_args`}} -oHostKeyAlgorithms=+ssh-rsa -oPubkeyAcceptedAlgorithms=+ssh-rsa -o IdentitiesOnly=yes'"
-      ],
-      "extra_arguments": [
-        "--scp-extra-args",
-        "'-O'",
         "--extra-vars",
         "{{user `ansible_common_vars`}}",
         "--extra-vars",
@@ -81,61 +55,25 @@
       ],
       "playbook_file": "./ansible/node.yml",
       "type": "ansible",
-      "user": "builder"
-    },
-    {
-      "arch": "{{user `goss_arch`}}",
-      "format": "{{user `goss_format`}}",
-      "format_options": "{{user `goss_format_options`}}",
-      "goss_file": "{{user `goss_entry_file`}}",
-      "inspect": "{{user `goss_inspect_mode`}}",
-      "tests": [
-        "{{user `goss_tests_dir`}}"
-      ],
-      "type": "goss",
-      "url": "{{user `goss_url`}}",
-      "use_sudo": true,
-      "vars_file": "{{user `goss_vars_file`}}",
-      "vars_inline": {
-        "ARCH": "amd64",
-        "OS": "{{user `distro_name` | lower}}",
-        "OS_VERSION": "{{user `os_version`}}",
-        "PROVIDER": "qemu",
-        "containerd_version": "{{user `containerd_version`}}",
-        "kubernetes_cni_deb_version": "{{ user `kubernetes_cni_deb_version` }}",
-        "kubernetes_cni_rpm_version": "{{ split (user `kubernetes_cni_rpm_version`) \"-\" 0 }}",
-        "kubernetes_cni_source_type": "{{user `kubernetes_cni_source_type`}}",
-        "kubernetes_cni_version": "{{user `kubernetes_cni_semver` | replace \"v\" \"\" 1}}",
-        "kubernetes_deb_version": "{{ user `kubernetes_deb_version` }}",
-        "kubernetes_rpm_version": "{{ split (user `kubernetes_rpm_version`) \"-\" 0  }}",
-        "kubernetes_source_type": "{{user `kubernetes_source_type`}}",
-        "kubernetes_version": "{{user `kubernetes_semver` | replace \"v\" \"\" 1}}"
-      },
-      "version": "{{user `goss_version`}}"
+      "user": "core"
     }
   ],
   "variables": {
-    "accelerator": "kvm",
-    "ansible_common_vars": "",
-    "ansible_extra_vars": "ansible_python_interpreter=/usr/bin/python3",
+    "floating_ip_network": "public",
+    "image_disk_format": "raw",
+    "use_blockstorage_volume": "true",
+    "volume_size": "10",
+    "ansible_common_vars": "ansible_python_interpreter=/usr/bin/python3",
+    "ansible_extra_vars": "",
     "ansible_user_vars": "",
     "attach_config_drive": "false",
-    "boot_wait": "10s",
     "build_timestamp": "{{timestamp}}",
     "containerd_sha256": null,
     "containerd_url": "https://github.com/containerd/containerd/releases/download/v{{user `containerd_version`}}/cri-containerd-cni-{{user `containerd_version`}}-linux-amd64.tar.gz",
     "containerd_version": null,
-    "cpus": "1",
     "crictl_url": "https://github.com/kubernetes-sigs/cri-tools/releases/download/v{{user `crictl_version`}}/crictl-v{{user `crictl_version`}}-linux-amd64.tar.gz",
     "crictl_version": null,
-    "disk_compression": "false",
-    "disk_discard": "unmap",
-    "disk_size": "20480",
     "existing_ansible_ssh_args": "{{env `ANSIBLE_SSH_ARGS`}}",
-    "firmware": "",
-    "format": "qcow2",
-    "headless": "true",
-    "http_directory": "./packer/openstack/linux/{{user `distro_name`}}/http/",
     "image_name": "{{user `build_name`}}-kube-{{user `kubernetes_semver`}}",
     "image_visibility": "private",
     "kubernetes_cni_deb_version": null,
@@ -155,11 +93,7 @@
     "kubernetes_semver": null,
     "kubernetes_series": null,
     "kubernetes_source_type": null,
-    "machine_id_mode": "444",
-    "memory": "2048",
-    "python_path": "",
-    "qemu_binary": "qemu-system-x86_64",
-    "ssh_username": "{{user `ssh_username`}}",
+    "ssh_username": "core",
     "use_floating_ip": "true"
   }
 }
