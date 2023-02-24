@@ -7,5 +7,6 @@
   "kubernetes_cni_source_type": "http",
   "kubernetes_source_type": "http",
   "crictl_source_type": "http",
-  "ansible_extra_vars": "ansible_python_interpreter=/opt/bin/python"
+  "ansible_extra_vars": "ansible_python_interpreter=/opt/bin/python",
+  "distro_name": "flatcar"
 }
