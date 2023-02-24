@@ -333,7 +333,7 @@ OCI_BUILD_NAMES			   ?= oci-ubuntu-1804 oci-ubuntu-2004 oci-ubuntu-2204 oci-orac
 
 DO_BUILD_NAMES 			?=	do-centos-7 do-ubuntu-1804 do-ubuntu-2004
 
-OPENSTACK_BUILD_NAMES	?=	openstack-ubuntu-2004	openstack-ubuntu-2204 openstack-flatcar
+OPENSTACK_BUILD_NAMES	?=	openstack-ubuntu-2004 openstack-ubuntu-2204 openstack-flatcar
 
 OSC_BUILD_NAMES 			?=	osc-ubuntu-2004
 
@@ -473,6 +473,10 @@ $(DO_VALIDATE_TARGETS): deps-do
 .PHONY: $(OPENSTACK_BUILD_TARGETS)
 $(OPENSTACK_BUILD_TARGETS): deps-openstack
 	packer build $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/openstack/$(subst build-openstack-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/openstack/packer.json
+
+.PHONY: $(OPENSTACK_VALIDATE_TARGETS)
+$(OPENSTACK_VALIDATE_TARGETS): deps-openstack
+	packer validate $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/openstack/$(subst validate-openstack-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/openstack/packer.json
 
 .PHONY: $(OPENSTACK_VALIDATE_TARGETS)
 $(OPENSTACK_VALIDATE_TARGETS): deps-openstack

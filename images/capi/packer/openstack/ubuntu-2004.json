@@ -1,5 +1,4 @@
 {
   "build_name": "ubuntu-2004",
-  "source_image": "ubuntu-20-04-x64",
   "ssh_username": "ubuntu"
 }
