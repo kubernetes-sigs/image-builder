@@ -64,6 +64,24 @@
     mode: 0600
   loop: "{{ kubernetes_imgs }}"
 
+- name: Copy Kubernetes image modification script
+  copy:
+    src: files/tmp/modify-k8s-img.sh
+    dest: /tmp/modify-k8s-img.sh
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Modify Kubernetes images
+  # Strip the arch from the name of the image to prevent image from being pulled again by kubeadm
+  shell: '/tmp/modify-k8s-img.sh {{ item }}'
+  loop: "{{ kubernetes_imgs }}"
+
+- name: Remove Kubernetes image modification script
+  file:
+    state: absent
+    path: /tmp/modify-k8s-img.sh
+
 - name: Load Kubernetes images
   shell: 'CONTAINERD_NAMESPACE="k8s.io" {{ sysusr_prefix }}/bin/ctr --address={{ containerd_cri_socket }} images import /tmp/{{ item }}'
   loop: "{{ kubernetes_imgs }}"
