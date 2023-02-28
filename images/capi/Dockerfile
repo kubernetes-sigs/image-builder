@@ -17,7 +17,7 @@
 ARG BASE_IMAGE=docker.io/library/ubuntu:latest
 FROM $BASE_IMAGE
 
-RUN apt-get update && apt-get install -y apt-transport-https ca-certificates python3-pip curl wget git rsync vim unzip build-essential \
+RUN apt-get update && apt-get install -y apt-transport-https build-essential ca-certificates curl git jq python3-pip rsync unzip vim wget \
     && useradd -ms /bin/bash imagebuilder \
     && apt-get purge --auto-remove -y \
     && rm -rf /var/lib/apt/lists/*
