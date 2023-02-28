@@ -10,7 +10,7 @@
   "guest_os_type": "ubuntu-64",
   "iso_checksum": "10f19c5b2b8d6db711582e0e27f5116296c34fe4b313ba45f9b201a5007056cb",
   "iso_checksum_type": "sha256",
-  "iso_url": "https://releases.ubuntu.com/22.04/ubuntu-22.04.1-live-server-amd64.iso",
+  "iso_url": "https://old-releases.ubuntu.com/releases/jammy/ubuntu-22.04.1-live-server-amd64.iso",
   "os_display_name": "Ubuntu 22.04",
   "shutdown_command": "shutdown -P now",
   "vsphere_guest_os_type": "ubuntu64Guest"
