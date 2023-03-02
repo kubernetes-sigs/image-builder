@@ -22,6 +22,4 @@ set -o pipefail
 
 echo "Changing Password in winrm_bootstrap.txt"
 
-cp packer/oci/scripts/winrm_bootstrap_template.txt packer/oci/scripts/winrm_bootstrap.txt
-
-sed "s/(\[adsi\].*/([adsi](\"WinNT:\/\/\"+\$opcUser.caption).replace(\"\\\\\",\"\/\")).SetPassword(\"$OPC_USER_PASSWORD\")/g" packer/oci/scripts/winrm_bootstrap.txt | tee packer/oci/scripts/winrm_bootstrap.txt >/dev/null
+sed "s/(\[adsi\].*/([adsi](\"WinNT:\/\/\"+\$opcUser.caption).replace(\"\\\\\",\"\/\")).SetPassword(\"$OPC_USER_PASSWORD\")/g" packer/oci/scripts/winrm_bootstrap_template.txt | tee packer/oci/scripts/winrm_bootstrap.txt >/dev/null
