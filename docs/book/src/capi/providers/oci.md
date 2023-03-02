@@ -106,6 +106,11 @@ and 2022 Datacenter edition of Windows can be found in their respective document
 |----------|-------------|---------|---------|
 | `OPC_USER_PASSWORD` | The password to set the OPC user to when creating the image. This will be used for accessing instances using this image. |  | Yes |
 
+> NOTE: Your new password must be at least 12 characters long and must comply with
+[Microsoft's password policy](https://technet.microsoft.com/library/hh994562(v=ws.11).aspx?f=255&MSPPError=-2147217396).
+If the password doesn't comply WinRM will fail to connect to the instance since the
+password failed to be updated.
+
 > NOTE: The `OPC_USER_PASSWORD` will be set in the `winrm_bootstrap.txt` file temporarily, while building the image.
   This is required in order for winrm to access the instance building the image. Once the build process is complete
   the password will be deleted along with the fil so the password isn't stored long term in a cleartext file.
