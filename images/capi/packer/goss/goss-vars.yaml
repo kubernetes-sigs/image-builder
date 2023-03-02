@@ -324,6 +324,12 @@ ubuntu:
       iptables -C FORWARD -d 168.63.129.16/32 -p tcp -m tcp --dport 80 -m comment --comment "block traffic to 168.63.129.16 for cve-2021-27075" -j DROP:
         exit-status: 0
         timeout: 0
+      grep -z -q -E '^datasource:\n\s\sAzure:\n\s\s\s\sgiapply_network_config:\sfalse$' /etc/cloud/cloud.cfg.d/15_azure-vnet.cfg || echo $?:
+        exit-status: 0
+        stdout: []
+        stderr: []
+        timeout: 0
+        title: "Check exact for the contents in /etc/cloud/cloud.cfg.d/15_azure-vnet.cfg"
     package:
       open-vm-tools:
       linux-cloud-tools-virtual:
