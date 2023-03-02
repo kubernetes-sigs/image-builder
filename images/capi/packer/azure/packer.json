@@ -254,7 +254,7 @@
     "kubernetes_semver": null,
     "kubernetes_series": null,
     "kubernetes_source_type": null,
-    "managed_image_storage_account_type": "",
+    "managed_image_storage_account_type": "{{user `storage_account_type`}}",
     "manifest_output": "manifest.json",
     "os_disk_size_gb": "",
     "plan_image_offer": "",
