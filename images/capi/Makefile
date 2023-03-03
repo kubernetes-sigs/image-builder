@@ -117,6 +117,7 @@ deps-oci: ## Installs/checks dependencies for OCI builds
 deps-oci:
 	hack/ensure-ansible.sh
 	hack/ensure-packer.sh
+	hack/ensure-ansible-windows.sh
 	packer plugins install github.com/hashicorp/oracle
 
 .PHONY: deps-vbox
