@@ -54,6 +54,7 @@
   file:
     path: /etc/systemd/system/cloud-final.service.d
     state: directory
+  when: ansible_os_family != "Flatcar"
 
 - name: Create cloud-final boot order drop in file
   copy:
@@ -62,11 +63,13 @@
     owner: root
     group: root
     mode: "0644"
+  when: ansible_os_family != "Flatcar"
 
 - name: Creates unit file directory for cloud-config
   file:
     path: /etc/systemd/system/cloud-config.service.d
     state: directory
+  when: ansible_os_family != "Flatcar"
 
 - name: Create cloud-config boot order drop in file
   copy:
@@ -75,6 +78,7 @@
     owner: root
     group: root
     mode: "0644"
+  when: ansible_os_family != "Flatcar"
 
 # Some OS might disable cloud-final service on boot (rhel 7).
 # Enable all cloud-init services on boot.
