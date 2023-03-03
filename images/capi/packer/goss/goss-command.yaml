@@ -257,5 +257,11 @@ command:
     stdout:
     - True
     timeout: 30000
+  Check if SSH server port is open:
+    exec: powershell -command "(Get-NetFirewallRule -ErrorAction Stop -DisplayName 'sshd').Enabled"
+    exit-status: 0
+    stdout:
+        - True
+    timeout: 30000
 {{end}}
 {{end}} #end windows
