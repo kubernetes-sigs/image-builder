@@ -61,20 +61,20 @@
     src: etc/systemd/system/cloud-final.service.d/boot-order.conf
     owner: root
     group: root
-    mode: "0755"
+    mode: "0644"
 
 - name: Creates unit file directory for cloud-config
   file:
     path: /etc/systemd/system/cloud-config.service.d
     state: directory
 
-- name: Create cloud-final boot order drop in file
+- name: Create cloud-config boot order drop in file
   copy:
     dest: /etc/systemd/system/cloud-config.service.d/boot-order.conf
     src: etc/systemd/system/cloud-config.service.d/boot-order.conf
     owner: root
     group: root
-    mode: "0755"
+    mode: "0644"
 
 # Some OS might disable cloud-final service on boot (rhel 7).
 # Enable all cloud-init services on boot.
