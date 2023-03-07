@@ -124,7 +124,7 @@
   template:
     src: etc/udev/rules.d/90-etcd-tuning.rules
     dest: /etc/udev/rules.d/90-etcd-tuning.rules
-    mode: 0744
+    mode: 0644
 
 - name: Copy etcd network tuning script
   copy:
