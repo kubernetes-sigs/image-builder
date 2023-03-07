@@ -28,7 +28,7 @@ understand and change.
 
 ## Trying it out with qemu
 
-If you're on linux, it's easy to try this out locally using qemu.
+If you're on Linux, it's easy to try this out locally using qemu.
 
 Note: this image has a root password of "root", and is thus suitable
 only for local testing.

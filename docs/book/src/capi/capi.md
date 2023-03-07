@@ -59,20 +59,20 @@ Several variables can be used to customize the image build.
 | `extra_rpms` | This can be set to a space delimited string containing the names of additional RPM packages to install | `""` |
 | `http_proxy` | This can be set to URL to use as an HTTP proxy during the Ansible stage of building | `""` |
 | `https_proxy` | This can be set to URL to use as an HTTPS proxy during the Ansible stage of building | `""` |
-| `kubernetes_deb_version` | This can be set to the version of kubernetes which will be installed in debian based image | `"1.23.15-00"` |
-| `kubernetes_rpm_version` | This can be set to the version of kubernetes which will be installed in rpm based image | `"1.23.15-0"` |
-| `kubernetes_semver` | This can be set to semantic verion of kubernetes which will be installed in the image | `"v1.23.15"` |
-| `kubernetes_series` | This can be set to series version kubernetes which will be installed in the image | `"v1.23"` |
-| `no_proxy` | This can be set to a comma-delimited list of domains that should be exluded from proxying during the Ansible stage of building | `""` |
+| `kubernetes_deb_version` | This can be set to the version of Kubernetes which will be installed in debian based image | `"1.23.15-00"` |
+| `kubernetes_rpm_version` | This can be set to the version of Kubernetes which will be installed in rpm based image | `"1.23.15-0"` |
+| `kubernetes_semver` | This can be set to semantic verion of Kubernetes which will be installed in the image | `"v1.23.15"` |
+| `kubernetes_series` | This can be set to series version Kubernetes which will be installed in the image | `"v1.23"` |
+| `no_proxy` | This can be set to a comma-delimited list of domains that should be excluded from proxying during the Ansible stage of building | `""` |
 | `reenable_public_repos` | If set to `"false"`, the package repositories disabled by setting `disable_public_repos` will remain disabled at the end of the build. | `"true"` |
 | `remove_extra_repos` | If set to `"true"`, the package repositories added to the OS through the use of `extra_repos` will be removed at the end of the build. | `"false"` |
 | `pause_image` | This can be used to override the default pause image used to hold the network namespace and IP for the pod. | `"registry.k8s.io/pause:3.9"` |
 | `pip_conf_file` | The path to a file to be copied into the image at `/etc/pip.conf` for use as a global config file. This file will be removed at the end of the build if `remove_extra_repos` is `true`. | `""` |
 | `containerd_additional_settings` | This is a string, base64 encoded, that contains additional configuration for containerd. It must be version 2 and not contain the pause image configuration block. See `image-builder/images/capi/ansible/roles/containerd/templates/etc/containerd/config.toml` for the template. | `null` |
 | `load_additional_components` | If set to `"true"`, the `load_additional_components` role will be executed. This needs to be set to `"true"` if any of `additional_url_images`, `additional_registry_images` or `additional_executables` are set to `"true"` | `"false"` |
-| `additional_url_images` | Set this to `"true"` to load addtional container images using a tar url. `additional_url_images_list` var should be set to a comma seperated string of tar urls of the container images. | `"false"` |
-| `additional_registry_images` | Set this to `"true"` to load addtional container images using their registry url. `additional_registry_images_list` var should be set to a comma seperated string of registry urls of the container images. | `"false"` |
-| `additional_executables` | Set this to `"true"` to load addtional executables from a url. `additional_executables_list` var should be set to a comma seperated string of urls. `additional_executables_destination_path` should be set to the destination path of the executables. | `"false"` |
+| `additional_url_images` | Set this to `"true"` to load additional container images using a tar url. `additional_url_images_list` var should be set to a comma separated string of tar urls of the container images. | `"false"` |
+| `additional_registry_images` | Set this to `"true"` to load additional container images using their registry url. `additional_registry_images_list` var should be set to a comma separated string of registry urls of the container images. | `"false"` |
+| `additional_executables` | Set this to `"true"` to load additional executables from a url. `additional_executables_list` var should be set to a comma separated string of urls. `additional_executables_destination_path` should be set to the destination path of the executables. | `"false"` |
 | `ansible_user_vars` | A space delimited string that the user can pass to use in the ansible roles  | `""` |
 | `containerd_config_file` | Custom containerd config file a user can pass to override the default. Use `ansible_user_vars` to pass this var | `""` |
 
@@ -172,7 +172,7 @@ PACKER_VAR_FILES=proxy.json make build-node-ova-local-photon-3
 ```
 
 
-##### Loading addtional components using `additional_components.json`
+##### Loading additional components using `additional_components.json`
 
 ```json
 {

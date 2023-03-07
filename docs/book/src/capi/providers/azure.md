@@ -26,7 +26,7 @@ From the `images/capi` directory, run `make build-azure-sig-ubuntu-1804`
 
 From the `images/capi` directory, run `make build-azure-vhd-ubuntu-1804`
 
-> If building the windows images from a Mac there is a known issue with connectivity. Please see details on running [MacOS with ansible](../windows/windows.md#macos-with-ansible).
+> If building the Windows images from a Mac there is a known issue with connectivity. Please see details on running [macOS with ansible](../windows/windows.md#macos-with-ansible).
 
 ### Hyper-V Generation 2 VHDs
 
@@ -72,5 +72,5 @@ az image create -n testvmimage -g cluster-api-images --os-type <Windows/Linux> -
 az vm create -n testvm --image testvmimage -g cluster-api-images
 ```
 
-### Debugging packer scripts
-There are several ways to debug packer scripts: https://www.packer.io/docs/other/debugging.html
+### Debugging Packer scripts
+There are several ways to debug Packer scripts: https://www.packer.io/docs/other/debugging.html

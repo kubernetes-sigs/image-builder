@@ -5,7 +5,7 @@
 * Nested Virtualization (or lots of patience)
 * Qemu
 * konfigadm >= 0.4.0
-* Linux or MacOSX
+* Linux or macOS
 
 ## Building new images
 

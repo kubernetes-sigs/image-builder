@@ -29,6 +29,7 @@ Amazon Web Services
 The Cluster API is a Kubernetes project to bring declarative, Kubernetes-style APIs to cluster creation, configuration, and management. It provides optional, additive functionality on top of core Kubernetes.
 
 [source](https://github.com/kubernetes-sigs/cluster-api)
+[docs](https://cluster-api.sigs.k8s.io)
 
 ## CAPV
 
@@ -49,9 +50,9 @@ ESXi (formerly ESX) is an enterprise-class, type-1 hypervisor developed by VMwar
 # G
 ---
 
-## GOSS
+## Goss
 
-[Goss](https://github.com/aelsabbahy/goss) is a YAML based serverspec alternative tool for validating a server’s configuration.  It is used in conjunction with [packer-provisioner-goss](https://github.com/YaleUniversity/packer-provisioner-goss/releases) to test if the images have all requisite components to work with cluster API.
+[Goss](https://github.com/goss-org/goss) is a YAML based serverspec alternative tool for validating a server’s configuration.  It is used in conjunction with [packer-provisioner-goss](https://github.com/YaleUniversity/packer-provisioner-goss/releases) to test if the images have all requisite components to work with cluster API.
 
 # K
 ---
@@ -64,7 +65,8 @@ Kubernetes
 
 Kubernetes (K8s) is an open-source system for automating deployment, scaling, and management of containerized applications.
 
-[source](https://kubernetes.io)
+[source](https://github.com/kubernetes/kubernetes)
+[docs](https://kubernetes.io)
 
 # O
 ---

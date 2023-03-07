@@ -64,7 +64,7 @@ func getConfig(cmd *cobra.Command, args []string) (*api.KubernetesConfiguration,
 		return nil, err
 	}
 
-	// 2nd run: unmarshall the root yaml, so that an image-builder yaml can be
+	// 2nd run: unmarshall the root YAML, so that an image-builder YAML can be
 	// fed directly into konfigadm
 	konfigadmSpec := &konfigadm.Config{}
 	konfigadmSpec.Init()

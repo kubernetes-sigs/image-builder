@@ -22,7 +22,7 @@ docker pull gcr.io/k8s-staging-scl-image-builder/cluster-node-image-builder-amd6
 ### Examples
 
 - AMI
-    - If the AWS-CLI is already installed on your machine, you can simply mount the `~/.aws` folder that stores all the required credentials.
+    - If the AWS CLI is already installed on your machine, you can simply mount the `~/.aws` folder that stores all the required credentials.
 
     ```commandline
     docker run -it --rm -v /Users/<user>/.aws:/home/imagebuilder/.aws registry.k8s.io/scl-image-builder/cluster-node-image-builder-amd64:v0.1.13 build-ami-ubuntu-2004
@@ -57,7 +57,7 @@ docker pull gcr.io/k8s-staging-scl-image-builder/cluster-node-image-builder-amd6
 - vSphere OVA
     - `vsphere.json` configuration file with user and hypervisor credentials. A template of this file can be found [here](https://github.com/kubernetes-sigs/image-builder/blob/master/images/capi/packer/ova/vsphere.json)
 
-    - Docker's `--net=host` option to ensure http server starts with the host IP and not the docker container IP. This option is Linux specific and thus implies that it can be run only from a Linux machine.
+    - Docker's `--net=host` option to ensure http server starts with the host IP and not the Docker container IP. This option is Linux specific and thus implies that it can be run only from a Linux machine.
 
     ```commandline
     docker run -it --rm --net=host --env PACKER_VAR_FILES=/home/imagebuilder/vsphere.json -v <complete path of vsphere.json>:/home/imagebuilder/vsphere.json registry.k8s.io/scl-image-builder/cluster-node-image-builder-amd64:v0.1.13 build-node-ova-vsphere-ubuntu-2004

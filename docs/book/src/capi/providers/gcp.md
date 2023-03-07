@@ -7,7 +7,7 @@
 From your google cloud console, follow [these instructions](https://cloud.google.com/iam/docs/creating-managing-service-accounts#creating)
 to create a new service account with Editor permissions. Thereafter, generate a JSON Key and store it somewhere safe.
 
-Use cloud shell to install ansible, packer and proceed with building the CAPI compliant vm image.
+Use cloud shell to install Ansible, Packer and proceed with building the CAPI compliant VM image.
 
 ### Install Ansible and Packer
 
@@ -20,11 +20,11 @@ $ export GCP_PROJECT_ID=<project-id>
 # Export the path to the service account credentials created in the step above
 $ export GOOGLE_APPLICATION_CREDENTIALS=</path/to/serviceaccount-key.json>
 
-# If you dont have the image-builder repository
+# If you don't have the image-builder repository
 $ git clone https://github.com/kubernetes-sigs/image-builder.git
 
 $ cd image-builder/images/capi/
-# Run the target make deps-gce to install ansible and packer
+# Run the target make deps-gce to install Ansible and Packer
 $ make deps-gce
 ```
 

@@ -3,6 +3,7 @@
 [Introduction](./introduction.md)
 - [CAPI](./capi/capi.md)
   - [Quick Start](./capi/quickstart.md)
+  - [3DS OUTSCALE](./capi/providers/3dsoutscale.md)
   - [AWS](./capi/providers/aws.md)
   - [Azure](./capi/providers/azure.md)
   - [CloudStack](./capi/providers/cloudstack.md)

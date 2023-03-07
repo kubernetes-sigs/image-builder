@@ -3,11 +3,11 @@
 ## Install Ansible and Packer
 
 ```bash
-# If you dont have the image-builder repository
+# If you don't have the image-builder repository
 $ git clone https://github.com/kubernetes-sigs/image-builder.git
 
 $ cd image-builder/images/capi/
-# Run the target make deps-nutanix to install ansible and packer
+# Run the target make deps-nutanix to install Ansible and Packer
 $ make deps-nutanix
 ```
 ## Prerequisites for Nutanix builder

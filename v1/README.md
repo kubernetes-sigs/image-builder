@@ -6,8 +6,8 @@
 `image-builder` supports 3 engines for configuring images:
 
 * **qemu** the default builder uses qemu to launch and configure a cloud instance on the local machine
-* **packer** provides a wrapper around using packer to launch and configure instances
-* **docker** builds images using standard docker images and RUN commands
+* **packer** provides a wrapper around using Packer to launch and configure instances
+* **docker** builds images using standard Docker images and RUN commands
 * **noop** passes the input straght through without configuration, useful for apply [transformations](#transformations-conversions) on existing images
 
 Engines are specified and configured using the `engine` section:

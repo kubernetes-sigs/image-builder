@@ -65,7 +65,7 @@ UUID_ROOT=`blkid -s UUID -o value ${PARTITION_DEVICE}`
 sed -i -e "s@{{UUID_ROOT}}@${UUID_ROOT}@g" ${MNT}/etc/fstab
 
 
-# Fix things that can't be done from docker (todo: move to yaml?)
+# Fix things that can't be done from Docker (todo: move to yaml?)
 echo "debian" > ${MNT}/etc/hostname
 chroot ${MNT} ln -sf /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
 
