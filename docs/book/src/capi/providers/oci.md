@@ -70,7 +70,7 @@ PACKER_VAR_FILES=oci.json make build-oci-oracle-linux-8
 #### Build an Arm based image
 
 Building an Arm based image requires some overrides to use the correct installation files . An example for an 
-`oci.json` file  for Arm is shown below. The parameters for containerd, crictl and kubernetes 
+`oci.json` file  for Arm is shown below. The parameters for containerd, crictl and Kubernetes 
 has to point to the corresponding URL for Arm. The containerd SHA can be changed appropriately, the containerd version
 is defined in images/capi/packer/config/containerd.json.
 
@@ -112,12 +112,12 @@ If the password doesn't comply WinRM will fail to connect to the instance since 
 password failed to be updated.
 
 > NOTE: The `OPC_USER_PASSWORD` will be set in the `winrm_bootstrap.txt` file temporarily, while building the image.
-  This is required in order for winrm to access the instance building the image. Once the build process is complete
+  This is required in order for WinRM to access the instance building the image. Once the build process is complete
   the password will be deleted along with the fil so the password isn't stored long term in a cleartext file.
 
 #### Build a Windows based image
 
-The following example json would use the [Windows Server 2019 Datacenter Edition BM E4 image in the us-ashburn-1 region](https://docs.oracle.com/en-us/iaas/images/image/4d56c93a-2165-49b0-9c6e-f9e9a9b05011/).
+The following example JSON would use the [Windows Server 2019 Datacenter Edition BM E4 image in the us-ashburn-1 region](https://docs.oracle.com/en-us/iaas/images/image/4d56c93a-2165-49b0-9c6e-f9e9a9b05011/).
 
 ```json
 {

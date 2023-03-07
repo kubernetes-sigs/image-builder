@@ -162,7 +162,7 @@ def main():
   <Property ovf:userConfigurable="false" ovf:value="${KUBERNETES_SOURCE_TYPE}" ovf:type="string" ovf:key="KUBERNETES_SOURCE_TYPE"/>\n''').substitute(data)
 
     # Check if OVF_CUSTOM_PROPERTIES environment Variable is set.
-    # If so, load the json file & add the properties to the OVF
+    # If so, load the JSON file & add the properties to the OVF
 
     if os.environ.get("OVF_CUSTOM_PROPERTIES"):
         with open(os.environ.get("OVF_CUSTOM_PROPERTIES"), 'r') as f:

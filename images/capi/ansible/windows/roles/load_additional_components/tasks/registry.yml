@@ -26,7 +26,7 @@
   until: pull is not failed
   when: runtime == "containerd"
   
-- name: Pre-pull docker additional images
+- name: Pre-pull Docker additional images
   win_shell: docker pull {{ item }}
   loop: "{{ additional_registry_images_list.split(',') }}"
   async: 1800

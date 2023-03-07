@@ -1,6 +1,6 @@
-# Building Images for 3DSOutscale
+# Building Images for 3DS OUTSCALE
 
-## Prerequisites for 3DSOutscale
+## Prerequisites for 3DS OUTSCALE
 
 - A Outscale account
 - The Outscale CLI ([osc-cli](https://github.com/outscale/osc-cli)) installed and configured

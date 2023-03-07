@@ -47,7 +47,7 @@ $ make deps-qemu
 
 From the `images/capi` directory, run `make build-qemu-xxxx-yyyy`. The image is built and located in images/capi/output/BUILD_NAME+kube-KUBERNETES_VERSION. Please replace xxxx with the OS distribution and yyyy with the OS version depending on WHAT you want to build the image for.
 
-For building a ubuntu-2004 based capi image, run the following commands -
+For building a ubuntu-2004 based CAPI image, run the following commands -
 
 ```bash
 $ git clone https://github.com/kubernetes-sigs/image-builder.git
@@ -67,7 +67,7 @@ Run the following script to ensure the required dependencies are met :
 $ ./hack/ensure-vhdutil.sh
 ```
 
-Follow the preceding steps to build the qcow2 capi template for KVM. It will display the location of the template to the terminal as shown :
+Follow the preceding steps to build the qcow2 CAPI template for KVM. It will display the location of the template to the terminal as shown :
 ```bash
 $ make build-qemu-ubuntu-2004
 .............................
@@ -98,7 +98,7 @@ Run the following script to ensure the required dependencies are met :
 $ ./hack/ensure-ovftool.sh
 ```
 
-Follow the preceding steps to build the qcow2 capi template for KVM. It will display the location of the template to the terminal as shown :
+Follow the preceding steps to build the qcow2 CAPI template for KVM. It will display the location of the template to the terminal as shown :
 ```bash
 $ make build-qemu-ubuntu-2004
 .............................

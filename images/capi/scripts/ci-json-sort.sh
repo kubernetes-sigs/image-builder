@@ -36,7 +36,7 @@ json_files=$(find . -type f -name "*.json" | sort -u)
 for f in ${json_files}
 do
   if ! diff <(jq -S . ${f}) ${f} >> /dev/null; then
-    echo "json files are not sorted!! Please sort them with \"make json-sort\" in \"images/capi\" before commit"
+    echo "JSON files are not sorted!! Please sort them with \"make json-sort\" in \"images/capi\" before commit"
     echo "Unsorted file: ${f}"
     exit 1
   fi

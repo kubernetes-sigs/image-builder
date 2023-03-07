@@ -14,7 +14,7 @@
 ---
 
 # Requires license. If you running on Azure License is currently provided with Windows Server images.
-- name: Install docker via OneGet
+- name: Install Docker via OneGet
   win_shell: |
     Install-PackageProvider -Name DockerMsftProvider -Force -ForceBootstrap | Out-Null
     $package = Find-Package -Name Docker -ProviderName DockerMsftProvider -RequiredVersion {{ docker_ee_version }}
@@ -31,7 +31,7 @@
     $exists=docker network ls -f name=host -q
     if (-not $exists) { docker network create -d nat host }
 
-- name: Pre-pull docker images
+- name: Pre-pull Docker images
   win_command: docker pull {{ item }}
   loop: "{{ images }}"
   async: 1800

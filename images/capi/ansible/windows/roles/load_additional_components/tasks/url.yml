@@ -64,7 +64,7 @@
   loop: "{{ images.results }}"
   when: runtime == "containerd" 
 
-- name: Load additional docker images
+- name: Load additional Docker images
   win_shell: |
     docker import {{ item }}
   loop: "{{ additional_url_images_list.split(',') }}"

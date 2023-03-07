@@ -32,7 +32,7 @@ make build-node-vbox-local-windows-2019
 
 #### Windows ISO download
 
-This field should point to an Windows evaluation ISO, it can be found at [Microsoft Evaluation Center](https://www.microsoft.com/en-us/evalcenter/evaluate-windows-server) page. Make sure you have the correct Windows Server version.
+This field should point to a Windows evaluation ISO, it can be found at [Microsoft Evaluation Center](https://www.microsoft.com/en-us/evalcenter/evaluate-windows-server-2019) page. Make sure you have the correct Windows Server version.
 
 ```json
 {

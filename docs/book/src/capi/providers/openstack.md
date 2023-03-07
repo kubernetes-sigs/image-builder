@@ -45,7 +45,7 @@ make deps-qemu
 
 From the `images/capi` directory, run `make build-qemu-ubuntu-xxxx`. The image is built and located in images/capi/output/BUILD_NAME+kube-KUBERNETES_VERSION. Please replace xxxx with `1804` or `2004` depending on the version you want to build the image for.
 
-For building a ubuntu-2004 based capi image, run the following commands -
+For building a ubuntu-2004 based CAPI image, run the following commands -
 
 ```bash
 $ git clone https://github.com/kubernetes-sigs/image-builder.git
