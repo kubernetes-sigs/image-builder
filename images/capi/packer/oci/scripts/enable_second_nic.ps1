@@ -8,7 +8,18 @@ if ($netAdapters.Length -le 1) {
     Exit 1
 }
 
-$secondNic = $netAdapters[1]
+# Make sure we use the second NIC, not the primary
+$primaryNic = Get-NetAdapter -Physical -Name "Ethernet"
+ForEach ($adapter in $netAdapters){
+    if ($adapter.Name -ne $primaryNic.Name) {
+        $secondNic = $adapter
+    }
+}
+
+if ($secondNic -eq $null) {
+    Write-Output "Could not find second Network Adapter from ${netAdapters}"
+    Exit 1
+}
 
 # make sure the network adapter is known
 if ($secondNic.Name -ne "") {
