@@ -89,11 +89,10 @@ is defined in images/capi/packer/config/containerd.json.
 
 ### Building a Windows image
 
-> NOTE: In order to use Windows with CAPI a Baremetal instance is required. This means a Baremetal instance is required for building the image as well. The OCIDs for the 2019
-and 2022 Datacenter edition of Windows can be found in their respective documentation:
+> NOTE: In order to use Windows with CAPI a Baremetal instance is required. This means a Baremetal instance is required for
+> building the image as well. The OCIDs for the 2019 Datacenter edition of Windows can be found in their documentation:
 >
-> - [Windows server 2019](https://docs.oracle.com/en-us/iaas/images/windows-server-2019-bm/)
-> - [Windows server 2022](https://docs.oracle.com/en-us/iaas/images/windows-server-2022-bm/)
+> - [Windows server 2019](https://docs.oracle.com/en-us/iaas/images/image/ffa1ec8d-694e-4df7-b5ec-3e8061a7ecdf/)
 
 > NOTE: It is important to make sure the shape used at image build time is used when launching an instance.
 >
@@ -117,7 +116,7 @@ password failed to be updated.
 
 #### Build a Windows based image
 
-The following example JSON would use the [Windows Server 2019 Datacenter Edition BM E4 image in the us-ashburn-1 region](https://docs.oracle.com/en-us/iaas/images/image/4d56c93a-2165-49b0-9c6e-f9e9a9b05011/).
+The following example JSON would use the [Windows Server 2019 Datacenter Edition BM E4 image in the us-ashburn-1 region](https://docs.oracle.com/en-us/iaas/images/image/ffa1ec8d-694e-4df7-b5ec-3e8061a7ecdf/).
 
 ```json
 {
