@@ -62,6 +62,8 @@
     - { param: vm.overcommit_memory, val: 1 }
     - { param: kernel.panic, val: 10 }
     - { param: kernel.panic_on_oops, val: 1 }
+    - { param: fs.inotify.max_user_instances, val: 8192 }
+    - { param: fs.inotify.max_user_watches, val: 524288 }
 
 - name: Disable swap memory
   shell: |
