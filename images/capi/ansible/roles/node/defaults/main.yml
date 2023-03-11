@@ -106,9 +106,9 @@ common_raw_debs:
 
 common_raw_photon_rpms: []
 
-#photon does not have backward compatibility for legacy distro behavior for sysctl.conf by default
+#photon and flatcar do not have backward compatibility for legacy distro behavior for sysctl.conf by default
 #as it uses systemd-sysctl. set this var so we can use for sysctl conf file value.
-sysctl_conf_file: "{{ '/etc/sysctl.d/99-sysctl.conf' if ansible_os_family == 'VMware Photon OS' else '/etc/sysctl.conf' }}"
+sysctl_conf_file: "{{ '/etc/sysctl.d/99-sysctl.conf' if ansible_os_family in ['Flatcar', 'VMware Photon OS'] else '/etc/sysctl.conf' }}"
 
 pause_image: "registry.k8s.io/pause:3.9"
 containerd_additional_settings: null
