@@ -43,3 +43,11 @@
     - { src: files/etc/networkd-dispatcher/routable.d/20-chrony.j2, dest: /etc/networkd-dispatcher/routable.d/20-chrony }
     - { src: files/etc/networkd-dispatcher/off.d/20-chrony.j2, dest: /etc/networkd-dispatcher/off.d/20-chrony }
     - { src: files/etc/networkd-dispatcher/no-carrier.d/20-chrony.j2, dest: /etc/networkd-dispatcher/no-carrier.d/20-chrony }
+
+- name: Create cloud-init datasource config file
+  copy:
+    dest: /etc/cloud/ds-identify.cfg
+    force: true
+    content: |
+      datasource: VMware
+  when: ansible_distribution_version is version('22.04', '>=')
