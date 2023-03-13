@@ -20,6 +20,19 @@ jobs:
   steps:
   - template: k8s-config.yaml
   - script: |
+      set -euo pipefail
+      kube_proxy_url="sigwindowstools/kube-proxy:v${KUBERNETES_VERSION/+/_}-calico-hostprocess"
+      echo "Checking for Windows kube-proxy image $kube_proxy_url"
+      if ! stderr="$(docker pull $kube_proxy_url 2>&1 > /dev/null)"; then
+        # It's a Windows image, so expect an error after pulling it on Linux
+        if [[ $stderr != *"cannot be used on this platform"* ]]; then
+          echo "Failed to pull kube-proxy image: $stderr"
+          exit 1
+        fi
+      fi
+    displayName: Checking for Windows kube-proxy image
+    condition: and(eq(variables['PREFLIGHT_CHECKS'], 'true'), eq(variables['OS'], 'Windows'))
+  - script: |
       set -o pipefail
       make deps-azure
       os=$(echo "${OS}" | tr '[:upper:]' '[:lower:]')
