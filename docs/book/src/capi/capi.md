@@ -19,6 +19,7 @@ If any needed binaries are not present, they can be installed to `images/capi/.b
 * [CloudStack](./providers/cloudstack.md)
 * [DigitalOcean](./providers/digitalocean.md)
 * [GCP](./providers/gcp.md)
+* [IBM Cloud](./providers/ibmcloud.md)
 * [Nutanix](./providers/nutanix.md)
 * [OCI](./providers/oci.md)
 * [3DSOutscale](./providers/3dsoutscale.md)
