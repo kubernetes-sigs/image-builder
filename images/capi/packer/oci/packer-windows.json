@@ -121,7 +121,7 @@
     "cloudbase_logging_serial_port": "COM1,9600,N,8",
     "cloudbase_metadata_services": "cloudbaseinit.metadata.services.httpservice.HttpService",
     "cloudbase_metadata_services_unattend": "cloudbaseinit.metadata.services.httpservice.HttpService",
-    "cloudbase_plugins": "cloudbaseinit.plugins.common.ephemeraldisk.EphemeralDiskPlugin, cloudbaseinit.plugins.common.mtu.MTUPlugin, cloudbaseinit.plugins.common.sethostname.SetHostNamePlugin",
+    "cloudbase_plugins": "cloudbaseinit.plugins.common.userdata.UserDataPlugin, cloudbaseinit.plugins.common.ephemeraldisk.EphemeralDiskPlugin, cloudbaseinit.plugins.common.mtu.MTUPlugin, cloudbaseinit.plugins.common.sethostname.SetHostNamePlugin",
     "cloudbase_plugins_unattend": "cloudbaseinit.plugins.common.mtu.MTUPlugin",
     "containerd_url": "",
     "containerd_version": null,

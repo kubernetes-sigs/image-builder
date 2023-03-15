@@ -130,6 +130,13 @@ jobs:
         --tags="${TAGS}" \
         --wait-for-nodes=2 \
         "${params[@]}"
+
+        set -x
+        set -e -o pipefail
+
+        # test if the vm's provisionState is "Succeeded" otherwise fail
+        # even though the node is reporting Ready, it still takes a moment for the Azure VM to go to Succeeded
+        timeout 60s bash -c "while ! az vm list -g ${RESOURCE_GROUP} | jq -e 'all(.provisioningState == \"Succeeded\")'; do sleep 1; done"
     displayName: Create a cluster
     env:
       AZURE_CLIENT_SECRET: $(AZURE_CLIENT_SECRET)

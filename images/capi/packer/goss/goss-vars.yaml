@@ -476,6 +476,8 @@ windows:
         contains:
         - "COM2,115200,N,8"
         - "metadata_services=cloudbaseinit.metadata.services.azureservice.AzureService"
+        - "cloudbaseinit.plugins.common.userdata.UserDataPlugin"
+        - "cloudbaseinit.plugins.windows.createuser.CreateUserPlugin"
         - "cloudbaseinit.plugins.common.ephemeraldisk.EphemeralDiskPlugin"
         - "cloudbaseinit.plugins.windows.azureguestagent.AzureGuestAgentPlugin"
         - "cloudbaseinit.plugins.common.mtu.MTUPlugin"
