@@ -1,5 +1,6 @@
 {
-  "boot_command_prefix": "c<wait>linux /casper/vmlinuz --- autoinstall ds='nocloud-net;s=http://{{ .HTTPIP }}:{{ .HTTPPort }}/22.04.efi/'<enter><wait>initrd /casper/initrd<enter><wait>boot<enter>",
+  "boot_command_prefix": "c<wait>linux /casper/vmlinuz ipv6.disable={{ user `boot_disable_ipv6` }} --- autoinstall ds='nocloud-net;s=http://{{ .HTTPIP }}:{{ .HTTPPort }}/22.04.efi/'<enter><wait>initrd /casper/initrd<enter><wait>boot<enter>",
+  "boot_disable_ipv6": "0",
   "boot_media_path": "/media/HTTP",
   "build_name": "ubuntu-2204-efi",
   "distro_arch": "amd64",

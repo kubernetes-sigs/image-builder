@@ -93,3 +93,15 @@
   file:
     state: absent
     path: /etc/udev/rules.d/70-persistent-net.rules
+
+- name: Remvoing subiquity disable disable cloud-init networking config
+  file:
+    path: /etc/cloud/cloud.cfg.d/subiquity-disable-cloudinit-networking.cfg
+    state: absent
+  when: ansible_distribution_version is version('22.04', '>=')
+
+- name: Removing 99-installer.cfg which sets the cloud-init datasource to None
+  file:
+    path: /etc/cloud/cloud.cfg.d/99-installer.cfg
+    state: absent
+  when: ansible_distribution_version is version('22.04', '>=')
