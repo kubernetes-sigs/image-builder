@@ -129,7 +129,7 @@ deps-vbox:
 	hack/ensure-goss.sh
 
 .PHONY: deps-powervs
-deps-powervs:
+deps-powervs: ## Installs/checks dependencies for PowerVS builds
 deps-powervs:
 	hack/ensure-ansible.sh
 	hack/ensure-packer.sh
