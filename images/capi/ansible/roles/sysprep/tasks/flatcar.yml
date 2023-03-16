@@ -22,12 +22,30 @@
     path: /etc/machine-id
     state: absent
 
+- name: Reactivate update-engine to enable updates from Nebraska
+  systemd:
+    name: update-engine
+    state: stopped
+    enabled: yes
+    masked: no
+  when: update_flatcar
+
+- name: Point to nebraska update server for OS and application updates
+  copy:
+    dest: /etc/flatcar/update.conf
+    content: |
+      GROUP={{update_group}}
+      SERVER={{update_url}}
+    mode: 0644
+  when: update_flatcar and (update_group is defined)
+
 - name: Stop and mask update-engine to freeze the image version
   systemd:
     name: update-engine
     state: stopped
     enabled: no
     masked: yes
+  when: not update_flatcar
 
 - name: Stop and mask the locksmith reboot manager since it depends on update-engine
   systemd:

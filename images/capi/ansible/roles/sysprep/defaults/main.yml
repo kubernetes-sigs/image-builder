@@ -15,3 +15,5 @@
 extra_repos: ""
 pip_conf_file: ""
 remove_extra_repos: false
+update_flatcar: false
+update_url: "https://public.update.flatcar-linux.net/v1/update/"
