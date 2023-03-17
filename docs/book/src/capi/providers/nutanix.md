@@ -1,6 +1,6 @@
-# Building CAPI Images for Nutanix Cloud Platform (NCP)
+# Building CAPI Images for Nutanix Cloud Platform
 
-## Install Ansible and Packer
+## Prerequisites for Nutanix builder
 
 ```bash
 # If you don't have the image-builder repository
@@ -10,23 +10,26 @@ $ cd image-builder/images/capi/
 # Run the target make deps-nutanix to install Ansible and Packer
 $ make deps-nutanix
 ```
-## Prerequisites for Nutanix builder
+
+## Configure the Nutanix builder
 
 Complete the `packer/nutanix/nutanix.json` configuration file with credentials and informations specific to the Nutanix Prism Central used to build the image.
 This file must have the following format:
 ```
 {
-    "nutanix_endpoint": "Prism Central IP / FQDN",
-    "nutanix_port": "9440",
-    "nutanix_insecure": "false",
-    "nutanix_username": "PrismCentral_Username",
-    "nutanix_password": "PrismCentral_Password",
-    "nutanix_cluster_name": "Name of PE Cluster",
-    "nutanix_subnet_name": "Name of Subnet",
     "force_deregister": "true",
-    "image_name": "Name of Destination Image"
+    "nutanix_cluster_name": "Name of PE Cluster",
+    "nutanix_endpoint": "Prism Central IP / FQDN",
+    "nutanix_insecure": "false",
+    "nutanix_password": "PrismCentral_Password",
+    "nutanix_port": "9440",
+    "nutanix_subnet_name": "Name of Subnet",
+    "nutanix_username": "PrismCentral_Username",
+    "scp_extra_vars": ""
 }
 ```
+
+If you are using a recent `OpenSSH_9` version, adding the `-O` value in `scp_extra_vars` may be necessary for servers that do not implement a recent SFTP protocol.
 
 ## Customizing the Build Process
 
