@@ -29,7 +29,7 @@ This file must have the following format:
 }
 ```
 
-if you are using a recent `OpenSSH_9` version adding the `-O` value in `scp_extra_vars` may be necessary for servers that do not implement recent SFTP protocol.
+If you are using a recent `OpenSSH_9` version, adding the `-O` value in `scp_extra_vars` may be necessary for servers that do not implement a recent SFTP protocol.
 
 ## Customizing the Build Process
 
