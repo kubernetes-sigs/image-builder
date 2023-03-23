@@ -24,6 +24,7 @@ If any needed binaries are not present, they can be installed to `images/capi/.b
 * [OCI](./providers/oci.md)
 * [3DSOutscale](./providers/3dsoutscale.md)
 * [OpenStack](./providers/openstack.md)
+* [OpenStack remote image building](./providers/openstack-remote.md)
 * [Raw](./providers/raw.md)
 * [VirtualBox](./providers/virtualbox.md)
 * [vSphere](./providers/vsphere.md)

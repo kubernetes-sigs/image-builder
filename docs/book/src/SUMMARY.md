@@ -12,6 +12,7 @@
   - [IBM Cloud](./capi/providers/ibmcloud.md)
   - [Nutanix](./capi/providers/nutanix.md)
   - [OpenStack](./capi/providers/openstack.md)
+  - [OpenStack remote image building](./capi/providers/openstack-remote.md)
   - [OCI](./capi/providers/oci.md)
   - [raw](./capi/providers/raw.md)
   - [vSphere](./capi/providers/vsphere.md)
