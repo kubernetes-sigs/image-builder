@@ -35,13 +35,15 @@
   delay: 10
   when: ansible_os_family == "Debian"
 
-- name: Install packages for building NVIDIA driver kernel module
+- name: Install packages for building NVIDIA driver kernel module and interacting with s3 endpoint
   become: true
   ansible.builtin.apt:
     pkg:
       - build-essential
       - wget
       - dkms
+      - python3-boto3
+      - python3-botocore
   when: ansible_os_family == "Debian"
 
 - name: Make /etc/nvidia/ClientConfigToken directory
@@ -54,16 +56,17 @@
     mode: 0755
 
 - name: Download NVIDIA License Token
-  ansible.builtin.include_role:
-    name: load_additional_components
-  vars:
-    additional_s3_endpoint: "{{ nvidia_s3_url }}"
-    additional_s3_access: "{{ nvidia_bucket_access }}"
-    additional_s3_secret: "{{ nvidia_bucket_secret }}"
-    additional_s3_bucket: "{{ nvidia_bucket }}"
-    additional_s3_ceph: "{{ nvidia_ceph }}"
-    additional_s3_object: "{{ nvidia_tok_location }}"
-    additional_s3_destination_path: /etc/nvidia/ClientConfigToken/client_configuration_token.tok
+  amazon.aws.s3_object:
+    endpoint_url: "{{ nvidia_s3_url }}"
+    access_key: "{{ nvidia_bucket_access }}"
+    secret_key: "{{ nvidia_bucket_secret }}"
+    bucket: "{{ nvidia_bucket }}"
+    object: "{{ nvidia_tok_location }}"
+    dest: /etc/nvidia/ClientConfigToken/client_configuration_token.tok
+    mode: get
+    ceph: "{{ nvidia_ceph }}"
+  retries: 5
+  delay: 3
 
 - name: Set Permissions of NVIDIA License Token
   file:
@@ -80,19 +83,20 @@
     dest: /etc/nvidia/gridd.conf
     mode: 0644
 
-- name: Download NVIDIA driver
-  ansible.builtin.include_role:
-    name: load_additional_components
-  vars:
-    additional_s3_endpoint: "{{ nvidia_s3_url }}"
-    additional_s3_access: "{{ nvidia_bucket_access }}"
-    additional_s3_secret: "{{ nvidia_bucket_secret }}"
-    additional_s3_bucket: "{{ nvidia_bucket }}"
-    additional_s3_ceph: "{{ nvidia_ceph }}"
-    additional_s3_object: "{{ nvidia_installer_location }}"
-    additional_s3_destination_path: /tmp/NVIDIA-Linux-gridd.run
+- name: Download NVIDIA driver installer file
+  amazon.aws.s3_object:
+    endpoint_url: "{{ nvidia_s3_url }}"
+    access_key: "{{ nvidia_bucket_access }}"
+    secret_key: "{{ nvidia_bucket_secret }}"
+    bucket: "{{ nvidia_bucket }}"
+    object: "{{ nvidia_installer_location }}"
+    dest: /tmp/NVIDIA-Linux-gridd.run
+    mode: get
+    ceph: "{{ nvidia_ceph }}"
+  retries: 5
+  delay: 3
 
-- name: Set Permissions of NVIDIA driver
+- name: Set Permissions of NVIDIA driver installer file
   file:
     path: /tmp/NVIDIA-Linux-gridd.run
     state: file
@@ -104,3 +108,18 @@
   become: true
   ansible.builtin.command:
     cmd: "/tmp/NVIDIA-Linux-gridd.run -s --dkms --no-cc-version-check"
+
+- name: Remove the NVIDIA driver installer file
+  file:
+    path: /tmp/NVIDIA-Linux-gridd.run
+    state: absent
+
+- name: Cleanup packages for interacting with s3 endpoint
+  become: true
+  ansible.builtin.apt:
+    state: absent
+    purge: true
+    pkg:
+      - python3-boto3
+      - python3-botocore
+  when: ansible_os_family == "Debian"
