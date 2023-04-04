@@ -12,6 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-networkd_dispatcher_download_url: "https://gitlab.com/craftyguy/networkd-dispatcher/-/archive/2.1/networkd-dispatcher-2.1.tar.bz2"
+networkd_dispatcher_download_url: "https://gitlab.com/craftyguy/networkd-dispatcher/-/archive/2.1/networkd-dispatcher-2.1.tar.gz"
 packer_builder_type: ""
 build_target: "virt"
