@@ -14,7 +14,7 @@ aliases:
     - mboersma
   image-builder-openstack-reviewers:
     - hidekazuna
-  image-builder-openstack-maintainers
+  image-builder-openstack-maintainers:
     - drew-viles
     - yankcrime
   image-builder-cloudstack-reviewers:
