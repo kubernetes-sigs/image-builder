@@ -6,6 +6,8 @@
 # - AZURE_CLIENT_SECRET_VHD - Service principal secret to build the vhd
 # - AZURE_SUBSCRIPTION_ID_VHD - Subscription ID to build the vhd
 # - KUBERNETES_VERSION - version of Kubernetes to create the sku for, e.g. `1.21.3`
+# - LINUX_OS_VERSION - version of Ubuntu Linux to test with, e.g. `22.04`
+# - WINDOWS_OS_VERSION - version of Windows Server to test with, e.g. `2022-containerd`
 # - CLEANUP - whether or not to clean up resources created in the run
 
 trigger: none
@@ -48,10 +50,10 @@ stages:
         matrix:
           Windows:
             OS: Windows
-            OS_VERSION: 2019
+            OS_VERSION: $(WINDOWS_OS_VERSION)
           Linux:
             OS: Ubuntu
-            OS_VERSION: 2004
+            OS_VERSION: $(LINUX_OS_VERSION)
       variables:
         AZURE_TENANT_ID: $(AZURE_TENANT_ID_VHD)
         AZURE_CLIENT_ID: $(AZURE_CLIENT_ID_VHD)
