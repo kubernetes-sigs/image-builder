@@ -65,3 +65,14 @@
     - netbase
     - nfs-common
   when: ansible_os_family == "Debian"
+
+## refer to ../files/etc/cloud/cloud.cfg.d/15_azure-vnet.cfg
+## for more context on below file addition
+- name: Create azure-vnet config file
+  copy:
+    src: files/etc/cloud/cloud.cfg.d/15_azure-vnet.cfg
+    dest: /etc/cloud/cloud.cfg.d/15_azure-vnet.cfg
+    owner: root
+    group: root
+    mode: 0644
+  when: ansible_os_family == "Debian"
