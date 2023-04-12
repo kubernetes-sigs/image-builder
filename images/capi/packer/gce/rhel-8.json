@@ -1,0 +1,11 @@
+{
+  "build_name": "rhel-8",
+  "distribution": "rhel",
+  "distribution_release": "rhel-8",
+  "distribution_version": "8",
+  "epel_rpm_gpg_key": "https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-8",
+  "redhat_epel_rpm": "https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm",
+  "source_image_family": "rhel-8",
+  "ssh_username": "packer",
+  "zone": "us-central1-a"
+}

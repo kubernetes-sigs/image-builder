@@ -18,7 +18,7 @@
     username: "{{ lookup('env', 'RHSM_USER') }}"
     password: "{{ lookup('env', 'RHSM_PASS') }}"
     auto_attach: true
-  when: 
+  when:
     - ansible_distribution == "RedHat"
     - lookup('env', 'RHSM_USER') | length > 0
     - lookup('env', 'RHSM_PASS') | length > 0

@@ -277,6 +277,17 @@ rhel:
       - distro_version: "8"
         package:
           <<: *rh8_rpms
+  gcp:
+    command:
+      find -L /bin -maxdepth 1 -type f -executable -printf "%f\n" | grep -Fx 'gcloud':
+        exit-status: 0
+        stdout: ["gcloud"]
+        stderr: []
+        timeout: 0
+    os_version:
+      - distro_version: "8"
+        package:
+          <<: *rh8_rpms
   ova:
     package:
       python2-pip:
