@@ -14,13 +14,13 @@ The `images/capi/packer/config/windows` directory includes several JSON files th
 
 ## Service Manager
 
-Image-builder provides you two ways to configure Windows services. The default is setup using [nssm](https://nssm.cc/) which configures a Windows service for kubelet by running `{{ kubernetes_install_path }}\StartKubelet.ps1` allowing easy editing of command arguments in the startup file.  The alternate is to use the Windows native [sc.exe](https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/sc-config) which uses the kubelet argument `--windows-service` to install kubelet as a native Windows service with the command line arguments configured on the service. Nssm handles service restarts, if you are using sc.exe you may wish to configure the service restart options on kubelet. To avoid starting kubelet to early, image-builder sets the kubelet service to *manual* which you should consider changing once the node has joined a cluster.
+Image-builder provides you two ways to configure Windows services. The default is setup using [nssm](https://nssm.cc/) which configures a Windows service for kubelet by running `{{ kubernetes_install_path }}\StartKubelet.ps1` allowing easy editing of command arguments in the startup file.  The alternate is to use the Windows native [sc.exe](https://learn.microsoft.com/windows-server/administration/windows-commands/sc-config) which uses the kubelet argument `--windows-service` to install kubelet as a native Windows service with the command line arguments configured on the service. Nssm handles service restarts, if you are using sc.exe you may wish to configure the service restart options on kubelet. To avoid starting kubelet to early, image-builder sets the kubelet service to *manual* which you should consider changing once the node has joined a cluster.
 
 **Important: sc.exe does not support kubeadm KUBELET_KUBEADM_ARGS which is used by Cluster API to pass extra user args**
 
 ## Wins (by rancher)
 
-As a workaround for the lack of privileged containers on Windows nodes, SIG Windows utilise [Wins](https://github.com/rancher/wins/) to allow pods to run processes on hosts, an example is when you are using kube-proxy or a cni provider in a pod. This means that by default we install wins using image-builder. This may be undesirable, if you do not need pod to have the ability to run processes on the host. Additionally, Alpha support for Windows [Host Processes](https://github.com/kubernetes/enhancements/tree/master/keps/sig-windows/1981-windows-privileged-container-support), which is the Windows equivalent for privileged containers, will be introduced in 1.22 which negates the need for wins entirely. To skip installing wins on the host you can add `"wins_url": ""` to your variables.  
+As a workaround for the lack of privileged containers on Windows nodes, SIG Windows utilise [Wins](https://github.com/rancher/wins/) to allow pods to run processes on hosts, an example is when you are using kube-proxy or a cni provider in a pod. This means that by default we install wins using image-builder. This may be undesirable, if you do not need pod to have the ability to run processes on the host. Additionally, Alpha support for Windows [Host Processes](https://github.com/kubernetes/enhancements/tree/master/keps/sig-windows/1981-windows-privileged-container-support), which is the Windows equivalent for privileged containers, will be introduced in 1.22 which negates the need for wins entirely. To skip installing wins on the host you can add `"wins_url": ""` to your variables.
 
 When using containerd, due to lack of host networking, there is currently no way to run cni inside a pod.   To work around this, containerd needs to be installed with an additional custom Ansible module or after the image has been created.  With CAPI, the additional configuration can be done with pre/postKubeadm scripts when the node is created.
 
@@ -31,15 +31,15 @@ When building Windows images it is necessary to install OS and Security updates.
 To specify the update categories to check, provide a value for `windows_updates_categories` in `packer/config/windows/common.json`.
 
 Example:
-Install all available updates from *all categories*.    
-`"windows_updates_categories": "CriticalUpdates SecurityUpdates UpdateRollups"` 
+Install all available updates from *all categories*.
+`"windows_updates_categories": "CriticalUpdates SecurityUpdates UpdateRollups"`
 
 Published Cloud Provider images such as Azure or AWS are regularly updated so it may be preferable to specify individual patches to install.  This can be achieved by specifying the KB numbers of required updates.
 
-To choose individual updates, provide a value for `windows_updates_kbs` in `packer/config/windows/common.json`. 
+To choose individual updates, provide a value for `windows_updates_kbs` in `packer/config/windows/common.json`.
 
-Example: 
-`"windows_updates_kbs": "KB4580390 KB4471332"`.  
+Example:
+`"windows_updates_kbs": "KB4580390 KB4471332"`.
 
 ## OpenSSH Server
 
@@ -58,7 +58,7 @@ Follow the documentation for configuring WinRM on the Windows machine: https://d
 After WinRM is installed you can edit or `/etc/ansible/hosts` file with the following:
 
 ```
-[winhost]    
+[winhost]
 <windows ip>
 
 [winhost:vars]
