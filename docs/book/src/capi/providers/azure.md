@@ -48,7 +48,7 @@ Generation 2 images may only be used with Shared Image Gallery, not VHD.
 This table lists several common options that a user may want to set via
 `PACKER_VAR_FILES` to customize their build behavior.  This is not an exhaustive
 list, and greater explanation can be found in the
-[Packer documentation for the Azure ARM builder](https://www.packer.io/docs/builders/azure/arm).
+[Packer documentation for the Azure ARM builder](https://developer.hashicorp.com/packer/plugins/builders/azure/arm).
 
 | Variable | Description | Default |
 |----------|-------------|---------|
@@ -65,7 +65,7 @@ If you are adding features to image builder than it is sometimes useful to work 
 
 ### Provision a VM directly from a VHD
 
-After creating a VHD, create a managed image using the url output from `make build-azure-vhd-<image>` and use it to [create the VM](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/build-image-with-packer#create-a-vm-from-the-packer-image): 
+After creating a VHD, create a managed image using the url output from `make build-azure-vhd-<image>` and use it to [create the VM](https://learn.microsoft.com/azure/virtual-machines/windows/build-image-with-packer#create-a-vm-from-the-packer-image):
 
 ```bash
 az image create -n testvmimage -g cluster-api-images --os-type <Windows/Linux> --source <storage url for vhd file>
@@ -73,4 +73,4 @@ az vm create -n testvm --image testvmimage -g cluster-api-images
 ```
 
 ### Debugging Packer scripts
-There are several ways to debug Packer scripts: https://www.packer.io/docs/other/debugging.html
+There are several ways to debug Packer scripts: https://developer.hashicorp.com/packer/docs/debugging
