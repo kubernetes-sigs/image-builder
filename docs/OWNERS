@@ -1,4 +1,17 @@
 # See the OWNERS docs at https://go.k8s.io/owners
 
+# Maintainers are expected to refrain from approving documentation changes
+# which don't relate to their area of maintenance.
 approvers:
+  - cluster-api-aws-maintainers
+  - cluster-api-azure-maintainers
+  - cluster-api-cloudstack-maintainers
+  - cluster-api-digitalocean-maintainers
+  - cluster-api-gcp-maintainers
+  - cluster-api-maintainers
+  - cluster-api-nutanix-maintainers
+  - cluster-api-openstack-maintainers
+  - cluster-api-vsphere-maintainers
+  - image-builder-maintainers
+  - image-builder-raw-maintainers
   - image-builder-windows-maintainers
