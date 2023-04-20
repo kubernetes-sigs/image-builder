@@ -6,6 +6,7 @@
   "build_name": "flatcar-{{env `FLATCAR_CHANNEL`}}-{{env `FLATCAR_VERSION`}}",
   "channel_name": "{{env `FLATCAR_CHANNEL`}}",
   "crictl_source_type": "http",
+  "distribution_version": "{{env `FLATCAR_CHANNEL`}}-{{env `FLATCAR_VERSION`}}",
   "distro_name": "flatcar",
   "guest_os_type": "linux-64",
   "http_directory": "./packer/files/flatcar/ignition/",

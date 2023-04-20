@@ -2,6 +2,7 @@
   "boot_command_prefix": "<tab> text inst.ks=",
   "boot_command_suffix": "/8/ks.cfg<enter><wait>",
   "build_name": "rhel-8",
+  "distribution_version": "8",
   "distro_name": "rhel",
   "distro_version": "8",
   "epel_rpm_gpg_key": "https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-8",
