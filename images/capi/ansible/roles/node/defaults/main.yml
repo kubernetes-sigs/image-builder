@@ -91,7 +91,6 @@ common_virt_rpms:
 - open-vm-tools
 
 common_virt_debs:
-- linux-cloud-tools-virtual
 - linux-tools-virtual
 - open-vm-tools
 

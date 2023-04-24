@@ -390,7 +390,6 @@ ubuntu:
       cloud-initramfs-dyn-netconf:
   qemu:
     package:
-      linux-cloud-tools-virtual:
       linux-tools-virtual:
       open-vm-tools:
       cloud-guest-utils:
@@ -552,3 +551,4 @@ windows:
         filetype: file
         contains:
         - "metadata_services=cloudbaseinit.metadata.services.base.EmptyMetadataService"
+

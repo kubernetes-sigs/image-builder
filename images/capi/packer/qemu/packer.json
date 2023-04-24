@@ -23,12 +23,74 @@
       "net_device": "virtio-net",
       "output_directory": "{{user `output_directory`}}",
       "qemu_binary": "{{user `qemu_binary`}}",
+      "qemuargs": [
+        [
+          "-machine",
+          "virt,accel=kvm,gic-version=host"
+        ],
+        [
+          "-cpu",
+          "host"
+        ],
+        [
+          "-k",
+          "en-us"
+        ],
+        [
+          "-boot",
+          "strict=off"
+        ],
+        [
+          "-device",
+          "usb-ehci"
+        ],
+        [
+          "-device",
+          "usb-kbd"
+        ],
+        [
+          "-device",
+          "usb-mouse"
+        ],
+        [
+          "-drive",
+          "file=./output/{{user `vm_name`}}/{{user `vm_name`}},if=none,id=drive0,cache=writeback"
+        ],
+        [
+          "-device",
+          "virtio-blk,drive=drive0,bootindex=0"
+        ],
+        [
+          "-drive",
+          "file=/root/.cache/packer/1bb131b162f10e50ac7d8671a71f4a0e13e36197.iso,if=none,id=drive1,cache=writeback"
+        ],
+        [
+          "-device",
+          "virtio-blk,drive=drive1,bootindex=1"
+        ],
+        [
+          "-drive",
+          "file=/var/lib/libvirt/images/capi.fd,format=raw,if=pflash"
+        ],
+        [
+          "-drive",
+          "file=/var/lib/libvirt/images/capi-nvmram.fd,format=raw,if=pflash"
+        ],
+        "-usb",
+        [
+          "-device",
+          "virtio-gpu-pci"
+        ]
+      ],
       "shutdown_command": "echo '{{user `ssh_password`}}' | sudo -S -E sh -c 'usermod -L {{user `ssh_username`}} && {{user `shutdown_command`}}'",
       "ssh_password": "{{user `ssh_password`}}",
       "ssh_timeout": "2h",
       "ssh_username": "{{user `ssh_username`}}",
       "type": "qemu",
-      "vm_name": "{{user `vm_name`}}"
+      "vm_name": "{{user `vm_name`}}",
+      "vnc_bind_address": "0.0.0.0",
+      "vnc_port_max": 5903,
+      "vnc_port_min": 5903
     }
   ],
   "post-processors": [

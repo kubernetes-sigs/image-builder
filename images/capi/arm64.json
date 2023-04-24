@@ -1,0 +1,8 @@
+{
+  "containerd_sha256": "5b7811998b02cf06ec2449c571d5d68a6796cfbba6b402cee0a355a6e431e204",
+  "containerd_url": "https://github.com/containerd/containerd/releases/download/v{{user `containerd_version`}}/cri-containerd-cni-{{user `containerd_version`}}-linux-arm64.tar.gz",
+  "cpus": "32",
+  "crictl_url": "https://github.com/kubernetes-sigs/cri-tools/releases/download/v{{user `crictl_version`}}/crictl-v{{user `crictl_version`}}-linux-arm64.tar.gz",
+  "memory": "16384",
+  "qemu_binary": "qemu-system-aarch64"
+}

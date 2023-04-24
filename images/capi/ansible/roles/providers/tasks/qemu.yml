@@ -46,4 +46,4 @@
     name: hv-kvp-daemon
     state: stopped
     enabled: false
-  when: ansible_os_family == "Debian"
+  when: ansible_os_family == "Debian" and ansible_architecture != "aarch64"
