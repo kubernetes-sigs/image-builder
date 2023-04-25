@@ -53,7 +53,7 @@ Example:
 Ansible doesn't run on directly on Windows (wsl works) but can used to configure a remote Windows host.  For faster development you can create a VM and run Ansible against the Windows VM directly without using Packer. This document gives the high level steps to use Ansible from Linux machines.
 
 ## Set up Windows machine
-Follow the documentation for configuring WinRM on the Windows machine: https://docs.ansible.com/ansible/latest/user_guide/windows_setup.html#winrm-setup. Note the [ConfigureRemotingForAnsible.ps1](https://raw.githubusercontent.com/ansible/ansible/devel/examples/scripts/ConfigureRemotingForAnsible.ps1) is for development only.  Refer to [Ansible WinRM documentation](https://docs.ansible.com/ansible/latest/user_guide/windows_winrm.html) for details for advance configuration.
+Follow the [WinRM Setup](https://docs.ansible.com/ansible/latest/os_guide/windows_setup.html) in the Ansible documentation for configuring WinRM on the Windows machine. Note the [ConfigureRemotingForAnsible.ps1](https://raw.githubusercontent.com/ansible/ansible/devel/examples/scripts/ConfigureRemotingForAnsible.ps1) is for development only. Refer to [Ansible WinRM documentation](https://docs.ansible.com/ansible/latest/user_guide/windows_winrm.html) for details for advance configuration.
 
 After WinRM is installed you can edit or `/etc/ansible/hosts` file with the following:
 
