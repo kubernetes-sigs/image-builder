@@ -34,6 +34,8 @@ packer validate -syntax-only $PACKER_FILE || exit 1
 
 az sig create --resource-group ${RESOURCE_GROUP_NAME} --gallery-name ${GALLERY_NAME}
 
+SECURITY_TYPE_CVM_SUPPORTED_FEATURE="SecurityType=ConfidentialVmSupported"
+
 create_image_definition() {
   az sig image-definition create \
     --resource-group ${RESOURCE_GROUP_NAME} \
@@ -43,7 +45,8 @@ create_image_definition() {
     --offer ${SIG_OFFER:-capz-demo} \
     --sku ${SIG_SKU:-$2} \
     --hyper-v-generation ${3} \
-    --os-type ${4}
+    --os-type ${4} \
+    --features ${5:-''}
 }
 
 SIG_TARGET=$1
@@ -73,6 +76,14 @@ case ${SIG_TARGET} in
   windows-2022-containerd)
     create_image_definition ${SIG_TARGET} "win-2022-containerd" "V1" "Windows"
   ;;
+  windows-2019-containerd-cvm)
+    SKU="windows-2019-cvm-containerd"
+    create_image_definition ${SKU} ${SKU} "V2" "Windows" ${SECURITY_TYPE_CVM_SUPPORTED_FEATURE}
+  ;;
+  windows-2022-containerd-cvm)
+    SKU="windows-2022-cvm-containerd"
+    create_image_definition ${SKU} ${SKU} "V2" "Windows" ${SECURITY_TYPE_CVM_SUPPORTED_FEATURE}
+  ;;
   flatcar)
     SKU="flatcar-${FLATCAR_CHANNEL}-${FLATCAR_VERSION}"
     create_image_definition ${SKU} ${SKU} "V1" "Linux"
@@ -83,8 +94,14 @@ case ${SIG_TARGET} in
   ubuntu-2004-gen2)
     create_image_definition ${SIG_TARGET} "20_04-lts-gen2" "V2" "Linux"
   ;;
+  ubuntu-2004-cvm)
+    create_image_definition ${SIG_TARGET} "20_04-lts-cvm" "V2" "Linux" ${SECURITY_TYPE_CVM_SUPPORTED_FEATURE}
+  ;;
   ubuntu-2204-gen2)
     create_image_definition ${SIG_TARGET} "22_04-lts-gen2" "V2" "Linux"
+  ;;
+  ubuntu-2204-cvm)
+    create_image_definition ${SIG_TARGET} "22_04-lts-cvm" "V2" "Linux" ${SECURITY_TYPE_CVM_SUPPORTED_FEATURE}
   ;;
   centos-7-gen2)
     create_image_definition "centos-7-gen2" "centos-7-gen2" "V2" "Linux"

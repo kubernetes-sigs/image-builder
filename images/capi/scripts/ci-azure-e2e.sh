@@ -38,12 +38,16 @@ source azure_targets.sh
 IFS=' ' read -r -a VHD_CI_TARGETS <<< "${VHD_CI_TARGETS}"
 IFS=' ' read -r -a SIG_CI_TARGETS <<< "${SIG_CI_TARGETS}"
 IFS=' ' read -r -a SIG_GEN2_CI_TARGETS <<< "${SIG_GEN2_CI_TARGETS}"
+IFS=' ' read -r -a SIG_CVM_CI_TARGETS <<< "${SIG_CVM_CI_TARGETS}"
 
 # Append the "gen2" targets to the original SIG list
 for element in "${SIG_GEN2_CI_TARGETS[@]}"
 do
     SIG_CI_TARGETS+=("${element}-gen2")
 done
+
+# Append "-cvm" suffix to SIG CVM targets
+SIG_CVM_CI_TARGETS=("${SIG_CVM_CI_TARGETS[@]/%/-cvm}")
 
 # shellcheck source=parse-prow-creds.sh
 source "packer/azure/scripts/parse-prow-creds.sh"
@@ -57,6 +61,11 @@ source "packer/azure/scripts/parse-prow-creds.sh"
 get_random_region() {
     local REGIONS=("eastus" "eastus2" "southcentralus" "westus2" "westeurope")
     echo "${REGIONS[${RANDOM} % ${#REGIONS[@]}]}"
+}
+
+export VALID_CVM_LOCATIONS=("eastus" "westus" "northeurope" "westeurope")
+get_random_cvm_region() {
+    echo "${VALID_CVM_LOCATIONS[${RANDOM} % ${#VALID_CVM_LOCATIONS[@]}]}"
 }
 
 export PATH=${PWD}/.local/bin:$PATH
@@ -94,6 +103,19 @@ if [[ "${AZURE_BUILD_FORMAT:-vhd}" == "sig" ]]; then
     for target in ${SIG_CI_TARGETS[@]};
     do
         make build-azure-sig-${target} > ${ARTIFACTS}/azure-sigs/${target}.log 2>&1 &
+        PIDS["sig-${target}"]=$!
+    done
+
+    SELECTED_LOCATION="${AZURE_LOCATION}"
+    if [[ ! " ${VALID_CVM_LOCATIONS[*]} " =~ " ${SELECTED_LOCATION} " ]]; then
+        SELECTED_LOCATION="$(get_random_cvm_region)"
+        echo "AZURE_LOCATION=${AZURE_LOCATION} is invalid for Confidential VM targets. Valid CVM locations: ${VALID_CVM_LOCATIONS[*]}."
+        echo "Selected location is ${SELECTED_LOCATION}."
+    fi
+
+    for target in ${SIG_CVM_CI_TARGETS[@]};
+    do
+        AZURE_LOCATION="${SELECTED_LOCATION}" make build-azure-sig-${target} > ${ARTIFACTS}/azure-sigs/${target}.log 2>&1 &
         PIDS["sig-${target}"]=$!
     done
 else
