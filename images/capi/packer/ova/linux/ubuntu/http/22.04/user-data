@@ -30,6 +30,8 @@ autoinstall:
   # For more information on how partitioning is configured,
   # please refer to https://curtin.readthedocs.io/en/latest/topics/storage.html.
   storage:
+    grub:
+      replace_linux_default: false
     config:
       - type: disk
         id: disk-0
