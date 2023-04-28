@@ -3,6 +3,7 @@
   "boot_command_prefix": "<tab> text ks=",
   "boot_command_suffix": "/7/ks.cfg<enter><wait>",
   "build_name": "centos-7",
+  "distribution_version": "7",
   "distro_arch": "amd64",
   "distro_name": "centos",
   "distro_version": "7",

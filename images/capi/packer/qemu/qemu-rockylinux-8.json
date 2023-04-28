@@ -2,6 +2,7 @@
   "boot_command_prefix": "<up><tab> text inst.ks=",
   "boot_command_suffix": "/8/ks.cfg<enter><wait><enter>",
   "build_name": "rockylinux-8",
+  "distribution_version": "8",
   "distro_arch": "amd64",
   "distro_name": "rockylinux",
   "distro_version": "8",
