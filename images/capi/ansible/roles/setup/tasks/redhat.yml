@@ -18,7 +18,10 @@
     username: "{{ lookup('env', 'RHSM_USER') }}"
     password: "{{ lookup('env', 'RHSM_PASS') }}"
     auto_attach: true
-  when: ansible_distribution == "RedHat"
+  when: 
+    - ansible_distribution == "RedHat"
+    - lookup('env', 'RHSM_USER') | length > 0
+    - lookup('env', 'RHSM_PASS') | length > 0
 
 - name: import epel gpg key
   rpm_key:

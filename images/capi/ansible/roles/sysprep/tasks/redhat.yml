@@ -60,7 +60,10 @@
         state: absent
     - name: clean local subscription data
       command: subscription-manager clean
-  when: ansible_distribution == "RedHat"
+  when: 
+    - ansible_distribution == "RedHat"
+    - lookup('env', 'RHSM_USER') | length > 0
+    - lookup('env', 'RHSM_PASS') | length > 0
 
 - name: Remove yum package caches
   yum:
