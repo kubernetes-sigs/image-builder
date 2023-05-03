@@ -72,8 +72,8 @@
   poll: 60
   retries: 5
   delay: 3
-  register: import
-  until: import is not failed
+  register: docker_import
+  until: docker_import is not failed
   when: runtime == "docker" 
 
 - name: Remove downloaded files
