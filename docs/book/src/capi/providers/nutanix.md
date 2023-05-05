@@ -18,6 +18,7 @@ This file must have the following format:
 ```
 {
     "force_deregister": "true",
+    "image_export": "false",
     "nutanix_cluster_name": "Name of PE Cluster",
     "nutanix_endpoint": "Prism Central IP / FQDN",
     "nutanix_insecure": "false",

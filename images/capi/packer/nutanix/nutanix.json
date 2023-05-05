@@ -1,5 +1,6 @@
 {
   "force_deregister": "true",
+  "image_export": "false",
   "nutanix_cluster_name": "",
   "nutanix_endpoint": "",
   "nutanix_insecure": "false",
