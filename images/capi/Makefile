@@ -156,6 +156,13 @@ deps-nutanix:
 	hack/ensure-packer.sh
 	hack/ensure-goss.sh
 
+.PHONY: deps-release
+deps-release: ## Installs/checks dependencies for project releases
+	hack/ensure-go.sh
+	hack/ensure-jq.sh
+	hack/ensure-kpromo.sh
+	hack/ensure-yq.sh
+
 ## --------------------------------------
 ## Container variables
 ## --------------------------------------
@@ -948,9 +955,16 @@ test-azure: ## Run the tests for Azure builders
 ## --------------------------------------
 ##@ Release
 
+USER_FORK ?= $(shell git config --get remote.origin.url | cut -d/ -f4)
+IMAGE_REVIEWERS ?= $(shell ./hack/get-project-maintainers.sh)
+
 .PHONY: release-staging
-release-staging: ## Builds and push container images to the staging bucket.
+release-staging: ## Build and push a container image to the staging registry.
 	TAG=$(IB_VERSION) REGISTRY=$(STAGING_REGISTRY) $(MAKE) docker-build docker-push
+
+.PHONY: promote-images
+promote-image: deps-release ## Create a pull request to promote a staging image to production.
+	kpromo pr --project scl-image-builder --tag $(IB_VERSION) --reviewers "$(IMAGE_REVIEWERS)" --fork $(USER_FORK)
 
 ## --------------------------------------
 ## Sort JSON
