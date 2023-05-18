@@ -105,3 +105,15 @@
     path: /etc/cloud/cloud.cfg.d/99-installer.cfg
     state: absent
   when: ansible_distribution_version is version('22.04', '>=')
+
+- name: Removing subiquity curtin preserve sources config
+  file:
+    path: /etc/cloud/cloud.cfg.d/curtin-preserve-sources.cfg
+    state: absent
+  when: ansible_distribution_version is version('22.04', '>=')
+
+- name: Removing cloud-init ds identify config
+  file:
+    path: /etc/cloud/ds-identify.cfg
+    state: absent
+  when: ansible_distribution_version is version('22.04', '>=')
