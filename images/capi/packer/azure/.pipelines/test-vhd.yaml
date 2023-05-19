@@ -31,7 +31,7 @@ jobs:
       VHD_RESOURCE_ID=$(jq -r .vhd_base_url $(system.defaultWorkingDirectory)/images/capi/packer/azure/vhd/vhd-publishing-info.json)
       STORAGE_ACCOUNT_NAME=$(jq -r .storage_account_name $(system.defaultWorkingDirectory)/images/capi/packer/azure/vhd/vhd-publishing-info.json)
       TAGS=$(jq -r .tags $(system.defaultWorkingDirectory)/images/capi/packer/azure/vhd/vhd-publishing-info.json)
-    
+
       echo "##vso[task.setvariable variable=VHD_RESOURCE_ID]$VHD_RESOURCE_ID"
       echo "##vso[task.setvariable variable=STORAGE_ACCOUNT_NAME]$STORAGE_ACCOUNT_NAME"
       echo "##vso[task.setvariable variable=TAGS;]$TAGS"
@@ -98,6 +98,8 @@ jobs:
 
       # Set up the Azure CLI Cluster API extension
       # https://github.com/Azure/azure-capi-cli-extension/releases/download/az-capi-nightly/capi-0.0.vnext-py2.py3-none-any.whl
+      python3 -m pip install --upgrade pip
+      az upgrade --yes
       az extension add --yes --source "${AZ_CAPI_EXTENSION_URL}"
 
       # Install required binaries
@@ -117,7 +119,7 @@ jobs:
       if [ "$OS" == "Windows" ]; then
         params+=(--windows)
       fi
-      
+
       # Create a cluster
       az capi create \
         --yes \
