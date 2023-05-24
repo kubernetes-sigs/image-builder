@@ -472,6 +472,13 @@ ubuntu:
       iscsid:
         enabled: true
         running: false
+  hcloud:
+    package:
+      cloud-guest-utils:
+      cloud-initramfs-copymods:
+      cloud-initramfs-dyn-netconf:
+      linux-cloud-tools-generic:
+      linux-tools-generic:
 
 oracle linux:
   common-kernel-param:

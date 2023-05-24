@@ -1,0 +1,8 @@
+{
+  "build_name": "ubuntu-1804",
+  "distribution": "ubuntu",
+  "distribution_release": "bionic",
+  "distribution_version": "1804",
+  "image": "ubuntu-18.04",
+  "ssh_username": "root"
+}

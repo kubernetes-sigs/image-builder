@@ -1,0 +1,6 @@
+{
+  "hcloud_location": "{{env `HCLOUD_LOCATION`}}",
+  "token": "{{env `AZURE_CLIENT_ID`}}",
+  "containerd_wasm_shims_runtimes": "spin,slight",
+  "server_type": "ccx11"
+}
