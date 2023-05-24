@@ -54,7 +54,7 @@ aliases:
     - vincepri
   cluster-api-digitalocean-maintainers:
     - cpanato
-    - MorrisLaw
+    - gottwald
     - prksu
     - timoreimann
   cluster-api-openstack-maintainers:
