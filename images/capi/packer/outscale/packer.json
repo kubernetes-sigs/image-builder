@@ -2,6 +2,10 @@
   "builders": [
     {
       "access_key": "{{ user `access_key` }}",
+      "global_permission": true,
+      "omi_account_ids": [
+        "{{ user `account_id` }}"
+      ],
       "omi_name": "{{user `build_name`}}-{{user `distribution_version`}}-kubernetes-{{user `kubernetes_semver`}}-{{isotime `2006-01-02`}}",
       "region": "{{ user `region` }}",
       "secret_key": "{{ user `secret_key` }}",
@@ -89,6 +93,7 @@
   ],
   "variables": {
     "access_key": "{{env `OSC_ACCESS_KEY`}}",
+    "account_id": "{{env `OSC_ACCOUNT_ID`}}",
     "ansible_common_vars": "",
     "ansible_extra_vars": "",
     "build_timestamp": "{{timestamp}}",
