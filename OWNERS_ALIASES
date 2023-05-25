@@ -45,13 +45,8 @@ aliases:
     - mboersma
   cluster-api-gcp-maintainers:
     - cpanato
-    - detiber
     - dims
-    - gab-satchi
-    - justinsb
-    - krousey
-    - rsmitty
-    - vincepri
+    - richardcase
   cluster-api-digitalocean-maintainers:
     - cpanato
     - gottwald
