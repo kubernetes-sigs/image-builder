@@ -14,9 +14,10 @@
       "server_type": "{{user `server_type`}}",
       "token": "{{user `hcloud_token`}}",
       "location": "{{user `hcloud_location`}}",
-      "snapshot_name": "{{user `image_name`}}",
+      "snapshot_name": "cluster-api-{{user `build_name`}}-{{user `flatcar_channel`}}-{{user `flatcar_version`}}-{{user `kubernetes_semver`}}-{{user `build_timestamp`}}",
       "type": "hcloud",
-      "image": "{{user `image`}}",
+      "image": "ubuntu-22.04",
+      "rescue": "linux64",
       "ssh_username": "{{user `ssh_username`}}"
     }
   ],
@@ -46,10 +47,25 @@
         "BUILD_NAME={{user `build_name`}}"
       ],
       "inline": [
-        "if [ $BUILD_NAME != \"ubuntu-1804\" ] && [ $BUILD_NAME != \"ubuntu-1804-gen2\" ]; then exit 0; fi",
+        "if [ $BUILD_NAME != \"ubuntu-1804\" ]; then exit 0; fi",
         "while [ ! -f /var/lib/cloud/instance/boot-finished ]; do echo 'Waiting for cloud-init...'; sleep 1; done",
         "sudo apt-get -qq update && sudo DEBIAN_FRONTEND=noninteractive apt-get -qqy install python python-pip"
       ],
+      "type": "shell"
+    },
+    {
+      "environment_vars": [
+        "FLATCAR_CHANNEL={{user `flatcar_channel`}}",
+	"FLATCAR_VERSION={{user `flatcar_version`}}" 
+      ],
+      "script": "./packer/hcloud/scripts/install-flatcar.sh",
+      "type": "shell",
+      "expect_disconnect": true,
+      "pause_after": "5s"
+    },
+    {
+      "execute_command": "BUILD_NAME={{user `build_name`}}; if [[ \"${BUILD_NAME}\" == *\"flatcar\"* ]]; then sudo {{.Vars}} -S -E bash '{{.Path}}'; fi",
+      "script": "./packer/files/flatcar/scripts/bootstrap-flatcar.sh",
       "type": "shell"
     },
     {
@@ -144,6 +160,8 @@
     "exclude_from_latest": "false",
     "existing_ansible_ssh_args": "{{env `ANSIBLE_SSH_ARGS`}}",
     "ib_version": "{{env `IB_VERSION`}}",
+    "flatcar_channel": "{{env `FLATCAR_CHANNEL` }}",
+    "flatcar_version": "{{env `FLATCAR_VERSION` }}",
     "kubernetes_cni_deb_version": null,
     "kubernetes_cni_http_source": null,
     "kubernetes_cni_rpm_version": null,
