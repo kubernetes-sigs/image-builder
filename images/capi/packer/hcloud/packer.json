@@ -2,9 +2,9 @@
   "builders": [
     {
       "snapshot_labels": {
-        "build_date": "{{isotime}}",
+        "build_date": "{{isotime \"2006-01-02T15-04-05Z\" }}",
         "build_timestamp": "{{user `build_timestamp`}}",
-        "creationTimestamp": "{{isotime \"2006-01-02T15:04:05Z\"}}",
+        "creationTimestamp": "{{isotime \"2006-01-02T15-04-05Z\"}}",
         "distribution": "{{user `distribution`}}",
         "distribution_release": "{{user `distribution_release`}}",
         "distribution_version": "{{user `distribution_version`}}",
@@ -14,7 +14,7 @@
       "server_type": "{{user `server_type`}}",
       "token": "{{user `hcloud_token`}}",
       "location": "{{user `hcloud_location`}}",
-      "snapshot_name": "{{user `image_name`}}-{{user `build_timestamp`}}",
+      "snapshot_name": "{{user `image_name`}}",
       "type": "hcloud",
       "image": "{{user `image`}}",
       "ssh_username": "{{user `ssh_username`}}"
