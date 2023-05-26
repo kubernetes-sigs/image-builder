@@ -166,6 +166,11 @@ centos:
       cloud-init:
       cloud-utils-growpart:
       python2-pip:
+  hcloud:
+    package:
+      cloud-init:
+      cloud-utils-growpart:
+      python2-pip:
 flatcar:
   common-service:
     containerd:
@@ -185,6 +190,8 @@ flatcar:
   ova:
     command:
   nutanix:
+    command:
+  hcloud:
     command:
 photon:
   common-service:
@@ -276,6 +283,12 @@ rockylinux:
       iscsid:
         enabled: true
         running: false
+  hcloud:
+    package:
+      cloud-init:
+      cloud-utils-growpart:
+      python3-netifaces:
+      <<: *rh8_rpms
 rhel:
   common-package: *common_rpms
   amazon:

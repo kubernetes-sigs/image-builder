@@ -1,0 +1,8 @@
+{
+  "build_name": "ubuntu-2204",
+  "distribution": "ubuntu",
+  "distribution_release": "jammy",
+  "distribution_version": "2204",
+  "image": "ubuntu-22.04",
+  "ssh_username": "root"
+}

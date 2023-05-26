@@ -51,7 +51,7 @@ version: ## Display version of image-builder
 
 .PHONY: deps
 deps: ## Installs/checks all dependencies
-deps: deps-ami deps-azure deps-do deps-gce deps-ova deps-openstack deps-qemu deps-raw deps-oci deps-osc deps-vbox deps-powervs deps-nutanix
+deps: deps-ami deps-azure deps-do deps-gce deps-ova deps-openstack deps-qemu deps-raw deps-oci deps-osc deps-vbox deps-powervs deps-nutanix deps-hcloud
 
 .PHONY: deps-ami
 deps-ami: ## Installs/checks dependencies for AMI builds
@@ -183,6 +183,13 @@ deps-release: ## Installs/checks dependencies for project releases
 	hack/ensure-jq.sh
 	hack/ensure-kpromo.sh
 	hack/ensure-yq.sh
+
+.PHONY: deps-hcloud
+deps-hcloud: ## Installs/checks dependencies for Hetznercloud builds
+deps-hcloud:
+	hack/ensure-ansible.sh
+	hack/ensure-packer.sh
+	hack/ensure-goss.sh
 
 ## --------------------------------------
 ## Container variables
@@ -376,7 +383,7 @@ VBOX_BUILD_NAMES			?=      vbox-windows-2019
 POWERVS_BUILD_NAMES         ?= powervs-centos-8
 
 NUTANIX_BUILD_NAMES ?= nutanix-ubuntu-2004 nutanix-ubuntu-2204 nutanix-rhel-8 nutanix-rhel-9 nutanix-rockylinux-8 nutanix-rockylinux-9 nutanix-flatcar nutanix-windows-2022
-HCLOUD_BUILD_NAMES ?= hcloud-ubuntu-1804 # hcloud-ubuntu-2004 hcloud-ubuntu-2204 hcloud-centos-7
+HCLOUD_BUILD_NAMES ?= hcloud-ubuntu-1804 hcloud-ubuntu-2004 hcloud-ubuntu-2204 hcloud-centos-7 hcloud-rockylinux-8 hcloud-rockylinux-9 hcloud-flatcar
 ## --------------------------------------
 ## Dynamic build targets
 ## --------------------------------------
@@ -420,6 +427,7 @@ POWERVS_VALIDATE_TARGETS   := $(addprefix validate-,$(POWERVS_BUILD_NAMES))
 NUTANIX_BUILD_TARGETS		:= $(addprefix build-,$(NUTANIX_BUILD_NAMES))
 NUTANIX_VALIDATE_TARGETS	:= $(addprefix validate-,$(NUTANIX_BUILD_NAMES))
 HCLOUD_BUILD_TARGETS		:= $(addprefix build-,$(HCLOUD_BUILD_NAMES))
+HCLOUD_VALIDATE_TARGETS		:= $(addprefix validate-,$(HCLOUD_BUILD_NAMES))
 
 .PHONY: $(NODE_OVA_LOCAL_BUILD_TARGETS)
 $(NODE_OVA_LOCAL_BUILD_TARGETS): deps-ova
@@ -586,8 +594,12 @@ $(NUTANIX_VALIDATE_TARGETS): deps-nutanix
 	$(PACKER) validate $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="packer/nutanix/nutanix.json" -var-file="$(abspath packer/nutanix/$(subst validate-nutanix-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/nutanix/packer$(if $(findstring windows,$@),-windows,).json
 
 .PHONY: $(HCLOUD_BUILD_TARGETS)
-$(HCLOUD_BUILD_TARGETS): 
-	$(PACKER) build $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="packer/hcloud/hcloud-config.json" -var-file="$(abspath packer/hcloud/$(subst build-hcloud-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/hcloud/packer$(if $(findstring windows,$@),-windows,).json
+$(HCLOUD_BUILD_TARGETS): deps-hcloud 
+	$(PACKER) build $(PACKER_NODE_FLAGS) -var-file="packer/hcloud/hcloud-config.json" -var-file="$(abspath packer/hcloud/$(subst build-hcloud-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/hcloud/packer$(if $(findstring flatcar,$@),-flatcar,).json
+
+.PHONY: $(HCLOUD_VALIDATE_TARGETS)
+$(HCLOUD_VALIDATE_TARGETS): deps-hcloud 
+	$(PACKER) validate $(PACKER_NODE_FLAGS) -var-file="packer/hcloud/hcloud-config.json" -var-file="$(abspath packer/hcloud/$(subst validate-hcloud-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/hcloud/packer$(if $(findstring flatcar,$@),-flatcar,).json
 
 ## --------------------------------------
 ## Dynamic clean targets
@@ -783,6 +795,14 @@ build-nutanix-flatcar: ## Builds the Nutanix Flatcar image
 build-nutanix-windows-2022: ## Builds the Nutanix Windows 2022 image
 build-nutanix-all: $(NUTANIX_BUILD_TARGETS) ## Builds all Nutanix image
 
+build-hcloud-ubuntu-1804: ## Builds the Hetzner Cloud ubuntu-1804 image
+build-hcloud-ubuntu-2004: ## Builds the Hetzner Cloud ubuntu-2004 image
+build-hcloud-ubuntu-2204: ## Builds the Hetzner Cloud ubuntu-2204 image
+build-hcloud-rockylinux-8: ## Builds the Hetzner Cloud Rocky Linux 8 image
+build-hcloud-rockylinux-9: ## Builds the Hetzner Cloud Rocky Linux 9 image
+build-hcloud-flatcar: ## Builds the Hetzner Cloud Flatcar image
+build-hcloud-all: $(HCLOUD_BUILD_TARGETS) ## Builds all Hetzner Cloud image
+
 ## --------------------------------------
 ## Document dynamic validate targets
 ## --------------------------------------
@@ -915,6 +935,14 @@ validate-nutanix-flatcar: ## Validates the Nutanix Flatcar Nutanix Packer config
 validate-nutanix-windows-2022: ## Validates Windows Server 2022 Nutanix Packer config
 validate-nutanix-all: $(NUTANIX_VALIDATE_TARGETS) ## Validates all Nutanix Packer config
 
+validate-hcloud-ubuntu-1804: ## Validates Ubuntu 18.04 Hetzner Cloud Packer config
+validate-hcloud-ubuntu-2004: ## Validates Ubuntu 20.04 Hetzner Cloud Packer config
+validate-hcloud-ubuntu-2204: ## Validates Ubuntu 22.04 Hetzner Cloud Packer config
+validate-hcloud-rockylinux-8: ## Validates Rocky Linux 8 Hetzner Cloud Packer config
+validate-hcloud-rockylinux-9: ## Validates the Hetzner Cloud Rocky Linux 9 Nutanix Packer config
+validate-hcloud-flatcar: ## Validates the Hetzner Cloud Flatcar Nutanix Packer config
+validate-hcloud-all: $(HCLOUD_VALIDATE_TARGETS) ## Validates all Hetzner Cloud Packer config
+
 validate-all: validate-ami-all \
 	validate-azure-all \
 	validate-do-all \
@@ -926,7 +954,9 @@ validate-all: validate-ami-all \
         validate-osc-all \
 	validate-vbox-all \
 	validate-powervs-all \
-	validate-nutanix-all
+	validate-nutanix-all \
+	validate-hcloud-all
+
 validate-all: ## Validates the Packer config for all build targets
 
 ## --------------------------------------
