@@ -49,7 +49,8 @@
   "provisioners": [
     {
       "environment_vars": [
-        "BUILD_NAME={{user `build_name`}}"
+        "BUILD_NAME={{user `build_name`}}",
+        "PYPY_HTTP_SOURCE={{user `pypy_http_source`}}"
       ],
       "execute_command": "BUILD_NAME={{user `build_name`}}; if [[ \"${BUILD_NAME}\" == *\"flatcar\"* ]]; then sudo {{.Vars}} -S -E bash '{{.Path}}'; fi",
       "script": "./packer/files/flatcar/scripts/bootstrap-flatcar.sh",
