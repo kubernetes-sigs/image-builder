@@ -9,7 +9,8 @@
         "distribution_release": "{{user `distribution_release`}}",
         "distribution_version": "{{user `distribution_version`}}",
         "image_builder_version": "{{user `ib_version`}}",
-        "kubernetes_version": "{{user `kubernetes_semver`}}"
+        "kubernetes_version": "{{user `kubernetes_semver`}}",
+	"caph-image-name": "{{user `image_name`}}"
       },
       "server_type": "{{user `server_type`}}",
       "token": "{{user `hcloud_token`}}",
