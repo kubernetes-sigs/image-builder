@@ -2,13 +2,13 @@
 
 aliases:
   image-builder-maintainers:
+    - AverageMarcus
     - jsturtevant
     - kkeshavamurthy
     - mboersma
   image-builder-reviewers:
     - EleanorRigby
     - randomvariable
-    - AverageMarcus
   image-builder-azure-reviewers:
     - jsturtevant
     - mboersma
