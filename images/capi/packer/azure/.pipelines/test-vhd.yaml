@@ -90,6 +90,10 @@ jobs:
     workingDirectory: '$(system.defaultWorkingDirectory)/images/capi'
     env:
       AZURE_CLIENT_SECRET: $(AZURE_CLIENT_SECRET)
+  - task: PipAuthenticate@1
+    inputs:
+      artifactFeeds: 'AzureContainerUpstream'
+      onlyAddExtraIndex: true
   - script: |
       set -x
       set -e -o pipefail
