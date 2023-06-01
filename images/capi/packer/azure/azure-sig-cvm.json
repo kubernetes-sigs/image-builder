@@ -1,0 +1,7 @@
+{
+  "image_name": "capi-{{user `distribution`}}-{{user `distribution_version`}}-cvm",
+  "replication_regions": "{{env `AZURE_LOCATION`}}",
+  "resource_group_name": "{{env `RESOURCE_GROUP_NAME`}}",
+  "shared_image_gallery_name": "{{env `GALLERY_NAME`}}",
+  "sig_image_version": "0.3.{{user `build_timestamp`}}"
+}

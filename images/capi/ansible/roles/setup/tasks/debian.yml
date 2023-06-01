@@ -62,6 +62,16 @@
   loop: "{{ extra_repos.split() }}"
   when: extra_repos != ""
 
+- name: Hold nullboot
+  ansible.builtin.dpkg_selections:
+    name: nullboot
+    selection: hold
+  when: packer_build_name is search('cvm')
+
+- name: Add '--no-tpm --no-efivars' to nullboot post install script
+  command: "sed -i 's/nullbootctl/nullbootctl --no-tpm --no-efivars/' /var/lib/dpkg/info/nullboot.postinst"
+  when: packer_build_name is search('cvm')
+
 - name: perform a dist-upgrade
   apt:
     force_apt_get: True
@@ -103,3 +113,8 @@
   until: apt_lock_status is not failed
   retries: 5
   delay: 10
+
+- name: Remove '--no-tpm --no-efivars' from nullboot post install script
+  command: "sed -i 's/nullbootctl --no-tpm --no-efivars/nullbootctl/' /var/lib/dpkg/info/nullboot.postinst"
+  when: packer_build_name is search('cvm')
+
