@@ -7,7 +7,6 @@ aliases:
     - kkeshavamurthy
     - mboersma
   image-builder-reviewers:
-    - EleanorRigby
     - randomvariable
   image-builder-azure-reviewers:
     - jsturtevant
