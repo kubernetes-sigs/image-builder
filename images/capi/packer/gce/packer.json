@@ -6,7 +6,7 @@
       "image_name": "{{user `image_name` | clean_resource_name}}",
       "labels": {
         "build_timestamp": "{{user `build_timestamp`}}",
-        "distribution": "ubuntu",
+        "distribution": "{{user `distribution`}}",
         "distribution_release": "{{user `distribution_release`}}",
         "distribution_version": "{{user `distribution_version`}}",
         "kubernetes_version": "{{user `kubernetes_semver` | clean_resource_name}}"
@@ -16,7 +16,7 @@
       "project_id": "{{ user `project_id` }}",
       "service_account_email": "{{ user `service_account_email` }}",
       "source_image_family": "{{ user `source_image_family` }}",
-      "ssh_username": "ubuntu",
+      "ssh_username": "{{user `ssh_username`}}",
       "type": "googlecompute",
       "use_internal_ip": "{{ user `use_internal_ip`}}",
       "zone": "{{ user `zone` }}"
@@ -43,6 +43,8 @@
         "{{user `ansible_common_vars`}}",
         "--extra-vars",
         "{{user `ansible_extra_vars`}}",
+        "--extra-vars",
+        "{{user `ansible_user_vars`}}",
         "--scp-extra-args",
         "{{user `ansible_scp_extra_args`}}"
       ],
@@ -68,7 +70,8 @@
       "vars_file": "{{user `goss_vars_file`}}",
       "vars_inline": {
         "ARCH": "amd64",
-        "OS": "ubuntu",
+        "OS": "{{user `distribution` | lower}}",
+        "OS_VERSION": "{{user `distribution_version` | lower}}",
         "PROVIDER": "gcp",
         "containerd_version": "{{user `containerd_version`}}",
         "kubernetes_cni_deb_version": "{{ user `kubernetes_cni_deb_version` }}",
@@ -119,7 +122,7 @@
     "machine_type": "n1-standard-1",
     "project_id": "{{env `GCP_PROJECT_ID`}}",
     "service_account_email": "",
-    "source_image_family": "{{user `build_name`}}-lts",
+    "source_image_family": "{{user `source_image_family`}}",
     "use_internal_ip": "false",
     "zone": null
   }

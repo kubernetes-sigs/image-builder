@@ -39,6 +39,16 @@
     state: link
   with_items: "{{ find.files }}"
 
+- name: Install cloud-init packages
+  yum:
+    name: "{{ packages }}"
+    state: present
+  vars:
+    packages:
+    - cloud-init
+    - cloud-utils-growpart
+  when: ansible_os_family == "RedHat"
+
 - name: Disable Hyper-V KVP protocol daemon on Ubuntu
   systemd:
     name: hv-kvp-daemon

@@ -1,6 +1,9 @@
 {
   "build_name": "ubuntu-1804",
+  "distribution": "ubuntu",
   "distribution_release": "bionic",
   "distribution_version": "1804",
+  "source_image_family": "ubuntu-1804-lts",
+  "ssh_username": "ubuntu",
   "zone": "us-central1-a"
 }
