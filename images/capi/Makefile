@@ -968,6 +968,6 @@ json-sort: ## Sort all JSON files alphabetically
 ## --------------------------------------
 ##@ Ignition
 .PHONY: gen-ignition
-ignition_files = bootstrap
+ignition_files = bootstrap bootstrap-pass-auth bootstrap-cloud
 gen-ignition: deps-ignition ## Generates Ignition files from CLC
 	for f in $(ignition_files); do (ct < packer/files/flatcar/clc/$$f.yaml | jq '.' > packer/files/flatcar/ignition/$$f.json) || exit 1; done

@@ -1,0 +1,21 @@
+# This file is used for initial provisioning of a Flatcar machine on platforms which use SSH
+# password authentication during the build process. The actions in this file are performed before
+# Packer provisioners (e.g. Ansible) are executed.
+passwd:
+  users:
+  - name: builder
+    # "BUILDERPASSWORDHASH" gets overwritten by Packer on platforms where SSH password auth is used.
+    password_hash: BUILDERPASSWORDHASH
+    groups:
+    - wheel
+    - sudo
+    - docker
+systemd:
+  units:
+  - name: docker.service
+    enable: true
+  # Mask update-engine and locksmithd to disable automatic updates during image creation.
+  - name: update-engine.service
+    mask: true
+  - name: locksmithd.service
+    mask: true

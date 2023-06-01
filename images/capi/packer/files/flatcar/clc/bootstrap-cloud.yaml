@@ -1,0 +1,13 @@
+# This file is used for initial provisioning of a Flatcar machine on platforms which automatically
+# authorize SSH keys (typically cloud providers such as AWS or Azure). On such platforms, no SSH
+# configuration needs to be done via Ignition. The actions in this file are performed before Packer
+# provisioners (e.g. Ansible) are executed.
+systemd:
+  units:
+  - name: docker.service
+    enable: true
+  # Mask update-engine and locksmithd to disable automatic updates during image creation.
+  - name: update-engine.service
+    mask: true
+  - name: locksmithd.service
+    mask: true
