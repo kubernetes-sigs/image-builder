@@ -2,13 +2,9 @@
 
 ## Please see our [Book](https://image-builder.sigs.k8s.io) for more in-depth documentation.
 
-## What is the Image Builder?
+## What is Image Builder?
 
-The Image Builder is a collection of cross-provider Kubernetes virtual machine image building utilities.
-
-There is currently 1 distinct tools in this repo:
-
-- [Image builder for Cluster API](https://github.com/kubernetes-sigs/image-builder/tree/master/images/capi)
+Image Builder is a tool for building Kubernetes virtual machine images across multiple infrastructure providers. The resulting VM images are specifically intended to be used with [Cluster API](https://github.com/kubernetes-sigs/cluster-api) but should be suitable for other setups also.
 
 ### Useful links
 
@@ -22,7 +18,7 @@ You can reach the maintainers of this project at:
 
 - Image Builder office hours: [Mondays (biweekly) at 08:30 PT (Pacific Time)](https://docs.google.com/document/d/1YIOD0Nnid_0h6rKlDxcbfJaoIRNO6mQd9Or5vKRNxaU/edit) (biweekly). [Convert to your timezone](http://www.thetimezoneconverter.com/?t=08:30&tz=PT%20%28Pacific%20Time%29).
   - [Meeting recordings](https://www.youtube.com/playlist?list=PL69nYSiGNLP29D0nYgAGWt1ZFqS9Z7lw4).
-- [Slack channel](https://kubernetes.slack.com/messages/sig-cluster-lifecycle)
+- [Slack channel](https://kubernetes.slack.com/messages/image-builder)
 - [Mailing list](https://groups.google.com/forum/#!forum/kubernetes-sig-cluster-lifecycle)
 
 ### Code of conduct
