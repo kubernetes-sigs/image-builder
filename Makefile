@@ -17,17 +17,6 @@ SHELL := /usr/bin/env bash
 CWD := $(shell pwd)
 BIN := image-builder
 
-.PHONY: clean $(BIN)
-
-default: $(BIN)
-
-$(BIN):
-	$(MAKE) -C v1
-
-clean:
-	rm -f dist/
-	$(MAKE) -C v1 clean
-
 .PHONY: build-book
 build-book:
 	docs/book/build.sh

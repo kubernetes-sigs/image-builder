@@ -48,7 +48,6 @@ Participation in the Kubernetes community is governed by the [Kubernetes Code of
 ## Roadmap
 
 - [x] Centralize the various image builders into this repository
-- [ ] Create a binary that simplifies the consumption of image-builder
 - [ ] Create a versioning policy
 - [ ] Automate the building of images
 - [ ] Publish images off master to facilitate E2E testing and the removal of `k/k/cluster`
