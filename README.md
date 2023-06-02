@@ -6,14 +6,12 @@
 
 The Image Builder is a collection of cross-provider Kubernetes virtual machine image building utilities.
 
-There are currently 2 distinct tools in this repo:
+There is currently 1 distinct tools in this repo:
 
 - [Image builder for Cluster API](https://github.com/kubernetes-sigs/image-builder/tree/master/images/capi)
-- [kube-deploy/imagebuilder](https://github.com/kubernetes-sigs/image-builder/tree/master/images/kube-deploy/imagebuilder)
-
-Each project is independent from each other, with the goal of eventually merging into a single tool.
 
 ### Useful links
+
 - [Quick Start for Cluster API Image Builder](https://image-builder.sigs.k8s.io/capi/quickstart.html)
 
 ## Community, discussion, contribution, and support

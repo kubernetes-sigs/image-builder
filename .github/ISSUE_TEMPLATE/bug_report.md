@@ -17,7 +17,7 @@ about: Tell us about a problem you are experiencing
 
 **Environment:**
 
-Project ([Image Builder for Cluster API](https://github.com/kubernetes-sigs/image-builder/tree/master/images/capi), [kube-deploy/imagebuilder](https://github.com/kubernetes-sigs/image-builder/tree/master/images/kube-deploy/imagebuilder):
+Project ([Image Builder for Cluster API](https://github.com/kubernetes-sigs/image-builder/tree/master/images/capi):
 
 Additional info for Image Builder for Cluster API related issues:
 
