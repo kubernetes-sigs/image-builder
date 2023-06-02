@@ -1,8 +1,0 @@
-kubernetes:
-  version: 1.14.3
-commands:
-  - systemctl start docker
-  - kubeadm config images pull
-container_runtime:
-  type: docker
-cleanup: true

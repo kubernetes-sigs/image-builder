@@ -1,9 +1,0 @@
-packages:
-  - qemu-system-x86
-  - kpartx
-  - python-pexpect
-  - python-serial
-  - libguestfs-tools
-commands:
-  -
-  #./VMware-ovftool-4.3.0-12320924-lin.x86_64.bundle   --eulas-agreed --required
