@@ -12,11 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-SHELL := /usr/bin/env bash
-CWD := $(shell pwd)
-BIN := image-builder
-
 .PHONY: build-book
 build-book:
 	docs/book/build.sh
