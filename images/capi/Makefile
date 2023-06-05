@@ -107,6 +107,7 @@ deps-openstack:
 	hack/ensure-ansible.sh
 	hack/ensure-packer.sh
 	hack/ensure-goss.sh
+	hack/ensure-s3.sh
 
 .PHONY: deps-qemu
 deps-qemu: ## Installs/checks dependencies for QEMU builds

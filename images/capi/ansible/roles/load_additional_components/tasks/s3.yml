@@ -1,4 +1,4 @@
-# Copyright 2021 The Kubernetes Authors.
+# Copyright 2023 The Kubernetes Authors.
 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,15 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- import_tasks: executables.yml
-  when: additional_executables | bool
-
-- import_tasks: registry.yml
-  when: additional_registry_images | bool
-
-- import_tasks: url.yml
-  when: additional_url_images | bool
-
-- import_tasks: s3.yml
-  when: additional_s3 | bool
-
+- name: Download additional from S3
+  amazon.aws.s3_object:
+    endpoint_url: "{{ additional_s3_endpoint }}"
+    access_key: "{{ additional_s3_access }}"
+    secret_key: "{{ additional_s3_secret }}"
+    bucket: "{{ additional_s3_bucket }}"
+    object: "{{ additional_s3_object }}"
+    dest: "{{ additional_s3_destination_path }}"
+    mode: get
+    ceph: "{{ additional_s3_ceph }}"

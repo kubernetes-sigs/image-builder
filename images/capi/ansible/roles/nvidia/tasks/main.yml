@@ -1,0 +1,120 @@
+# Copyright 2023 The Kubernetes Authors.
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+
+# http://www.apache.org/licenses/LICENSE-2.0
+
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+---
+
+- name: unload nouveau
+  modprobe:
+    name: nouveau
+    state: absent
+  ignore_errors: true
+
+- name: Add NVIDIA package signing key
+  ansible.builtin.apt_key:
+    url: https://nvidia.github.io/libnvidia-container/gpgkey
+  when: ansible_distribution == "Debian"
+
+- name: perform a cache update
+  apt:
+    force_apt_get: True
+    update_cache: True
+  register: apt_lock_status
+  until: apt_lock_status is not failed
+  retries: 5
+  delay: 10
+  when: ansible_distribution == "Debian"
+
+- name: Install packages for interacting with s3 endpoint & building NVIDIA driver kernel module
+  become: true
+  ansible.builtin.apt:
+    pkg:
+      - python3-boto3
+      - python3-botocore
+      - build-essential
+      - wget
+      - dkms
+  when: ansible_distribution == "Debian"
+
+- name: Make /etc/nvidia/ClientConfigToken directory
+  become: true
+  file:
+    path: /etc/nvidia/ClientConfigToken
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Download NVIDIA License Token
+  ansible.builtin.include_role:
+    name: load_additional_components
+  vars:
+    additional_s3: true
+    additional_s3_endpoint: "{{ nvidia_s3_url }}"
+    additional_s3_access: "{{ nvidia_bucket_access }}"
+    additional_s3_secret: "{{ nvidia_bucket_secret }}"
+    additional_s3_bucket: "{{ nvidia_bucket }}"
+    additional_s3_ceph: "{{ nvidia_ceph }}"
+    additional_s3_object: "{{ nvidia_tok_location }}"
+    additional_s3_destination_path: /etc/nvidia/ClientConfigToken/client_configuration_token.tok
+
+- name: Set Permissions of NVIDIA License Token
+  file:
+    path: /etc/nvidia/ClientConfigToken/client_configuration_token.tok
+    state: file
+    owner: root
+    group: root
+    mode: 0744
+
+- name: Create GRIDD licensing config
+  become: true
+  template:
+    src: templates/gridd.conf.j2
+    dest: /etc/nvidia/gridd.conf
+    mode: 0644
+
+- name: Download NVIDIA driver
+  ansible.builtin.include_role:
+    name: load_additional_components
+  vars:
+    additional_s3: true
+    additional_s3_endpoint: "{{ nvidia_s3_url }}"
+    additional_s3_access: "{{ nvidia_bucket_access }}"
+    additional_s3_secret: "{{ nvidia_bucket_secret }}"
+    additional_s3_bucket: "{{ nvidia_bucket }}"
+    additional_s3_ceph: "{{ nvidia_ceph }}"
+    additional_s3_object: "{{ nvidia_installer_location }}"
+    additional_s3_destination_path: /tmp/NVIDIA-Linux-gridd.run
+
+- name: Set Permissions of NVIDIA driver
+  file:
+    path: /tmp/NVIDIA-Linux-gridd.run
+    state: file
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Install NVIDIA driver
+  become: true
+  ansible.builtin.command:
+    cmd: "/tmp/NVIDIA-Linux-gridd.run -s --dkms --no-cc-version-check"
+
+- name: Cleanup packages for interacting with s3 endpoint
+  become: true
+  ansible.builtin.apt:
+    state: absent
+    purge: true
+    pkg:
+      - python3-boto3
+      - python3-botocore
+  when: ansible_distribution == "Debian"
