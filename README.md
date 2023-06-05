@@ -2,23 +2,13 @@
 
 ## Please see our [Book](https://image-builder.sigs.k8s.io) for more in-depth documentation.
 
-## What is the Image Builder?
+## What is Image Builder?
 
-The Image Builder is a collection of cross-provider Kubernetes virtual machine image building utilities.
-
-There are currently 3 distinct tools in this repo:
-
-- [Image builder for Cluster API](https://github.com/kubernetes-sigs/image-builder/tree/master/images/capi)
-- [kube-deploy/imagebuilder](https://github.com/kubernetes-sigs/image-builder/tree/master/images/kube-deploy/imagebuilder)
-- [konfigadm](https://github.com/kubernetes-sigs/image-builder/tree/master/images/konfigadm)
-
-Each project is independent from each other, with the goal of eventually merging into a single tool.
-
-The `konfigadm` directory contains manifests for use with the `konfigadm CLI`.
+Image Builder is a tool for building Kubernetes virtual machine images across multiple infrastructure providers. The resulting VM images are specifically intended to be used with [Cluster API](https://github.com/kubernetes-sigs/cluster-api) but should be suitable for other setups that rely on Kubeadm.
 
 ### Useful links
+
 - [Quick Start for Cluster API Image Builder](https://image-builder.sigs.k8s.io/capi/quickstart.html)
-- [konfigadm CLI](https://github.com/flanksource/konfigadm)
 
 ## Community, discussion, contribution, and support
 
@@ -28,7 +18,7 @@ You can reach the maintainers of this project at:
 
 - Image Builder office hours: [Mondays (biweekly) at 08:30 PT (Pacific Time)](https://docs.google.com/document/d/1YIOD0Nnid_0h6rKlDxcbfJaoIRNO6mQd9Or5vKRNxaU/edit) (biweekly). [Convert to your timezone](http://www.thetimezoneconverter.com/?t=08:30&tz=PT%20%28Pacific%20Time%29).
   - [Meeting recordings](https://www.youtube.com/playlist?list=PL69nYSiGNLP29D0nYgAGWt1ZFqS9Z7lw4).
-- [Slack channel](https://kubernetes.slack.com/messages/sig-cluster-lifecycle)
+- [Slack channel](https://kubernetes.slack.com/messages/image-builder)
 - [Mailing list](https://groups.google.com/forum/#!forum/kubernetes-sig-cluster-lifecycle)
 
 ### Code of conduct
@@ -54,7 +44,6 @@ Participation in the Kubernetes community is governed by the [Kubernetes Code of
 ## Roadmap
 
 - [x] Centralize the various image builders into this repository
-- [ ] Create a binary that simplifies the consumption of image-builder
 - [ ] Create a versioning policy
 - [ ] Automate the building of images
 - [ ] Publish images off master to facilitate E2E testing and the removal of `k/k/cluster`

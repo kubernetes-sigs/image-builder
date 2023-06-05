@@ -1,3 +1,0 @@
-commands:
-  - docker images > /scratch/images-pre-init.txt
-  - kubeadm init > /scratch/kubeadm.log
