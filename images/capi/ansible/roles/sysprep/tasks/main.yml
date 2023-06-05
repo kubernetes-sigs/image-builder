@@ -190,6 +190,7 @@
     state: "{{ item.state }}"
     path: "{{ item.path }}"
   loop:
+  - { path: /swap.img, state: absent }
   - { path: /swapfile, state: absent }
   - { path: /mnt/resource/swapfile, state: absent }
   when: ansible_memory_mb.swap.total != 0
@@ -226,6 +227,12 @@
     state: absent
     path: /usr/share/oem/config.ign
   when: ansible_os_family == "Flatcar"
+
+- name: fstrim
+  systemd:
+    name: fstrim.service
+    state: started
+  when: ansible_os_family == "Debian"
 
 - name: start ssh
   systemd:
