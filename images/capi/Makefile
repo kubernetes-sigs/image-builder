@@ -486,10 +486,12 @@ $(AZURE_VALIDATE_SIG_CVM_TARGETS): deps-azure
 
 .PHONY: $(DO_BUILD_TARGETS)
 $(DO_BUILD_TARGETS): deps-do
+	$(PACKER) init packer/digitalocean/config.pkr.hcl
 	$(PACKER) build $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/digitalocean/$(subst build-do-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/digitalocean/packer.json
 
 .PHONY: $(DO_VALIDATE_TARGETS)
 $(DO_VALIDATE_TARGETS): deps-do
+	$(PACKER) init packer/digitalocean/config.pkr.hcl
 	$(PACKER) validate $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/digitalocean/$(subst validate-do-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/digitalocean/packer.json
 
 .PHONY: $(OPENSTACK_BUILD_TARGETS)
