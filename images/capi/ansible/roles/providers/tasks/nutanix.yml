@@ -60,10 +60,35 @@
       - xfsprogs
   when: ansible_os_family == "RedHat"
 
+- name: Set correct SCSI device timeout for Nutanix devices
+  ansible.builtin.lineinfile:
+    path: /etc/udev/rules.d/50-udev.rules
+    line: SUBSYSTEMS=="scsi", ACTION=="add", ATTRS{vendor}=="NUTANIX", RUN+="/bin/sh -c 'echo 60 > /sys$$DEVPATH/timeout'"
+    create: yes
+
+- name: Nutanix iSCSI client tuning recommendations
+  ini_file:
+    path: /etc/iscsi/iscsid.conf
+    section:
+    option: "{{ item.key }}"
+    value: "{{ item.value }}"
+  loop: "{{ iscsi_settings | dict2items }}"
+  vars:
+    iscsi_settings:
+      node.conn[0].iscsi.MaxRecvDataSegmentLength: 1048576
+      node.session.cmds_max: 2048
+      node.session.iscsi.FirstBurstLength: 1048576
+      node.session.iscsi.MaxBurstLength: 16776192
+      node.conn[0].timeo.noop_out_timeout: 10
+      node.session.queue_depth: 1024
+      node.session.timeo.replacement_timeout: 240
+      node.conn[0].timeo.noop_out_interval: 5
+      discovery.sendtargets.iscsi.MaxRecvDataSegmentLength: 1048576
+
 - name: Enable iSCSI initiator daemon on Ubuntu or RedHat
   systemd:
     name: iscsid
-    state: started
+    state: stopped
     enabled: true
   when: ansible_os_family == "Debian" or
     ansible_os_family == "RedHat"
