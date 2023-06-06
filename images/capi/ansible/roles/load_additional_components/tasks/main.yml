@@ -21,6 +21,8 @@
 - import_tasks: url.yml
   when: additional_url_images | bool
 
-- import_tasks: s3.yml
+# We have to use include_tasks for the S3 task due to ansible pre-processing the task when import_tasks is used.
+# This causes a failure when using any other additional_component.
+- include_tasks: s3.yml
   when: additional_s3 | bool
 

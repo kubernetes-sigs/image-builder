@@ -8,7 +8,7 @@ An example of the fields you need are defined below. Make sure to review and cha
 
 ```json
 {
-  "ansible_user_vars": "nvidia_s3_url=https://s3-endpoint nvidia_bucket=nvidia nvidia_bucket_access=ACCESS_KEY nvidia_bucket_secret=SECRET_KEY nvidia_installer_location=NVIDIA-Linux-x86_64-525.85.05-grid.run nvidia_tok_location=client_configuration_token.tok gridd_feature_type=4"
+  "ansible_user_vars": "additional_s3=true nvidia_s3_url=https://s3-endpoint nvidia_bucket=nvidia nvidia_bucket_access=ACCESS_KEY nvidia_bucket_secret=SECRET_KEY nvidia_installer_location=NVIDIA-Linux-x86_64-525.85.05-grid.run nvidia_tok_location=client_configuration_token.tok gridd_feature_type=4"
   "node_custom_roles_pre": "nvidia"
 }
 

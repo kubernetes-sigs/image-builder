@@ -30,4 +30,4 @@ cd "$(dirname "${BASH_SOURCE[0]}")/.."
 export PIP_DISABLE_PIP_VERSION_CHECK=1 PIP_ROOT_USER_ACTION=ignore
 
 # S3 interaction requires the following galaxy collection
-ansible-galaxy collection install amazon.aws
+ansible-galaxy collection install amazon.aws:5.5.0
