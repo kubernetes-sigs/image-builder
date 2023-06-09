@@ -23,7 +23,7 @@
 - name: Add NVIDIA package signing key
   ansible.builtin.apt_key:
     url: https://nvidia.github.io/libnvidia-container/gpgkey
-  when: ansible_distribution == "Debian"
+  when: ansible_os_family == "Debian"
 
 - name: perform a cache update
   apt:
@@ -33,18 +33,16 @@
   until: apt_lock_status is not failed
   retries: 5
   delay: 10
-  when: ansible_distribution == "Debian"
+  when: ansible_os_family == "Debian"
 
-- name: Install packages for interacting with s3 endpoint & building NVIDIA driver kernel module
+- name: Install packages for building NVIDIA driver kernel module
   become: true
   ansible.builtin.apt:
     pkg:
-      - python3-boto3
-      - python3-botocore
       - build-essential
       - wget
       - dkms
-  when: ansible_distribution == "Debian"
+  when: ansible_os_family == "Debian"
 
 - name: Make /etc/nvidia/ClientConfigToken directory
   become: true
@@ -59,7 +57,6 @@
   ansible.builtin.include_role:
     name: load_additional_components
   vars:
-    additional_s3: true
     additional_s3_endpoint: "{{ nvidia_s3_url }}"
     additional_s3_access: "{{ nvidia_bucket_access }}"
     additional_s3_secret: "{{ nvidia_bucket_secret }}"
@@ -87,7 +84,6 @@
   ansible.builtin.include_role:
     name: load_additional_components
   vars:
-    additional_s3: true
     additional_s3_endpoint: "{{ nvidia_s3_url }}"
     additional_s3_access: "{{ nvidia_bucket_access }}"
     additional_s3_secret: "{{ nvidia_bucket_secret }}"
@@ -108,13 +104,3 @@
   become: true
   ansible.builtin.command:
     cmd: "/tmp/NVIDIA-Linux-gridd.run -s --dkms --no-cc-version-check"
-
-- name: Cleanup packages for interacting with s3 endpoint
-  become: true
-  ansible.builtin.apt:
-    state: absent
-    purge: true
-    pkg:
-      - python3-boto3
-      - python3-botocore
-  when: ansible_distribution == "Debian"

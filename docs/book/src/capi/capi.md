@@ -188,6 +188,7 @@ PACKER_VAR_FILES=proxy.json make build-node-ova-local-photon-3
   "additional_s3_bucket": "some-bucket",
   "additional_s3_object": "path/to/object",
   "additional_s3_destination_path": "/path/to/dest",
+  "additional_s3_ceph": "true",
   "additional_registry_images": "true",
   "additional_registry_images_list": "plndr/kube-vip:0.3.4,plndr/kube-vip:0.3.3",
   "additional_url_images": "true",
