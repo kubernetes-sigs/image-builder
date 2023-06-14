@@ -28,7 +28,23 @@ command:
     timeout: 0
 {{end}}
 {{if eq .Vars.kubernetes_source_type "pkg"}}
+{{if or (eq .Vars.OS "debian") (eq .Vars.OS "ubuntu") }}
+{{- range mkSlice "kubeadm" "kubelet" "kubectl" }}
+  apt-mark showhold | grep {{.}}:
+    exit-status: 0
+    stderr: []
+    timeout: 0
+    stdout: [{{.}}]
+{{end}}
+{{end}}
 {{if eq .Vars.kubernetes_cni_source_type "pkg"}}
+{{if or (eq .Vars.OS "debian") (eq .Vars.OS "ubuntu") }}
+  apt-mark showhold | grep kubernetes-cni:
+    exit-status: 0
+    stderr: []
+    timeout: 0
+    stdout: ["kubernetes-cni"]
+{{end}}
   crictl images | grep -v 'IMAGE ID' | awk -F'[ /]' '{print $2}' | sed 's/-{{ .Vars.arch }}//g' | sort:
     exit-status: 0
     stderr: []

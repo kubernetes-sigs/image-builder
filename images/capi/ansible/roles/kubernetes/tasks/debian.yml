@@ -34,3 +34,13 @@
       - "kubeadm={{ kubernetes_deb_version }}"
       - "kubectl={{ kubernetes_deb_version }}"
       - "kubernetes-cni={{ kubernetes_cni_deb_version }}"
+
+- name: Lock packages versions
+  dpkg_selections:
+    name: "{{ item }}"
+    selection: hold
+  loop:
+    - kubeadm
+    - kubelet
+    - kubectl
+    - kubernetes-cni
