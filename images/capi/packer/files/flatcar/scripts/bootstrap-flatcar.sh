@@ -21,15 +21,16 @@ if [[ -e ${BINDIR}/.bootstrapped ]]; then
   exit 0
 fi
 
+PYPY_HTTP_SOURCE=${PYPY_HTTP_SOURCE:="https://github.com/squeaky-pl/portable-pypy"}
 PYPY_VERSION=7.2.0
 PYTHON3_VERSION=3.6
 
-curl -sfL https://github.com/squeaky-pl/portable-pypy/releases/download/pypy-${PYPY_VERSION}/pypy-${PYPY_VERSION}-linux_x86_64-portable.tar.bz2 | tar -xjf -
+curl -sfL ${PYPY_HTTP_SOURCE}/releases/download/pypy-${PYPY_VERSION}/pypy-${PYPY_VERSION}-linux_x86_64-portable.tar.bz2 | tar -xjf -
 mv -n pypy-${PYPY_VERSION}-linux_x86_64-portable pypy2
 ln -s ./pypy2/bin/pypy python2
 ln -s ./pypy2/bin/pypy python
 
-curl -sfL  https://github.com/squeaky-pl/portable-pypy/releases/download/pypy${PYTHON3_VERSION}-${PYPY_VERSION}/pypy${PYTHON3_VERSION}-${PYPY_VERSION}-linux_x86_64-portable.tar.bz2 | tar -xjf -
+curl -sfL  ${PYPY_HTTP_SOURCE}/releases/download/pypy${PYTHON3_VERSION}-${PYPY_VERSION}/pypy${PYTHON3_VERSION}-${PYPY_VERSION}-linux_x86_64-portable.tar.bz2 | tar -xjf -
 mv -n pypy${PYTHON3_VERSION}-${PYPY_VERSION}-linux_x86_64-portable pypy3
 ln -s ./pypy3/bin/pypy3 python3
 
