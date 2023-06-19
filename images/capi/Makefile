@@ -330,7 +330,7 @@ NODE_OVA_VSPHERE_BASE_BUILD_NAMES		:=	$(addprefix node-ova-vsphere-base-,$(PLATF
 NODE_OVA_VSPHERE_CLONE_BUILD_NAMES		:=	$(addprefix node-ova-vsphere-clone-,$(PLATFORMS_AND_VERSIONS))
 
 AMI_BUILD_NAMES			   ?= ami-centos-7 ami-ubuntu-1804 ami-ubuntu-2004 ami-ubuntu-2204 ami-amazon-2 ami-flatcar ami-windows-2019 ami-windows-2004 ami-rockylinux-8 ami-rhel-8
-GCE_BUILD_NAMES			   ?= gce-ubuntu-1804 gce-ubuntu-2004 gce-ubuntu-2204 gce-rhel-8
+GCE_BUILD_NAMES			   ?= gce-ubuntu-2004 gce-ubuntu-2204 gce-rhel-8
 
 # Make needs these lists to be space delimited, no quotes
 VHD_TARGETS := $(shell grep VHD_TARGETS azure_targets.sh | sed 's/VHD_TARGETS=//' | tr -d \")
@@ -646,7 +646,6 @@ build-do-ubuntu-2004: ## Builds Ubuntu 20.04 DigitalOcean Snapshot
 build-do-centos-7: ## Builds Centos 7 DigitalOcean Snapshot
 build-do-all: $(DO_BUILD_TARGETS) ## Builds all DigitalOcean Snapshot
 
-build-gce-ubuntu-1804: ## Builds the GCE ubuntu-1804 image
 build-gce-ubuntu-2004: ## Builds the GCE ubuntu-2004 image
 build-gce-ubuntu-2204: ## Builds the GCE ubuntu-2204 image
 build-gce-rhel-8: ## Builds the GCE rhel-8 image
@@ -821,7 +820,6 @@ validate-openstack-ubuntu-2204: ## Validates Ubuntu 20.04 Openstack Image Packer
 validate-openstack-flatcar: ## Validates Flatcar Openstack Image Packer config
 validate-openstack-all: $(OPENSTACK_VALIDATE_TARGETS) ## Validates all Openstack Glance Image Packer config
 
-validate-gce-ubuntu-1804: ## Validates Ubuntu 18.04 GCE Snapshot Packer config
 validate-gce-ubuntu-2004: ## Validates Ubuntu 20.04 GCE Snapshot Packer config
 validate-gce-ubuntu-2204: ## Validates Ubuntu 22.04 GCE Snapshot Packer config
 validate-gce-rhel-8: ## Validates RHEL 8 GCE Snapshot Packer config
