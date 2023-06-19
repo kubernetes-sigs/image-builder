@@ -1,0 +1,106 @@
+#cloud-config
+# Copyright 2022 The Kubernetes Authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# For more information on how autoinstall is configured, please refer to
+# https://ubuntu.com/server/docs/install/autoinstall-reference
+autoinstall:
+  version: 1
+  # Disable ssh server during installation, otherwise packer tries to connect and exceed max attempts
+  early-commands:
+    - systemctl stop ssh
+  # Configure the locale
+  locale: en_US.UTF-8
+  keyboard:
+    layout: us
+  # For more information on how partitioning is configured,
+  # please refer to https://curtin.readthedocs.io/en/latest/topics/storage.html.
+  storage:
+    grub:
+      reorder_uefi: false
+      replace_linux_default: false
+    config:
+    - ptable: gpt
+      path: /dev/sda
+      wipe: superblock-recursive
+      preserve: false
+      name: ''
+      grub_device: false
+      type: disk
+      id: disk-sda
+    - device: disk-sda
+      # Create EFI partition of 512MB same as in Ubuntu 20.04
+      size: 536870912
+      wipe: superblock
+      flag: boot
+      number: 1
+      preserve: false
+      grub_device: true
+      type: partition
+      id: partition-0
+    - fstype: fat32
+      volume: partition-0
+      preserve: false
+      type: format
+      id: format-0
+    - device: disk-sda
+      size: -1
+      wipe: superblock
+      flag: ''
+      number: 2
+      preserve: false
+      grub_device: false
+      type: partition
+      id: partition-1
+    - fstype: ext4
+      volume: partition-1
+      preserve: false
+      type: format
+      id: format-1
+    - path: /
+      device: format-1
+      type: mount
+      id: mount-1
+    - path: /boot/efi
+      device: format-0
+      type: mount
+      id: mount-0
+  updates: "all"
+  ssh:
+    install-server: true
+    allow-pw: true
+  # Create the default user.
+  # Ensures the "builder" user doesn't require a password to use sudo.
+  user-data:
+    users:
+      - name: builder
+        # openssl passwd -6 -stdin <<< builder
+        passwd: $6$xyz$UtXVazU08Q5b8AW.TJ3MPYZglyXa3Ttf2RCel8MCUPlEYO1evWxeWBhZ2QqivU/Ij4tqYAxMCqc2ujEM4dMSe1
+        groups: [adm, cdrom, dip, plugdev, lxd, sudo]
+        lock-passwd: false
+        sudo: ALL=(ALL) NOPASSWD:ALL
+        shell: /bin/bash
+
+  # This command runs after all other steps; it:
+  # 1. Disables swapfiles
+  # 2. Removes the existing swapfile
+  # 3. Removes the swapfile entry from /etc/fstab
+  # 4. Cleans up any packages that are no longer required
+  # 5. Removes the cached list of packages
+  late-commands:
+    - swapoff -a
+    - rm -f /swapfile
+    - sed -ri '/\sswap\s/s/^#?/#/' /etc/fstab
+    - apt-get purge --auto-remove -y
+    - rm -rf /var/lib/apt/lists/*
