@@ -25,7 +25,8 @@ source hack/utils.sh
 # SHA are for amd64 arch.
 _version="3.1.4"
 darwin_sha256="ddb663a3e4208639d90b89ebdb69dc240ec16d6b01877ccbf968f76a58a89f99"
-linux_sha256="9084877c2eea7e41fae60aaa6cdf7a7dde4e5de5e3d1f693ec8e812419ac54e9"
+linux_amd64_sha256="9084877c2eea7e41fae60aaa6cdf7a7dde4e5de5e3d1f693ec8e812419ac54e9"
+linux_arm64_sha256="5c3f43800b22cc9a1084f3f700243ea1a2392e12c0ae55987bec91d07b5547ed"
 _bin_url="https://github.com/YaleUniversity/packer-provisioner-goss/releases/download/v${_version}/packer-provisioner-goss-v${_version}-${HOSTOS}-${HOSTARCH}.tar.gz"
 _tarfile="${HOME}/.packer.d/plugins/packer-provisioner-goss.tar.gz"
 _binfile="${HOME}/.packer.d/plugins/packer-provisioner-goss"
@@ -33,7 +34,18 @@ _binfile="${HOME}/.packer.d/plugins/packer-provisioner-goss"
 # Get a shasum for right OS's binary
 case "${HOSTOS}" in
 linux)
-  _sha256="${linux_sha256}"
+  case "${HOSTARCH}" in
+    amd64)
+      _sha256="${linux_amd64_sha256}"
+      ;;
+    arm64)
+      _sha256="${linux_arm64_sha256}"
+      ;;
+    *)
+      echo "unsupported HOSTARCH=${HOSTARCH}" 1>&2
+      return 1
+      ;;
+  esac
   ;;
 darwin)
   _sha256="${darwin_sha256}"
