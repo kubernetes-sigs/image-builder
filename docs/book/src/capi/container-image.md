@@ -57,7 +57,7 @@ docker pull registry.k8s.io/scl-image-builder/cluster-node-image-builder-amd64:v
     ```
 
 - vSphere OVA
-    - `vsphere.json` configuration file with user and hypervisor credentials. A template of this file can be found [here](https://github.com/kubernetes-sigs/image-builder/blob/master/images/capi/packer/ova/vsphere.json)
+    - `vsphere.json` configuration file with user and hypervisor credentials. A template of this file can be found [here](https://github.com/kubernetes-sigs/image-builder/blob/main/images/capi/packer/ova/vsphere.json)
 
     - Docker's `--net=host` option to ensure http server starts with the host IP and not the Docker container IP. This option is Linux specific and thus implies that it can be run only from a Linux machine.
 

@@ -8,13 +8,13 @@ Releasing image-builder is a simple process: project maintainers should be able 
 
 ### Create a tag
 
-Releases in image-builder follow [semantic versioning][semver] conventions. Currently the project tags only patch releases on the master branch.
+Releases in image-builder follow [semantic versioning][semver] conventions. Currently the project tags only patch releases on the main branch.
 
 - Check out the existing branch and make sure you have the latest changes:
-  - `git checkout master`
+  - `git checkout main`
   - `git fetch upstream`
     - *This assumes you have an "upstream" git remote pointing at github.com/kubernetes-sigs/image-builder*
-  - `git rebase upstream/master`
+  - `git rebase upstream/main`
     - *If the HEAD commit isn't meant for release, reset to the intended commit before proceeding.*
 - Ensure you can sign tags:
   - Set up GPG, SSH, or S/MIME [at GitHub](https://docs.github.com/authentication/managing-commit-signature-verification/about-commit-signature-verification) if you haven't already.
