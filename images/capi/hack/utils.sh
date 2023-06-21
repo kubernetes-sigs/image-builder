@@ -32,6 +32,9 @@ case "${_hostarch}" in
 *aarch64*)
   HOSTARCH=arm64
   ;;
+*arm64*)
+  HOSTARCH=arm64
+  ;;
 *x86_64*)
   HOSTARCH=amd64
   ;;
