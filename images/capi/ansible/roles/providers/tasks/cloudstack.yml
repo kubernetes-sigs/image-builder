@@ -16,7 +16,7 @@
   copy:
     dest: /etc/cloud/cloud.cfg.d/cloudstack.cfg
     content: |-
-      datasource_list: ['CloudStack']
+      datasource_list: ['CloudStack', 'ConfigDrive']
       datasource:
         CloudStack:
           max_wait: 120
