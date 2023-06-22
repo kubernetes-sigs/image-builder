@@ -11,7 +11,7 @@ To get the latest image-builder source on your machine, choose one of the follow
 Tarball download:
 
 ```sh
-curl -L https://github.com/kubernetes-sigs/image-builder/tarball/master -o image-builder.tgz
+curl -L https://github.com/kubernetes-sigs/image-builder/tarball/main -o image-builder.tgz
 mkdir image-builder
 tar xzf image-builder.tgz --strip-components 1 -C image-builder
 rm image-builder.tgz
