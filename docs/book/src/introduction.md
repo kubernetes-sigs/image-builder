@@ -4,8 +4,4 @@ This is the official documentation for the Kubernetes [Image Builder](https://gi
 
 ## Introduction
 
-The Kubernetes Image Builder is a SIG Cluster Lifecycle sponsored project with the purpose to consolidate several existing projects for building node images to run conformant Kubernetes clusters. Over time, the Image Builder will present a consistent, unified tool to create images across cloud and infrastructure providers, along with all the needed hooks for customization to meet business needs.
-
-## Summary
-
-## Tutorials
+The Kubernetes Image Builder is a SIG Cluster Lifecycle sponsored project for building Kubernetes virtual machine images across multiple infrastructure providers. The resulting VM images are specifically intended to be used with [Cluster API](https://github.com/kubernetes-sigs/cluster-api) but should be suitable for other setups that rely on Kubeadm.
