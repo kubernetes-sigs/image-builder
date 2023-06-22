@@ -70,6 +70,7 @@ deps-azure:
 	hack/ensure-jq.sh
 	hack/ensure-azure-cli.sh
 	hack/ensure-goss.sh
+	$(PACKER) init packer/azure/config.pkr.hcl
 
 .PHONY: deps-do
 deps-do: ## Installs/checks dependencies for DigitalOcean builds
