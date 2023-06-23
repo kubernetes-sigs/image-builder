@@ -40,21 +40,12 @@ groupadd -r packer && useradd -m -s /bin/bash -r -g packer packer
 chown -R packer:packer /home/prow/go/src/sigs.k8s.io/image-builder
 # use the packer user to run the build
 
-# build image for 1.24
-# using PACKER_FLAGS=-force to overwrite the previous image and keep the same name
-su - packer -c "bash -c 'cd /home/prow/go/src/sigs.k8s.io/image-builder/images/capi && PATH=$PATH:~packer/.local/bin:/home/prow/go/src/sigs.k8s.io/image-builder/images/capi/.local/bin GCP_PROJECT_ID=$GCP_PROJECT PACKER_VAR_FILES=packer/gce/ci/nightly/overwrite-1-24.json PACKER_FLAGS=-force make deps-gce build-gce-all'"
-
-# build image for 1.25
-# using PACKER_FLAGS=-force to overwrite the previous image and keep the same name
-su - packer -c "bash -c 'cd /home/prow/go/src/sigs.k8s.io/image-builder/images/capi && PATH=$PATH:~packer/.local/bin:/home/prow/go/src/sigs.k8s.io/image-builder/images/capi/.local/bin GCP_PROJECT_ID=$GCP_PROJECT PACKER_VAR_FILES=packer/gce/ci/nightly/overwrite-1-25.json PACKER_FLAGS=-force make deps-gce build-gce-all'"
-
-# build image for 1.26
-# using PACKER_FLAGS=-force to overwrite the previous image and keep the same name
-su - packer -c "bash -c 'cd /home/prow/go/src/sigs.k8s.io/image-builder/images/capi && PATH=$PATH:~packer/.local/bin:/home/prow/go/src/sigs.k8s.io/image-builder/images/capi/.local/bin GCP_PROJECT_ID=$GCP_PROJECT PACKER_VAR_FILES=packer/gce/ci/nightly/overwrite-1-26.json PACKER_FLAGS=-force make deps-gce build-gce-all'"
-
-# build image for 1.27
-# using PACKER_FLAGS=-force to overwrite the previous image and keep the same name
-su - packer -c "bash -c 'cd /home/prow/go/src/sigs.k8s.io/image-builder/images/capi && PATH=$PATH:~packer/.local/bin:/home/prow/go/src/sigs.k8s.io/image-builder/images/capi/.local/bin GCP_PROJECT_ID=$GCP_PROJECT PACKER_VAR_FILES=packer/gce/ci/nightly/overwrite-1-27.json PACKER_FLAGS=-force make deps-gce build-gce-all'"
+# Build image for each available config
+for f in packer/gce/ci/nightly/*.json
+do
+  # using PACKER_FLAGS=-force to overwrite the previous image and keep the same name
+  su - packer -c "bash -c 'cd /home/prow/go/src/sigs.k8s.io/image-builder/images/capi && PATH=$PATH:~packer/.local/bin:/home/prow/go/src/sigs.k8s.io/image-builder/images/capi/.local/bin GCP_PROJECT_ID=$GCP_PROJECT PACKER_VAR_FILES=${f} PACKER_FLAGS=-force make deps-gce build-gce-all'"
+done
 
 echo "Displaying the generated image information"
 filter="name~cluster-api-ubuntu-*"
