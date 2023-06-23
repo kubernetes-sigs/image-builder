@@ -77,6 +77,7 @@ deps-do: ## Installs/checks dependencies for DigitalOcean builds
 deps-do:
 	hack/ensure-ansible.sh
 	hack/ensure-packer.sh
+	$(PACKER) init packer/digitalocean/config.pkr.hcl
 
 .PHONY: deps-osc
 deps-osc: ## Installs/checks dependencies for Outscale builds
@@ -160,6 +161,7 @@ deps-nutanix:
 	hack/ensure-ansible.sh
 	hack/ensure-packer.sh
 	hack/ensure-goss.sh
+	$(PACKER) init packer/nutanix/config.pkr.hcl
 
 .PHONY: deps-release
 deps-release: ## Installs/checks dependencies for project releases
@@ -488,12 +490,10 @@ $(AZURE_VALIDATE_SIG_CVM_TARGETS): deps-azure
 
 .PHONY: $(DO_BUILD_TARGETS)
 $(DO_BUILD_TARGETS): deps-do
-	$(PACKER) init packer/digitalocean/config.pkr.hcl
 	$(PACKER) build $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/digitalocean/$(subst build-do-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/digitalocean/packer.json
 
 .PHONY: $(DO_VALIDATE_TARGETS)
 $(DO_VALIDATE_TARGETS): deps-do
-	$(PACKER) init packer/digitalocean/config.pkr.hcl
 	$(PACKER) validate $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/digitalocean/$(subst validate-do-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/digitalocean/packer.json
 
 .PHONY: $(OPENSTACK_BUILD_TARGETS)
@@ -564,12 +564,10 @@ $(POWERVS_VALIDATE_TARGETS): deps-powervs
 
 .PHONY: $(NUTANIX_BUILD_TARGETS)
 $(NUTANIX_BUILD_TARGETS): deps-nutanix
-	$(PACKER) init packer/nutanix/config.pkr.hcl
 	$(PACKER) build $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="packer/nutanix/nutanix.json" -var-file="$(abspath packer/nutanix/$(subst build-nutanix-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/nutanix/packer$(if $(findstring windows,$@),-windows,).json
 
 .PHONY: $(NUTANIX_VALIDATE_TARGETS)
 $(NUTANIX_VALIDATE_TARGETS): deps-nutanix
-	$(PACKER) init packer/nutanix/config.pkr.hcl
 	$(PACKER) validate $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="packer/nutanix/nutanix.json" -var-file="$(abspath packer/nutanix/$(subst validate-nutanix-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/nutanix/packer$(if $(findstring windows,$@),-windows,).json
 
 ## --------------------------------------
