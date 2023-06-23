@@ -20,6 +20,10 @@ SHELL := /usr/bin/env bash
 
 .DEFAULT_GOAL := help
 
+# This is to handle running from the root Makefile via include
+CWD ?= ./
+CURDIR := $(realpath $(CWD))
+
 # This option is for running docker manifest command
 export DOCKER_CLI_EXPERIMENTAL := enabled
 export PATH := $(PATH):$(CURDIR)/.local/bin
@@ -56,119 +60,119 @@ deps: deps-ami deps-azure deps-do deps-gce deps-ova deps-openstack deps-qemu dep
 .PHONY: deps-ami
 deps-ami: ## Installs/checks dependencies for AMI builds
 deps-ami:
-	hack/ensure-ansible.sh
-	hack/ensure-ansible-windows.sh
-	hack/ensure-packer.sh
-	hack/ensure-goss.sh
+	$(CURDIR)/hack/ensure-ansible.sh
+	$(CURDIR)/hack/ensure-ansible-windows.sh
+	$(CURDIR)/hack/ensure-packer.sh
+	$(CURDIR)/hack/ensure-goss.sh
 
 .PHONY: deps-azure
 deps-azure: ## Installs/checks dependencies for Azure builds
 deps-azure:
-	hack/ensure-ansible.sh
-	hack/ensure-ansible-windows.sh
-	hack/ensure-packer.sh
-	hack/ensure-jq.sh
-	hack/ensure-azure-cli.sh
-	hack/ensure-goss.sh
-	$(PACKER) init packer/azure/config.pkr.hcl
+	$(CURDIR)/hack/ensure-ansible.sh
+	$(CURDIR)/hack/ensure-ansible-windows.sh
+	$(CURDIR)/hack/ensure-packer.sh
+	$(CURDIR)/hack/ensure-jq.sh
+	$(CURDIR)/hack/ensure-azure-cli.sh
+	$(CURDIR)/hack/ensure-goss.sh
+	$(PACKER) init $(CURDIR)/packer/azure/config.pkr.hcl
 
 .PHONY: deps-do
 deps-do: ## Installs/checks dependencies for DigitalOcean builds
 deps-do:
-	hack/ensure-ansible.sh
-	hack/ensure-packer.sh
-	$(PACKER) init packer/digitalocean/config.pkr.hcl
+	$(CURDIR)/hack/ensure-ansible.sh
+	$(CURDIR)/hack/ensure-packer.sh
+	$(PACKER) init $(CURDIR)/packer/digitalocean/config.pkr.hcl
 
 .PHONY: deps-osc
 deps-osc: ## Installs/checks dependencies for Outscale builds
 deps-osc:
-	hack/ensure-ansible.sh
-	hack/ensure-packer.sh
-	hack/ensure-goss.sh
+	$(CURDIR)/hack/ensure-ansible.sh
+	$(CURDIR)/hack/ensure-packer.sh
+	$(CURDIR)/hack/ensure-goss.sh
 	$(PACKER) plugins install github.com/outscale/outscale
 
 .PHONY: deps-gce
 deps-gce: ## Installs/checks dependencies for GCE builds
 deps-gce:
-	hack/ensure-ansible.sh
-	hack/ensure-packer.sh
-	hack/ensure-goss.sh
+	$(CURDIR)/hack/ensure-ansible.sh
+	$(CURDIR)/hack/ensure-packer.sh
+	$(CURDIR)/hack/ensure-goss.sh
 
 .PHONY: deps-ova
 deps-ova: ## Installs/checks dependencies for OVA builds
 deps-ova:
-	hack/ensure-ansible.sh
-	hack/ensure-ansible-windows.sh
-	hack/ensure-packer.sh
-	hack/ensure-goss.sh
-	hack/ensure-ovftool.sh
+	$(CURDIR)/hack/ensure-ansible.sh
+	$(CURDIR)/hack/ensure-ansible-windows.sh
+	$(CURDIR)/hack/ensure-packer.sh
+	$(CURDIR)/hack/ensure-goss.sh
+	$(CURDIR)/hack/ensure-ovftool.sh
 
 .PHONY: deps-openstack
 deps-openstack: ## Installs/checks dependencies for OpenStack builds
 deps-openstack:
-	hack/ensure-ansible.sh
-	hack/ensure-packer.sh
-	hack/ensure-goss.sh
-	hack/ensure-s3.sh
+	$(CURDIR)/hack/ensure-ansible.sh
+	$(CURDIR)/hack/ensure-packer.sh
+	$(CURDIR)/hack/ensure-goss.sh
+	$(CURDIR)/hack/ensure-s3.sh
 
 .PHONY: deps-qemu
 deps-qemu: ## Installs/checks dependencies for QEMU builds
 deps-qemu:
-	hack/ensure-ansible.sh
-	hack/ensure-packer.sh
-	hack/ensure-goss.sh
+	$(CURDIR)/hack/ensure-ansible.sh
+	$(CURDIR)/hack/ensure-packer.sh
+	$(CURDIR)/hack/ensure-goss.sh
 
 .PHONY: deps-raw
 deps-raw: ## Installs/checks dependencies for RAW builds
 deps-raw:
-	hack/ensure-ansible.sh
-	hack/ensure-packer.sh
-	hack/ensure-goss.sh
+	$(CURDIR)/hack/ensure-ansible.sh
+	$(CURDIR)/hack/ensure-packer.sh
+	$(CURDIR)/hack/ensure-goss.sh
 
 .PHONY: deps-oci
 deps-oci: ## Installs/checks dependencies for OCI builds
 deps-oci:
-	hack/ensure-ansible.sh
-	hack/ensure-packer.sh
-	hack/ensure-ansible-windows.sh
+	$(CURDIR)/hack/ensure-ansible.sh
+	$(CURDIR)/hack/ensure-packer.sh
+	$(CURDIR)/hack/ensure-ansible-windows.sh
 	$(PACKER) plugins install github.com/hashicorp/oracle
 
 .PHONY: deps-vbox
 deps-vbox: ## Installs/checks dependencies for VirtualBox builds
 deps-vbox:
-	hack/ensure-ansible.sh
-	hack/ensure-ansible-windows.sh
-	hack/ensure-packer.sh
-	hack/ensure-goss.sh
+	$(CURDIR)/hack/ensure-ansible.sh
+	$(CURDIR)/hack/ensure-ansible-windows.sh
+	$(CURDIR)/hack/ensure-packer.sh
+	$(CURDIR)/hack/ensure-goss.sh
 
 .PHONY: deps-powervs
 deps-powervs: ## Installs/checks dependencies for PowerVS builds
 deps-powervs:
-	hack/ensure-ansible.sh
-	hack/ensure-packer.sh
-	hack/ensure-goss.sh
-	hack/ensure-powervs.sh
+	$(CURDIR)/hack/ensure-ansible.sh
+	$(CURDIR)/hack/ensure-packer.sh
+	$(CURDIR)/hack/ensure-goss.sh
+	$(CURDIR)/hack/ensure-powervs.sh
 
 .PHONY: deps-ignition
 deps-ignition: ## Installs/checks dependencies for generating Ignition files
 deps-ignition:
-	hack/ensure-jq.sh
-	hack/ensure-ct.sh
+	$(CURDIR)/hack/ensure-jq.sh
+	$(CURDIR)/hack/ensure-ct.sh
 
 .PHONY: deps-nutanix
 deps-nutanix: ## Installs/checks dependencies for Nutanix builds
 deps-nutanix:
-	hack/ensure-ansible.sh
-	hack/ensure-packer.sh
-	hack/ensure-goss.sh
-	$(PACKER) init packer/nutanix/config.pkr.hcl
+	$(CURDIR)/hack/ensure-ansible.sh
+	$(CURDIR)/hack/ensure-packer.sh
+	$(CURDIR)/hack/ensure-goss.sh
+	$(PACKER) init $(CURDIR)/packer/nutanix/config.pkr.hcl
 
 .PHONY: deps-release
 deps-release: ## Installs/checks dependencies for project releases
-	hack/ensure-go.sh
-	hack/ensure-jq.sh
-	hack/ensure-kpromo.sh
-	hack/ensure-yq.sh
+	$(CURDIR)/hack/ensure-go.sh
+	$(CURDIR)/hack/ensure-jq.sh
+	$(CURDIR)/hack/ensure-kpromo.sh
+	$(CURDIR)/hack/ensure-yq.sh
 
 ## --------------------------------------
 ## Container variables
@@ -251,38 +255,38 @@ endif
 # A list of variable files given to Packer to configure things like the versions
 # of Kubernetes, CNI, and ContainerD to install. Any additional files from the
 # environment are appended.
-COMMON_NODE_VAR_FILES :=	packer/config/kubernetes.json \
-					packer/config/cni.json \
-					packer/config/containerd.json \
-					packer/config/wasm-shims.json \
-					packer/config/ansible-args.json \
-					packer/config/goss-args.json \
-					packer/config/common.json \
-					packer/config/additional_components.json
+COMMON_NODE_VAR_FILES :=	$(CURDIR)/packer/config/kubernetes.json \
+					$(CURDIR)/packer/config/cni.json \
+					$(CURDIR)/packer/config/containerd.json \
+					$(CURDIR)/packer/config/wasm-shims.json \
+					$(CURDIR)/packer/config/ansible-args.json \
+					$(CURDIR)/packer/config/goss-args.json \
+					$(CURDIR)/packer/config/common.json \
+					$(CURDIR)/packer/config/additional_components.json
 
-COMMON_WINDOWS_VAR_FILES :=	packer/config/kubernetes.json \
-					packer/config/windows/kubernetes.json \
-					packer/config/containerd.json \
-					packer/config/windows/containerd.json \
-					packer/config/windows/docker.json \
-					packer/config/windows/ansible-args-windows.json \
-					packer/config/common.json \
-					packer/config/windows/common.json \
-					packer/config/windows/cloudbase-init.json \
-					packer/config/goss-args.json \
-					packer/config/additional_components.json
+COMMON_WINDOWS_VAR_FILES :=	$(CURDIR)/packer/config/kubernetes.json \
+					$(CURDIR)/packer/config/windows/kubernetes.json \
+					$(CURDIR)/packer/config/containerd.json \
+					$(CURDIR)/packer/config/windows/containerd.json \
+					$(CURDIR)/packer/config/windows/docker.json \
+					$(CURDIR)/packer/config/windows/ansible-args-windows.json \
+					$(CURDIR)/packer/config/common.json \
+					$(CURDIR)/packer/config/windows/common.json \
+					$(CURDIR)/packer/config/windows/cloudbase-init.json \
+					$(CURDIR)/packer/config/goss-args.json \
+					$(CURDIR)/packer/config/additional_components.json
 
-COMMON_POWERVS_VAR_FILES := packer/config/kubernetes.json \
-					packer/config/ppc64le/kubernetes.json \
-					packer/config/cni.json \
-					packer/config/ppc64le/cni.json \
-					packer/config/containerd.json \
-                    packer/config/ppc64le/containerd.json \
-                    packer/config/ansible-args.json \
-                    packer/config/goss-args.json \
-                    packer/config/common.json \
-                    packer/config/ppc64le/common.json \
-                    packer/config/additional_components.json
+COMMON_POWERVS_VAR_FILES := $(CURDIR)/packer/config/kubernetes.json \
+					$(CURDIR)/packer/config/ppc64le/kubernetes.json \
+					$(CURDIR)/packer/config/cni.json \
+					$(CURDIR)/packer/config/ppc64le/cni.json \
+					$(CURDIR)/packer/config/containerd.json \
+					$(CURDIR)/packer/config/ppc64le/containerd.json \
+					$(CURDIR)/packer/config/ansible-args.json \
+					$(CURDIR)/packer/config/goss-args.json \
+					$(CURDIR)/packer/config/common.json \
+					$(CURDIR)/packer/config/ppc64le/common.json \
+					$(CURDIR)/packer/config/additional_components.json
 
 # Initialize a list of flags to pass to Packer. This includes any existing flags
 # specified by PACKER_FLAGS, as well as prefixing the list with the variable
@@ -303,8 +307,8 @@ PACKER_POWERVS_NODE_FLAGS := $(foreach f,$(abspath $(COMMON_POWERVS_VAR_FILES)),
 CENTOS_VERSIONS			:=	centos-7
 FLATCAR_VERSIONS		:=	flatcar
 PHOTON_VERSIONS			:=	photon-3 photon-4
-RHEL_VERSIONS			:=	rhel-7 rhel-8
-ROCKYLINUX_VERSIONS     :=  rockylinux-8
+RHEL_VERSIONS				:=	rhel-7 rhel-8
+ROCKYLINUX_VERSIONS	:=  rockylinux-8
 UBUNTU_VERSIONS			:=	ubuntu-1804 ubuntu-2004 ubuntu-2004-efi ubuntu-2204 ubuntu-2204-efi
 WINDOWS_VERSIONS		:=	windows-2019 windows-2004 windows-2022
 
@@ -312,7 +316,7 @@ WINDOWS_VERSIONS		:=	windows-2019 windows-2004 windows-2022
 FLATCAR_CHANNEL ?= stable
 FLATCAR_VERSION ?= current
 ifeq ($(FLATCAR_VERSION),current)
-override FLATCAR_VERSION := $(shell hack/image-grok-latest-flatcar-version.sh $(FLATCAR_CHANNEL))
+override FLATCAR_VERSION := $(shell $(CURDIR)/hack/image-grok-latest-flatcar-version.sh $(FLATCAR_CHANNEL))
 endif
 
 export FLATCAR_CHANNEL FLATCAR_VERSION
@@ -332,20 +336,20 @@ NODE_OVA_VSPHERE_BUILD_NAMES		:=	$(addprefix node-ova-vsphere-,$(PLATFORMS_AND_V
 NODE_OVA_VSPHERE_BASE_BUILD_NAMES		:=	$(addprefix node-ova-vsphere-base-,$(PLATFORMS_AND_VERSIONS))
 NODE_OVA_VSPHERE_CLONE_BUILD_NAMES		:=	$(addprefix node-ova-vsphere-clone-,$(PLATFORMS_AND_VERSIONS))
 
-AMI_BUILD_NAMES			   ?= ami-centos-7 ami-ubuntu-1804 ami-ubuntu-2004 ami-ubuntu-2204 ami-amazon-2 ami-flatcar ami-windows-2019 ami-windows-2004 ami-rockylinux-8 ami-rhel-8
-GCE_BUILD_NAMES			   ?= gce-ubuntu-2004 gce-ubuntu-2204 gce-rhel-8
+AMI_BUILD_NAMES ?= ami-centos-7 ami-ubuntu-1804 ami-ubuntu-2004 ami-ubuntu-2204 ami-amazon-2 ami-flatcar ami-windows-2019 ami-windows-2004 ami-rockylinux-8 ami-rhel-8
+GCE_BUILD_NAMES ?= gce-ubuntu-2004 gce-ubuntu-2204 gce-rhel-8
 
 # Make needs these lists to be space delimited, no quotes
-VHD_TARGETS := $(shell grep VHD_TARGETS azure_targets.sh | sed 's/VHD_TARGETS=//' | tr -d \")
-SIG_TARGETS := $(shell grep SIG_TARGETS azure_targets.sh | sed 's/SIG_TARGETS=//' | tr -d \")
-SIG_GEN2_TARGETS := $(shell grep SIG_GEN2_TARGETS azure_targets.sh | sed 's/SIG_GEN2_TARGETS=//' | tr -d \")
-SIG_CVM_TARGETS := $(shell grep SIG_CVM_TARGETS azure_targets.sh | sed 's/SIG_CVM_TARGETS=//' | tr -d \")
+VHD_TARGETS := $(shell grep VHD_TARGETS $(CURDIR)/azure_targets.sh | sed 's/VHD_TARGETS=//' | tr -d \")
+SIG_TARGETS := $(shell grep SIG_TARGETS $(CURDIR)/azure_targets.sh | sed 's/SIG_TARGETS=//' | tr -d \")
+SIG_GEN2_TARGETS := $(shell grep SIG_GEN2_TARGETS $(CURDIR)/azure_targets.sh | sed 's/SIG_GEN2_TARGETS=//' | tr -d \")
+SIG_CVM_TARGETS := $(shell grep SIG_CVM_TARGETS $(CURDIR)/azure_targets.sh | sed 's/SIG_CVM_TARGETS=//' | tr -d \")
 AZURE_BUILD_VHD_NAMES	   ?= $(addprefix azure-vhd-,$(VHD_TARGETS))
 AZURE_BUILD_SIG_NAMES	   ?= $(addprefix azure-sig-,$(SIG_TARGETS))
 AZURE_BUILD_SIG_GEN2_NAMES ?= $(addsuffix -gen2,$(addprefix azure-sig-,$(SIG_GEN2_TARGETS)))
 AZURE_BUILD_SIG_CVM_NAMES ?= $(addsuffix -cvm,$(addprefix azure-sig-,$(SIG_CVM_TARGETS)))
 
-OCI_BUILD_NAMES			   ?= oci-ubuntu-1804 oci-ubuntu-2004 oci-ubuntu-2204 oci-oracle-linux-8 oci-oracle-linux-9 oci-windows-2019 oci-windows-2022
+OCI_BUILD_NAMES			?= oci-ubuntu-1804 oci-ubuntu-2004 oci-ubuntu-2204 oci-oracle-linux-8 oci-oracle-linux-9 oci-windows-2019 oci-windows-2022
 
 DO_BUILD_NAMES 			?=	do-centos-7 do-ubuntu-1804 do-ubuntu-2004
 
@@ -409,166 +413,166 @@ NUTANIX_VALIDATE_TARGETS	:= $(addprefix validate-,$(NUTANIX_BUILD_NAMES))
 .PHONY: $(NODE_OVA_LOCAL_BUILD_TARGETS)
 $(NODE_OVA_LOCAL_BUILD_TARGETS): deps-ova
     # This uses a packer file builder to input unattend variables into a JSON file to be consumed by the python script before running the vmware-iso provisioner
-	$(if $(findstring windows,$@),$(PACKER) build $(PACKER_WINDOWS_NODE_FLAGS) -var-file="packer/ova/packer-common.json" -var-file="$(abspath packer/ova/$(subst build-node-ova-local-,,$@).json)" -only=file $(ABSOLUTE_PACKER_VAR_FILES) packer/ova/packer-windows.json,)
-	$(if $(findstring windows,$@),hack/windows-ova-unattend.py --unattend-file='./packer/ova/windows/$(subst build-node-ova-local-,,$@)/autounattend.xml',)
-	$(PACKER) build $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="packer/ova/packer-common.json" -var-file="$(abspath packer/ova/$(subst build-node-ova-local-,,$@).json)" -except=vsphere -only=vmware-iso $(ABSOLUTE_PACKER_VAR_FILES) packer/ova/packer-$(if $(findstring windows,$@),windows,node).json
+	$(if $(findstring windows,$@),$(PACKER) build $(PACKER_WINDOWS_NODE_FLAGS) -var-file="$(CURDIR)/packer/ova/packer-common.json" -var-file="$(abspath $(CURDIR)/packer/ova/$(subst build-node-ova-local-,,$@).json)" -only=file $(ABSOLUTE_PACKER_VAR_FILES) $(CURDIR)/packer/ova/packer-windows.json,)
+	$(if $(findstring windows,$@),$(CURDIR)/hack/windows-ova-unattend.py --unattend-file='$(CURDIR)/packer/ova/windows/$(subst build-node-ova-local-,,$@)/autounattend.xml',)
+	$(PACKER) build $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="$(CURDIR)/packer/ova/packer-common.json" -var-file="$(abspath $(CURDIR)/packer/ova/$(subst build-node-ova-local-,,$@).json)" -except=vsphere -only=vmware-iso $(ABSOLUTE_PACKER_VAR_FILES) $(CURDIR)/packer/ova/packer-$(if $(findstring windows,$@),windows,node).json
 
 .PHONY: $(NODE_OVA_LOCAL_VALIDATE_TARGETS)
 $(NODE_OVA_LOCAL_VALIDATE_TARGETS): deps-ova
-	$(PACKER) validate $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="packer/ova/packer-common.json" -var-file="$(abspath packer/ova/$(subst validate-node-ova-local-,,$@).json)" -except=vsphere -only=vmware-iso $(ABSOLUTE_PACKER_VAR_FILES) packer/ova/packer-$(if $(findstring windows,$@),windows,node).json
+	$(PACKER) validate $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="$(CURDIR)/packer/ova/packer-common.json" -var-file="$(abspath $(CURDIR)/packer/ova/$(subst validate-node-ova-local-,,$@).json)" -except=vsphere -only=vmware-iso $(ABSOLUTE_PACKER_VAR_FILES) $(CURDIR)/packer/ova/packer-$(if $(findstring windows,$@),windows,node).json
 
 .PHONY: $(NODE_OVA_LOCAL_VMX_BUILD_TARGETS)
 $(NODE_OVA_LOCAL_VMX_BUILD_TARGETS): deps-ova
-	$(PACKER) build $(PACKER_NODE_FLAGS) -var-file="packer/ova/packer-common.json" -var-file="$(abspath packer/ova/$(subst build-node-ova-local-vmx-,,$@).json)" -var-file="packer/ova/vmx.json" -except=vsphere -except=vmware-iso -only=vmware-vmx $(ABSOLUTE_PACKER_VAR_FILES) packer/ova/packer-node.json
+	$(PACKER) build $(PACKER_NODE_FLAGS) -var-file="$(CURDIR)/packer/ova/packer-common.json" -var-file="$(abspath $(CURDIR)/packer/ova/$(subst build-node-ova-local-vmx-,,$@).json)" -var-file="$(CURDIR)/packer/ova/vmx.json" -except=vsphere -except=vmware-iso -only=vmware-vmx $(ABSOLUTE_PACKER_VAR_FILES) $(CURDIR)/packer/ova/packer-node.json
 
 .PHONY: $(NODE_OVA_LOCAL_BASE_BUILD_TARGETS)
 $(NODE_OVA_LOCAL_BASE_BUILD_TARGETS): deps-ova
-	$(PACKER) build $(PACKER_NODE_FLAGS) -var-file="packer/ova/packer-common.json" -var-file="$(abspath packer/ova/$(subst build-node-ova-local-base-,,$@).json)"  -except=vsphere -except=vmware-iso -except=vmware-vmx -only=vmware-iso-base $(ABSOLUTE_PACKER_VAR_FILES) packer/ova/packer-node.json
+	$(PACKER) build $(PACKER_NODE_FLAGS) -var-file="$(CURDIR)/packer/ova/packer-common.json" -var-file="$(abspath $(CURDIR)/packer/ova/$(subst build-node-ova-local-base-,,$@).json)"  -except=vsphere -except=vmware-iso -except=vmware-vmx -only=vmware-iso-base $(ABSOLUTE_PACKER_VAR_FILES) $(CURDIR)/packer/ova/packer-node.json
 
 .PHONY: $(NODE_OVA_VSPHERE_BUILD_TARGETS)
 $(NODE_OVA_VSPHERE_BUILD_TARGETS): deps-ova
     # This uses a packer file builder to input unattend variables into a JSON file to be consumed by the python script before running the vsphere provisioner
-	$(if $(findstring windows,$@),$(PACKER) build $(PACKER_WINDOWS_NODE_FLAGS) -var-file="packer/ova/packer-common.json" -var-file="$(abspath packer/ova/$(subst build-node-ova-vsphere-,,$@).json)" -only=file $(ABSOLUTE_PACKER_VAR_FILES) packer/ova/packer-windows.json,)
-	$(if $(findstring windows,$@),hack/windows-ova-unattend.py --unattend-file='./packer/ova/windows/$(subst build-node-ova-vsphere-,,$@)/autounattend.xml',)
-	$(PACKER) build $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS))  -var-file="packer/ova/packer-common.json" -var-file="$(abspath packer/ova/$(subst build-node-ova-vsphere-,,$@).json)" -var-file="packer/ova/vsphere.json"  -except=local -only=vsphere-iso $(ABSOLUTE_PACKER_VAR_FILES) -only=vsphere packer/ova/packer-$(if $(findstring windows,$@),windows,node).json
+	$(if $(findstring windows,$@),$(PACKER) build $(PACKER_WINDOWS_NODE_FLAGS) -var-file="$(CURDIR)/packer/ova/packer-common.json" -var-file="$(abspath $(CURDIR)/packer/ova/$(subst build-node-ova-vsphere-,,$@).json)" -only=file $(ABSOLUTE_PACKER_VAR_FILES) $(CURDIR)/packer/ova/packer-windows.json,)
+	$(if $(findstring windows,$@),$(CURDIR)/hack/windows-ova-unattend.py --unattend-file='$(CURDIR)/packer/ova/windows/$(subst build-node-ova-vsphere-,,$@)/autounattend.xml',)
+	$(PACKER) build $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS))  -var-file="$(CURDIR)/packer/ova/packer-common.json" -var-file="$(abspath $(CURDIR)/packer/ova/$(subst build-node-ova-vsphere-,,$@).json)" -var-file="$(CURDIR)/packer/ova/vsphere.json"  -except=local -only=vsphere-iso $(ABSOLUTE_PACKER_VAR_FILES) -only=vsphere $(CURDIR)/packer/ova/packer-$(if $(findstring windows,$@),windows,node).json
 
 .PHONY: $(NODE_OVA_VSPHERE_BASE_BUILD_TARGETS)
 $(NODE_OVA_VSPHERE_BASE_BUILD_TARGETS): deps-ova
-	$(PACKER) build $(PACKER_NODE_FLAGS) -var-file="packer/ova/packer-common.json" -var-file="$(abspath packer/ova/$(subst build-node-ova-vsphere-base-,,$@).json)" -var-file="packer/ova/vsphere.json" -except=local -except=manifest -except=vsphere -only=vsphere-iso-base $(ABSOLUTE_PACKER_VAR_FILES) packer/ova/packer-node.json
+	$(PACKER) build $(PACKER_NODE_FLAGS) -var-file="$(CURDIR)/packer/ova/packer-common.json" -var-file="$(abspath $(CURDIR)/packer/ova/$(subst build-node-ova-vsphere-base-,,$@).json)" -var-file="$(CURDIR)/packer/ova/vsphere.json" -except=local -except=manifest -except=vsphere -only=vsphere-iso-base $(ABSOLUTE_PACKER_VAR_FILES) $(CURDIR)/packer/ova/packer-node.json
 
 .PHONY: $(NODE_OVA_VSPHERE_CLONE_BUILD_TARGETS)
 $(NODE_OVA_VSPHERE_CLONE_BUILD_TARGETS): deps-ova
-	$(PACKER) build $(PACKER_NODE_FLAGS) -var-file="packer/ova/packer-common.json" -var-file="$(abspath packer/ova/$(subst build-node-ova-vsphere-clone-,,$@).json)" -var-file="packer/ova/vsphere.json" -except=local -only=vsphere-clone $(ABSOLUTE_PACKER_VAR_FILES) packer/ova/packer-node.json
+	$(PACKER) build $(PACKER_NODE_FLAGS) -var-file="$(CURDIR)/packer/ova/packer-common.json" -var-file="$(abspath $(CURDIR)/packer/ova/$(subst build-node-ova-vsphere-clone-,,$@).json)" -var-file="$(CURDIR)/packer/ova/vsphere.json" -except=local -only=vsphere-clone $(ABSOLUTE_PACKER_VAR_FILES) $(CURDIR)/packer/ova/packer-node.json
 
 .PHONY: $(AMI_BUILD_TARGETS)
 $(AMI_BUILD_TARGETS): deps-ami
-	$(PACKER) build $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="$(abspath packer/ami/$(subst build-ami-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/ami/packer$(if $(findstring windows,$@),-windows,).json
+	$(PACKER) build $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="$(abspath $(CURDIR)/packer/ami/$(subst build-ami-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) $(CURDIR)/packer/ami/packer$(if $(findstring windows,$@),-windows,).json
 
 .PHONY: $(AMI_VALIDATE_TARGETS)
 $(AMI_VALIDATE_TARGETS): deps-ami
-	$(PACKER) validate $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="$(abspath packer/ami/$(subst validate-ami-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/ami/packer$(if $(findstring windows,$@),-windows,).json
+	$(PACKER) validate $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="$(abspath $(CURDIR)/packer/ami/$(subst validate-ami-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) $(CURDIR)/packer/ami/packer$(if $(findstring windows,$@),-windows,).json
 
 .PHONY: $(GCE_BUILD_TARGETS)
 $(GCE_BUILD_TARGETS): deps-gce
-	$(PACKER) build $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/gce/$(subst build-gce-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/gce/packer.json
+	$(PACKER) build $(PACKER_NODE_FLAGS) -var-file="$(abspath $(CURDIR)/packer/gce/$(subst build-gce-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) $(CURDIR)/packer/gce/packer.json
 
 .PHONY: $(GCE_VALIDATE_TARGETS)
 $(GCE_VALIDATE_TARGETS): deps-gce
-	$(PACKER) validate $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/gce/$(subst validate-gce-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/gce/packer.json
+	$(PACKER) validate $(PACKER_NODE_FLAGS) -var-file="$(abspath $(CURDIR)/packer/gce/$(subst validate-gce-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) $(CURDIR)/packer/gce/packer.json
 
 .PHONY: $(AZURE_BUILD_VHD_TARGETS)
 $(AZURE_BUILD_VHD_TARGETS): deps-azure
-	. $(abspath packer/azure/scripts/init-vhd.sh) && $(PACKER) build $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="$(abspath packer/azure/azure-config.json)" -var-file="$(abspath packer/azure/azure-vhd.json)" -var-file="$(abspath packer/azure/$(subst build-azure-vhd-,,$@).json)" -only="$(subst build-azure-,,$@)" $(ABSOLUTE_PACKER_VAR_FILES) packer/azure/packer$(findstring -windows,$@).json
+	. $(abspath $(CURDIR)/packer/azure/scripts/init-vhd.sh) && $(PACKER) build $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="$(abspath $(CURDIR)/packer/azure/azure-config.json)" -var-file="$(abspath $(CURDIR)/packer/azure/azure-vhd.json)" -var-file="$(abspath $(CURDIR)/packer/azure/$(subst build-azure-vhd-,,$@).json)" -only="$(subst build-azure-,,$@)" $(ABSOLUTE_PACKER_VAR_FILES) $(CURDIR)/packer/azure/packer$(findstring -windows,$@).json
 
 .PHONY: $(AZURE_VALIDATE_VHD_TARGETS)
 $(AZURE_VALIDATE_VHD_TARGETS): deps-azure
-	$(PACKER) validate $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="$(abspath packer/azure/azure-config.json)" -var-file="$(abspath packer/azure/azure-vhd.json)" -var-file="$(abspath packer/azure/$(subst validate-azure-vhd-,,$@).json)" -only="$(subst validate-azure-,,$@)" $(ABSOLUTE_PACKER_VAR_FILES) packer/azure/packer$(findstring -windows,$@).json
+	$(PACKER) validate $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="$(abspath $(CURDIR)/packer/azure/azure-config.json)" -var-file="$(abspath $(CURDIR)/packer/azure/azure-vhd.json)" -var-file="$(abspath $(CURDIR)/packer/azure/$(subst validate-azure-vhd-,,$@).json)" -only="$(subst validate-azure-,,$@)" $(ABSOLUTE_PACKER_VAR_FILES) $(CURDIR)/packer/azure/packer$(findstring -windows,$@).json
 
 .PHONY: $(AZURE_BUILD_SIG_TARGETS)
 $(AZURE_BUILD_SIG_TARGETS): deps-azure
-	. $(abspath packer/azure/scripts/init-sig.sh) $(subst build-azure-sig-,,$@) && $(PACKER) build $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="$(abspath packer/azure/azure-config.json)" -var-file="$(abspath packer/azure/azure-sig.json)" -var-file="$(abspath packer/azure/$(subst build-azure-sig-,,$@).json)" -only="$(subst build-azure-,,$@)" $(ABSOLUTE_PACKER_VAR_FILES) packer/azure/packer$(findstring -windows,$@).json
+	. $(abspath $(CURDIR)/packer/azure/scripts/init-sig.sh) $(subst build-azure-sig-,,$@) && $(PACKER) build $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="$(abspath $(CURDIR)/packer/azure/azure-config.json)" -var-file="$(abspath $(CURDIR)/packer/azure/azure-sig.json)" -var-file="$(abspath $(CURDIR)/packer/azure/$(subst build-azure-sig-,,$@).json)" -only="$(subst build-azure-,,$@)" $(ABSOLUTE_PACKER_VAR_FILES) $(CURDIR)/packer/azure/packer$(findstring -windows,$@).json
 
 .PHONY: $(AZURE_BUILD_SIG_GEN2_TARGETS)
 $(AZURE_BUILD_SIG_GEN2_TARGETS): deps-azure
-	. $(abspath packer/azure/scripts/init-sig.sh) $(subst build-azure-sig-,,$@) && $(PACKER) build $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="$(abspath packer/azure/azure-config.json)" -var-file="$(abspath packer/azure/azure-sig-gen2.json)" -var-file="$(abspath packer/azure/$(subst build-azure-sig-,,$@).json)" -only="$(subst build-azure-,,$@)" $(ABSOLUTE_PACKER_VAR_FILES) packer/azure/packer$(findstring -windows,$@).json
+	. $(abspath $(CURDIR)/packer/azure/scripts/init-sig.sh) $(subst build-azure-sig-,,$@) && $(PACKER) build $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="$(abspath $(CURDIR)/packer/azure/azure-config.json)" -var-file="$(abspath $(CURDIR)/packer/azure/azure-sig-gen2.json)" -var-file="$(abspath $(CURDIR)/packer/azure/$(subst build-azure-sig-,,$@).json)" -only="$(subst build-azure-,,$@)" $(ABSOLUTE_PACKER_VAR_FILES) $(CURDIR)/packer/azure/packer$(findstring -windows,$@).json
 
 .PHONY: $(AZURE_BUILD_SIG_CVM_TARGETS)
 $(AZURE_BUILD_SIG_CVM_TARGETS): deps-azure
-	. $(abspath packer/azure/scripts/init-sig.sh) $(subst build-azure-sig-,,$@) && packer build $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="$(abspath packer/azure/azure-config.json)" -var-file="$(abspath packer/azure/azure-sig-cvm.json)" -var-file="$(abspath packer/azure/$(subst build-azure-sig-,,$@).json)" -only="$(subst build-azure-,,$@)" $(ABSOLUTE_PACKER_VAR_FILES) packer/azure/packer$(findstring -windows,$@).json
+	. $(abspath $(CURDIR)/packer/azure/scripts/init-sig.sh) $(subst build-azure-sig-,,$@) && packer build $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="$(abspath $(CURDIR)/packer/azure/azure-config.json)" -var-file="$(abspath $(CURDIR)/packer/azure/azure-sig-cvm.json)" -var-file="$(abspath $(CURDIR)/packer/azure/$(subst build-azure-sig-,,$@).json)" -only="$(subst build-azure-,,$@)" $(ABSOLUTE_PACKER_VAR_FILES) $(CURDIR)/packer/azure/packer$(findstring -windows,$@).json
 
 .PHONY: $(AZURE_VALIDATE_SIG_TARGETS)
 $(AZURE_VALIDATE_SIG_TARGETS): deps-azure
-	$(PACKER) validate $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="$(abspath packer/azure/azure-config.json)" -var-file="$(abspath packer/azure/azure-sig.json)" -var-file="$(abspath packer/azure/$(subst validate-azure-sig-,,$@).json)" -only="$(subst validate-azure-,,$@)" $(ABSOLUTE_PACKER_VAR_FILES) packer/azure/packer$(findstring -windows,$@).json
+	$(PACKER) validate $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="$(abspath $(CURDIR)/packer/azure/azure-config.json)" -var-file="$(abspath $(CURDIR)/packer/azure/azure-sig.json)" -var-file="$(abspath $(CURDIR)/packer/azure/$(subst validate-azure-sig-,,$@).json)" -only="$(subst validate-azure-,,$@)" $(ABSOLUTE_PACKER_VAR_FILES) $(CURDIR)/packer/azure/packer$(findstring -windows,$@).json
 
 .PHONY: $(AZURE_VALIDATE_SIG_GEN2_TARGETS)
 $(AZURE_VALIDATE_SIG_GEN2_TARGETS): deps-azure
-	$(PACKER) validate $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="$(abspath packer/azure/azure-config.json)" -var-file="$(abspath packer/azure/azure-sig-gen2.json)" -var-file="$(abspath packer/azure/$(subst validate-azure-sig-,,$@).json)" -only="$(subst validate-azure-,,$@)" $(ABSOLUTE_PACKER_VAR_FILES) packer/azure/packer$(findstring windows,$@).json
+	$(PACKER) validate $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="$(abspath $(CURDIR)/packer/azure/azure-config.json)" -var-file="$(abspath $(CURDIR)/packer/azure/azure-sig-gen2.json)" -var-file="$(abspath $(CURDIR)/packer/azure/$(subst validate-azure-sig-,,$@).json)" -only="$(subst validate-azure-,,$@)" $(ABSOLUTE_PACKER_VAR_FILES) $(CURDIR)/packer/azure/packer$(findstring windows,$@).json
 
 .PHONY: $(AZURE_VALIDATE_SIG_CVM_TARGETS)
 $(AZURE_VALIDATE_SIG_CVM_TARGETS): deps-azure
-	packer validate $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="$(abspath packer/azure/azure-config.json)" -var-file="$(abspath packer/azure/azure-sig-cvm.json)" -var-file="$(abspath packer/azure/$(subst validate-azure-sig-,,$@).json)" -only="$(subst validate-azure-,,$@)" $(ABSOLUTE_PACKER_VAR_FILES) packer/azure/packer$(findstring -windows,$@).json
+	packer validate $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="$(abspath $(CURDIR)/packer/azure/azure-config.json)" -var-file="$(abspath $(CURDIR)/packer/azure/azure-sig-cvm.json)" -var-file="$(abspath $(CURDIR)/packer/azure/$(subst validate-azure-sig-,,$@).json)" -only="$(subst validate-azure-,,$@)" $(ABSOLUTE_PACKER_VAR_FILES) $(CURDIR)/packer/azure/packer$(findstring -windows,$@).json
 
 .PHONY: $(DO_BUILD_TARGETS)
 $(DO_BUILD_TARGETS): deps-do
-	$(PACKER) build $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/digitalocean/$(subst build-do-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/digitalocean/packer.json
+	$(PACKER) build $(PACKER_NODE_FLAGS) -var-file="$(abspath $(CURDIR)/packer/digitalocean/$(subst build-do-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) $(CURDIR)/packer/digitalocean/packer.json
 
 .PHONY: $(DO_VALIDATE_TARGETS)
 $(DO_VALIDATE_TARGETS): deps-do
-	$(PACKER) validate $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/digitalocean/$(subst validate-do-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/digitalocean/packer.json
+	$(PACKER) validate $(PACKER_NODE_FLAGS) -var-file="$(abspath $(CURDIR)/packer/digitalocean/$(subst validate-do-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) $(CURDIR)/packer/digitalocean/packer.json
 
 .PHONY: $(OPENSTACK_BUILD_TARGETS)
 $(OPENSTACK_BUILD_TARGETS): deps-openstack
-	packer build $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/openstack/$(subst build-openstack-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/openstack/packer.json
+	packer build $(PACKER_NODE_FLAGS) -var-file="$(abspath $(CURDIR)/packer/openstack/$(subst build-openstack-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) $(CURDIR)/packer/openstack/packer.json
 
 .PHONY: $(OPENSTACK_VALIDATE_TARGETS)
 $(OPENSTACK_VALIDATE_TARGETS): deps-openstack
-	packer validate $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/openstack/$(subst validate-openstack-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/openstack/packer.json
+	packer validate $(PACKER_NODE_FLAGS) -var-file="$(abspath $(CURDIR)/packer/openstack/$(subst validate-openstack-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) $(CURDIR)/packer/openstack/packer.json
 
 .PHONY: $(QEMU_BUILD_TARGETS)
 $(QEMU_BUILD_TARGETS): deps-qemu
-	$(PACKER) build $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/qemu/$(subst build-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/qemu/packer.json
+	$(PACKER) build $(PACKER_NODE_FLAGS) -var-file="$(abspath $(CURDIR)/packer/qemu/$(subst build-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) $(CURDIR)/packer/qemu/packer.json
 
 .PHONY: $(QEMU_VALIDATE_TARGETS)
 $(QEMU_VALIDATE_TARGETS): deps-qemu
-	$(PACKER) validate $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/qemu/$(subst validate-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/qemu/packer.json
+	$(PACKER) validate $(PACKER_NODE_FLAGS) -var-file="$(abspath $(CURDIR)/packer/qemu/$(subst validate-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) $(CURDIR)/packer/qemu/packer.json
 
 .PHONY: $(QEMU_KUBEVIRT_BUILD_TARGETS)
 $(QEMU_KUBEVIRT_BUILD_TARGETS): deps-qemu
-	$(PACKER) build $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/qemu/$(subst build-kubevirt-,,$@).json)" --var 'kubevirt=true' $(ABSOLUTE_PACKER_VAR_FILES) packer/qemu/packer.json
+	$(PACKER) build $(PACKER_NODE_FLAGS) -var-file="$(abspath $(CURDIR)/packer/qemu/$(subst build-kubevirt-,,$@).json)" --var 'kubevirt=true' $(ABSOLUTE_PACKER_VAR_FILES) $(CURDIR)/packer/qemu/packer.json
 
 .PHONY: $(QEMU_KUBEVIRT_VALIDATE_TARGETS)
 $(QEMU_KUBEVIRT_VALIDATE_TARGETS): deps-qemu
-	$(PACKER) validate $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/qemu/$(subst validate-kubevirt-,,$@).json)" --var 'kubevirt=true' $(ABSOLUTE_PACKER_VAR_FILES) packer/qemu/packer.json
+	$(PACKER) validate $(PACKER_NODE_FLAGS) -var-file="$(abspath $(CURDIR)/packer/qemu/$(subst validate-kubevirt-,,$@).json)" --var 'kubevirt=true' $(ABSOLUTE_PACKER_VAR_FILES) $(CURDIR)/packer/qemu/packer.json
 
 .PHONY: $(RAW_BUILD_TARGETS)
 $(RAW_BUILD_TARGETS): deps-raw
-	$(PACKER) build $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/raw/$(subst build-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/raw/packer.json
+	$(PACKER) build $(PACKER_NODE_FLAGS) -var-file="$(abspath $(CURDIR)/packer/raw/$(subst build-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) $(CURDIR)/packer/raw/packer.json
 
 .PHONY: $(RAW_VALIDATE_TARGETS)
 $(RAW_VALIDATE_TARGETS): deps-raw
-	$(PACKER) validate $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/raw/$(subst validate-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/raw/packer.json
+	$(PACKER) validate $(PACKER_NODE_FLAGS) -var-file="$(abspath $(CURDIR)/packer/raw/$(subst validate-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) $(CURDIR)/packer/raw/packer.json
 
 .PHONY: $(OCI_BUILD_TARGETS)
 $(OCI_BUILD_TARGETS): deps-oci
-	$(if $(findstring windows,$@),./packer/oci/scripts/set_bootstrap.sh,)
-	$(PACKER) build $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="$(abspath packer/oci/$(subst build-oci-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/oci/packer$(findstring -windows,$@).json
-	$(if $(findstring windows,$@),./packer/oci/scripts/unset_bootstrap.sh,)
+	$(if $(findstring windows,$@),$(CURDIR)/packer/oci/scripts/set_bootstrap.sh,)
+	$(PACKER) build $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="$(abspath $(CURDIR)/packer/oci/$(subst build-oci-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) $(CURDIR)/packer/oci/packer$(findstring -windows,$@).json
+	$(if $(findstring windows,$@),$(CURDIR)/packer/oci/scripts/unset_bootstrap.sh,)
 
 .PHONY: $(OCI_VALIDATE_TARGETS)
 $(OCI_VALIDATE_TARGETS): deps-oci
-	$(PACKER) validate $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/oci/$(subst validate-oci-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/oci/packer.json
+	$(PACKER) validate $(PACKER_NODE_FLAGS) -var-file="$(abspath $(CURDIR)/packer/oci/$(subst validate-oci-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) $(CURDIR)/packer/oci/packer.json
 
 .PHONY: $(OSC_BUILD_TARGETS)
 $(OSC_BUILD_TARGETS): deps-osc
-	$(PACKER) build $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/outscale/$(subst build-osc-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/outscale/packer.json
+	$(PACKER) build $(PACKER_NODE_FLAGS) -var-file="$(abspath $(CURDIR)/packer/outscale/$(subst build-osc-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) $(CURDIR)/packer/outscale/packer.json
 
 .PHONY: $(OSC_VALIDATE_TARGETS)
 $(OSC_VALIDATE_TARGETS): deps-osc
-	$(PACKER) validate $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/outscale/$(subst validate-osc-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/outscale/packer.json
+	$(PACKER) validate $(PACKER_NODE_FLAGS) -var-file="$(abspath $(CURDIR)/packer/outscale/$(subst validate-osc-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) $(CURDIR)/packer/outscale/packer.json
 
 .PHONY: $(VBOX_BUILD_TARGETS)
 $(VBOX_BUILD_TARGETS): deps-vbox
-	$(PACKER) build $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="packer/vbox/packer-common.json" -var-file="$(abspath packer/vbox/$(subst build-vbox-,,$@).json)" -only=virtualbox-iso $(ABSOLUTE_PACKER_VAR_FILES) packer/vbox/packer-$(if $(findstring windows,$@),windows).json
+	$(PACKER) build $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="$(CURDIR)/packer/vbox/packer-common.json" -var-file="$(abspath $(CURDIR)/packer/vbox/$(subst build-vbox-,,$@).json)" -only=virtualbox-iso $(ABSOLUTE_PACKER_VAR_FILES) $(CURDIR)/packer/vbox/packer-$(if $(findstring windows,$@),windows).json
 
 .PHONY: $(VBOX_VALIDATE_TARGETS)
 $(VBOX_VALIDATE_TARGETS): deps-vbox
-	$(PACKER) validate $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="packer/vbox/packer-common.json" -var-file="$(abspath packer/vbox/$(subst validate-vbox-,,$@).json)" -only=virtualbox-iso $(ABSOLUTE_PACKER_VAR_FILES) packer/vbox/packer-$(if $(findstring windows,$@),windows).json
+	$(PACKER) validate $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="$(CURDIR)/packer/vbox/packer-common.json" -var-file="$(abspath $(CURDIR)/packer/vbox/$(subst validate-vbox-,,$@).json)" -only=virtualbox-iso $(ABSOLUTE_PACKER_VAR_FILES) $(CURDIR)/packer/vbox/packer-$(if $(findstring windows,$@),windows).json
 
 .PHONY: $(POWERVS_BUILD_TARGETS)
 $(POWERVS_BUILD_TARGETS): deps-powervs
-	$(PACKER) build $(PACKER_POWERVS_NODE_FLAGS) -var-file="$(abspath packer/powervs/$(subst build-powervs-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) -except=flatcar packer/powervs/packer.json
+	$(PACKER) build $(PACKER_POWERVS_NODE_FLAGS) -var-file="$(abspath $(CURDIR)/packer/powervs/$(subst build-powervs-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) -except=flatcar $(CURDIR)/packer/powervs/packer.json
 
 .PHONY: $(POWERVS_VALIDATE_TARGETS)
 $(POWERVS_VALIDATE_TARGETS): deps-powervs
-	$(PACKER) validate $(PACKER_POWERVS_NODE_FLAGS) -var-file="$(abspath packer/powervs/$(subst validate-powervs-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) -except=flatcar packer/powervs/packer.json
+	$(PACKER) validate $(PACKER_POWERVS_NODE_FLAGS) -var-file="$(abspath $(CURDIR)/packer/powervs/$(subst validate-powervs-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) -except=flatcar $(CURDIR)/packer/powervs/packer.json
 
 .PHONY: $(NUTANIX_BUILD_TARGETS)
 $(NUTANIX_BUILD_TARGETS): deps-nutanix
-	$(PACKER) build $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="packer/nutanix/nutanix.json" -var-file="$(abspath packer/nutanix/$(subst build-nutanix-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/nutanix/packer$(if $(findstring windows,$@),-windows,).json
+	$(PACKER) build $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="$(CURDIR)/packer/nutanix/nutanix.json" -var-file="$(abspath $(CURDIR)/packer/nutanix/$(subst build-nutanix-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) $(CURDIR)/packer/nutanix/packer$(if $(findstring windows,$@),-windows,).json
 
 .PHONY: $(NUTANIX_VALIDATE_TARGETS)
 $(NUTANIX_VALIDATE_TARGETS): deps-nutanix
-	$(PACKER) validate $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="packer/nutanix/nutanix.json" -var-file="$(abspath packer/nutanix/$(subst validate-nutanix-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/nutanix/packer$(if $(findstring windows,$@),-windows,).json
+	$(PACKER) validate $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="$(CURDIR)/packer/nutanix/nutanix.json" -var-file="$(abspath $(CURDIR)/packer/nutanix/$(subst validate-nutanix-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) $(CURDIR)/packer/nutanix/packer$(if $(findstring windows,$@),-windows,).json
 
 ## --------------------------------------
 ## Dynamic clean targets
@@ -576,22 +580,22 @@ $(NUTANIX_VALIDATE_TARGETS): deps-nutanix
 NODE_OVA_LOCAL_CLEAN_TARGETS := $(subst build-,clean-,$(NODE_OVA_LOCAL_BUILD_TARGETS))
 .PHONY: $(NODE_OVA_LOCAL_CLEAN_TARGETS)
 $(NODE_OVA_LOCAL_CLEAN_TARGETS):
-	rm -fr output/$(subst clean-node-ova-local-,,$@)-kube*
+	rm -fr $(CURDIR)/output/$(subst clean-node-ova-local-,,$@)-kube*
 
 QEMU_CLEAN_TARGETS := $(subst build-,clean-,$(QEMU_BUILD_TARGETS))
 .PHONY: $(QEMU_CLEAN_TARGETS)
 $(QEMU_CLEAN_TARGETS):
-	rm -fr output/$(subst clean-qemu-,,$@)-kube*
+	rm -fr $(CURDIR)/output/$(subst clean-qemu-,,$@)-kube*
 
 RAW_CLEAN_TARGETS := $(subst build-,clean-,$(RAW_BUILD_TARGETS))
 .PHONY: $(RAW_CLEAN_TARGETS)
 $(RAW_CLEAN_TARGETS):
-	rm -fr output/$(subst clean-raw-,,$@)-kube*
+	rm -fr $(CURDIR)/output/$(subst clean-raw-,,$@)-kube*
 
 VBOX_CLEAN_TARGETS := $(subst build-,clean-,$(VBOX_BUILD_TARGETS))
 .PHONY: $(VBOX_CLEAN_TARGETS)
 $(VBOX_CLEAN_TARGETS):
-	rm -fr output/$(subst clean-vbox-,,$@)-kube*
+	rm -fr $(CURDIR)/output/$(subst clean-vbox-,,$@)-kube*
 
 ## --------------------------------------
 ## Document dynamic build targets
@@ -910,7 +914,7 @@ validate-all: validate-ami-all \
 	validate-qemu-all \
 	validate-raw-all \
 	validate-oci-all \
-        validate-osc-all \
+	validate-osc-all \
 	validate-vbox-all \
 	validate-powervs-all \
 	validate-nutanix-all
@@ -958,7 +962,7 @@ docker-pull-prerequisites:
 
 .PHONY: docker-build
 docker-build: docker-pull-prerequisites ## Build the Docker image for controller-manager
-	DOCKER_BUILDKIT=1 docker build --build-arg PASSED_IB_VERSION=$(IB_VERSION) --build-arg ARCH=$(ARCH) --build-arg BASE_IMAGE=$(BASE_IMAGE) . -t $(CONTROLLER_IMG)-$(ARCH):$(TAG)
+	DOCKER_BUILDKIT=1 docker build --build-arg PASSED_IB_VERSION=$(IB_VERSION) --build-arg ARCH=$(ARCH) --build-arg BASE_IMAGE=$(BASE_IMAGE) $(CURDIR) -t $(CONTROLLER_IMG)-$(ARCH):$(TAG)
 
 .PHONY: docker-push
 docker-push: ## Push the Docker image
@@ -970,7 +974,7 @@ docker-push: ## Push the Docker image
 ##@ Testing
 .PHONY: test-azure
 test-azure: ## Run the tests for Azure builders
-	$(abspath packer/azure/scripts/ci-azure-e2e.sh)
+	$(abspath $(CURDIR)/packer/azure/scripts/ci-azure-e2e.sh)
 
 ## --------------------------------------
 ## Release targets
@@ -978,7 +982,7 @@ test-azure: ## Run the tests for Azure builders
 ##@ Release
 
 USER_FORK ?= $(shell git config --get remote.origin.url | cut -d/ -f4)
-IMAGE_REVIEWERS ?= $(shell ./hack/get-project-maintainers.sh)
+IMAGE_REVIEWERS ?= $(shell $(CURDIR)/hack/get-project-maintainers.sh)
 
 .PHONY: release-staging
 release-staging: ## Build and push a container image to the staging registry.
@@ -994,7 +998,7 @@ promote-image: deps-release ## Create a pull request to promote a staging image 
 ##@ Sort JSON
 
 .PHONY: json-sort
-json_files = $(shell find . -type f -name "*.json" | sort -u)
+json_files = $(shell find $(CURDIR) -type f -name "*.json" | sort -u)
 json-sort: ## Sort all JSON files alphabetically
 	@for f in $(json_files); do (cat "$$f" | jq -S '.' >> "$$f".sorted && mv "$$f".sorted "$$f") || exit 1 ; done
 
@@ -1006,4 +1010,4 @@ json-sort: ## Sort all JSON files alphabetically
 .PHONY: gen-ignition
 ignition_files = bootstrap bootstrap-pass-auth bootstrap-cloud
 gen-ignition: deps-ignition ## Generates Ignition files from CLC
-	for f in $(ignition_files); do (ct < packer/files/flatcar/clc/$$f.yaml | jq '.' > packer/files/flatcar/ignition/$$f.json) || exit 1; done
+	for f in $(ignition_files); do (ct < $(CURDIR)/packer/files/flatcar/clc/$$f.yaml | jq '.' > $(CURDIR)/packer/files/flatcar/ignition/$$f.json) || exit 1; done

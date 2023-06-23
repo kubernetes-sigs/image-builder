@@ -20,13 +20,13 @@ set -o pipefail
 
 [[ -n ${DEBUG:-} ]] && set -o xtrace
 
-source hack/utils.sh
-
-_version="2.11.5"
-
 # Change directories to the parent directory of the one in which this
 # script is located.
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
+
+source hack/utils.sh
+
+_version="2.11.5"
 
 # Disable pip's version check and root user warning
 export PIP_DISABLE_PIP_VERSION_CHECK=1 PIP_ROOT_USER_ACTION=ignore

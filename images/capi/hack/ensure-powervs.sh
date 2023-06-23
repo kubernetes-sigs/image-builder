@@ -20,6 +20,10 @@ set -o pipefail
 
 [[ -n ${DEBUG:-} ]] && set -o xtrace
 
+# Change directories to the parent directory of the one in which this
+# script is located.
+cd "$(dirname "${BASH_SOURCE[0]}")/.."
+
 source hack/utils.sh
 
 SED="sed"

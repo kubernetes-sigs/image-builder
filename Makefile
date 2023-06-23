@@ -19,3 +19,6 @@ build-book:
 .PHONY: serve-book
 serve-book: ## Build and serve the book with live-reloading enabled
 	$(MAKE) -C docs/book serve
+
+export CWD=images/capi
+include $(CWD)/Makefile

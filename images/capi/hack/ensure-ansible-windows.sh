@@ -20,6 +20,10 @@ set -o pipefail
 
 [[ -n ${DEBUG:-} ]] && set -o xtrace
 
+# Change directories to the parent directory of the one in which this
+# script is located.
+cd "$(dirname "${BASH_SOURCE[0]}")/.."
+
 source hack/utils.sh
 
 _version="0.4.3"
@@ -30,10 +34,6 @@ if [[ ${HOSTOS} == "darwin" ]]; then
     echo "To fix the issue provide the enviroment variable 'no_proxy=*'"
     echo "Example call to build Windows images on MacOS: 'no_proxy=* make build-<target>'"
 fi
-
-# Change directories to the parent directory of the one in which this
-# script is located.
-cd "$(dirname "${BASH_SOURCE[0]}")/.."
 
 # Disable pip's version check and root user warning
 export PIP_DISABLE_PIP_VERSION_CHECK=1 PIP_ROOT_USER_ACTION=ignore
