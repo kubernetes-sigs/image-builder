@@ -358,7 +358,7 @@ VBOX_BUILD_NAMES			?=      vbox-windows-2019
 
 POWERVS_BUILD_NAMES         ?= powervs-centos-8
 
-NUTANIX_BUILD_NAMES ?= nutanix-ubuntu-2004 nutanix-ubuntu-2204 nutanix-rockylinux-8 nutanix-rockylinux-9 nutanix-flatcar nutanix-windows-2022
+NUTANIX_BUILD_NAMES ?= nutanix-ubuntu-2004 nutanix-ubuntu-2204 nutanix-rhel-8 nutanix-rhel-9 nutanix-rockylinux-8 nutanix-rockylinux-9 nutanix-flatcar nutanix-windows-2022
 
 ## --------------------------------------
 ## Dynamic build targets
@@ -763,6 +763,8 @@ build-vbox-all: $(VBOX_BUILD_TARGETS) ## Builds all Qemu images
 
 build-nutanix-ubuntu-2004: ## Builds the Nutanix ubuntu-2004 image
 build-nutanix-ubuntu-2204: ## Builds the Nutanix ubuntu-2204 image
+build-nutanix-rhel-8: ## Builds the Nutanix RedHat Enterprise Linux 8 image
+build-nutanix-rhel-9: ## Builds the Nutanix edHat Enterprise Linux 9 image
 build-nutanix-rockylinux-8: ## Builds the Nutanix Rocky Linux 8 image
 build-nutanix-rockylinux-9: ## Builds the Nutanix Rocky Linux 9 image
 build-nutanix-flatcar: ## Builds the Nutanix Flatcar image
@@ -899,8 +901,10 @@ validate-powervs-all: $(POWERVS_VALIDATE_TARGETS) ## Validates all PowerVS Packe
 
 validate-nutanix-ubuntu-2004: ## Validates Ubuntu 20.04 Nutanix Packer config
 validate-nutanix-ubuntu-2204: ## Validates Ubuntu 22.04 Nutanix Packer config
+validate-nutanix-rhel-8: ## Validates RedHat Enterprise Linux 8 Nutanix Packer config
+validate-nutanix-rhel-9: ## Validates RedHat Enterprise Linux 9 Nutanix Packer config
 validate-nutanix-rockylinux-8: ## Validates Rocky Linux 8 Nutanix Packer config
-validate-nutanix-rockylinux-9: ## Validates the Nutanix Rocky Linux 9 Nutanix Packer config
+validate-nutanix-rockylinux-9: ## Validates Rocky Linux 9 Nutanix Packer config
 validate-nutanix-flatcar: ## Validates the Nutanix Flatcar Nutanix Packer config
 validate-nutanix-windows-2022: ## Validates Windows Server 2022 Nutanix Packer config
 validate-nutanix-all: $(NUTANIX_VALIDATE_TARGETS) ## Validates all Nutanix Packer config

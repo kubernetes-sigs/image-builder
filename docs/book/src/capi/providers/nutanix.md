@@ -53,6 +53,11 @@ To build all Nutanix ubuntu images, run
 make build-nutanix-all
 ```
 
+### Output
+
+By default images are stored inside your Nutanix Prism Central Image Library. If you want to use them in different Prism Central or distribute it, you can set the option  `"image_export": "true"` in your build config file.
+In this case the images will be downloaded in raw format on the machine where you launch the image-builder process.
+
 ## Configuration
 
 The `nutanix` sub-directory inside `images/capi/packer` stores JSON configuration files for each OS including necessary config.
@@ -63,5 +68,21 @@ The `nutanix` sub-directory inside `images/capi/packer` stores JSON configuratio
 | `ubuntu-2204.json`  | Settings for Ubuntu 22.04 image               |
 | `rockylinux-8.json` | Settings for Rocky Linux 8 image (UEFI)       |
 | `rockylinux-9.json` | Settings for Rocky Linux 9 image              |
+| `rhel-8.json`       | Settings for RedHat Enterprise Linux 8 image  |
+| `rhel-9.json`       | Settings for RedHat Enterprise Linux 9 image  |
 | `flatcar.json`      | Settings for Flatcar Linux image (beta)       |
 | `windows-2022.json` | Settings for Windows Server 2022 image (beta) |
+
+### OS specific options
+
+#### RHEL
+
+You need to set your `image_url` value correctly in your rhel-(8|9).json file with a working Red Hat Enterprise Linux KVM Guest Image url.
+
+When building the RHEL image, the OS must register itself with the Red Hat Subscription Manager (RHSM). To do this, the current supported method is to supply a username and password via environment variables. The two environment variables are RHSM_USER and RHSM_PASS. Although building RHEL images has been tested via this method, if an error is encountered during the build, the VM is deleted without the machine being unregistered with RHSM. To prevent this, it is recommended to build with the following command:
+
+```
+PACKER_FLAGS=-on-error=ask RHSM_USER=user RHSM_PASS=pass make build-nutanix-rhel-9
+```
+
+The addition of `PACKER_FLAGS=-on-error=ask` means that if an error is encountered, the build will pause, allowing you to SSH into the machine and unregister manually.
