@@ -249,7 +249,7 @@ rockylinux:
     service:
       iscsid:
         enabled: true
-        running: true
+        running: false
 rhel:
   common-package: *common_rpms
   amazon:
@@ -312,6 +312,19 @@ rhel:
       cloud-utils-growpart:
       python2-pip:
       <<: *rh7_rpms
+  nutanix:
+    package:
+      cloud-init:
+      python3-netifaces:
+      iscsi-initiator-utils:
+      nfs-utils:
+      lvm2:
+      xfsprogs:
+      <<: *rh8_rpms
+    service:
+      iscsid:
+        enabled: true
+        running: false
 ubuntu:
   common-kernel-param:
     net.ipv4.conf.all.rp_filter:
@@ -428,7 +441,7 @@ ubuntu:
     service:
       iscsid:
         enabled: true
-        running: true
+        running: false
 
 oracle linux:
   common-kernel-param:

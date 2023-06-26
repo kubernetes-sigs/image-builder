@@ -1,0 +1,84 @@
+# Copyright 2020 The Kubernetes Authors.
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+
+# http://www.apache.org/licenses/LICENSE-2.0
+
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+---
+- name: Install cloud-init packages
+  yum:
+    name: "{{ packages }}"
+    state: present
+  vars:
+    packages:
+      - cloud-init
+      - cloud-utils-growpart
+
+- name: Install CAPX prerequisites
+  yum:
+    name: "{{ packages }}"
+    state: present
+  vars:
+    packages:
+      - iscsi-initiator-utils
+      - nfs-utils
+      - lvm2
+      - xfsprogs
+      - ipvsadm
+
+- name: Set correct SCSI device timeout for Nutanix devices
+  ansible.builtin.lineinfile:
+    path: /etc/udev/rules.d/50-udev.rules
+    line: SUBSYSTEMS=="scsi", ACTION=="add", ATTRS{vendor}=="NUTANIX", RUN+="/bin/sh -c 'echo 60 > /sys$$DEVPATH/timeout'"
+    create: yes
+
+- name: Nutanix iSCSI client tuning recommendations
+  ini_file:
+    path: /etc/iscsi/iscsid.conf
+    section: ""
+    option: "{{ item.key }}"
+    value: "{{ item.value }}"
+  loop: "{{ iscsi_settings | dict2items }}"
+  vars:
+    iscsi_settings:
+      node.conn[0].iscsi.MaxRecvDataSegmentLength: 1048576
+      node.session.cmds_max: 2048
+      node.session.iscsi.FirstBurstLength: 1048576
+      node.session.iscsi.MaxBurstLength: 16776192
+      node.conn[0].timeo.noop_out_timeout: 10
+      node.session.queue_depth: 1024
+      node.session.timeo.replacement_timeout: 240
+      node.conn[0].timeo.noop_out_interval: 5
+      discovery.sendtargets.iscsi.MaxRecvDataSegmentLength: 1048576
+
+- name: Enable iSCSI initiator daemon
+  systemd:
+    name: iscsid
+    state: stopped
+    enabled: true
+
+- name: Create a iscsi-init.service override directory
+  file:
+    owner: root
+    group: root
+    mode: 0755
+    path: /etc/systemd/system/iscsi-init.service.d
+    state: directory
+
+- name: Set up iscsi-init.service override
+  ini_file:
+    dest: /etc/systemd/system/iscsi-init.service.d/wait_fs.conf
+    owner: root
+    group: root
+    mode: 0644
+    section: Unit
+    option: After
+    value: local-fs.target
+

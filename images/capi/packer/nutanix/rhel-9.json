@@ -1,0 +1,12 @@
+{
+  "build_name": "rhel-9",
+  "distribution_version": "9",
+  "distro_name": "rhel",
+  "epel_rpm_gpg_key": "https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-9",
+  "extra_rpms": "",
+  "guest_os_type": "Linux",
+  "image_url": "https://REPLACE_YOUR_SERVER/redhat/9/rhel-9.2-x86_64-kvm.qcow2",
+  "redhat_epel_rpm": "https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm",
+  "shutdown_command": "shutdown -P now",
+  "user_data": "I2Nsb3VkLWNvbmZpZwp1c2VyczoKICAtIG5hbWU6IGJ1aWxkZXIKICAgIHN1ZG86IFsnQUxMPShBTEwpIE5PUEFTU1dEOkFMTCddCmNocGFzc3dkOgogIGxpc3Q6IHwKICAgIGJ1aWxkZXI6YnVpbGRlcgogIGV4cGlyZTogRmFsc2UKc3NoX3B3YXV0aDogVHJ1ZQ=="
+}
