@@ -30,6 +30,10 @@ al2_rpms:
 - python-netifaces
 - python-requests
 
+# Used for Mariner distributions
+mariner_rpms:
+- lsof
+
 # Used for RedHat based distributions ==  7 (ex. RHEL-7, CentOS-7 etc.)
 rh7_rpms:
 - ebtables
@@ -108,7 +112,7 @@ common_raw_photon_rpms: []
 
 #photon and flatcar do not have backward compatibility for legacy distro behavior for sysctl.conf by default
 #as it uses systemd-sysctl. set this var so we can use for sysctl conf file value.
-sysctl_conf_file: "{{ '/etc/sysctl.d/99-sysctl.conf' if ansible_os_family in ['Flatcar', 'VMware Photon OS'] else '/etc/sysctl.conf' }}"
+sysctl_conf_file: "{{ '/etc/sysctl.d/99-sysctl.conf' if ansible_os_family in ['Common Base Linux Mariner', 'Flatcar', 'VMware Photon OS'] else '/etc/sysctl.conf' }}"
 
 pause_image: "registry.k8s.io/pause:3.9"
 containerd_additional_settings: null

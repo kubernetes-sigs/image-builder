@@ -16,7 +16,7 @@
   when: ansible_os_family == "Debian"
 
 - import_tasks: redhat.yml
-  when: ansible_os_family == "RedHat"
+  when: ansible_os_family in ["Common Base Linux Mariner", "RedHat"]
 
 - import_tasks: photon.yml
   when: ansible_os_family == "VMware Photon OS"
@@ -127,6 +127,13 @@
     dest: /etc/systemd/system/containerd.service.d/max-tasks.conf
     src: etc/systemd/system/containerd.service.d/max-tasks.conf
     mode: 0644
+
+- name: Create containerd LimitNOFILE drop in file
+  template:
+    dest: /etc/systemd/system/containerd.service.d/limit-nofile.conf
+    src: etc/systemd/system/containerd.service.d/limit-nofile.conf
+    mode: 0644
+  when: ansible_os_family == "Common Base Linux Mariner"
 
 - name: Create containerd http proxy conf file if needed
   template:

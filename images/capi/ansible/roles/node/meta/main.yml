@@ -36,3 +36,8 @@ dependencies:
       debs: "{{ common_debs +  lookup('vars', 'common_' + build_target + '_debs') }}"
     when: ansible_distribution != "VMware Photon OS" and ansible_distribution != "Amazon" and not (packer_builder_type == "oracle-oci" and ansible_architecture == "aarch64") and
       not packer_builder_type is search('qemu')
+
+  - role: setup
+    vars:
+      rpms: "{{ common_rpms + mariner_rpms + lookup('vars', 'common_' + build_target + '_rpms') }}"
+    when: ansible_distribution == "Common Base Linux Mariner"
