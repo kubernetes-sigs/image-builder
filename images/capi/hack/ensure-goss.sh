@@ -22,6 +22,9 @@ set -o pipefail
 
 source hack/utils.sh
 
+# There is no darwin/arm64 version so we need to default HOSTARCH to amd64 if on an M1/M2 Mac
+HOSTARCH=$(hostarch_without_darwin_arm64)
+
 # SHA are for amd64 arch.
 _version="3.1.4"
 darwin_sha256="ddb663a3e4208639d90b89ebdb69dc240ec16d6b01877ccbf968f76a58a89f99"

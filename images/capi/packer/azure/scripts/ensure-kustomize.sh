@@ -31,6 +31,9 @@ if command -v kustomize >/dev/null 2>&1; then exit 0; fi
 
 mkdir -p .local/bin && cd .local/bin
 
+# There is no darwin/arm64 version so we need to default HOSTARCH to amd64 if on an M1/M2 Mac
+HOSTARCH=$(hostarch_without_darwin_arm64)
+
 KUSTOMIZE_VERSION=4.5.2
 _binfile="kustomize-v${KUSTOMIZE_VERSION}.tar.gz"
 
