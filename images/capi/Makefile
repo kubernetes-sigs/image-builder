@@ -173,7 +173,7 @@ deps-release: ## Installs/checks dependencies for project releases
 ## --------------------------------------
 ## Container variables
 ## --------------------------------------
-REGISTRY ?= gcr.io/$(shell gcloud config get-value project)
+REGISTRY ?= gcr.io/$(or $(shell gcloud config get-value project),scl-image-builder)
 STAGING_REGISTRY := gcr.io/k8s-staging-scl-image-builder
 IMAGE_NAME ?= cluster-node-image-builder
 CONTROLLER_IMG ?= $(REGISTRY)/$(IMAGE_NAME)
