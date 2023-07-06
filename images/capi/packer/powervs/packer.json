@@ -43,9 +43,6 @@
   ],
   "provisioners": [
     {
-      "ansible_env_vars": [
-        "ANSIBLE_SSH_ARGS='{{user `existing_ansible_ssh_args`}} {{user `ansible_common_ssh_args`}}'"
-      ],
       "extra_arguments": [
         "--extra-vars",
         "{{user `ansible_common_vars`}}",
@@ -54,7 +51,9 @@
         "--extra-vars",
         "{{user `ansible_user_vars`}}",
         "--scp-extra-args",
-        "{{user `ansible_scp_extra_args`}}"
+        "{{user `ansible_scp_extra_args`}}",
+        "--ssh-extra-args",
+        "{{user `existing_ansible_ssh_args`}} {{user `ansible_common_ssh_args`}}"
       ],
       "playbook_file": "./ansible/node.yml",
       "type": "ansible"
