@@ -50,7 +50,7 @@
   unarchive:
     remote_src: True
     src: /tmp/containerd.tar.gz
-    dest: /
+    dest: "{{ containerd_prefix | default('/') }}"
     extra_opts:
       - --no-overwrite-dir
   when: ansible_os_family != "Flatcar"
@@ -70,7 +70,7 @@
   unarchive:
     remote_src: True
     src: /tmp/containerd.tar.gz
-    dest: /
+    dest: "{{ containerd_prefix | default('/') }}"
     extra_opts:
       - --absolute-names
       - --transform
