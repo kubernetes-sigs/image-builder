@@ -99,3 +99,11 @@ ensure_py3() {
     ensure_py3_bin pip3
   fi
 }
+
+hostarch_without_darwin_arm64() {
+  if [ "${HOSTOS}" == "darwin" ] && [ "${HOSTARCH}" == "arm64" ]; then
+    echo "amd64"
+  else
+    echo ${HOSTARCH}
+  fi
+}
