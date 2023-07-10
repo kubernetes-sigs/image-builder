@@ -13,10 +13,11 @@ to test if the images have all requisite components to work with cluster API.
 | OS                      | Builder              |
 |-------------------------|----------------------|
 | Amazon Linux            | aws                  |
-| PhotonOS                | ova                  |
-| Ubuntu                  | aws, azure, gcp, ova |
 | CentOS                  | aws, ova             |
 | Flatcar Container Linux | aws, azure, ova      |
+| Mariner                 | azure                |
+| PhotonOS                | ova                  |
+| Ubuntu                  | aws, azure, gcp, ova |
 | Windows                 | aws, azure, ova      |
 
 

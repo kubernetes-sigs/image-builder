@@ -236,6 +236,7 @@
     "image_publisher": "",
     "image_sku": "",
     "image_version": "latest",
+    "kubernetes_apiserver_port": null,
     "kubernetes_cni_deb_version": null,
     "kubernetes_cni_http_source": null,
     "kubernetes_cni_rpm_version": null,

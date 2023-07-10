@@ -64,6 +64,9 @@ case ${SIG_TARGET} in
   centos-7)
     create_image_definition "centos-7" "centos-7" "V1" "Linux"
   ;;
+  mariner-2)
+    create_image_definition ${SIG_TARGET} "mariner-2" "V1" "Linux"
+  ;;
   rhel-8)
     create_image_definition "rhel-8" "rhel-8" "V1" "Linux"
   ;;
@@ -105,6 +108,9 @@ case ${SIG_TARGET} in
   ;;
   centos-7-gen2)
     create_image_definition "centos-7-gen2" "centos-7-gen2" "V2" "Linux"
+  ;;
+  mariner-2-gen2)
+    create_image_definition ${SIG_TARGET} "mariner-2-gen2" "V2" "Linux"
   ;;
   flatcar-gen2)
     SKU="flatcar-${FLATCAR_CHANNEL}-${FLATCAR_VERSION}-gen2"
