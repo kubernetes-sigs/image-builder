@@ -55,7 +55,7 @@
       - --no-overwrite-dir
   when: ansible_os_family != "Flatcar"
 
-# install containerd Wasm shims when the runtimes are not empty -- current known runtimes are 'slight' and 'spin'
+# install containerd Wasm shims when the runtimes are not empty -- current known runtimes are 'slight', 'spin', and 'wws'
 # see: https://github.com/kubernetes-sigs/image-builder/pull/1037
 - name: unpack containerd-wasm-shims
   unarchive:
@@ -81,7 +81,7 @@
       - 's@opt/local@opt@'
   when: ansible_os_family == "Flatcar"
 
-# install containerd Wasm shims when the runtimes are not empty -- current known runtimes are 'slight' and 'spin'
+# install containerd Wasm shims when the runtimes are not empty -- current known runtimes are 'slight', 'spin', and 'wws'
 # see: https://github.com/kubernetes-sigs/image-builder/pull/1037
 - name: unpack containerd-wasm-shims for Flatcar to /opt/bin
   unarchive:

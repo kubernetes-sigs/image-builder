@@ -21,7 +21,12 @@ command:
     stdout: [ ]
     stderr: ["io.containerd.spin.v1: InvalidArgument(\"Shim namespace cannot be empty\")"]
     timeout: 0
-  grep -E 'io\.containerd\.(slight|spin)\.v1' /etc/containerd/config.toml:
+  containerd-shim-wws-v1:
+    exit-status: 1
+    stdout: [ ]
+    stderr: ["io.containerd.wws.v1: InvalidArgument(\"Shim namespace cannot be empty\")"]
+    timeout: 0
+  grep -E 'io\.containerd\.(slight|spin|wws)\.v1' /etc/containerd/config.toml:
     exit-status: 0
     stdout: [ ]
     stderr: [ ]

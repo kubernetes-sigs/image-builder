@@ -24,6 +24,10 @@ imports = ["/etc/containerd/conf.d/*.toml"]
   [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.slight]
     runtime_type = "io.containerd.slight.v1"
 {% endif %}
+{% if 'wws' in containerd_wasm_shims_runtimes %}
+  [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.wws]
+    runtime_type = "io.containerd.wws.v1"
+{% endif %}
 {% endif %}
 {% if packer_builder_type.startswith('azure') %}
   [plugins."io.containerd.grpc.v1.cri".registry.headers]
