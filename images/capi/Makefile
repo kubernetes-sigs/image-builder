@@ -110,6 +110,7 @@ deps-openstack:
 	hack/ensure-packer.sh
 	hack/ensure-goss.sh
 	hack/ensure-s3.sh
+	$(PACKER) init packer/openstack/config.pkr.hcl
 
 .PHONY: deps-qemu
 deps-qemu: ## Installs/checks dependencies for QEMU builds
