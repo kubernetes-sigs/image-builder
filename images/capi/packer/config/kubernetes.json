@@ -10,6 +10,7 @@
   "kubernetes_deb_gpg_key": "https://packages.cloud.google.com/apt/doc/apt-key.gpg",
   "kubernetes_deb_repo": "\"https://apt.kubernetes.io/ kubernetes-xenial\"",
   "kubernetes_deb_version": "1.25.10-00",
+  "kubernetes_goarch": "amd64",
   "kubernetes_http_source": "https://dl.k8s.io/release",
   "kubernetes_load_additional_imgs": "false",
   "kubernetes_rpm_gpg_check": "True",
