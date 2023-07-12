@@ -120,3 +120,6 @@ leak_local_mdns_to_dns: false
 build_target: "virt"
 cloud_cfg_file: "/etc/cloud/cloud.cfg"
 external_binary_path: "{{ '/opt/bin' if ansible_os_family == 'Flatcar' else '/usr/local/bin' }}"
+
+# Enable containerd trace audit in auditd, default: false.
+enable_containerd_audit: false
