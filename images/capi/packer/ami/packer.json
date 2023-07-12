@@ -62,6 +62,7 @@
       "token": "{{ user `aws_session_token` }}",
       "type": "amazon-ebs",
       "user_data": "{{ user `user_data` }}",
+      "user_data_file": "{{ user `user_data_file` }}",
       "vpc_id": "{{ user `vpc_id` }}"
     }
   ],
@@ -206,6 +207,7 @@
     "temporary_security_group_source_cidrs": "",
     "throughput": "125",
     "user_data": "#cloud-config\nrepo_upgrade: none",
+    "user_data_file": "",
     "volume_size": "8",
     "volume_type": "gp3",
     "vpc_id": ""
