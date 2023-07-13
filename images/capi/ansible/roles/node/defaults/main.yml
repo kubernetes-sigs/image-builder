@@ -91,6 +91,9 @@ photon_3_rpms:
 photon_4_rpms:
 - jq
 
+photon_5_rpms:
+- jq
+
 common_virt_rpms:
 - open-vm-tools
 
