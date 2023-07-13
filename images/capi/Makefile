@@ -60,6 +60,7 @@ deps-ami:
 	hack/ensure-ansible-windows.sh
 	hack/ensure-packer.sh
 	hack/ensure-goss.sh
+	$(PACKER) init packer/config.pkr.hcl
 
 .PHONY: deps-azure
 deps-azure: ## Installs/checks dependencies for Azure builds
@@ -70,6 +71,7 @@ deps-azure:
 	hack/ensure-jq.sh
 	hack/ensure-azure-cli.sh
 	hack/ensure-goss.sh
+	$(PACKER) init packer/config.pkr.hcl
 	$(PACKER) init packer/azure/config.pkr.hcl
 
 .PHONY: deps-do
@@ -77,6 +79,7 @@ deps-do: ## Installs/checks dependencies for DigitalOcean builds
 deps-do:
 	hack/ensure-ansible.sh
 	hack/ensure-packer.sh
+	$(PACKER) init packer/config.pkr.hcl
 	$(PACKER) init packer/digitalocean/config.pkr.hcl
 
 .PHONY: deps-osc
@@ -85,6 +88,7 @@ deps-osc:
 	hack/ensure-ansible.sh
 	hack/ensure-packer.sh
 	hack/ensure-goss.sh
+	$(PACKER) init packer/config.pkr.hcl
 	$(PACKER) plugins install github.com/outscale/outscale
 
 .PHONY: deps-gce
@@ -93,6 +97,7 @@ deps-gce:
 	hack/ensure-ansible.sh
 	hack/ensure-packer.sh
 	hack/ensure-goss.sh
+	$(PACKER) init packer/config.pkr.hcl
 
 .PHONY: deps-ova
 deps-ova: ## Installs/checks dependencies for OVA builds
@@ -102,6 +107,7 @@ deps-ova:
 	hack/ensure-packer.sh
 	hack/ensure-goss.sh
 	hack/ensure-ovftool.sh
+	$(PACKER) init packer/config.pkr.hcl
 
 .PHONY: deps-openstack
 deps-openstack: ## Installs/checks dependencies for OpenStack builds
@@ -110,6 +116,7 @@ deps-openstack:
 	hack/ensure-packer.sh
 	hack/ensure-goss.sh
 	hack/ensure-s3.sh
+	$(PACKER) init packer/config.pkr.hcl
 	$(PACKER) init packer/openstack/config.pkr.hcl
 
 .PHONY: deps-qemu
@@ -118,6 +125,7 @@ deps-qemu:
 	hack/ensure-ansible.sh
 	hack/ensure-packer.sh
 	hack/ensure-goss.sh
+	$(PACKER) init packer/config.pkr.hcl
 
 .PHONY: deps-raw
 deps-raw: ## Installs/checks dependencies for RAW builds
@@ -125,6 +133,7 @@ deps-raw:
 	hack/ensure-ansible.sh
 	hack/ensure-packer.sh
 	hack/ensure-goss.sh
+	$(PACKER) init packer/config.pkr.hcl
 
 .PHONY: deps-oci
 deps-oci: ## Installs/checks dependencies for OCI builds
@@ -132,6 +141,7 @@ deps-oci:
 	hack/ensure-ansible.sh
 	hack/ensure-packer.sh
 	hack/ensure-ansible-windows.sh
+	$(PACKER) init packer/config.pkr.hcl
 	$(PACKER) plugins install github.com/hashicorp/oracle
 
 .PHONY: deps-vbox
@@ -141,6 +151,7 @@ deps-vbox:
 	hack/ensure-ansible-windows.sh
 	hack/ensure-packer.sh
 	hack/ensure-goss.sh
+	$(PACKER) init packer/config.pkr.hcl
 
 .PHONY: deps-powervs
 deps-powervs: ## Installs/checks dependencies for PowerVS builds
@@ -149,6 +160,7 @@ deps-powervs:
 	hack/ensure-packer.sh
 	hack/ensure-goss.sh
 	hack/ensure-powervs.sh
+	$(PACKER) init packer/config.pkr.hcl
 
 .PHONY: deps-ignition
 deps-ignition: ## Installs/checks dependencies for generating Ignition files
@@ -162,6 +174,7 @@ deps-nutanix:
 	hack/ensure-ansible.sh
 	hack/ensure-packer.sh
 	hack/ensure-goss.sh
+	$(PACKER) init packer/config.pkr.hcl
 	$(PACKER) init packer/nutanix/config.pkr.hcl
 
 .PHONY: deps-release
