@@ -47,3 +47,16 @@
     state: stopped
     enabled: false
   when: ansible_os_family == "Debian"
+
+- name: Copy networkd-dispatcher scripts to add DHCP provided NTP servers
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: a+x
+  vars:
+    server_dir: "/var/lib/dhcp"
+    chrony_helper_dir: "/usr/libexec/chrony"
+  loop:
+    - { src: files/etc/networkd-dispatcher/routable.d/20-chrony.j2, dest: /etc/networkd-dispatcher/routable.d/20-chrony }
+    - { src: files/etc/networkd-dispatcher/off.d/20-chrony.j2, dest: /etc/networkd-dispatcher/off.d/20-chrony }
+    - { src: files/etc/networkd-dispatcher/no-carrier.d/20-chrony.j2, dest: /etc/networkd-dispatcher/no-carrier.d/20-chrony }
