@@ -190,6 +190,8 @@ deps-hcloud:
 	hack/ensure-ansible.sh
 	hack/ensure-packer.sh
 	hack/ensure-goss.sh
+	$(PACKER) init packer/config.pkr.hcl
+	$(PACKER) init packer/hcloud/config.pkr.hcl
 
 ## --------------------------------------
 ## Container variables
