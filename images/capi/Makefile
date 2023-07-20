@@ -385,7 +385,7 @@ VBOX_BUILD_NAMES			?=      vbox-windows-2019
 POWERVS_BUILD_NAMES         ?= powervs-centos-8
 
 NUTANIX_BUILD_NAMES ?= nutanix-ubuntu-2004 nutanix-ubuntu-2204 nutanix-rhel-8 nutanix-rhel-9 nutanix-rockylinux-8 nutanix-rockylinux-9 nutanix-flatcar nutanix-windows-2022
-HCLOUD_BUILD_NAMES ?= hcloud-ubuntu-1804 hcloud-ubuntu-2004 hcloud-ubuntu-2204 hcloud-centos-7 hcloud-rockylinux-8 hcloud-rockylinux-9 hcloud-flatcar
+HCLOUD_BUILD_NAMES ?= hcloud-ubuntu-2004 hcloud-ubuntu-2204 hcloud-centos-7 hcloud-rockylinux-8 hcloud-rockylinux-9 hcloud-flatcar
 ## --------------------------------------
 ## Dynamic build targets
 ## --------------------------------------
@@ -797,7 +797,6 @@ build-nutanix-flatcar: ## Builds the Nutanix Flatcar image
 build-nutanix-windows-2022: ## Builds the Nutanix Windows 2022 image
 build-nutanix-all: $(NUTANIX_BUILD_TARGETS) ## Builds all Nutanix image
 
-build-hcloud-ubuntu-1804: ## Builds the Hetzner Cloud ubuntu-1804 image
 build-hcloud-ubuntu-2004: ## Builds the Hetzner Cloud ubuntu-2004 image
 build-hcloud-ubuntu-2204: ## Builds the Hetzner Cloud ubuntu-2204 image
 build-hcloud-rockylinux-8: ## Builds the Hetzner Cloud Rocky Linux 8 image
@@ -937,7 +936,6 @@ validate-nutanix-flatcar: ## Validates the Nutanix Flatcar Nutanix Packer config
 validate-nutanix-windows-2022: ## Validates Windows Server 2022 Nutanix Packer config
 validate-nutanix-all: $(NUTANIX_VALIDATE_TARGETS) ## Validates all Nutanix Packer config
 
-validate-hcloud-ubuntu-1804: ## Validates Ubuntu 18.04 Hetzner Cloud Packer config
 validate-hcloud-ubuntu-2004: ## Validates Ubuntu 20.04 Hetzner Cloud Packer config
 validate-hcloud-ubuntu-2204: ## Validates Ubuntu 22.04 Hetzner Cloud Packer config
 validate-hcloud-rockylinux-8: ## Validates Rocky Linux 8 Hetzner Cloud Packer config
