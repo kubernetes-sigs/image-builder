@@ -1,24 +1,24 @@
 {
   "builders": [
     {
+      "image": "{{user `image`}}",
+      "location": "{{user `hcloud_location`}}",
+      "server_type": "{{user `server_type`}}",
       "snapshot_labels": {
         "build_date": "{{isotime \"2006-01-02T15-04-05Z\" }}",
         "build_timestamp": "{{user `build_timestamp`}}",
+        "caph-image-name": "{{user `image_name`}}",
         "creationTimestamp": "{{isotime \"2006-01-02T15-04-05Z\"}}",
         "distribution": "{{user `distribution`}}",
         "distribution_release": "{{user `distribution_release`}}",
         "distribution_version": "{{user `distribution_version`}}",
         "image_builder_version": "{{user `ib_version`}}",
-        "kubernetes_version": "{{user `kubernetes_semver`}}",
-	"caph-image-name": "{{user `image_name`}}"
+        "kubernetes_version": "{{user `kubernetes_semver`}}"
       },
-      "server_type": "{{user `server_type`}}",
-      "token": "{{user `hcloud_token`}}",
-      "location": "{{user `hcloud_location`}}",
       "snapshot_name": "{{user `image_name`}}",
-      "type": "hcloud",
-      "image": "{{user `image`}}",
-      "ssh_username": "{{user `ssh_username`}}"
+      "ssh_username": "{{user `ssh_username`}}",
+      "token": "{{user `hcloud_token`}}",
+      "type": "hcloud"
     }
   ],
   "post-processors": [

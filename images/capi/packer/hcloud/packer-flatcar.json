@@ -1,25 +1,25 @@
 {
   "builders": [
     {
+      "image": "ubuntu-22.04",
+      "location": "{{user `hcloud_location`}}",
+      "rescue": "linux64",
+      "server_type": "{{user `server_type`}}",
       "snapshot_labels": {
         "build_date": "{{isotime \"2006-01-02T15-04-05Z\" }}",
         "build_timestamp": "{{user `build_timestamp`}}",
+        "caph-image-name": "cluster-api-{{user `build_name`}}-{{user `flatcar_channel`}}-{{user `flatcar_version`}}-{{user `kubernetes_semver`}}-{{user `build_timestamp`}}",
         "creationTimestamp": "{{isotime \"2006-01-02T15-04-05Z\"}}",
         "distribution": "{{user `distribution`}}",
         "distribution_release": "{{user `distribution_release`}}",
         "distribution_version": "{{user `distribution_version`}}",
         "image_builder_version": "{{user `ib_version`}}",
-        "kubernetes_version": "{{user `kubernetes_semver`}}",
-        "caph-image-name": "cluster-api-{{user `build_name`}}-{{user `flatcar_channel`}}-{{user `flatcar_version`}}-{{user `kubernetes_semver`}}-{{user `build_timestamp`}}"
+        "kubernetes_version": "{{user `kubernetes_semver`}}"
       },
-      "server_type": "{{user `server_type`}}",
-      "token": "{{user `hcloud_token`}}",
-      "location": "{{user `hcloud_location`}}",
       "snapshot_name": "cluster-api-{{user `build_name`}}-{{user `flatcar_channel`}}-{{user `flatcar_version`}}-{{user `kubernetes_semver`}}-{{user `build_timestamp`}}",
-      "type": "hcloud",
-      "image": "ubuntu-22.04",
-      "rescue": "linux64",
-      "ssh_username": "{{user `ssh_username`}}"
+      "ssh_username": "{{user `ssh_username`}}",
+      "token": "{{user `hcloud_token`}}",
+      "type": "hcloud"
     }
   ],
   "post-processors": [
@@ -57,12 +57,12 @@
     {
       "environment_vars": [
         "FLATCAR_CHANNEL={{user `flatcar_channel`}}",
-	"FLATCAR_VERSION={{user `flatcar_version`}}" 
+        "FLATCAR_VERSION={{user `flatcar_version`}}"
       ],
-      "script": "./packer/hcloud/scripts/install-flatcar.sh",
-      "type": "shell",
       "expect_disconnect": true,
-      "pause_after": "5s"
+      "pause_after": "5s",
+      "script": "./packer/hcloud/scripts/install-flatcar.sh",
+      "type": "shell"
     },
     {
       "execute_command": "BUILD_NAME={{user `build_name`}}; if [[ \"${BUILD_NAME}\" == *\"flatcar\"* ]]; then sudo {{.Vars}} -S -E bash '{{.Path}}'; fi",
@@ -160,9 +160,9 @@
     "distribution_version": null,
     "exclude_from_latest": "false",
     "existing_ansible_ssh_args": "{{env `ANSIBLE_SSH_ARGS`}}",
-    "ib_version": "{{env `IB_VERSION`}}",
     "flatcar_channel": "{{env `FLATCAR_CHANNEL` }}",
     "flatcar_version": "{{env `FLATCAR_VERSION` }}",
+    "ib_version": "{{env `IB_VERSION`}}",
     "kubernetes_cni_deb_version": null,
     "kubernetes_cni_http_source": null,
     "kubernetes_cni_rpm_version": null,
