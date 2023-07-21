@@ -88,6 +88,9 @@ photon_3_rpms: &photon_3_rpms
 photon_4_rpms: &photon_4_rpms
   jq:
 
+photon_5_rpms: &photon_5_rpms
+  jq:
+
 arch: "amd64"
 containerd_version: ""
 containerd_wasm_shims_runtimes: ""
@@ -217,6 +220,9 @@ photon:
     - distro_version: "4"
       package:
         <<: *photon_4_rpms
+    - distro_version: "5"
+      package:
+        <<: *photon_5_rpms
 mariner:
   common-package: *common_mariner_rpms
   azure:

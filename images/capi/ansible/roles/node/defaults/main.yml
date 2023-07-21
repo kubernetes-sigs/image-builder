@@ -91,6 +91,11 @@ photon_3_rpms:
 photon_4_rpms:
 - jq
 
+# Creating photon_5_rpms for adding future packages if needed.
+# Since empty list errors out, jq is added.
+photon_5_rpms:
+- jq
+
 common_virt_rpms:
 - open-vm-tools
 

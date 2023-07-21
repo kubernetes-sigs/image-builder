@@ -147,7 +147,7 @@ def main():
                 os_versions = ["7", "8"]
             elif system == 'photon':
                 runtimes = ["containerd"]
-                os_versions = ["3", "4"]
+                os_versions = ["3", "4", "5"]
             else: 
                 runtimes = ["containerd"]
                 os_versions = [""]
