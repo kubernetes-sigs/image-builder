@@ -1,0 +1,17 @@
+{
+  "boot_command_prefix": "<esc><wait> vmlinuz initrd=initrd.img root/dev/ram0 loglevel=3 photon.media=cdrom ks=",
+  "boot_command_suffix": "/5/ks.json insecure_installation=1<enter><wait>",
+  "boot_media_path": "http://{{ .HTTPIP }}:{{ .HTTPPort }}",
+  "build_name": "photon-5",
+  "cdrom_type": "sata",
+  "distro_arch": "amd64",
+  "distro_name": "photon",
+  "distro_version": "5",
+  "guest_os_type": "vmware-photon-64",
+  "iso_checksum": "85cddaa8da26c095cf55d3f22f0838ad5d9ae73aa476d0c5c8e54bfbfcb432deaf940733c2cb5af14d1e5b133da65c17f3f4e215bf381d5b8b411d548b66a463",
+  "iso_checksum_type": "sha512",
+  "iso_url": "https://packages.vmware.com/photon/5.0/GA/iso/photon-minimal-5.0-dde71ec57.x86_64.iso",
+  "os_display_name": "VMware Photon OS 64-bit",
+  "shutdown_command": "shutdown now",
+  "vsphere_guest_os_type": "vmwarePhoton64Guest"
+}
