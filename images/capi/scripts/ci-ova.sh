@@ -22,22 +22,27 @@ CAPI_ROOT=$(dirname "${BASH_SOURCE[0]}")/..
 cd "${CAPI_ROOT}" || exit 1
 
 export ARTIFACTS="${ARTIFACTS:-${PWD}/_artifacts}"
-TARGETS=("ubuntu-2004" "ubuntu-2204" "photon-3" "photon-4" "photon-5" "centos-7" "rockylinux-8" "flatcar")
+TARGETS=("ubuntu-2004" "ubuntu-2204" "photon-3" "photon-4" "photon-5" "rockylinux-8" "flatcar")
 
 on_exit() {
+  #Cleanup VMs
+  cleanup_build_vm
+
   # kill the VPN
   docker kill vpn
 }
 
 cleanup_build_vm() {
   # Setup govc to delete build VM after
-  curl -L https://github.com/vmware/govmomi/releases/download/v0.23.0/govc_linux_amd64.gz | gunzip > govc
+  wget https://github.com/vmware/govmomi/releases/download/v0.30.5/govc_Linux_x86_64.tar.gz
+  tar xf govc_Linux_x86_64.tar.gz
   chmod +x govc
   mv govc /usr/local/bin/govc
 
   for target in ${TARGETS[@]};
   do
-    govc vm.destroy capv-ci-${target}-${TIMESTAMP}
+    govc vm.power -off -force -wait /${GOVC_DATACENTER}/vm/${FOLDER}/capv-ci-${target}-${TIMESTAMP} || true
+    govc object.destroy /${GOVC_DATACENTER}/vm/${FOLDER}/capv-ci-${target}-${TIMESTAMP}
   done
 
 }
@@ -50,6 +55,7 @@ export GC_KIND="false"
 export TIMESTAMP="$(date -u '+%Y%m%dT%H%M%S')"
 export GOVC_DATACENTER="SDDC-Datacenter"
 export GOVC_INSECURE=true
+export FOLDER="Workloads/ci/imagebuilder"
 
 cat << EOF > packer/ova/vsphere.json
 {
@@ -61,7 +67,7 @@ cat << EOF > packer/ova/vsphere.json
     "datacenter":"${GOVC_DATACENTER}",
     "cluster": "Cluster-1",
     "network": "sddc-cgw-network-8",
-    "folder": "Workloads/ci/imagebuilder"
+    "folder": "${FOLDER}"
 }
 EOF
 
@@ -86,52 +92,12 @@ declare -A PIDS
 for target in ${TARGETS[@]};
 do
   export PACKER_VAR_FILES="ci-${target}.json scripts/ci-disable-goss-inspect.json"
-  if [[ "${target}" == 'photon-3' ]]; then
+  if [[ "${target}" == 'photon-'* || "${target}" == 'rockylinux-8' || "${target}" == 'ubuntu-2204' ]]; then
 cat << EOF > ci-${target}.json
 {
 "build_version": "capv-ci-${target}-${TIMESTAMP}",
 "linked_clone": "true",
-"template": "base-photon-3-20220623"
-}
-EOF
-    make build-node-ova-vsphere-clone-${target} > ${ARTIFACTS}/${target}.log 2>&1 &
-
-  elif [[ "${target}" == 'photon-4' ]]; then
-cat << EOF > ci-${target}.json
-{
-"build_version": "capv-ci-${target}-${TIMESTAMP}",
-"linked_clone": "true",
-"template": "base-photon-4"
-}
-EOF
-    make build-node-ova-vsphere-clone-${target} > ${ARTIFACTS}/${target}.log 2>&1 &
-
-  elif [[ "${target}" == 'photon-5' ]]; then
-cat << EOF > ci-${target}.json
-{
-"build_version": "capv-ci-${target}-${TIMESTAMP}",
-"linked_clone": "true",
-"template": "base-photon-5"
-}
-EOF
-    make build-node-ova-vsphere-clone-${target} > ${ARTIFACTS}/${target}.log 2>&1 &
-
-  elif [[ "${target}" == 'rockylinux-8' ]]; then
-    cat << EOF > ci-${target}.json
-{
-"build_version": "capv-ci-${target}-${TIMESTAMP}",
-"linked_clone": "true",
-"template": "base-rockylinux-8-20220623"
-}
-EOF
-    make build-node-ova-vsphere-clone-${target} > ${ARTIFACTS}/${target}.log 2>&1 &
-
-  elif [[ "${target}" == 'ubuntu-2204' ]]; then
-    cat << EOF > ci-${target}.json
-{
-"build_version": "capv-ci-${target}-${TIMESTAMP}",
-"linked_clone": "true",
-"template": "base-ubuntu-2204"
+"template": "base-${target}"
 }
 EOF
     make build-node-ova-vsphere-clone-${target} > ${ARTIFACTS}/${target}.log 2>&1 &
@@ -161,7 +127,6 @@ for target in "${!PIDS[@]}"; do
 done
 set -o errexit
 
-cleanup_build_vm
 if [[ "${exit_err}" = true ]]; then
   exit 1
 fi
