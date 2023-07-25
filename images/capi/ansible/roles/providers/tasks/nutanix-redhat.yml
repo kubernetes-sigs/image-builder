@@ -32,6 +32,8 @@
       - lvm2
       - xfsprogs
       - ipvsadm
+      - lsscsi
+      - sysstat
 
 - name: Set correct SCSI device timeout for Nutanix devices
   ansible.builtin.lineinfile:
@@ -81,4 +83,3 @@
     section: Unit
     option: After
     value: local-fs.target
-
