@@ -63,9 +63,11 @@ aliases:
     - davidjumani
     - Pearl1594
   cluster-api-vsphere-maintainers:
-    - frapposelli
+    - chrischdi
     - gab-satchi
+    - killianmuldoon
     - randomvariable
+    - sbueringer
     - srm09
     - yastij
   cluster-api-nutanix-maintainers:
