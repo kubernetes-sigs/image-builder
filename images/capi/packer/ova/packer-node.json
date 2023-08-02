@@ -147,6 +147,7 @@
       "create_snapshot": "{{user `create_snapshot`}}",
       "datacenter": "{{user `datacenter`}}",
       "datastore": "{{user `datastore`}}",
+      "destroy": "{{user `destroy`}}",
       "disk_controller_type": "{{user `disk_controller_type`}}",
       "firmware": "{{user `firmware`}}",
       "floppy_dirs": "{{ user `floppy_dirs`}}",
@@ -203,6 +204,7 @@
       "cpu_cores": "{{user `cpu_cores`}}",
       "datacenter": "{{user `datacenter`}}",
       "datastore": "{{user `datastore`}}",
+      "destroy": "{{user `destroy`}}",
       "disk_controller_type": "{{user `disk_controller_type`}}",
       "export": {
         "force": true,
@@ -468,6 +470,7 @@
     "crictl_url": "https://github.com/kubernetes-sigs/cri-tools/releases/download/v{{user `crictl_version`}}/crictl-v{{user `crictl_version`}}-linux-amd64.tar.gz",
     "crictl_version": null,
     "datastore": "",
+    "destroy": "false",
     "disk_size": "20480",
     "existing_ansible_ssh_args": "{{env `ANSIBLE_SSH_ARGS`}}",
     "export_manifest": "none",
