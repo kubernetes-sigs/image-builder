@@ -1,7 +1,7 @@
 {
   "containerd_additional_settings": null,
   "containerd_cri_socket": "/var/run/containerd/containerd.sock",
-  "containerd_sha256": "57ea580e90e744cef5d79008661b69b35401b62da7cca1f908678a90d112ea88",
-  "containerd_sha256_windows": "cc212cddcbf971c5a48cd7e992318115ed6c34040ee9fa95c4353477b6ece19e",
-  "containerd_version": "1.6.21"
+  "containerd_sha256": "424c7847a2771d67eae027e1856ec01cb67abf024d275da730f9ea98ad975491",
+  "containerd_sha256_windows": "e5f2237aa43deef7fe07764e97fa8e717d5c795dd4c29d91b71aaa0d18f673ee",
+  "containerd_version": "1.6.22"
 }
