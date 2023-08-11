@@ -20,7 +20,8 @@ set -o pipefail
 
 [[ -n ${DEBUG:-} ]] && set -o xtrace
 
-_version="1.9.1"
+# **DO NOT** change the Packer version: v1.9.2 is the last release under the MPL v2.0 license.
+_version="1.9.2"
 
 # Change directories to the parent directory of the one in which this
 # script is located.
