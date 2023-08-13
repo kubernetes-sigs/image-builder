@@ -48,6 +48,19 @@
     enabled: false
   when: ansible_os_family == "Debian"
 
+- name: Ensure networkd-dispatcher folders exist
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+  loop:
+    - /etc/networkd-dispatcher/routable.d
+    - /etc/networkd-dispatcher/off.d
+    - /etc/networkd-dispatcher/no-carrier.d
+    
+
 - name: Copy networkd-dispatcher scripts to add DHCP provided NTP servers
   template:
     src: "{{ item.src }}"
