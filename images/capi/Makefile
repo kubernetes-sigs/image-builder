@@ -940,13 +940,12 @@ validate-all: validate-ami-all \
 	validate-do-all \
 	validate-gce-all \
 	validate-node-ova-local-all \
+	validate-oci-all \
+	validate-osc-all \
+	validate-powervs-all \
 	validate-qemu-all \
 	validate-raw-all \
-	validate-oci-all \
-        validate-osc-all \
-	validate-vbox-all \
-	validate-powervs-all \
-	validate-nutanix-all
+	validate-vbox-all
 validate-all: ## Validates the Packer config for all build targets
 
 ## --------------------------------------
