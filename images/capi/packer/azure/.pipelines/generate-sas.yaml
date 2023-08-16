@@ -1,6 +1,7 @@
 steps:
 - script: |
       set -o pipefail
+      set -x
       RESOURCE_GROUP_NAME=$(jq -r '.builds[-1].custom_data.resource_group_name' manifest.json | cut -d ":" -f2)
       STORAGE_ACCOUNT_NAME=$(jq -r '.builds[-1].custom_data.storage_account_name' manifest.json | cut -d ":" -f2)
       OS_DISK_URI=$(cat packer/azure/packer.out | grep "OSDiskUri:" -m 1 | cut -d " " -f 2)
