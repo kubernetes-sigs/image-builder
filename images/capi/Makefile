@@ -66,6 +66,7 @@ deps-ami: deps-common
 	hack/ensure-ansible-windows.sh
 	hack/ensure-goss.sh
 	$(PACKER) init packer/config.pkr.hcl
+	$(PACKER) init packer/ami/config.pkr.hcl
 
 .PHONY: deps-azure
 deps-azure: ## Installs/checks dependencies for Azure builds
