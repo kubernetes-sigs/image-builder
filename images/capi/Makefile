@@ -96,6 +96,7 @@ deps-gce: ## Installs/checks dependencies for GCE builds
 deps-gce: deps-common
 	hack/ensure-goss.sh
 	$(PACKER) init packer/config.pkr.hcl
+	$(PACKER) init packer/gce/config.pkr.hcl
 
 .PHONY: deps-ova
 deps-ova: ## Installs/checks dependencies for OVA builds
