@@ -140,6 +140,7 @@ deps-vbox: deps-common
 	hack/ensure-ansible-windows.sh
 	hack/ensure-goss.sh
 	$(PACKER) init packer/config.pkr.hcl
+	$(PACKER) init packer/vbox/config.pkr.hcl
 
 .PHONY: deps-powervs
 deps-powervs: ## Installs/checks dependencies for PowerVS builds
