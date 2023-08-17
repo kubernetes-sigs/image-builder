@@ -119,6 +119,7 @@ deps-qemu: ## Installs/checks dependencies for QEMU builds
 deps-qemu: deps-common
 	hack/ensure-goss.sh
 	$(PACKER) init packer/config.pkr.hcl
+	$(PACKER) init packer/qemu/config.pkr.hcl
 
 .PHONY: deps-raw
 deps-raw: ## Installs/checks dependencies for RAW builds
