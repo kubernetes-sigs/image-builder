@@ -1,12 +1,1 @@
-{
-  "force_deregister": "true",
-  "image_export": "false",
-  "nutanix_cluster_name": "",
-  "nutanix_endpoint": "",
-  "nutanix_insecure": "false",
-  "nutanix_password": "",
-  "nutanix_port": "9440",
-  "nutanix_subnet_name": "",
-  "nutanix_username": "admin",
-  "scp_extra_vars": ""
-}
+{}

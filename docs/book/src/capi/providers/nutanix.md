@@ -13,24 +13,48 @@ $ make deps-nutanix
 
 ## Configure the Nutanix builder
 
-Complete the `packer/nutanix/nutanix.json` configuration file with credentials and informations specific to the Nutanix Prism Central used to build the image.
-This file must have the following format:
+Modify the `packer/nutanix/nutanix.json` configuration file with credentials and informations specific to your Nutanix Prism Central used to build the image, you can also use the corresponding env variables.  
+This file have the following format:
+
 ```
 {
-    "force_deregister": "true",
-    "image_export": "false",
-    "nutanix_cluster_name": "Name of PE Cluster",
+
     "nutanix_endpoint": "Prism Central IP / FQDN",
-    "nutanix_insecure": "false",
-    "nutanix_password": "PrismCentral_Password",
     "nutanix_port": "9440",
-    "nutanix_subnet_name": "Name of Subnet",
-    "nutanix_username": "PrismCentral_Username",
-    "scp_extra_vars": ""
+    "nutanix_insecure": "false",
+    "nutanix_username": "Prism Central Username",
+    "nutanix_password": "Prism Central Password",
+    "nutanix_cluster_name": "Name of PE Cluster",
+    "nutanix_subnet_name": "Name of Subnet"
+
 }
 ```
 
-If you are using a recent `OpenSSH_9` version, adding the `-O` value in `scp_extra_vars` may be necessary for servers that do not implement a recent SFTP protocol.
+Corresponding env variables
+
+`NUTANIX_ENDPOINT`  
+`NUTANIX_PORT`  
+`NUTANIX_INSECURE`  
+`NUTANIX_USERNAME`  
+`NUTANIX_PASSWORD`  
+`NUTANIX_CLUSTER_NAME`  
+`NUTANIX_SUBNET_NAME`
+
+
+#### Additional options
+
+| Variable              | Description                                                    | Default                             |
+|-----------------------|----------------------------------------------------------------|-------------------------------------|
+| `force_deregister`    | Allow output image override if already exists.                 | `false`                             |
+| `image_delete`        | Delete image once enitrebuild process is completed.            | `false`                             |
+| `image_export`        | Export raw image in the current folder.                        | `false`                             |
+| `image_name`          | Name of the output image.                                      | `BUILD_NAME-kube-KUBERNETES_SEMVER` |
+| `source_image_delete` | Delete source image once build process is completed            | `false`                             |
+| `source_image_force`  | Always download and replace source image even if already exist | `false`                             |
+| `vm_force_delete`     | Delete the vm even if build is not succesful.                  | `false`                             |
+
+:warning: If you are using a recent `OpenSSH_9` version, adding the `-O` value in `scp_extra_vars` may be necessary for servers that do not implement a recent SFTP protocol.
+
 
 ## Customizing the Build Process
 

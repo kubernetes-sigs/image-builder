@@ -11,6 +11,7 @@
       "cluster_name": "{{user `nutanix_cluster_name`}}",
       "communicator": "winrm",
       "force_deregister": "{{user `force_deregister`}}",
+      "image_delete": "{{user `image_delete`}}",
       "image_description": "kube image-builder packer",
       "image_export": "{{user `image_export`}}",
       "image_name": "{{user `image_name`}}",
@@ -38,6 +39,7 @@
           "image_type": "DISK"
         }
       ],
+      "vm_force_delete": "{{user `vm_force_delete`}}",
       "vm_name": "{{user `build_name`}}-kube-{{user `kubernetes_semver`}}",
       "vm_nics": {
         "subnet_name": "{{user `nutanix_subnet_name`}}"
@@ -131,6 +133,8 @@
     "crictl_version": null,
     "disk_size_gb": "40",
     "existing_ansible_ssh_args": "{{env `ANSIBLE_SSH_ARGS`}}",
+    "force_deregister": "true",
+    "image_delete": "false",
     "image_export": "false",
     "image_name": "{{user `build_name`}}-kube-{{user `kubernetes_semver`}}",
     "kubernetes_base_url": "https://kubernetesreleases.blob.core.windows.net/kubernetes/{{user `kubernetes_semver`}}/binaries/node/windows/{{user `kubernetes_goarch`}}",
@@ -145,7 +149,15 @@
     "kubernetes_typed_version": "kube-{{user `kubernetes_semver`}}",
     "machine_id_mode": "444",
     "memory": "4096",
+    "nutanix_cluster_name": "{{env `NUTANIX_CLUSTER_NAME`}}",
+    "nutanix_endpoint": "{{env `NUTANIX_ENDPOINT`}}",
+    "nutanix_insecure": "{{env `NUTANIX_INSECURE`}}",
+    "nutanix_password": "{{env `NUTANIX_PASSWORD`}}",
+    "nutanix_port": "{{env `NUTANIX_PORT`}}",
+    "nutanix_subnet_name": "{{env `NUTANIX_SUBNET_NAME`}}",
+    "nutanix_username": "{{env `NUTANIX_USERNAME`}}",
     "scp_extra_vars": "",
+    "vm_force_delete": "false",
     "wins_url": null
   }
 }
