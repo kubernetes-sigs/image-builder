@@ -7,7 +7,7 @@
 # - KUBERNETES_VERSION - version of Kubernetes to create the sku for, e.g. `1.16.2`
 # - OFFER - the name of the offer to create the sku for
 # - OS - target of build e.g. `Ubuntu/Windows`
-# - OS_VERSION - target of build e.g. `18.04/2004/2019/2022-containerd`
+# - OS_VERSION - target of build e.g. `22.04/2004/2019/2022-containerd`
 # - PUBLISHER - the name of the publisher to create the sku for
 # - SKU_TEMPLATE_FILE - the base template file to use for the sku
 # - VM_GENERATION - VM generation to use, e.g. `gen2`
@@ -31,4 +31,3 @@ jobs:
     inputs:
       artifact: 'sku-info'
       path: '$(system.defaultWorkingDirectory)/images/capi/packer/azure/sku-publishing-info.json'
-      

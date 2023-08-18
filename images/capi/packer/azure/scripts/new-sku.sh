@@ -1,7 +1,7 @@
 #!/bin/bash -e
 
 OS=${OS:-"Ubuntu"}
-OS_VERSION=${OS_VERSION:-"18.04"}
+OS_VERSION=${OS_VERSION:-"22.04"}
 PUB_VERSION=${PUB_VERSION:-"v0.3.3"}
 VM_GENERATION=${VM_GENERATION:-"gen1"}
 [[ -n ${DEBUG:-} ]] && set -o xtrace

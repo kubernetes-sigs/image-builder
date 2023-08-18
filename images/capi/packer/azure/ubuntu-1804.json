@@ -1,9 +1,0 @@
-{
-  "build_name": "ubuntu-1804",
-  "distribution": "ubuntu",
-  "distribution_release": "bionic",
-  "distribution_version": "1804",
-  "image_offer": "UbuntuServer",
-  "image_publisher": "Canonical",
-  "image_sku": "18.04-LTS"
-}
