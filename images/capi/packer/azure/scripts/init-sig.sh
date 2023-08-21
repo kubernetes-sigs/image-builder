@@ -52,9 +52,6 @@ create_image_definition() {
 SIG_TARGET=$1
 
 case ${SIG_TARGET} in
-  ubuntu-1804)
-    create_image_definition ${SIG_TARGET} "18.04-LTS" "V1" "Linux"
-  ;;
   ubuntu-2004)
     create_image_definition ${SIG_TARGET} "20_04-lts" "V1" "Linux"
   ;;
@@ -90,9 +87,6 @@ case ${SIG_TARGET} in
   flatcar)
     SKU="flatcar-${FLATCAR_CHANNEL}-${FLATCAR_VERSION}"
     create_image_definition ${SKU} ${SKU} "V1" "Linux"
-  ;;
-  ubuntu-1804-gen2)
-    create_image_definition ${SIG_TARGET} "18.04-lts-gen2" "V2" "Linux"
   ;;
   ubuntu-2004-gen2)
     create_image_definition ${SIG_TARGET} "20_04-lts-gen2" "V2" "Linux"

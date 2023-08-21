@@ -5,7 +5,7 @@
 echo "PWD: $PWD"
 
 OS=${OS:-"Ubuntu"}
-OS_VERSION=${OS_VERSION:-"18.04"}
+OS_VERSION=${OS_VERSION:-"22.04"}
 PUB_VERSION=${PUB_VERSION:-"v0.3.3"}
 
 required_env_vars=(
