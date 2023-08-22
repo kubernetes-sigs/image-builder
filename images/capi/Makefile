@@ -193,7 +193,7 @@ IMAGE_NAME ?= cluster-node-image-builder
 CONTROLLER_IMG ?= $(REGISTRY)/$(IMAGE_NAME)
 TAG ?= dev
 ARCH ?= amd64
-BASE_IMAGE ?= docker.io/library/ubuntu:focal
+BASE_IMAGE ?= docker.io/library/ubuntu:jammy
 
 ## --------------------------------------
 ## Packer flags
