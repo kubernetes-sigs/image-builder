@@ -25,7 +25,7 @@
       - cloud-initramfs-dyn-netconf
   when: ansible_os_family == "Debian"
 
-- name: Install cloud-tools and tools  packages
+- name: Install cloud-tools and tools packages
   apt:
     name: "{{ packages }}"
     state: present
