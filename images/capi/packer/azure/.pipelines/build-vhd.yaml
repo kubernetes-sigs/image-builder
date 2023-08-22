@@ -7,7 +7,7 @@
 # - AZURE_SUBSCRIPTION_ID - Subscription ID used by the pipeline
 # - KUBERNETES_VERSION - version of Kubernetes to build the image with, e.g. `1.16.2`
 # - OS - target of build e.g. `Ubuntu/Windows`
-# - OS_VERSION - target of build e.g. `22.04/2004/2019`
+# - OS_VERSION - target of build e.g. `22.04/2019/2022-containerd`
 
 jobs:
 - job: build_vhd

@@ -5,7 +5,7 @@
 # - AZURE_CLIENT_ID - Service principal ID
 # - AZURE_CLIENT_SECRET - Service principal secret
 # - OS - target of build e.g. `Ubuntu/Windows`
-# - OS_VERSION - target of build e.g. `22.04/2004/2019`
+# - OS_VERSION - target of build e.g. `22.04/2019`
 
 jobs:
 - job: create_disk_version

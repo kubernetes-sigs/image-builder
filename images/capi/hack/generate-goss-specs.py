@@ -141,7 +141,7 @@ def main():
         if system in builds[provider]:
             if system == 'windows':
                 runtimes = ["docker-ee","containerd"]
-                os_versions = ["2019", "2004"]
+                os_versions = ["2019", "2022"]
             elif system == 'rhel':
                 runtimes = ["containerd"]
                 os_versions = ["7", "8"]
