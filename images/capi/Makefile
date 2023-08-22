@@ -320,7 +320,7 @@ PHOTON_VERSIONS			:=	photon-3 photon-4 photon-5
 RHEL_VERSIONS			:=	rhel-7 rhel-8
 ROCKYLINUX_VERSIONS     :=  rockylinux-8
 UBUNTU_VERSIONS			:=	ubuntu-2004 ubuntu-2004-efi ubuntu-2204 ubuntu-2204-efi
-WINDOWS_VERSIONS		:=	windows-2019 windows-2004 windows-2022
+WINDOWS_VERSIONS		:=	windows-2019 windows-2022
 
 # Set Flatcar Container Linux channel and version if not supplied
 FLATCAR_CHANNEL ?= stable
@@ -346,7 +346,7 @@ NODE_OVA_VSPHERE_BUILD_NAMES		:=	$(addprefix node-ova-vsphere-,$(PLATFORMS_AND_V
 NODE_OVA_VSPHERE_BASE_BUILD_NAMES		:=	$(addprefix node-ova-vsphere-base-,$(PLATFORMS_AND_VERSIONS))
 NODE_OVA_VSPHERE_CLONE_BUILD_NAMES		:=	$(addprefix node-ova-vsphere-clone-,$(PLATFORMS_AND_VERSIONS))
 
-AMI_BUILD_NAMES			   ?= ami-centos-7 ami-ubuntu-2004 ami-ubuntu-2204 ami-amazon-2 ami-flatcar ami-windows-2019 ami-windows-2004 ami-rockylinux-8 ami-rhel-8
+AMI_BUILD_NAMES			   ?= ami-centos-7 ami-ubuntu-2004 ami-ubuntu-2204 ami-amazon-2 ami-flatcar ami-windows-2019 ami-rockylinux-8 ami-rhel-8
 GCE_BUILD_NAMES			   ?= gce-ubuntu-2004 gce-ubuntu-2204 gce-rhel-8
 
 # Make needs these lists to be space delimited, no quotes
@@ -619,7 +619,6 @@ build-ami-rockylinux-8: ## Builds RockyLinux 8 AMI
 build-ami-rhel-8: ## Builds RHEL-8 AMI
 build-ami-flatcar: ## Builds Flatcar
 build-ami-windows-2019: ## Build Windows Server 2019 AMI Packer config
-build-ami-windows-2004: ## Build Windows Server 2004 SAC AMI Packer config
 build-ami-all: $(AMI_BUILD_TARGETS) ## Builds all AMIs
 
 build-azure-sig-ubuntu-2004: ## Builds Ubuntu 20.04 Azure managed image in Shared Image Gallery
@@ -632,7 +631,6 @@ build-azure-sig-windows-2019-containerd: ## Builds Windows Server 2019 with cont
 build-azure-sig-windows-2022-containerd: ## Builds Windows Server 2022 with containerd Azure managed image in Shared Image Gallery
 build-azure-sig-windows-2019-containerd-cvm: ## Builds Windows Server 2019 with containerd CVM Azure managed image in Shared Image Gallery
 build-azure-sig-windows-2022-containerd-cvm: ## Builds Windows Server 2022 with containerd CVM Azure managed image in Shared Image Gallery
-build-azure-sig-windows-2004: ## Builds Windows Server 2004 SAC Azure managed image in Shared Image Gallery
 build-azure-vhd-ubuntu-2004: ## Builds Ubuntu 20.04 VHD image for Azure
 build-azure-vhd-ubuntu-2204: ## Builds Ubuntu 22.04 VHD image for Azure
 build-azure-vhd-centos-7: ## Builds CentOS 7 VHD image for Azure
@@ -641,7 +639,6 @@ build-azure-vhd-rhel-8: ## Builds RHEL 8 VHD image for Azure
 build-azure-vhd-windows-2019: ## Builds for Windows Server 2019
 build-azure-vhd-windows-2019-containerd: ## Builds for Windows Server 2019 with containerd
 build-azure-vhd-windows-2022-containerd: ## Builds for Windows Server 2022 with containerd
-build-azure-vhd-windows-2004: ## Builds for Windows Server 2004 SAC
 build-azure-sig-centos-7-gen2: ## Builds CentOS Gen2 managed image in Shared Image Gallery
 build-azure-sig-mariner-2-gen2: ## Builds Mariner Gen2 managed image in Shared Image Gallery
 build-azure-sig-flatcar: ## Builds Flatcar Azure managed image in Shared Image Gallery
@@ -672,7 +669,6 @@ build-node-ova-local-rhel-8: ## Builds RHEL 8 Node OVA w local hypervisor
 build-node-ova-local-rockylinux-8: ## Builds RockyLinux 8 Node OVA w local hypervisor
 build-node-ova-local-ubuntu-2004: ## Builds Ubuntu 20.04 Node OVA w local hypervisor
 build-node-ova-local-windows-2019: ## Builds for Windows Server 2019 Node OVA w local hypervisor
-build-node-ova-local-windows-2004: ## Builds for Windows Server 2004 SAC Node OVA w local hypervisor
 build-node-ova-local-all: $(NODE_OVA_LOCAL_BUILD_TARGETS) ## Builds all Node OVAs w local hypervisor
 
 build-node-ova-vsphere-centos-7: ## Builds CentOS 7 Node OVA and template on vSphere
@@ -688,7 +684,6 @@ build-node-ova-vsphere-ubuntu-2004-efi: ## Builds Ubuntu 20.04 Node OVA and temp
 build-node-ova-vsphere-ubuntu-2204: ## Builds Ubuntu 22.04 Node OVA and template on vSphere
 build-node-ova-vsphere-ubuntu-2204-efi: ## Builds Ubuntu 22.04 Node OVA and template on vSphere that EFI boots
 build-node-ova-vsphere-windows-2019: ## Builds for Windows Server 2019 and template on vSphere
-build-node-ova-vsphere-windows-2004: ## Builds for Windows Server 2004 SAC and template on vSphere
 build-node-ova-vsphere-windows-2022: ## Builds for Windows Server 2022 template on vSphere
 build-node-ova-vsphere-all: $(NODE_OVA_VSPHERE_BUILD_TARGETS) ## Builds all Node OVAs and templates on vSphere
 
@@ -790,7 +785,6 @@ validate-ami-flatcar: ## Validates Flatcar AMI Packer config
 validate-ami-ubuntu-2004: ## Validates Ubuntu 20.04 AMI Packer config
 validate-ami-ubuntu-2204: ## Validates Ubuntu 22.04 AMI Packer config
 validate-ami-windows-2019: ## Validates Windows Server 2019 AMI Packer config
-validate-ami-windows-2004: ## Validates Windows Server 2004 SAC AMI Packer config
 validate-ami-all: $(AMI_VALIDATE_TARGETS) ## Validates all AMIs Packer config
 
 validate-azure-sig-centos-7: ## Validates CentOS 7 Azure managed image in Shared Image Gallery Packer config
@@ -801,7 +795,6 @@ validate-azure-sig-ubuntu-2204: ## Validates Ubuntu 22.04 Azure managed image in
 validate-azure-sig-windows-2019: ## Validate Windows Server 2019 Azure managed image in Shared Image Gallery Packer config
 validate-azure-sig-windows-2019-containerd: ## Validate Windows Server 2019 with containerd Azure managed image in Shared Image Gallery Packer config
 validate-azure-sig-windows-2022-containerd: ## Validate Windows Server 2022 with containerd Azure managed image in Shared Image Gallery Packer config
-validate-azure-sig-windows-2004: ## Validate Windows Server 2004 SAC Azure managed image in Shared Image Gallery Packer config
 validate-azure-vhd-centos-7: ## Validates CentOS 7 VHD image Azure Packer config
 validate-azure-vhd-mariner-2: ## Validates Mariner 2 VHD image Azure Packer config
 validate-azure-vhd-rhel-8: ## Validates RHEL 8 VHD image Azure Packer config
@@ -810,7 +803,6 @@ validate-azure-vhd-ubuntu-2204: ## Validates Ubuntu 22.04 VHD image Azure Packer
 validate-azure-vhd-windows-2019: ## Validate Windows Server 2019 VHD image Azure Packer config
 validate-azure-vhd-windows-2019-containerd: ## Validate Windows Server 2019 VHD with containerd image Azure Packer config
 validate-azure-vhd-windows-2022-containerd: ## Validate Windows Server 2022 VHD with containerd image Azure Packer config
-validate-azure-vhd-windows-2004: ## Validate Windows Server 2004 SAC VHD image Azure Packer config
 validate-azure-sig-centos-7-gen2: ## Validates CentOS 7 Azure managed image in Shared Image Gallery Packer config
 validate-azure-sig-mariner-2-gen2: ## Validates Mariner 2 Gen2 Azure managed image in Shared Image Gallery Packer config
 validate-azure-sig-ubuntu-2004-gen2: ## Validates Ubuntu 20.04 Azure managed image in Shared Image Gallery Packer config
@@ -844,7 +836,6 @@ validate-node-ova-local-rockylinux-8: ## Validates RockyLinux 8 Node OVA Packer 
 validate-node-ova-local-ubuntu-2004: ## Validates Ubuntu 20.04 Node OVA Packer config w local hypervisor
 validate-node-ova-local-ubuntu-2204: ## Validates Ubuntu 22.04 Node OVA Packer config w local hypervisor
 validate-node-ova-local-windows-2019: ## Validates Windows Server 2019 Node OVA Packer config w local hypervisor
-validate-node-ova-local-windows-2004: ## Validates Windows Server 2004 SAC Node OVA Packer config w local hypervisor
 validate-node-ova-local-windows-2022: ## Validates Windows Server 2022 Node OVA Packer config w local hypervisor
 validate-node-ova-local-all: $(NODE_OVA_LOCAL_VALIDATE_TARGETS) ## Validates all Node OVAs Packer config w local hypervisor
 

@@ -22,7 +22,3 @@ prepull_images:
     - mcr.microsoft.com/windows/servercore:ltsc2019
     - mcr.microsoft.com/windows/nanoserver:1809
     - "{{ pause_image }}"
-  2004:
-    - mcr.microsoft.com/windows/servercore:2004
-    - mcr.microsoft.com/windows/nanoserver:2004
-    - "{{ pause_image }}"
