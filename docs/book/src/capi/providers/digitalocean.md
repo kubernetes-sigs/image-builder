@@ -26,5 +26,4 @@ the different operating systems.
 | File | Description |
 |------|-------------|
 | `centos-7.json`    | The settings for the CentOS 7 image |
-| `ubuntu-1804.json` | The settings for the Ubuntu 18.04 image |
 | `ubuntu-2004.json` | The settings for the Ubuntu 20.04 image |
