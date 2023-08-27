@@ -77,7 +77,6 @@
     state: started
     enabled: true
   when: ansible_os_family in ["Debian", "Redhat"]
-    ansible_os_family == "RedHat"
 
 - name: Disable Hyper-V KVP protocol daemon on Ubuntu
   systemd:
