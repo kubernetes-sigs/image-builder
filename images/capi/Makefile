@@ -799,6 +799,7 @@ build-nutanix-all: $(NUTANIX_BUILD_TARGETS) ## Builds all Nutanix image
 
 build-hcloud-ubuntu-2004: ## Builds the Hetzner Cloud ubuntu-2004 image
 build-hcloud-ubuntu-2204: ## Builds the Hetzner Cloud ubuntu-2204 image
+build-hcloud-centos-7: ## Builds the Hetzner Cloud CentOS 7 image
 build-hcloud-rockylinux-8: ## Builds the Hetzner Cloud Rocky Linux 8 image
 build-hcloud-rockylinux-9: ## Builds the Hetzner Cloud Rocky Linux 9 image
 build-hcloud-flatcar: ## Builds the Hetzner Cloud Flatcar image
@@ -938,6 +939,7 @@ validate-nutanix-all: $(NUTANIX_VALIDATE_TARGETS) ## Validates all Nutanix Packe
 
 validate-hcloud-ubuntu-2004: ## Validates Ubuntu 20.04 Hetzner Cloud Packer config
 validate-hcloud-ubuntu-2204: ## Validates Ubuntu 22.04 Hetzner Cloud Packer config
+validate-hcloud-centos-7: ## Validates CentOS 7 Hetzner Cloud Packer config
 validate-hcloud-rockylinux-8: ## Validates Rocky Linux 8 Hetzner Cloud Packer config
 validate-hcloud-rockylinux-9: ## Validates the Hetzner Cloud Rocky Linux 9 Nutanix Packer config
 validate-hcloud-flatcar: ## Validates the Hetzner Cloud Flatcar Nutanix Packer config
