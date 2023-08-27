@@ -6,3 +6,4 @@
 /.bin/
 /.local/bin/
 manifest.json
+**.DS_Store

@@ -16,6 +16,7 @@
   - [OCI](./capi/providers/oci.md)
   - [raw](./capi/providers/raw.md)
   - [vSphere](./capi/providers/vsphere.md)
+  - [Proxmox](./capi/providers/proxmox.md)
   - [Windows](./capi/windows/windows.md)
   - [VirtualBox](./capi/providers/virtualbox.md)
   - [Testing the Images](./capi/goss/goss.md)
