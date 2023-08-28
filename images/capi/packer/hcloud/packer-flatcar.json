@@ -1,0 +1,175 @@
+{
+  "builders": [
+    {
+      "image": "ubuntu-22.04",
+      "location": "{{user `hcloud_location`}}",
+      "rescue": "linux64",
+      "server_type": "{{user `server_type`}}",
+      "snapshot_labels": {
+        "build_date": "{{isotime \"2006-01-02T15-04-05Z\" }}",
+        "build_timestamp": "{{user `build_timestamp`}}",
+        "caph-image-name": "cluster-api-{{user `build_name`}}-{{user `flatcar_channel`}}-{{user `flatcar_version`}}-{{user `kubernetes_semver`}}-{{user `build_timestamp`}}",
+        "creationTimestamp": "{{isotime \"2006-01-02T15-04-05Z\"}}",
+        "distribution": "{{user `distribution`}}",
+        "distribution_release": "{{user `distribution_release`}}",
+        "distribution_version": "{{user `distribution_version`}}",
+        "image_builder_version": "{{user `ib_version`}}",
+        "kubernetes_version": "{{user `kubernetes_semver`}}"
+      },
+      "snapshot_name": "cluster-api-{{user `build_name`}}-{{user `flatcar_channel`}}-{{user `flatcar_version`}}-{{user `kubernetes_semver`}}-{{user `build_timestamp`}}",
+      "ssh_username": "{{user `ssh_username`}}",
+      "token": "{{user `hcloud_token`}}",
+      "type": "hcloud"
+    }
+  ],
+  "post-processors": [
+    {
+      "custom_data": {
+        "build_date": "{{isotime}}",
+        "build_name": "{{user `build_name`}}",
+        "build_timestamp": "{{user `build_timestamp`}}",
+        "build_type": "node",
+        "containerd_version": "{{user `containerd_version`}}",
+        "kubernetes_cni_semver": "{{user `kubernetes_cni_semver`}}",
+        "kubernetes_semver": "{{user `kubernetes_semver`}}",
+        "kubernetes_source_type": "{{user `kubernetes_source_type`}}",
+        "os_name": "{{user `distro_name`}}",
+        "resource_group_name": "{{user `resource_group_name`}}",
+        "storage_account_name": "{{user `storage_account_name`}}"
+      },
+      "output": "{{user `manifest_output`}}",
+      "strip_path": true,
+      "type": "manifest"
+    }
+  ],
+  "provisioners": [
+    {
+      "environment_vars": [
+        "FLATCAR_CHANNEL={{user `flatcar_channel`}}",
+        "FLATCAR_VERSION={{user `flatcar_version`}}"
+      ],
+      "expect_disconnect": true,
+      "pause_after": "5s",
+      "script": "./packer/hcloud/scripts/install-flatcar.sh",
+      "type": "shell"
+    },
+    {
+      "execute_command": "BUILD_NAME={{user `build_name`}}; if [[ \"${BUILD_NAME}\" == *\"flatcar\"* ]]; then sudo {{.Vars}} -S -E bash '{{.Path}}'; fi",
+      "script": "./packer/files/flatcar/scripts/bootstrap-flatcar.sh",
+      "type": "shell"
+    },
+    {
+      "ansible_env_vars": [
+        "ANSIBLE_SSH_ARGS='{{user `existing_ansible_ssh_args`}} {{user `ansible_common_ssh_args`}}'"
+      ],
+      "extra_arguments": [
+        "--extra-vars",
+        "{{user `ansible_common_vars`}}",
+        "--extra-vars",
+        "{{user `ansible_extra_vars`}}",
+        "--extra-vars",
+        "{{user `ansible_user_vars`}}",
+        "--scp-extra-args",
+        "{{user `ansible_scp_extra_args`}}"
+      ],
+      "playbook_file": "./ansible/python.yml",
+      "type": "ansible",
+      "user": "packer"
+    },
+    {
+      "ansible_env_vars": [
+        "ANSIBLE_SSH_ARGS='{{user `existing_ansible_ssh_args`}} {{user `ansible_common_ssh_args`}}'"
+      ],
+      "extra_arguments": [
+        "--extra-vars",
+        "{{user `ansible_common_vars`}}",
+        "--extra-vars",
+        "{{user `ansible_extra_vars`}}",
+        "--extra-vars",
+        "{{user `ansible_user_vars`}}",
+        "--scp-extra-args",
+        "{{user `ansible_scp_extra_args`}}"
+      ],
+      "playbook_file": "./ansible/node.yml",
+      "type": "ansible",
+      "user": "packer"
+    },
+    {
+      "arch": "{{user `goss_arch`}}",
+      "download_path": "{{user `goss_download_path`}}",
+      "format": "{{user `goss_format`}}",
+      "format_options": "{{user `goss_format_options`}}",
+      "goss_file": "{{user `goss_entry_file`}}",
+      "inspect": "{{user `goss_inspect_mode`}}",
+      "remote_folder": "{{user `goss_remote_folder`}}",
+      "remote_path": "{{user `goss_remote_path`}}",
+      "skip_install": "{{user `goss_skip_install`}}",
+      "tests": [
+        "{{user `goss_tests_dir`}}"
+      ],
+      "type": "goss",
+      "url": "{{user `goss_url`}}",
+      "use_sudo": true,
+      "vars_file": "{{user `goss_vars_file`}}",
+      "vars_inline": {
+        "ARCH": "amd64",
+        "OS": "{{user `distribution` | lower}}",
+        "OS_VERSION": "{{user `distribution_version` | lower}}",
+        "PROVIDER": "hcloud",
+        "containerd_version": "{{user `containerd_version`}}",
+        "containerd_wasm_shims_runtimes": "{{user `containerd_wasm_shims_runtimes` }}",
+        "kubernetes_cni_deb_version": "{{ user `kubernetes_cni_deb_version` }}",
+        "kubernetes_cni_rpm_version": "{{ split (user `kubernetes_cni_rpm_version`) \"-\" 0 }}",
+        "kubernetes_cni_source_type": "{{user `kubernetes_cni_source_type`}}",
+        "kubernetes_cni_version": "{{user `kubernetes_cni_semver` | replace \"v\" \"\" 1}}",
+        "kubernetes_deb_version": "{{ user `kubernetes_deb_version` }}",
+        "kubernetes_rpm_version": "{{ split (user `kubernetes_rpm_version`) \"-\" 0  }}",
+        "kubernetes_source_type": "{{user `kubernetes_source_type`}}",
+        "kubernetes_version": "{{user `kubernetes_semver` | replace \"v\" \"\" 1}}"
+      },
+      "version": "{{user `goss_version`}}"
+    }
+  ],
+  "variables": {
+    "ansible_common_vars": "",
+    "ansible_extra_vars": "",
+    "ansible_scp_extra_args": "",
+    "ansible_user_vars": "",
+    "build_name": null,
+    "build_timestamp": "{{timestamp}}",
+    "containerd_sha256": null,
+    "containerd_url": "https://github.com/containerd/containerd/releases/download/v{{user `containerd_version`}}/cri-containerd-cni-{{user `containerd_version`}}-linux-amd64.tar.gz",
+    "containerd_version": null,
+    "containerd_wasm_shims_runtimes": null,
+    "crictl_url": "https://github.com/kubernetes-sigs/cri-tools/releases/download/v{{user `crictl_version`}}/crictl-v{{user `crictl_version`}}-linux-amd64.tar.gz",
+    "crictl_version": null,
+    "direct_shared_gallery_image_id": "",
+    "distribution": null,
+    "distribution_release": null,
+    "distribution_version": null,
+    "exclude_from_latest": "false",
+    "existing_ansible_ssh_args": "{{env `ANSIBLE_SSH_ARGS`}}",
+    "flatcar_channel": "{{env `FLATCAR_CHANNEL` }}",
+    "flatcar_version": "{{env `FLATCAR_VERSION` }}",
+    "ib_version": "{{env `IB_VERSION`}}",
+    "kubernetes_cni_deb_version": null,
+    "kubernetes_cni_http_source": null,
+    "kubernetes_cni_rpm_version": null,
+    "kubernetes_cni_semver": null,
+    "kubernetes_cni_source_type": null,
+    "kubernetes_container_registry": null,
+    "kubernetes_deb_gpg_key": null,
+    "kubernetes_deb_repo": null,
+    "kubernetes_deb_version": null,
+    "kubernetes_http_source": null,
+    "kubernetes_load_additional_imgs": null,
+    "kubernetes_rpm_gpg_check": null,
+    "kubernetes_rpm_gpg_key": null,
+    "kubernetes_rpm_repo": null,
+    "kubernetes_rpm_version": null,
+    "kubernetes_semver": null,
+    "kubernetes_series": null,
+    "kubernetes_source_type": null,
+    "manifest_output": "manifest.json"
+  }
+}

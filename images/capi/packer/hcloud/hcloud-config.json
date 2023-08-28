@@ -1,0 +1,7 @@
+{
+  "containerd_wasm_shims_runtimes": "spin,slight",
+  "hcloud_location": "{{env `HCLOUD_LOCATION`}}",
+  "image_name": "cluster-api-{{user `build_name`}}-{{user `kubernetes_semver`}}-{{user `build_timestamp`}}",
+  "server_type": "cx21",
+  "token": "{{env `AZURE_CLIENT_ID`}}"
+}
