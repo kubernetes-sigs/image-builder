@@ -53,7 +53,8 @@ jobs:
       AZURE_LOCATION=$(az storage account show --name "${STORAGE_ACCOUNT_NAME}" --query '[location]' -o tsv)
 
       # Create the resource group
-      az group create --name "${RESOURCE_GROUP}" --location "${AZURE_LOCATION}" --tags "${TAGS}"
+      # Note: the tags parameter is not surrounded by quotes for the Azure CLI to parse it correctly.
+      az group create --name "${RESOURCE_GROUP}" --location "${AZURE_LOCATION}" --tags ${TAGS}
 
       # Create a managed image from the VHD blob
       OS_TYPE="Linux"
