@@ -31,7 +31,8 @@ $ sudo chown root:kvm /dev/kvm
 
 Then exit and log back in to make the change take place.
 
-## Building Images
+## Raw Images
+### Raw Dependencies
 
 The build [prerequisites](../capi.md#prerequisites) for using `image-builder` for
 building raw images are managed by running:
@@ -40,8 +41,7 @@ building raw images are managed by running:
 cd image-builder/images/capi
 make deps-raw
 ```
-
-### Building QCOW2 Image
+### Build the Raw Image
 
 From the `images/capi` directory, run `make build-raw-ubuntu-xxxx`. The image is built and located in images/capi/output/BUILD_NAME+kube-KUBERNETES_VERSION. Please replace xxxx with `2004` or `2004-efi` depending on the version you want to build the image for.
 
@@ -50,5 +50,28 @@ To build a Ubuntu 20.04-based CAPI image, run the following commands -
 ```bash
 $ git clone https://github.com/kubernetes-sigs/image-builder.git
 $ cd image-builder/images/capi/
-$ make build-qemu-ubuntu-2004
+$ make build-raw-ubuntu-2004
+```
+
+## QCOW2 Images
+### Raw Dependencies
+
+The build [prerequisites](../capi.md#prerequisites) for using `image-builder` for
+building raw images are managed by running:
+
+```bash
+cd image-builder/images/capi
+make deps-qemu
+```
+
+### Building QCOW2 Image
+
+From the `images/capi` directory, run `make build-qemu-ubuntu-xxxx`. The image is built and located in images/capi/output/BUILD_NAME+kube-KUBERNETES_VERSION. Please replace xxxx with `1804`,`2004` or `2204` depending on the version you want to build the image for.
+
+For building a ubuntu-2204 based CAPI image, run the following commands -
+
+```bash
+$ git clone https://github.com/kubernetes-sigs/image-builder.git
+$ cd image-builder/images/capi/
+$ make build-qemu-ubuntu-2204
 ```
