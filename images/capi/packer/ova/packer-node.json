@@ -171,6 +171,7 @@
         }
       ],
       "password": "{{user `password`}}",
+      "resource_pool": "{{user `resource_pool`}}",
       "shutdown_command": "echo '{{user `ssh_password`}}' | sudo -S -E sh -c '{{user `shutdown_command`}}'",
       "ssh_clear_authorized_keys": "false",
       "ssh_password": "{{user `ssh_password`}}",
@@ -233,6 +234,7 @@
         }
       ],
       "password": "{{user `password`}}",
+      "resource_pool": "{{user `resource_pool`}}",
       "shutdown_command": "echo '{{user `ssh_password`}}' | sudo -S -E sh -c 'userdel -f -r {{user `ssh_username`}} && rm -f /etc/sudoers.d/{{user `ssh_username` }} && {{user `shutdown_command`}}'",
       "ssh_password": "{{user `ssh_password`}}",
       "ssh_timeout": "4h",
@@ -273,6 +275,7 @@
       "name": "vsphere-clone",
       "network": "{{user `network`}}",
       "password": "{{user `password`}}",
+      "resource_pool": "{{user `resource_pool`}}",
       "shutdown_command": "echo '{{user `ssh_password`}}' | sudo -S -E sh -c 'userdel -f -r {{user `ssh_username`}} && rm -f /etc/sudoers.d/{{user `ssh_username` }} && {{user `shutdown_command`}}'",
       "ssh_password": "{{user `ssh_password`}}",
       "ssh_timeout": "4h",
@@ -502,6 +505,7 @@
     "kubernetes_source_type": null,
     "kubernetes_typed_version": "kube-{{user `kubernetes_semver`}}",
     "output_dir": "./output/{{user `build_version`}}",
+    "resource_pool": "",
     "username": "",
     "vcenter_server": "",
     "vsphere_guest_os_type": null
