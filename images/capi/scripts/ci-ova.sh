@@ -41,8 +41,9 @@ cleanup_build_vm() {
 
   for target in ${TARGETS[@]};
   do
+    # Adding || true to both commands so it does not exit after not being able to cleanup one target.
     govc vm.power -off -force -wait /${GOVC_DATACENTER}/vm/${FOLDER}/capv-ci-${target}-${TIMESTAMP} || true
-    govc object.destroy /${GOVC_DATACENTER}/vm/${FOLDER}/capv-ci-${target}-${TIMESTAMP}
+    govc object.destroy /${GOVC_DATACENTER}/vm/${FOLDER}/capv-ci-${target}-${TIMESTAMP} || true
   done
 
 }
@@ -57,6 +58,8 @@ export GOVC_DATACENTER="SDDC-Datacenter"
 export GOVC_INSECURE=true
 export FOLDER="Workloads/ci/imagebuilder"
 
+echo "Running build with timestamp ${TIMESTAMP}"
+
 cat << EOF > packer/ova/vsphere.json
 {
     "vcenter_server":"${GOVC_URL}",
@@ -65,6 +68,7 @@ cat << EOF > packer/ova/vsphere.json
     "password":"${GOVC_PASSWORD}",
     "datastore":"WorkloadDatastore",
     "datacenter":"${GOVC_DATACENTER}",
+    "resource_pool": "Compute-ResourcePool/ci-image-builder",
     "cluster": "Cluster-1",
     "network": "sddc-cgw-network-8",
     "folder": "${FOLDER}"
