@@ -53,67 +53,60 @@ version: ## Display version of image-builder
 deps: ## Installs/checks all dependencies
 deps: deps-ami deps-azure deps-do deps-gce deps-ova deps-openstack deps-qemu deps-raw deps-oci deps-osc deps-vbox deps-powervs deps-nutanix deps-hcloud
 
+.PHONY: deps-common
+deps-common: ## Installs/checks dependencies common to most builds
+deps-common:
+	hack/ensure-python.sh
+	hack/ensure-ansible.sh
+	hack/ensure-packer.sh
+
 .PHONY: deps-ami
 deps-ami: ## Installs/checks dependencies for AMI builds
-deps-ami:
-	hack/ensure-ansible.sh
+deps-ami: deps-common
 	hack/ensure-ansible-windows.sh
-	hack/ensure-packer.sh
 	hack/ensure-goss.sh
 	$(PACKER) init packer/config.pkr.hcl
 
 .PHONY: deps-azure
 deps-azure: ## Installs/checks dependencies for Azure builds
-deps-azure:
-	hack/ensure-ansible.sh
+deps-azure: deps-common
 	hack/ensure-ansible-windows.sh
-	hack/ensure-packer.sh
+	hack/ensure-goss.sh
 	hack/ensure-jq.sh
 	hack/ensure-azure-cli.sh
-	hack/ensure-goss.sh
 	$(PACKER) init packer/config.pkr.hcl
 	$(PACKER) init packer/azure/config.pkr.hcl
 
 .PHONY: deps-do
 deps-do: ## Installs/checks dependencies for DigitalOcean builds
-deps-do:
-	hack/ensure-ansible.sh
-	hack/ensure-packer.sh
+deps-do: deps-common
 	$(PACKER) init packer/config.pkr.hcl
 	$(PACKER) init packer/digitalocean/config.pkr.hcl
 
 .PHONY: deps-osc
 deps-osc: ## Installs/checks dependencies for Outscale builds
-deps-osc:
-	hack/ensure-ansible.sh
-	hack/ensure-packer.sh
+deps-osc: deps-common
 	hack/ensure-goss.sh
 	$(PACKER) init packer/config.pkr.hcl
 	$(PACKER) plugins install github.com/outscale/outscale
 
 .PHONY: deps-gce
 deps-gce: ## Installs/checks dependencies for GCE builds
-deps-gce:
-	hack/ensure-ansible.sh
-	hack/ensure-packer.sh
+deps-gce: deps-common
 	hack/ensure-goss.sh
 	$(PACKER) init packer/config.pkr.hcl
 
 .PHONY: deps-ova
 deps-ova: ## Installs/checks dependencies for OVA builds
-deps-ova:
-	hack/ensure-ansible.sh
+deps-ova: deps-common
 	hack/ensure-ansible-windows.sh
-	hack/ensure-packer.sh
 	hack/ensure-goss.sh
 	hack/ensure-ovftool.sh
 	$(PACKER) init packer/config.pkr.hcl
 
 .PHONY: deps-openstack
 deps-openstack: ## Installs/checks dependencies for OpenStack builds
-deps-openstack:
-	hack/ensure-ansible.sh
-	hack/ensure-packer.sh
+deps-openstack: deps-common
 	hack/ensure-goss.sh
 	hack/ensure-s3.sh
 	$(PACKER) init packer/config.pkr.hcl
@@ -121,43 +114,33 @@ deps-openstack:
 
 .PHONY: deps-qemu
 deps-qemu: ## Installs/checks dependencies for QEMU builds
-deps-qemu:
-	hack/ensure-ansible.sh
-	hack/ensure-packer.sh
+deps-qemu: deps-common
 	hack/ensure-goss.sh
 	$(PACKER) init packer/config.pkr.hcl
 
 .PHONY: deps-raw
 deps-raw: ## Installs/checks dependencies for RAW builds
-deps-raw:
-	hack/ensure-ansible.sh
-	hack/ensure-packer.sh
+deps-raw: deps-common
 	hack/ensure-goss.sh
 	$(PACKER) init packer/config.pkr.hcl
 
 .PHONY: deps-oci
 deps-oci: ## Installs/checks dependencies for OCI builds
-deps-oci:
-	hack/ensure-ansible.sh
-	hack/ensure-packer.sh
+deps-oci: deps-common
 	hack/ensure-ansible-windows.sh
 	$(PACKER) init packer/config.pkr.hcl
 	$(PACKER) plugins install github.com/hashicorp/oracle
 
 .PHONY: deps-vbox
 deps-vbox: ## Installs/checks dependencies for VirtualBox builds
-deps-vbox:
-	hack/ensure-ansible.sh
+deps-vbox: deps-common
 	hack/ensure-ansible-windows.sh
-	hack/ensure-packer.sh
 	hack/ensure-goss.sh
 	$(PACKER) init packer/config.pkr.hcl
 
 .PHONY: deps-powervs
 deps-powervs: ## Installs/checks dependencies for PowerVS builds
-deps-powervs:
-	hack/ensure-ansible.sh
-	hack/ensure-packer.sh
+deps-powervs: deps-common
 	hack/ensure-goss.sh
 	hack/ensure-powervs.sh
 	$(PACKER) init packer/config.pkr.hcl
@@ -170,9 +153,7 @@ deps-ignition:
 
 .PHONY: deps-nutanix
 deps-nutanix: ## Installs/checks dependencies for Nutanix builds
-deps-nutanix:
-	hack/ensure-ansible.sh
-	hack/ensure-packer.sh
+deps-nutanix: deps-common
 	hack/ensure-goss.sh
 	$(PACKER) init packer/config.pkr.hcl
 	$(PACKER) init packer/nutanix/config.pkr.hcl
@@ -186,9 +167,7 @@ deps-release: ## Installs/checks dependencies for project releases
 
 .PHONY: deps-hcloud
 deps-hcloud: ## Installs/checks dependencies for Hetznercloud builds
-deps-hcloud:
-	hack/ensure-ansible.sh
-	hack/ensure-packer.sh
+deps-hcloud: deps-common
 	hack/ensure-goss.sh
 	$(PACKER) init packer/config.pkr.hcl
 	$(PACKER) init packer/hcloud/config.pkr.hcl
