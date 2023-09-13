@@ -35,6 +35,10 @@
     - cloud-utils-growpart
   when: ansible_os_family == "RedHat"
 
+- name: Run dracut cmd to regenerate initramfs with all drivers - needed when converting to different hypervisor templates
+  shell: dracut --force --no-hostonly
+  when: ansible_os_family == "RedHat"
+
 #- name: Unlock password
 #  replace:
 #    path: /etc/cloud/cloud.cfg
