@@ -22,7 +22,7 @@ set -o pipefail
 
 if [[ -z "$(command -v boskosctl)" ]]; then
   echo "installing boskosctl"
-  GO111MODULE=on go get sigs.k8s.io/boskos/cmd/boskosctl@master
+  GO111MODULE=on go install sigs.k8s.io/boskos/cmd/boskosctl@master
   echo "'boskosctl' has been installed to $GOPATH/bin, make sure this directory is in your \$PATH"
 fi
 
