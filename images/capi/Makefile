@@ -172,6 +172,13 @@ deps-hcloud: deps-common
 	$(PACKER) init packer/config.pkr.hcl
 	$(PACKER) init packer/hcloud/config.pkr.hcl
 
+.PHONY: deps-proxmox
+deps-proxmox: ## Installs/checks dependencies for Proxmox builds
+deps-proxmox: deps-common
+	hack/ensure-goss.sh
+	$(PACKER) init packer/config.pkr.hcl
+	$(PACKER) init packer/proxmox/config.pkr.hcl
+
 ## --------------------------------------
 ## Container variables
 ## --------------------------------------
@@ -365,7 +372,11 @@ VBOX_BUILD_NAMES			?=      vbox-windows-2019
 POWERVS_BUILD_NAMES         ?= powervs-centos-8
 
 NUTANIX_BUILD_NAMES ?= nutanix-ubuntu-2004 nutanix-ubuntu-2204 nutanix-rhel-8 nutanix-rhel-9 nutanix-rockylinux-8 nutanix-rockylinux-9 nutanix-flatcar nutanix-windows-2022
+
 HCLOUD_BUILD_NAMES ?= hcloud-ubuntu-2004 hcloud-ubuntu-2204 hcloud-centos-7 hcloud-rockylinux-8 hcloud-rockylinux-9 hcloud-flatcar
+
+PROXMOX_BUILD_NAMES 		?= proxmox-ubuntu-2204
+
 ## --------------------------------------
 ## Dynamic build targets
 ## --------------------------------------
@@ -410,6 +421,8 @@ NUTANIX_BUILD_TARGETS		:= $(addprefix build-,$(NUTANIX_BUILD_NAMES))
 NUTANIX_VALIDATE_TARGETS	:= $(addprefix validate-,$(NUTANIX_BUILD_NAMES))
 HCLOUD_BUILD_TARGETS		:= $(addprefix build-,$(HCLOUD_BUILD_NAMES))
 HCLOUD_VALIDATE_TARGETS		:= $(addprefix validate-,$(HCLOUD_BUILD_NAMES))
+PROXMOX_BUILD_TARGETS		:= $(addprefix build-,$(PROXMOX_BUILD_NAMES))
+PROXMOX_VALIDATE_TARGETS	:= $(addprefix validate-,$(PROXMOX_BUILD_NAMES))
 
 .PHONY: $(NODE_OVA_LOCAL_BUILD_TARGETS)
 $(NODE_OVA_LOCAL_BUILD_TARGETS): deps-ova
@@ -576,12 +589,20 @@ $(NUTANIX_VALIDATE_TARGETS): deps-nutanix
 	$(PACKER) validate $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="packer/nutanix/nutanix.json" -var-file="$(abspath packer/nutanix/$(subst validate-nutanix-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/nutanix/packer$(if $(findstring windows,$@),-windows,).json
 
 .PHONY: $(HCLOUD_BUILD_TARGETS)
-$(HCLOUD_BUILD_TARGETS): deps-hcloud 
+$(HCLOUD_BUILD_TARGETS): deps-hcloud
 	$(PACKER) build $(PACKER_NODE_FLAGS) -var-file="packer/hcloud/hcloud-config.json" -var-file="$(abspath packer/hcloud/$(subst build-hcloud-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/hcloud/packer$(if $(findstring flatcar,$@),-flatcar,).json
 
 .PHONY: $(HCLOUD_VALIDATE_TARGETS)
-$(HCLOUD_VALIDATE_TARGETS): deps-hcloud 
+$(HCLOUD_VALIDATE_TARGETS): deps-hcloud
 	$(PACKER) validate $(PACKER_NODE_FLAGS) -var-file="packer/hcloud/hcloud-config.json" -var-file="$(abspath packer/hcloud/$(subst validate-hcloud-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/hcloud/packer$(if $(findstring flatcar,$@),-flatcar,).json
+
+.PHONY: $(PROXMOX_BUILD_TARGETS)
+$(PROXMOX_BUILD_TARGETS): deps-proxmox
+	$(PACKER) build $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/proxmox/$(subst build-proxmox-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/proxmox/packer.json
+
+.PHONY: $(PROXMOX_VALIDATE_TARGETS)
+$(PROXMOX_VALIDATE_TARGETS): deps-proxmox
+	$(PACKER) validate $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/proxmox/$(subst validate-proxmox-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/proxmox/packer.json
 
 ## --------------------------------------
 ## Dynamic clean targets
@@ -781,6 +802,8 @@ build-hcloud-rockylinux-9: ## Builds the Hetzner Cloud Rocky Linux 9 image
 build-hcloud-flatcar: ## Builds the Hetzner Cloud Flatcar image
 build-hcloud-all: $(HCLOUD_BUILD_TARGETS) ## Builds all Hetzner Cloud image
 
+build-proxmox-ubuntu-2204: ## Builds the Proxmox ubuntu-2204 image
+
 ## --------------------------------------
 ## Document dynamic validate targets
 ## --------------------------------------
@@ -917,6 +940,8 @@ validate-hcloud-rockylinux-8: ## Validates Rocky Linux 8 Hetzner Cloud Packer co
 validate-hcloud-rockylinux-9: ## Validates the Hetzner Cloud Rocky Linux 9 Nutanix Packer config
 validate-hcloud-flatcar: ## Validates the Hetzner Cloud Flatcar Nutanix Packer config
 validate-hcloud-all: $(HCLOUD_VALIDATE_TARGETS) ## Validates all Hetzner Cloud Packer config
+
+validate-proxmox-ubuntu-2204: ## Validates Ubuntu 22.04 Proxmox Packer config
 
 validate-all: validate-ami-all \
 	validate-azure-all \
