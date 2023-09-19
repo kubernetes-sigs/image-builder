@@ -11,6 +11,11 @@ command:
     stderr: []
     timeout: 0
 {{if ne .Vars.containerd_wasm_shims_runtimes ""}}
+  containerd-shim-lunatic-v1:
+    exit-status: 1
+    stdout: [ ]
+    stderr: ["io.containerd.lunatic.v1: InvalidArgument(\"Shim namespace cannot be empty\")"]
+    timeout: 0
   containerd-shim-slight-v1:
     exit-status: 1
     stdout: [ ]
@@ -26,7 +31,7 @@ command:
     stdout: [ ]
     stderr: ["io.containerd.wws.v1: InvalidArgument(\"Shim namespace cannot be empty\")"]
     timeout: 0
-  grep -E 'io\.containerd\.(slight|spin|wws)\.v1' /etc/containerd/config.toml:
+  grep -E 'io\.containerd\.(lunatic|slight|spin|wws)\.v1' /etc/containerd/config.toml:
     exit-status: 0
     stdout: [ ]
     stderr: [ ]

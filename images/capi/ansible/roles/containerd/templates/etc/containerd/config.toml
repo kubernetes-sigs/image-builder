@@ -16,13 +16,17 @@ imports = ["/etc/containerd/conf.d/*.toml"]
     runtime_type = "io.containerd.runc.v2"
   [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options]
     SystemdCgroup = true
-{% if 'spin' in containerd_wasm_shims_runtimes %}
-  [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.spin]
-    runtime_type = "io.containerd.spin.v1"
+{% if 'lunatic' in containerd_wasm_shims_runtimes %}
+  [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.lunatic]
+    runtime_type = "io.containerd.lunatic.v1"
 {% endif %}
 {% if 'slight' in containerd_wasm_shims_runtimes %}
   [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.slight]
     runtime_type = "io.containerd.slight.v1"
+{% endif %}
+{% if 'spin' in containerd_wasm_shims_runtimes %}
+  [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.spin]
+    runtime_type = "io.containerd.spin.v1"
 {% endif %}
 {% if 'wws' in containerd_wasm_shims_runtimes %}
   [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.wws]

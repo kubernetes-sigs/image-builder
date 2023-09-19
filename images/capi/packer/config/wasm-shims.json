@@ -1,6 +1,6 @@
 {
   "containerd_wasm_shims_runtimes": "",
-  "containerd_wasm_shims_sha256": "26bb6bd99947a7a45bd4d4ae4f94dd130677da5530bba08ffec8160ff6997313",
-  "containerd_wasm_shims_url": "https://github.com/deislabs/containerd-wasm-shims/releases/download/{{user `containerd_wasm_shims_version`}}/containerd-wasm-shims-v1-linux-x86_64.tar.gz",
-  "containerd_wasm_shims_version": "v0.8.0"
+  "containerd_wasm_shims_sha256": "{\"lunatic\":\"2927411e8cf892ade6a970055b4f77e332cd3ec1c43e2d09872c825212d35ade\",\"slight\":\"8aac701e20bbf7f3cf046d4676ebe869a1e20f89ce8a565e4b9a3e23be327932\",\"spin\":\"2f7be169f28434df0d2c1cddd189e06486d9de8c29e84f720cbfa2573518bddf\",\"wws\":\"58a357845eaa251993427721c1fa9ecadc6c2cc81bc900d1c4913638df91a661\"}",
+  "containerd_wasm_shims_url": "https://github.com/deislabs/containerd-wasm-shims/releases/download/{{ user `containerd_wasm_shims_version` }}/containerd-wasm-shims-v1-<SHIM>-linux-x86_64.tar.gz",
+  "containerd_wasm_shims_version": "v0.9.1"
 }
