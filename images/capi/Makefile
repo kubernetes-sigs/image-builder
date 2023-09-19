@@ -179,6 +179,10 @@ deps-proxmox: deps-common
 	$(PACKER) init packer/config.pkr.hcl
 	$(PACKER) init packer/proxmox/config.pkr.hcl
 
+.PHONY: deps-lint
+deps-lint: ## Installs/checks dependencies for image-builder code linting
+	hack/ensure-ansible-lint.sh
+
 ## --------------------------------------
 ## Container variables
 ## --------------------------------------
@@ -260,7 +264,7 @@ endif
 # A list of variable files given to Packer to configure things like the versions
 # of Kubernetes, CNI, and ContainerD to install. Any additional files from the
 # environment are appended.
-COMMON_NODE_VAR_FILES :=	packer/config/kubernetes.json \
+COMMON_NODE_VAR_FILES := packer/config/kubernetes.json \
 					packer/config/cni.json \
 					packer/config/containerd.json \
 					packer/config/wasm-shims.json \
@@ -951,13 +955,18 @@ validate-all: validate-ami-all \
 	validate-qemu-all \
 	validate-raw-all \
 	validate-oci-all \
-        validate-osc-all \
+	validate-osc-all \
 	validate-vbox-all \
 	validate-powervs-all \
 	validate-nutanix-all \
 	validate-hcloud-all
 
 validate-all: ## Validates the Packer config for all build targets
+
+.PHONY: lint
+lint: ## Runs linters on image-builder code
+lint: deps-lint
+	ansible-lint ansible/
 
 ## --------------------------------------
 ## Clean targets
