@@ -19,6 +19,6 @@
 - name: Set transparent huge pages to madvise
   lineinfile:
     path: /boot/photon.cfg
-    backrefs: yes
+    backrefs: true
     regexp: "^(?!.*transparent_hugepage=madvise)(photon_cmdline.*)"
     line: '\1 transparent_hugepage=madvise'

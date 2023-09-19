@@ -13,20 +13,20 @@
 # limitations under the License.
 ---
 kubernetes_bins:
-- kubeadm
-- kubectl
-- kubelet
+  - kubeadm
+  - kubectl
+  - kubelet
 
 kubernetes_primary_imgs:
-- kube-apiserver.tar
-- kube-controller-manager.tar
-- kube-scheduler.tar
-- kube-proxy.tar
+  - kube-apiserver.tar
+  - kube-controller-manager.tar
+  - kube-scheduler.tar
+  - kube-proxy.tar
 
 kubernetes_additional_imgs:
-- pause.tar
-- coredns.tar
-- etcd.tar
+  - pause.tar
+  - coredns.tar
+  - etcd.tar
 
 kubernetes_load_additional_imgs: false
 

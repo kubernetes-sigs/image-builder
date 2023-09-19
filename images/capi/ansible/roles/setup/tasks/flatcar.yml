@@ -32,8 +32,8 @@
 
 - name: Enable usr-libexec.mount unit
   systemd:
-    daemon_reload: yes
-    enabled: yes
+    daemon_reload: true
+    enabled: true
     name: usr-libexec.mount
 
 - name: Create system-environment-generators directory
@@ -51,5 +51,5 @@
 
 - name: Enable systemd-timesyncd unit
   systemd:
-    enabled: yes
+    enabled: true
     name: systemd-timesyncd.service

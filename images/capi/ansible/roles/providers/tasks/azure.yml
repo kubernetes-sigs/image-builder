@@ -24,7 +24,7 @@
 - name: Configure PTP
   lineinfile:
     path: /etc/chrony/chrony.conf
-    create: yes
+    create: true
     line: refclock PHC /dev/ptp0 poll 3 dpoll -2 offset 0
 
 - name: Ensure makestep parameter set as per Azure recommendation
@@ -37,7 +37,7 @@
   apt:
     name: "{{ packages }}"
     state: present
-    force_apt_get: yes
+    force_apt_get: true
   vars:
     packages:
       - iptables-persistent
@@ -49,7 +49,7 @@
     dest: /etc/iptables/rules.v4
     owner: root
     group: root
-    mode: 0644
+    mode: "0644"
   when: ansible_os_family == "Debian"
 
 - name: Load iptable rules from file
@@ -62,11 +62,11 @@
   apt:
     name: "{{ packages }}"
     state: present
-    force_apt_get: yes
+    force_apt_get: true
   vars:
     packages:
-    - netbase
-    - nfs-common
+      - netbase
+      - nfs-common
   when: ansible_os_family == "Debian"
 
 ## refer to ../files/etc/cloud/cloud.cfg.d/15_azure-vnet.cfg
@@ -77,5 +77,5 @@
     dest: /etc/cloud/cloud.cfg.d/15_azure-vnet.cfg
     owner: root
     group: root
-    mode: 0644
+    mode: "0644"
   when: ansible_os_family == "Debian"

@@ -21,7 +21,7 @@
   get_url:
     url: "{{ item }}"
     dest: "/tmp/images/"
-    mode: 0600
+    mode: "0600"
   register: images
   loop: "{{ additional_url_images_list.split(',') }}"
   retries: 5

@@ -19,9 +19,9 @@
     state: present
   vars:
     packages:
-    - cloud-init
-    - cloud-utils-growpart
-    - python2-pip
+      - cloud-init
+      - cloud-utils-growpart
+      - python2-pip
 
 # pip on CentOS needs to be upgraded, but since it's still
 # Python 2.7, need < 21.0
@@ -35,17 +35,17 @@
 # cloud-init is < 21.3
 - name: Download cloud-init datasource for VMware Guestinfo
   get_url:
-    url:  '{{ guestinfo_datasource_script }}'
+    url: '{{ guestinfo_datasource_script }}'
     dest: /tmp/cloud-init-vmware.sh
-    mode: 0700
+    mode: "0700"
 
 - name: Execute cloud-init-vmware.sh
   shell: bash -o errexit -o pipefail /tmp/cloud-init-vmware.sh
   environment:
     REPO_SLUG: '{{ guestinfo_datasource_slug }}'
-    GIT_REF:   '{{ guestinfo_datasource_ref }}'
+    GIT_REF: '{{ guestinfo_datasource_ref }}'
 
 - name: Remove cloud-init-vmware.sh
   file:
-    path:  /tmp/cloud-init-vmware.sh
+    path: /tmp/cloud-init-vmware.sh
     state: absent

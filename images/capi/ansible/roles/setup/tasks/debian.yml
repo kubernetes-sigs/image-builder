@@ -16,7 +16,7 @@
   template:
     src: etc/apt/sources.list.j2
     dest: /etc/apt/sources.list
-    mode: 0644
+    mode: "0644"
   # OCI Base images have the required apt sources list embedded inside the image, adding the sources list
   # from this repo leads to build failures(especially in Arm), hence ignoring the step.
   when: packer_builder_type != "oracle-oci"
@@ -25,14 +25,14 @@
   template:
     src: etc/apt/apt.conf.d/90proxy
     dest: /etc/apt/apt.conf.d/90proxy
-    mode: 0644
+    mode: "0644"
   when: http_proxy is defined or https_proxy is defined
 
 - name: Ensure cloud-final is in a running state
   service:
     name: cloud-final
     state: started
-  check_mode: yes
+  check_mode: true
   register: cloudfinalstatus
   until: cloudfinalstatus.status.ActiveState == "active"
   retries: 5
@@ -58,7 +58,7 @@
   copy:
     src: "{{ item }}"
     dest: "/etc/apt/sources.list.d/{{ item | basename }}"
-    mode: 0644
+    mode: "0644"
   loop: "{{ extra_repos.split() }}"
   when: extra_repos != ""
 
@@ -72,43 +72,43 @@
   command: "sed -i 's/nullbootctl/nullbootctl --no-tpm --no-efivars/' /var/lib/dpkg/info/nullboot.postinst"
   when: packer_build_name is search('cvm')
 
-- name: perform a dist-upgrade
+- name: Perform a dist-upgrade
   apt:
-    force_apt_get: True
-    update_cache: True
+    force_apt_get: true
+    update_cache: true
     upgrade: dist
   register: apt_lock_status
   until: apt_lock_status is not failed
   retries: 5
   delay: 10
 
-- name: install baseline dependencies
+- name: Install baseline dependencies
   apt:
-    force_apt_get: True
-    update_cache: True
+    force_apt_get: true
+    update_cache: true
     name: "{{ debs }}"
     state: latest
   register: apt_lock_status
   until: apt_lock_status is not failed
   retries: 5
   delay: 10
-  
-- name: install extra debs
+
+- name: Install extra debs
   apt:
-    force_apt_get: True
+    force_apt_get: true
     name: "{{ extra_debs.split() }}"
     state: latest
   register: apt_lock_status
   until: apt_lock_status is not failed
   retries: 5
   delay: 10
-  
-- name: install pinned debs
+
+- name: Install pinned debs
   apt:
-    force_apt_get: True
+    force_apt_get: true
     name: "{{ pinned_debs }}"
     state: present
-    force: yes
+    force: true
   register: apt_lock_status
   until: apt_lock_status is not failed
   retries: 5
@@ -117,4 +117,3 @@
 - name: Remove '--no-tpm --no-efivars' from nullboot post install script
   command: "sed -i 's/nullbootctl --no-tpm --no-efivars/nullbootctl/' /var/lib/dpkg/info/nullboot.postinst"
   when: packer_build_name is search('cvm')
-

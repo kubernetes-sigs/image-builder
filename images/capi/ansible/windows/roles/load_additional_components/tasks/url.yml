@@ -16,7 +16,7 @@
   win_file:
     path: '{{ tempdir.stdout | trim }}\images'
     state: directory
-  when: runtime == "containerd" 
+  when: runtime == "containerd"
 
 - name: Download additional images from url
   win_get_url:
@@ -28,7 +28,7 @@
   poll: 60
   retries: 5
   delay: 3
-  when: runtime == "containerd" 
+  when: runtime == "containerd"
 
 - name: Load additional images to containerd
   win_shell: |
@@ -49,20 +49,20 @@
       $gzipStream.Close()
       $output.Close()
       $input.Close()
-    } 
+    }
 
     $file = "{{ item.dest }}"
     $ext = $file.substring($file.length - 3, 3)
-    
+
     if ($ext -eq ".gz") {
-      DeGZip-File $file 
+      DeGZip-File $file
       $file = ($file -replace '\.gz$','')
     }
     #refresh the path to ensure ansible sees update
     $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine")
     ctr.exe -n k8s.io images import --no-unpack $file
   loop: "{{ images.results }}"
-  when: runtime == "containerd" 
+  when: runtime == "containerd"
 
 - name: Load additional Docker images
   win_shell: |
@@ -74,10 +74,10 @@
   delay: 3
   register: docker_import
   until: docker_import is not failed
-  when: runtime == "docker" 
+  when: runtime == "docker"
 
 - name: Remove downloaded files
   win_file:
     state: absent
     path: '{{ tempdir.stdout | trim }}\images'
-  when: runtime == "containerd" 
+  when: runtime == "containerd"

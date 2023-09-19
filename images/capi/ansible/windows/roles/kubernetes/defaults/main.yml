@@ -13,6 +13,6 @@
 # limitations under the License.
 ---
 kubernetes_bins:
-- kubeadm
-- kubectl
-- kubelet
+  - kubeadm
+  - kubectl
+  - kubelet

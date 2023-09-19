@@ -16,7 +16,7 @@
   get_url:
     url: "{{ item }}"
     dest: "{{ additional_executables_destination_path }}"
-    mode: 0711
+    mode: "0711"
   loop: "{{ additional_executables_list.split(',') }}"
   retries: 5
   delay: 3

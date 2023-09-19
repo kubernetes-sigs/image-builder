@@ -14,9 +14,9 @@
 
 - name: Create OpenSSH directory structure
   win_file:
-    path:  "{{ item }}"
+    path: "{{ item }}"
     state: directory
-  loop: 
+  loop:
     - '{{ programfiles.stdout | trim }}\OpenSSH'
     - '{{ alluserprofile.stdout | trim }}\ssh'
 
@@ -39,7 +39,7 @@
   win_acl_inheritance:
     path: '{{ programfiles.stdout | trim }}\OpenSSH'
     state: absent
-    reorganize: yes
+    reorganize: true
 - name: Remove permission for Users
   win_acl:
     path: '{{ programfiles.stdout | trim }}\OpenSSH'
@@ -62,9 +62,9 @@
 - name: Unzip OpenSSH Archive
   win_unzip:
     src: '{{ ssh.dest }}'
-    dest: '{{ tempdir.stdout | trim }}' 
-    recurse: no
-    delete_archive: yes
+    dest: '{{ tempdir.stdout | trim }}'
+    recurse: false
+    delete_archive: true
 
 - name: Install OpenSSH
   win_shell: |
@@ -80,4 +80,4 @@
     direction: in
     protocol: tcp
     state: present
-    enabled: yes
+    enabled: true

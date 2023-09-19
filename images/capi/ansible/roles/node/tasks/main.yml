@@ -42,16 +42,16 @@
       overlay
       br_netfilter
     dest: /etc/modules-load.d/kubernetes.conf
-    mode: 0644
+    mode: "0644"
 
 - name: Set and persist kernel params
   sysctl:
     name: "{{ item.param }}"
     value: "{{ item.val }}"
     state: present
-    sysctl_set: yes
+    sysctl_set: true
     sysctl_file: "{{ sysctl_conf_file }}"
-    reload: yes
+    reload: true
   loop:
     - { param: net.bridge.bridge-nf-call-iptables, val: 1 }
     - { param: net.bridge.bridge-nf-call-ip6tables, val: 1 }
@@ -85,24 +85,24 @@
   service:
     name: auditd
     state: started
-    enabled: yes
+    enabled: true
 
-- name: configure auditd rules for containerd
+- name: Configure auditd rules for containerd
   copy:
     src: etc/audit/rules.d/containerd.rules
     dest: /etc/audit/rules.d/containerd.rules
     owner: root
     group: root
-    mode: 0644
+    mode: "0644"
   when: ansible_os_family != "Flatcar" and enable_containerd_audit
 
-- name: configure auditd rules for containerd (Flatcar)
+- name: Configure auditd rules for containerd (Flatcar)
   copy:
     src: etc/audit/rules.d/containerd.rules-flatcar
     dest: /etc/audit/rules.d/containerd.rules
     owner: root
     group: root
-    mode: 0644
+    mode: "0644"
   when: ansible_os_family == "Flatcar" and enable_containerd_audit
 
 - name: Ensure reverse packet filtering is set as strict
@@ -110,14 +110,14 @@
     name: net.ipv4.conf.all.rp_filter
     value: "1"
     state: present
-    sysctl_set: yes
-    reload: yes
+    sysctl_set: true
+    reload: true
   when: ansible_distribution == "Ubuntu"
 
 - name: Set transparent huge pages to madvise
   lineinfile:
     path: /etc/default/grub
-    backrefs: yes
+    backrefs: true
     regexp: "^(?!.*transparent_hugepage=madvise)(GRUB_CMDLINE_LINUX=.*)(\"$)"
     line: '\1 transparent_hugepage=madvise"'
   when: ansible_os_family == "RedHat"
@@ -126,10 +126,10 @@
   template:
     src: etc/udev/rules.d/90-etcd-tuning.rules
     dest: /etc/udev/rules.d/90-etcd-tuning.rules
-    mode: 0644
+    mode: "0644"
 
 - name: Copy etcd network tuning script
   copy:
     src: usr/local/bin/etcd-network-tuning.sh
     dest: "{{ external_binary_path }}/etcd-network-tuning.sh"
-    mode: 0755
+    mode: "0755"

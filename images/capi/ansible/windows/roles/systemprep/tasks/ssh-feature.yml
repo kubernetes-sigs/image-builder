@@ -12,10 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Requires admin rights to install 
+# Requires admin rights to install
 # https://docs.ansible.com/ansible/latest/user_guide/become.html#become-and-windows
 - name: Install OpenSSH
   win_shell: Add-WindowsCapability -Online -Name OpenSSH.Server~~~~0.0.1.0
-  become: yes
+  become: true
   become_method: runas
   become_user: SYSTEM

@@ -16,13 +16,13 @@
   apt:
     name: "{{ packages }}"
     state: present
-    force_apt_get: yes
+    force_apt_get: true
   vars:
     packages:
-    - cloud-init
-    - cloud-guest-utils
-    - cloud-initramfs-copymods
-    - cloud-initramfs-dyn-netconf
+      - cloud-init
+      - cloud-guest-utils
+      - cloud-initramfs-copymods
+      - cloud-initramfs-dyn-netconf
   when: ansible_os_family == "Debian"
 
 - name: Disable Hyper-V KVP protocol daemon on Ubuntu

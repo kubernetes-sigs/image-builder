@@ -15,8 +15,8 @@
 - hosts: all
   # Gathering facts requires Python to be available, so it's a chicken and egg
   # problem as this playbook installs Python.
-  gather_facts: no
-  become: yes
+  gather_facts: false
+  become: true
 
   tasks:
     - include_role:

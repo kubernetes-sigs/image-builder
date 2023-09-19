@@ -91,7 +91,7 @@
 - name: Make sure all cloud init services are enabled
   service:
     name: "{{ item }}"
-    enabled: yes
+    enabled: true
   with_items:
     - cloud-final
     - cloud-config
@@ -105,32 +105,32 @@
     dest: /etc/cloud/cloud.cfg.d/05_logging.cfg
     owner: root
     group: root
-    mode: 0644
+    mode: "0644"
   when: ansible_os_family != "Flatcar"
 
-- name: set cloudinit feature flags
+- name: Set cloudinit feature flags
   copy:
     src: usr/lib/python3/dist-packages/cloudinit/feature_overrides.py
     dest: /usr/lib/python3/dist-packages/cloudinit/feature_overrides.py
     owner: root
     group: root
-    mode: 0644
+    mode: "0644"
   when: ansible_os_family == "Debian"
 
-- name: set cloudinit feature flags for redhat
+- name: Set cloudinit feature flags for redhat
   copy:
     src: usr/lib/python3/site-packages/cloudinit/feature_overrides.py
     dest: /usr/lib/python3.6/site-packages/cloudinit/feature_overrides.py
     owner: root
     group: root
-    mode: 0644
+    mode: "0644"
   when: ansible_os_family == "RedHat" and ansible_distribution == "RedHat"
 
 - name: Ensure chrony is running
   systemd:
-    enabled: yes
+    enabled: true
     state: started
-    daemon_reload: yes
+    daemon_reload: true
     name: chronyd
   when: (packer_builder_type.startswith('amazon') or
     packer_builder_type.startswith('azure') or

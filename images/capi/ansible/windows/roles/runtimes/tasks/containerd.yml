@@ -26,9 +26,9 @@
 
 - name: Create containerd directory structure
   win_file:
-    path:  "{{ item }}"
+    path: "{{ item }}"
     state: directory
-  loop: 
+  loop:
     - '{{ programfiles.stdout | trim }}\containerd'
     - '{{ alluserprofile.stdout | trim }}\containerd\state'
     - '{{ alluserprofile.stdout | trim }}\containerd\root'
@@ -47,7 +47,7 @@
 - name: Add containerd to path
   win_path:
     elements:
-    - '{{ programfiles.stdout | trim }}\containerd'
+      - '{{ programfiles.stdout | trim }}\containerd'
     scope: machine
 
 - name: Copy containerd config file {{ containerd_config_file }}
@@ -72,7 +72,7 @@
     #refresh the path to ensure ansible sees update
     $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine")
     containerd.exe --register-service
-  when: containerd_service.exists == false
+  when: not containerd_service.exists
 
 # Enables DNS resolution of SMB shares
 # https://github.com/kubernetes-sigs/windows-gmsa/issues/30#issuecomment-802240945

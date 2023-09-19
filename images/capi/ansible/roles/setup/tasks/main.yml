@@ -35,5 +35,5 @@
   copy:
     src: "{{ pip_conf_file }}"
     dest: /etc/pip.conf
-    mode: 0644
+    mode: "0644"
   when: pip_conf_file != ""

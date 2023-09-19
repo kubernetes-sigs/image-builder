@@ -14,7 +14,7 @@
 ---
 - name: Define file modes
   set_fact:
-    last_log_mode:   "0644"
+    last_log_mode: "0644"
     machine_id_mode: "0444"
 
 - name: Invalidate the machine-id file for systemd to reevaluate presets
@@ -26,25 +26,25 @@
   systemd:
     name: update-engine
     state: stopped
-    enabled: no
-    masked: yes
+    enabled: false
+    masked: true
 
 - name: Stop and mask the locksmith reboot manager since it depends on update-engine
   systemd:
     name: locksmithd
     state: stopped
-    enabled: no
-    masked: yes
+    enabled: false
+    masked: true
 
 - name: Mask docker
   systemd:
     name: "{{ item }}"
     state: stopped
-    enabled: no
-    masked: yes
+    enabled: false
+    masked: true
   with_items:
-  - docker.socket
-  - docker.service
+    - docker.socket
+    - docker.service
 
 - name: Set cgroup v1 to match the cgroupfs driver in containerd and kubelet
   shell: |
@@ -53,5 +53,5 @@
 
 - name: Set oem_id in grub
   shell: |
-    echo 'set oem_id="{{oem_id}}"' >> /usr/share/oem/grub.cfg
+    echo 'set oem_id="{{ oem_id }}"' >> /usr/share/oem/grub.cfg
   when: (oem_id is defined) and (oem_id != "")

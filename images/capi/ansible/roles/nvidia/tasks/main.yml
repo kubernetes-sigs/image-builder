@@ -14,7 +14,7 @@
 
 ---
 
-- name: unload nouveau
+- name: Unload nouveau
   modprobe:
     name: nouveau
     state: absent
@@ -25,10 +25,10 @@
     url: https://nvidia.github.io/libnvidia-container/gpgkey
   when: ansible_os_family == "Debian"
 
-- name: perform a cache update
+- name: Perform a cache update
   apt:
-    force_apt_get: True
-    update_cache: True
+    force_apt_get: true
+    update_cache: true
   register: apt_lock_status
   until: apt_lock_status is not failed
   retries: 5
@@ -53,7 +53,7 @@
     state: directory
     owner: root
     group: root
-    mode: 0755
+    mode: "0755"
 
 - name: Download NVIDIA License Token
   amazon.aws.s3_object:
@@ -74,14 +74,14 @@
     state: file
     owner: root
     group: root
-    mode: 0744
+    mode: "0744"
 
 - name: Create GRIDD licensing config
   become: true
   template:
     src: templates/gridd.conf.j2
     dest: /etc/nvidia/gridd.conf
-    mode: 0644
+    mode: "0644"
 
 - name: Download NVIDIA driver installer file
   amazon.aws.s3_object:
@@ -102,7 +102,7 @@
     state: file
     owner: root
     group: root
-    mode: 0755
+    mode: "0755"
 
 - name: Install NVIDIA driver
   become: true

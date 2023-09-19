@@ -23,7 +23,7 @@
 - name: Install Kubernetes
   yum:
     name: "{{ packages }}"
-    allow_downgrade: True
+    allow_downgrade: true
     state: present
     lock_timeout: 60
   vars:

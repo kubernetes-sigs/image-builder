@@ -27,8 +27,8 @@
   win_unzip:
     src: '{{ gmsadownload.dest }}'
     dest: '{{ kubernetes_install_path }}'
-    recurse: no
-    delete_archive: yes
+    recurse: false
+    delete_archive: true
 
 - name: Copy gMSA Key Vault plugin to System32
   win_shell: |

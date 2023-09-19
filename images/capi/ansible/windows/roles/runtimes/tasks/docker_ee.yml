@@ -20,7 +20,7 @@
     $package = Find-Package -Name Docker -ProviderName DockerMsftProvider -RequiredVersion {{ docker_ee_version }}
     $package | Install-Package -Force | Out-Null
 
-- name: Start Docker Service 
+- name: Start Docker Service
   win_service:
     name: docker
     start_mode: auto
@@ -42,4 +42,3 @@
   when: (prepull | bool)
   vars:
     images: "{{ prepull_images[distribution_version] | default([]) }}"
-    

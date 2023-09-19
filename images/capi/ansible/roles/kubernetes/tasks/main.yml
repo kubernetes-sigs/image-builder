@@ -26,15 +26,15 @@
 
 - name: Symlink cri-tools
   file:
-    src:   "/usr/local/bin/{{ item }}"
-    dest:  "/usr/bin/{{ item }}"
-    mode: 0777
+    src: "/usr/local/bin/{{ item }}"
+    dest: "/usr/bin/{{ item }}"
+    mode: "0777"
     state: link
-    force: yes
+    force: true
   loop:
-  - ctr
-  - crictl
-  - critest
+    - ctr
+    - crictl
+    - critest
   when: ansible_os_family != "Flatcar"
 
 - import_tasks: url.yml
@@ -48,23 +48,23 @@
 - name: Create kubelet default config file
   template:
     src: etc/sysconfig/kubelet
-    dest: "{{ '/etc/default/kubelet' if ansible_os_family == 'Debian' else '/etc/sysconfig/kubelet'}}"
+    dest: "{{ '/etc/default/kubelet' if ansible_os_family == 'Debian' else '/etc/sysconfig/kubelet' }}"
     owner: root
     group: root
-    mode: 0644
+    mode: "0644"
 
 - name: Enable kubelet service
   systemd:
     name: kubelet
-    daemon_reload: yes
-    enabled: True
+    daemon_reload: true
+    enabled: true
     state: stopped
 
 - name: Create the Kubernetes version file
   template:
     dest: /etc/kubernetes-version
     src: etc/kubernetes-version
-    mode: 0644
+    mode: "0644"
 
 # TODO: This section will be deprecated once https://github.com/containerd/cri/issues/1131 is fixed. It is used to support ECR with containerd.
 - name: Check if Kubernetes container registry is using Amazon ECR
@@ -72,7 +72,7 @@
     ecr: '{{ kubernetes_container_registry is regex("^[0-9]{12}.dkr.ecr.[^.]+.amazonaws.com$") }}'
 
 - import_tasks: kubeadmpull.yml
-  when: (kubernetes_source_type == "pkg" and ecr != true) or ansible_os_family == "Flatcar"
+  when: (kubernetes_source_type == "pkg" and not ecr) or ansible_os_family == "Flatcar"
 
 - import_tasks: ecrpull.yml
-  when: kubernetes_source_type != "http" and ecr == true
+  when: kubernetes_source_type != "http" and ecr

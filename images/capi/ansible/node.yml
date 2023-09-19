@@ -13,7 +13,7 @@
 # limitations under the License.
 ---
 - hosts: all
-  become: yes
+  become: true
   vars:
     node_custom_roles_pre: ""
     node_custom_roles_post: ""

@@ -16,7 +16,7 @@
   apt:
     name: "{{ packages }}"
     state: present
-    force_apt_get: yes
+    force_apt_get: true
   vars:
     packages:
       - cloud-init
@@ -29,7 +29,7 @@
   apt:
     name: "{{ packages }}"
     state: present
-    force_apt_get: yes
+    force_apt_get: true
   vars:
     packages:
       - linux-cloud-tools-generic
@@ -50,7 +50,7 @@
   apt:
     name: "{{ packages }}"
     state: present
-    force_apt_get: yes
+    force_apt_get: true
   vars:
     packages:
       - nfs-common

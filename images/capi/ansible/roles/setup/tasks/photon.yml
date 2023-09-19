@@ -12,11 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- name: add bash_profile
+- name: Add bash_profile
   template:
     dest: /home/builder/.bash_profile
     src: photon_bash_profile
-    mode: 0600
+    mode: "0600"
     owner: builder
     group: builder
 
@@ -31,11 +31,11 @@
   set_fact:
     photon_rpms: "{{ rpms | join(' ') }}"
 
-- name: install baseline dependencies
+- name: Install baseline dependencies
   command: tdnf install {{ photon_rpms }} -y
   when: photon_rpms != ""
 
-- name: install extra RPMs
+- name: Install extra RPMs
   command: tdnf install {{ extra_rpms }} -y
   when: extra_rpms != ""
 
@@ -48,13 +48,13 @@
     opts: "size=5G"
     state: remounted
 
-- name: reset iptables rules input
+- name: Reset iptables rules input
   replace:
     path: /etc/systemd/scripts/ip4save
     regexp: 'INPUT DROP'
     replace: 'INPUT ACCEPT'
 
-- name: reset ip6tables rules input
+- name: Reset ip6tables rules input
   replace:
     path: /etc/systemd/scripts/ip6save
     regexp: 'INPUT DROP'
