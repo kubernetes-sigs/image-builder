@@ -56,7 +56,7 @@ export GC_KIND="false"
 export TIMESTAMP="$(date -u '+%Y%m%dT%H%M%S')"
 export GOVC_DATACENTER="SDDC-Datacenter"
 export GOVC_INSECURE=true
-export FOLDER="Workloads/ci/imagebuilder"
+export FOLDER="Workloads/image-builder"
 
 echo "Running build with timestamp ${TIMESTAMP}"
 
@@ -68,7 +68,7 @@ cat << EOF > packer/ova/vsphere.json
     "password":"${GOVC_PASSWORD}",
     "datastore":"WorkloadDatastore",
     "datacenter":"${GOVC_DATACENTER}",
-    "resource_pool": "Compute-ResourcePool/ci-image-builder",
+    "resource_pool": "Compute-ResourcePool/image-builder",
     "cluster": "Cluster-1",
     "network": "sddc-cgw-network-8",
     "folder": "${FOLDER}"
