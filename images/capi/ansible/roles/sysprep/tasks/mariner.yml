@@ -14,7 +14,7 @@
 ---
 - name: Define file modes
   set_fact:
-    last_log_mode:   "0644"
+    last_log_mode: "0644"
     machine_id_mode: "0444"
 
 - name: Get installed packages
@@ -32,8 +32,8 @@
 - name: Disable swap service and ensure it is masked
   systemd:
     name: swap.target
-    enabled: no
-    masked: yes
+    enabled: false
+    masked: true
   when: ansible_memory_mb.swap.total != 0
 
 - name: Remove the kickstart log

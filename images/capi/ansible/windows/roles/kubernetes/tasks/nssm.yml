@@ -20,7 +20,7 @@
   delay: 3
   register: nssm_download
   until: nssm_download is not failed
-    
+
 - name: Create kubelet start file for nssm
   win_template:
     src: templates/StartKubelet.ps1

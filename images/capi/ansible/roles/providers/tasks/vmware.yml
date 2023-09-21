@@ -27,7 +27,7 @@
     dest: /etc/vmware-tools/tools.conf
     owner: root
     group: root
-    mode: 0644
+    mode: "0644"
   when: ansible_os_family != "Flatcar"
 
 - name: Create service to modify cloud-init config
@@ -36,7 +36,7 @@
     dest: /etc/systemd/system/modify-cloud-init-cfg.service
     owner: root
     group: root
-    mode: 0644
+    mode: "0644"
   when: ansible_os_family != "Flatcar"
 
 - name: Copy cloud-init modification script
@@ -45,13 +45,13 @@
     dest: /usr/local/bin/modify-cloud-init-cfg.sh
     owner: root
     group: root
-    mode: 0755
+    mode: "0755"
   when: ansible_os_family != "Flatcar"
 
 - name: Enable modify-cloud-init-cfg.service
   systemd:
     name: modify-cloud-init-cfg.service
-    daemon_reload: yes
-    enabled: True
+    daemon_reload: true
+    enabled: true
     state: stopped
   when: ansible_os_family != "Flatcar"

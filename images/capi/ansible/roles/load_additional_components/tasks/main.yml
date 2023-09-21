@@ -25,4 +25,3 @@
 # This causes a failure when using any other additional_component.
 - include_tasks: s3.yml
   when: additional_s3 | bool
-

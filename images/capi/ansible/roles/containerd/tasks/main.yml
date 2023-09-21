@@ -23,32 +23,32 @@
 
 # TODO(vincepri): Use deb/rpm packages once available.
 # See https://github.com/containerd/containerd/issues/1508 for context.
-- name: download containerd
+- name: Download containerd
   get_url:
     url: "{{ containerd_url }}"
     checksum: "sha256:{{ containerd_sha256 }}"
     dest: /tmp/containerd.tar.gz
-    mode: 0600
+    mode: "0600"
 
-- name: download containerd-wasm-shims
+- name: Download containerd-wasm-shims
   get_url:
     url: "{{ containerd_wasm_shims_url }}"
     checksum: "sha256:{{ containerd_wasm_shims_sha256 }}"
     dest: /tmp/containerd_wasm_shims.tar.gz
-    mode: 0600
+    mode: "0600"
   when: containerd_wasm_shims_runtimes | length > 0
 
 - name: Create a directory if it does not exist
   file:
     path: "{{ sysusr_prefix }}/bin"
     state: directory
-    mode: 0755
+    mode: "0755"
 
 # TODO(vincepri): This unpacks the entire tar in the root directory
 # we should find a better way to check what's being unpacked and where.
-- name: unpack containerd
+- name: Unpack containerd
   unarchive:
-    remote_src: True
+    remote_src: true
     src: /tmp/containerd.tar.gz
     dest: "{{ containerd_prefix | default('/') }}"
     extra_opts:
@@ -57,18 +57,18 @@
 
 # install containerd Wasm shims when the runtimes are not empty -- current known runtimes are 'slight', 'spin', and 'wws'
 # see: https://github.com/kubernetes-sigs/image-builder/pull/1037
-- name: unpack containerd-wasm-shims
+- name: Unpack containerd-wasm-shims
   unarchive:
-    remote_src: True
+    remote_src: true
     src: /tmp/containerd_wasm_shims.tar.gz
     dest: "{{ sysusr_prefix }}/bin"
     extra_opts:
       - --no-overwrite-dir
   when: ansible_os_family != "Flatcar" and (containerd_wasm_shims_runtimes | length > 0)
 
-- name: unpack containerd for Flatcar to /opt/bin
+- name: Unpack containerd for Flatcar to /opt/bin
   unarchive:
-    remote_src: True
+    remote_src: true
     src: /tmp/containerd.tar.gz
     dest: "{{ containerd_prefix | default('/') }}"
     extra_opts:
@@ -83,9 +83,9 @@
 
 # install containerd Wasm shims when the runtimes are not empty -- current known runtimes are 'slight', 'spin', and 'wws'
 # see: https://github.com/kubernetes-sigs/image-builder/pull/1037
-- name: unpack containerd-wasm-shims for Flatcar to /opt/bin
+- name: Unpack containerd-wasm-shims for Flatcar to /opt/bin
   unarchive:
-    remote_src: True
+    remote_src: true
     src: /tmp/containerd_wasm_shims.tar.gz
     dest: "{{ sysusr_prefix }}/bin"
     extra_opts:
@@ -93,18 +93,18 @@
   when: ansible_os_family == "Flatcar" and (containerd_wasm_shims_runtimes | length > 0)
 
 # Remove /opt/cni directory, as we will install cni later
-- name: delete /opt/cni directory
+- name: Delete /opt/cni directory
   file:
     path: /opt/cni
     state: absent
 
 # Remove /etc/cni directory, as we will configure cni later
-- name: delete /etc/cni directory
+- name: Delete /etc/cni directory
   file:
     path: /etc/cni
     state: absent
 
-- name: Creates unit file directory
+- name: Create unit file directory
   file:
     path: /etc/systemd/system/containerd.service.d
     state: directory
@@ -113,33 +113,33 @@
   template:
     dest: /etc/systemd/system/containerd.service.d/10-opt-bin-custom.conf
     src: etc/systemd/system/containerd-flatcar.conf
-    mode: 0600
+    mode: "0600"
   when: ansible_os_family == "Flatcar"
 
-- name: Create containerd memory pressure drop in file
+- name: Create containerd memory pressure drop-in file
   template:
     dest: /etc/systemd/system/containerd.service.d/memory-pressure.conf
     src: etc/systemd/system/containerd.service.d/memory-pressure.conf
-    mode: 0644
+    mode: "0644"
 
-- name: Create containerd max tasks drop in file
+- name: Create containerd max tasks drop-in file
   template:
     dest: /etc/systemd/system/containerd.service.d/max-tasks.conf
     src: etc/systemd/system/containerd.service.d/max-tasks.conf
-    mode: 0644
+    mode: "0644"
 
 - name: Create containerd LimitNOFILE drop in file
   template:
     dest: /etc/systemd/system/containerd.service.d/limit-nofile.conf
     src: etc/systemd/system/containerd.service.d/limit-nofile.conf
-    mode: 0644
+    mode: "0644"
   when: ansible_os_family == "Common Base Linux Mariner"
 
 - name: Create containerd http proxy conf file if needed
   template:
     dest: /etc/systemd/system/containerd.service.d/http-proxy.conf
     src: etc/systemd/system/containerd.service.d/http-proxy.conf
-    mode: 0644
+    mode: "0644"
   when: http_proxy is defined or https_proxy is defined
 
 - name: Creates containerd config directory
@@ -151,26 +151,26 @@
   template:
     dest: /etc/containerd/config.toml
     src: "{{ containerd_config_file }}"
-    mode: 0644
+    mode: "0644"
 
 - name: Copy in crictl config
   template:
     dest: /etc/crictl.yaml
     src: etc/crictl.yaml
 
-- name: start containerd service
+- name: Start containerd service
   systemd:
     name: containerd
-    daemon_reload: yes
-    enabled: True
+    daemon_reload: true
+    enabled: true
     state: restarted
 
-- name: delete tarball
+- name: Delete containerd tarball
   file:
     path: /tmp/containerd.tar.gz
     state: absent
 
-- name: delete tarball
+- name: Delete containerd-wasm-shims tarball
   file:
     path: /tmp/containerd_wasm_shims.tar.gz
     state: absent

@@ -28,4 +28,3 @@
   delay: 3
   register: download
   until: download is not failed
-  

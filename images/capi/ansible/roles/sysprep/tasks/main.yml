@@ -47,8 +47,8 @@
     group: root
     mode: "{{ item.mode }}"
   loop:
-  - { path: /etc/machine-id, state: absent, mode: "{{ machine_id_mode }}" }
-  - { path: /etc/machine-id, state: touch,  mode: "{{ machine_id_mode }}" }
+    - { path: /etc/machine-id, state: absent, mode: "{{ machine_id_mode }}" }
+    - { path: /etc/machine-id, state: touch,  mode: "{{ machine_id_mode }}" }
   when: ansible_os_family not in ["Common Base Linux Mariner", "Flatcar"]
 
 - name: Truncate hostname file
@@ -59,8 +59,8 @@
     group: root
     mode: "{{ item.mode }}"
   loop:
-  - { path: /etc/hostname, state: absent, mode: "0644" }
-  - { path: /etc/hostname, state: touch,  mode: "0644" }
+    - { path: /etc/hostname, state: absent, mode: "0644" }
+    - { path: /etc/hostname, state: touch,  mode: "0644" }
 
 - name: Set hostname
   hostname:
@@ -83,20 +83,20 @@
     group: utmp
     mode: "{{ item.mode }}"
   loop:
-  - { path: /var/log/wtmp,    state: absent, mode: "0664" }
-  - { path: /var/log/lastlog, state: absent, mode: "{{ last_log_mode }}" }
-  - { path: /var/log/wtmp,    state: touch,  mode: "0664" }
-  - { path: /var/log/lastlog, state: touch,  mode: "{{ last_log_mode }}" }
+    - { path: /var/log/wtmp,    state: absent, mode: "0664" }
+    - { path: /var/log/lastlog, state: absent, mode: "{{ last_log_mode }}" }
+    - { path: /var/log/wtmp,    state: touch,  mode: "0664" }
+    - { path: /var/log/lastlog, state: touch,  mode: "{{ last_log_mode }}" }
 
 - name: Remove cloud-init lib dir and logs
   file:
     state: absent
     path: "{{ item }}"
   loop:
-  - /var/lib/cloud
-  - /var/log/cloud-init.log
-  - /var/log/cloud-init-output.log
-  - /var/run/cloud-init
+    - /var/lib/cloud
+    - /var/log/cloud-init.log
+    - /var/log/cloud-init-output.log
+    - /var/run/cloud-init
 
 # A shallow search in /tmp and /var/tmp is used to declare which files or
 # directories will be removed as part of resetting temp space. The reason
@@ -108,8 +108,8 @@
     depth: 1
     file_type: any
     paths:
-    - /tmp
-    - /var/tmp
+      - /tmp
+      - /var/tmp
     pattern: '*'
   register: temp_files
 
@@ -124,9 +124,9 @@
     depth: 1
     file_type: any
     paths:
-    - /lib/netplan
-    - /etc/netplan
-    - /run/netplan
+      - /lib/netplan
+      - /etc/netplan
+      - /run/netplan
     pattern: '*.yaml'
   register: netplan_files
 
@@ -163,8 +163,8 @@
     state: absent
     path: "{{ item.path }}"
   loop:
-  - { path: /root/.ssh/authorized_keys }
-  - { path: "/home/{{ ansible_env.SUDO_USER | default(ansible_user_id) }}/.ssh/authorized_keys" }
+    - { path: /root/.ssh/authorized_keys }
+    - { path: "/home/{{ ansible_env.SUDO_USER | default(ansible_user_id) }}/.ssh/authorized_keys" }
   when: ansible_os_family != "Flatcar"
 
 - name: Remove SSH authorized users for Flatcar
@@ -172,7 +172,7 @@
     state: absent
     path: "{{ item.path }}"
   loop:
-  - { path: /root/.ssh/authorized_keys }
+    - { path: /root/.ssh/authorized_keys }
   when: ansible_os_family == "Flatcar"
 
 
@@ -193,9 +193,9 @@
     state: "{{ item.state }}"
     path: "{{ item.path }}"
   loop:
-  - { path: /swap.img, state: absent }
-  - { path: /swapfile, state: absent }
-  - { path: /mnt/resource/swapfile, state: absent }
+    - { path: /swap.img, state: absent }
+    - { path: /swapfile, state: absent }
+    - { path: /mnt/resource/swapfile, state: absent }
   when: ansible_memory_mb.swap.total != 0
 
 - name: Truncate shell history
@@ -203,8 +203,8 @@
     state: absent
     path: "{{ item.path }}"
   loop:
-  - { path: /root/.bash_history }
-  - { path: "/home/{{ ansible_env.SUDO_USER | default(ansible_user_id) }}/.bash_history" }
+    - { path: /root/.bash_history }
+    - { path: "/home/{{ ansible_env.SUDO_USER | default(ansible_user_id) }}/.bash_history" }
 
 - name: Rotate journalctl to archive logs
   shell:
@@ -231,14 +231,14 @@
     path: /usr/share/oem/config.ign
   when: ansible_os_family == "Flatcar"
 
-- name: fstrim
+- name: Start fstrim
   systemd:
     name: fstrim.service
     state: started
   when: ansible_os_family == "Debian"
 
-- name: start ssh
+- name: Start ssh
   systemd:
     name: ssh
-    enabled: yes
+    enabled: true
   when: ansible_os_family == "Debian"

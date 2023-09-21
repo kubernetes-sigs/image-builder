@@ -14,19 +14,19 @@
 ---
 - import_tasks: rpm_repos.yml
 
-- name: perform a yum update
+- name: Perform a yum update
   yum:
     name: '*'
     state: latest
     lock_timeout: 60
 
-- name: install baseline dependencies on Mariner
+- name: Install baseline dependencies on Mariner
   yum:
     name: "{{ rpms }}"
     state: present
     lock_timeout: 60
 
-- name: install extra rpms
+- name: Install extra rpms
   yum:
     name: "{{ extra_rpms.split() }}"
     state: present

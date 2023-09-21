@@ -16,7 +16,7 @@
   file:
     state: directory
     path: /opt/cni/bin
-    mode: 0755
+    mode: "0755"
     owner: root
     group: root
 
@@ -25,13 +25,13 @@
     url: "{{ kubernetes_cni_http_source }}/{{ kubernetes_cni_semver }}/cni-plugins-linux-{{ kubernetes_goarch }}-{{ kubernetes_cni_semver }}.tgz"
     checksum: "{{ kubernetes_cni_http_checksum }}"
     dest: /tmp/cni.tar.gz
-    mode: 0755
+    mode: "0755"
     owner: root
     group: root
 
 - name: Install CNI
   unarchive:
-    remote_src: yes
+    remote_src: true
     dest: /opt/cni/bin
     src: /tmp/cni.tar.gz
 
@@ -46,9 +46,9 @@
     # TODO(akutz) Write a script to separately download the checksum
     #             and verify the associated file using the correct
     #             checksum file format
-    #checksum: "sha1:{{ kubernetes_http_source }}/bin/linux/amd64/{{ item }}.sha1"
+    # checksum: "sha1:{{ kubernetes_http_source }}/bin/linux/amd64/{{ item }}.sha1"
     dest: "{{ sysusr_prefix }}/bin/{{ item }}"
-    mode: 0755
+    mode: "0755"
     owner: root
     group: root
   loop: "{{ kubernetes_bins }}"
@@ -59,9 +59,9 @@
     # TODO(akutz) Write a script to separately download the checksum
     #             and verify the associated file using the correct
     #             checksum file format
-    #checksum: "sha1:{{ kubernetes_http_source }}/bin/linux/amd64/{{ item }}.sha1"
+    # checksum: "sha1:{{ kubernetes_http_source }}/bin/linux/amd64/{{ item }}.sha1"
     dest: "/tmp/{{ item }}"
-    mode: 0600
+    mode: "0600"
   loop: "{{ kubernetes_imgs }}"
 
 - name: Copy Kubernetes image modification script
@@ -70,7 +70,7 @@
     dest: /tmp/modify-k8s-img.sh
     owner: root
     group: root
-    mode: 0755
+    mode: "0755"
 
 - name: Modify Kubernetes images
   # Strip the arch from the name of the image to prevent image from being pulled again by kubeadm
@@ -96,7 +96,7 @@
   file:
     state: directory
     path: /etc/kubernetes/manifests
-    mode: 0755
+    mode: "0755"
     owner: root
     group: root
 
@@ -104,7 +104,7 @@
   file:
     state: directory
     path: /etc/sysconfig
-    mode: 0755
+    mode: "0755"
     owner: root
     group: root
 
@@ -112,7 +112,7 @@
   file:
     state: directory
     path: "{{ systemd_prefix }}/system/kubelet.service.d"
-    mode: 0755
+    mode: "0755"
     owner: root
     group: root
 
@@ -122,7 +122,7 @@
     dest: "{{ systemd_prefix }}/system/kubelet.service.d/10-kubeadm.conf"
     owner: root
     group: root
-    mode: 0644
+    mode: "0644"
 
 - name: Create kubelet systemd file
   template:
@@ -130,4 +130,4 @@
     dest: "{{ systemd_prefix }}/system/kubelet.service"
     owner: root
     group: root
-    mode: 0644
+    mode: "0644"

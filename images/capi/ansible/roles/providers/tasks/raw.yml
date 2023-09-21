@@ -16,13 +16,13 @@
   apt:
     name: "{{ packages }}"
     state: present
-    force_apt_get: yes
+    force_apt_get: true
   vars:
     packages:
-    - cloud-init
-    - cloud-guest-utils
-    - cloud-initramfs-copymods
-    - cloud-initramfs-dyn-netconf
+      - cloud-init
+      - cloud-guest-utils
+      - cloud-initramfs-copymods
+      - cloud-initramfs-dyn-netconf
   when: ansible_os_family == "Debian"
 
 - name: Install cloud-init packages
@@ -31,25 +31,19 @@
     state: present
   vars:
     packages:
-    - cloud-init
-    - cloud-utils-growpart
+      - cloud-init
+      - cloud-utils-growpart
   when: ansible_os_family == "RedHat"
 
 - name: Run dracut cmd to regenerate initramfs with all drivers - needed when converting to different hypervisor templates
   shell: dracut --force --no-hostonly
   when: ansible_os_family == "RedHat"
 
-#- name: Unlock password
-#  replace:
-#    path: /etc/cloud/cloud.cfg
-#    regexp: '(?i)lock_passwd: True'
-#    replace: 'lock_passwd: False'
-
 - name: Symlink /usr/libexec/cloud-init to /usr/lib/cloud-init
   file:
-    src:   /usr/libexec/cloud-init
-    dest:  /usr/lib/cloud-init
-    mode: 0777
+    src: /usr/libexec/cloud-init
+    dest: /usr/lib/cloud-init
+    mode: "0777"
     state: link
   when: ansible_os_family == "RedHat"
 

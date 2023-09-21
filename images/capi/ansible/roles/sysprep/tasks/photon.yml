@@ -14,10 +14,10 @@
 ---
 - name: Define file modes
   set_fact:
-    last_log_mode:   "0644"
+    last_log_mode: "0644"
     machine_id_mode: "0444"
 
-- name: set hostname
+- name: Set hostname
   command: hostnamectl set-hostname localhost.local
 
 - name: Remove the kickstart log
@@ -29,11 +29,11 @@
   shell: tdnf list installed | cut -d ' ' -f 1
   register: packages
 
-- name: create a package list
+- name: Create a package list
   set_fact:
     package_list: "{{ packages.stdout_lines | join(' ') }}"
 
-- name: exclude packages from upgrade
+- name: Exclude packages from upgrade
   lineinfile:
     path: /etc/tdnf/tdnf.conf
     regexp: '^excludepkgs='
@@ -47,4 +47,4 @@
 - name: Lock root account
   user:
     name: root
-    password_lock: yes
+    password_lock: true

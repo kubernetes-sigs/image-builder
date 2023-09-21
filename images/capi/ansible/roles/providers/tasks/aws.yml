@@ -12,13 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- name: upgrade pip to latest
+- name: Upgrade pip to latest
   pip:
     name: pip
     executable: pip3
     state: latest
 
-- name: install aws clients
+- name: Install aws clients
   pip:
     name: "{{ packages }}"
     executable: pip3
@@ -31,7 +31,7 @@
   when: ansible_distribution == "RedHat"
 
 # Remove after https://github.com/aws/amazon-ssm-agent/issues/235 is fixed.
-- name: install aws agents RPM on Redhat distributions
+- name: Install aws agents RPM on Redhat distributions
   package:
     name: "{{ item }}"
     state: present
@@ -42,7 +42,7 @@
     - ansible_os_family == "RedHat"
     - ansible_distribution != "Amazon"
 
-- name: install aws agents RPM
+- name: Install aws agents RPM
   package:
     name: "{{ item }}"
     state: present
@@ -55,10 +55,10 @@
   service:
     name: amazon-ssm-agent
     state: started
-    enabled: yes
+    enabled: true
   when: ansible_os_family == "RedHat"
 
-- name: install aws agents Ubuntu
+- name: Install aws agents Ubuntu
   shell: snap install amazon-ssm-agent --classic
   when: ansible_distribution == "Ubuntu"
 
@@ -66,7 +66,7 @@
   service:
     name: snap.amazon-ssm-agent.amazon-ssm-agent.service
     state: started
-    enabled: yes
+    enabled: true
   when: ansible_distribution == "Ubuntu"
 
 - name: Disable Hyper-V KVP protocol daemon on Ubuntu

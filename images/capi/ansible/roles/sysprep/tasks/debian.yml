@@ -14,10 +14,10 @@
 ---
 - name: Define file modes
   set_fact:
-    last_log_mode:   "0664"
+    last_log_mode: "0664"
     machine_id_mode: "0644"
 
-- name: apt-mark all installed packages
+- name: Pin all installed packages with apt-mark
   shell: dpkg-query -f '${binary:Package}\n' -W | xargs apt-mark hold
 
 - name: Remove extra repos
@@ -55,9 +55,9 @@
 
 - name: Remove apt package caches
   apt:
-    autoclean: yes
-    autoremove: yes
-    force_apt_get: yes
+    autoclean: true
+    autoremove: true
+    force_apt_get: true
 
 - name: Remove apt package lists
   file:
@@ -67,8 +67,8 @@
     group: root
     mode: "{{ item.mode }}"
   loop:
-  - { path: /var/lib/apt/lists, state: absent,    mode: "0755" }
-  - { path: /var/lib/apt/lists, state: directory, mode: "0755" }
+    - { path: /var/lib/apt/lists, state: absent,    mode: "0755" }
+    - { path: /var/lib/apt/lists, state: directory, mode: "0755" }
 
 - name: Disable apt-daily services
   systemd:
@@ -76,8 +76,8 @@
     state: stopped
     enabled: false
   loop:
-  - apt-daily.timer
-  - apt-daily-upgrade.timer
+    - apt-daily.timer
+    - apt-daily-upgrade.timer
 
 - name: Get installed packages
   package_facts:

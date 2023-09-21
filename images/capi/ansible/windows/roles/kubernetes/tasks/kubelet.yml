@@ -38,7 +38,7 @@
 - name: Ensure kubelet is installed
   win_service:
     name: kubelet
-    dependencies: [ "{{ runtime_service }}" ]
+    dependencies: ["{{ runtime_service }}"]
     start_mode: auto
   vars:
     dependencies:
@@ -55,4 +55,4 @@
     direction: in
     protocol: tcp
     state: present
-    enabled: yes
+    enabled: true

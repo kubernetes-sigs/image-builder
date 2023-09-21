@@ -34,20 +34,20 @@
     name: net.ipv4.tcp_limit_output_bytes
     value: "524288"
     state: present
-    sysctl_set: yes
-    reload: yes
+    sysctl_set: true
+    reload: true
     sysctl_file: "{{ sysctl_conf_file }}"
 
 - name: Disable Apparmor service
   systemd:
     name: apparmor
-    daemon_reload: yes
+    daemon_reload: true
     enabled: false
     state: stopped
 
 - name: Disable Apparmor in kernel
   lineinfile:
     path: /boot/photon.cfg
-    backrefs: yes
+    backrefs: true
     regexp: "^(?!.*apparmor=0)(photon_cmdline.*)"
     line: '\1 apparmor=0'

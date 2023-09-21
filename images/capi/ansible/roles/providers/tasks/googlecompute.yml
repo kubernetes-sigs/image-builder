@@ -14,16 +14,16 @@
 ---
 - name: Download gcloud SDK
   get_url:
-    url:  https://sdk.cloud.google.com/
+    url: https://sdk.cloud.google.com/
     dest: /tmp/install-gcloud.sh
-    mode: 0700
+    mode: "0700"
 
 - name: Execute install-gcloud.sh
   shell: bash -o errexit -o pipefail /tmp/install-gcloud.sh --disable-prompts --install-dir=/
 
 - name: Remove install-gcloud.sh
   file:
-    path:  /tmp/install-gcloud.sh
+    path: /tmp/install-gcloud.sh
     state: absent
 
 - name: Find all files in /google-cloud-sdk/bin/
@@ -32,7 +32,7 @@
   register: find
 
 - name: Create symlinks to /bin
-  become: True
+  become: true
   file:
     src: "{{ item.path }}"
     path: "/bin/{{ item.path | basename }}"
@@ -45,8 +45,8 @@
     state: present
   vars:
     packages:
-    - cloud-init
-    - cloud-utils-growpart
+      - cloud-init
+      - cloud-utils-growpart
   when: ansible_os_family == "RedHat"
 
 - name: Disable Hyper-V KVP protocol daemon on Ubuntu

@@ -21,4 +21,3 @@
   delay: 3
   register: kubernetes_download
   until: kubernetes_download is not failed
-  

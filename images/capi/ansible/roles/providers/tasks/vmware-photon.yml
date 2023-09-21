@@ -27,7 +27,7 @@
   unarchive:
     src: "{{ networkd_dispatcher_download_url }}"
     dest: /tmp
-    remote_src: yes
+    remote_src: true
 
 - name: Create needed directories
   file:
@@ -55,7 +55,7 @@
   systemd:
     name: networkd-dispatcher
     state: started
-    enabled: yes
+    enabled: true
 
 - name: Copy networkd-dispatcher scripts to add DHCP provided NTP servers
   template:
