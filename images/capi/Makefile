@@ -181,6 +181,8 @@ deps-proxmox: deps-common
 
 .PHONY: deps-lint
 deps-lint: ## Installs/checks dependencies for image-builder code linting
+deps-lint: deps-common
+	hack/ensure-ansible-windows.sh
 	hack/ensure-ansible-lint.sh
 
 ## --------------------------------------
