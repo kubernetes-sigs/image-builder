@@ -968,6 +968,16 @@ lint: ## Runs linters on image-builder code
 lint: deps-lint
 	ansible-lint ansible/
 
+.PHONY: lint-fix
+lint-fix: ## Runs linters on image-builder code and fixes issues
+lint-fix: deps-lint
+	ansible-lint --fix=all ansible/
+
+.PHONY: lint-ignore
+lint-ignore: ## Runs linters on image-builder code and creates an "ignore" file
+lint-ignore: deps-lint
+	ansible-lint --generate-ignore ansible/
+
 ## --------------------------------------
 ## Clean targets
 ## --------------------------------------

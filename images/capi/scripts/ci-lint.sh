@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 # Copyright 2023 The Kubernetes Authors.
 #
@@ -14,25 +14,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+###############################################################################
+
 set -o errexit
 set -o nounset
 set -o pipefail
 
 [[ -n ${DEBUG:-} ]] && set -o xtrace
 
-source hack/utils.sh
+CAPI_ROOT=$(dirname "${BASH_SOURCE[0]}")/..
+cd "${CAPI_ROOT}" || exit 1
 
-_version="6.20.0"
+export PATH=${PWD}/.local/bin:$PATH
+export PATH=${PYTHON_BIN_DIR:-"${HOME}/.local/bin"}:$PATH
 
-# Change directories to the parent directory of the one in which this
-# script is located.
-cd "$(dirname "${BASH_SOURCE[0]}")/.."
-
-# Disable pip's version check and root user warning
-export PIP_DISABLE_PIP_VERSION_CHECK=1 PIP_ROOT_USER_ACTION=ignore
-
-if ! command -v ansible-lint >/dev/null 2>&1; then
-    ensure_py3
-    pip3 install --user "ansible-lint==${_version}"
-    ensure_py3_bin ansible-lint
-fi
+make lint
