@@ -13,7 +13,7 @@
 # limitations under the License.
 ---
 - name: Pull containerd additional images
-  win_shell: |
+  ansible.windows.win_shell: |
     #refresh the path to ensure ansible sees update
     $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine")
     ctr.exe -n k8s.io images pull {{ item }}
@@ -27,7 +27,7 @@
   when: runtime == "containerd"
 
 - name: Pre-pull Docker additional images
-  win_shell: docker pull {{ item }}
+  ansible.windows.win_shell: docker pull {{ item }}
   loop: "{{ additional_registry_images_list.split(',') }}"
   async: 1800
   poll: 60

@@ -1,3 +1,4 @@
+---
 # Copyright 2021 The Kubernetes Authors.
 
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,12 +14,12 @@
 # limitations under the License.
 
 - name: Create OpenSSH directory structure
-  win_file:
+  ansible.windows.win_file:
     path: "{{ item }}"
     state: directory
   loop:
-    - '{{ programfiles.stdout | trim }}\OpenSSH'
-    - '{{ alluserprofile.stdout | trim }}\ssh'
+    - "{{ programfiles.stdout | trim }}\\OpenSSH"
+    - "{{ alluserprofile.stdout | trim }}\\ssh"
 
 # Win32-OpenSSH requires SYSTEM and Administrator groups having Write
 # permissions on directory 'C:\Program Files\OpenSSH', authenticated
@@ -36,44 +37,43 @@
 # users are allowed to have such permission, this prevent us from connecting
 # to the sshd server, just remove it.
 - name: Disable inheritance of OpenSSH directory
-  win_acl_inheritance:
-    path: '{{ programfiles.stdout | trim }}\OpenSSH'
+  ansible.windows.win_acl_inheritance:
+    path: "{{ programfiles.stdout | trim }}\\OpenSSH"
     state: absent
     reorganize: true
 - name: Remove permission for Users
-  win_acl:
-    path: '{{ programfiles.stdout | trim }}\OpenSSH'
+  ansible.windows.win_acl:
+    path: "{{ programfiles.stdout | trim }}\\OpenSSH"
     user: BUILTIN\Users
     rights: ReadAndExecute,Synchronize
     type: allow
     state: absent
-    inherit: 'None'
-    propagation: 'None'
+    inherit: None
+    propagation: None
 
 - name: Download OpenSSH Archive
-  win_get_url:
-    url: '{{ ssh_source_url }}'
-    dest: '{{ tempdir.stdout | trim }}\OpenSSH.zip'
+  ansible.windows.win_get_url:
+    url: "{{ ssh_source_url }}"
+    dest: "{{ tempdir.stdout | trim }}\\OpenSSH.zip"
   register: ssh
   retries: 5
   delay: 3
   until: ssh is not failed
 
 - name: Unzip OpenSSH Archive
-  win_unzip:
-    src: '{{ ssh.dest }}'
-    dest: '{{ tempdir.stdout | trim }}'
+  community.windows.win_unzip:
+    src: "{{ ssh.dest }}"
+    dest: "{{ tempdir.stdout | trim }}"
     recurse: false
     delete_archive: true
 
 - name: Install OpenSSH
-  win_shell: |
+  ansible.windows.win_shell: |
     Get-ChildItem -Path "{{ tempdir.stdout | trim }}\OpenSSH-Win64\*" -Recurse | Move-Item -Destination "{{ programfiles.stdout | trim }}\OpenSSH"
     Get-ChildItem -Path "{{ programfiles.stdout | trim }}\OpenSSH" | Unblock-File
     & 'C:\Program Files\OpenSSH\install-sshd.ps1'
-
 - name: Add OpenSSH firewall rule
-  win_firewall_rule:
+  community.windows.win_firewall_rule:
     name: sshd
     localport: 22
     action: allow

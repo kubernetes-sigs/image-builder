@@ -32,8 +32,8 @@ kubernetes_load_additional_imgs: false
 
 kubernetes_imgs: "{{ kubernetes_primary_imgs | union(kubernetes_additional_imgs) if kubernetes_load_additional_imgs | bool else kubernetes_primary_imgs }}"
 
-kubernetes_cni_http_checksum: "sha1:{{ kubernetes_cni_http_source }}/{{ kubernetes_cni_semver }}/cni-plugins-{{ kubernetes_goarch }}-{{ kubernetes_cni_semver }}.tgz.sha1"
+kubernetes_cni_http_checksum: sha1:{{ kubernetes_cni_http_source }}/{{ kubernetes_cni_semver }}/cni-plugins-{{ kubernetes_goarch }}-{{ kubernetes_cni_semver }}.tgz.sha1
 
-kubeadm_template: "etc/kubeadm.yml"
+kubeadm_template: etc/kubeadm.yml
 
-kubelet_extra_args: "--pod-infra-container-image={{ pause_image }}"
+kubelet_extra_args: --pod-infra-container-image={{ pause_image }}

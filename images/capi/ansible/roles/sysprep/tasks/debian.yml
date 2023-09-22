@@ -13,65 +13,64 @@
 # limitations under the License.
 ---
 - name: Define file modes
-  set_fact:
+  ansible.builtin.set_fact:
     last_log_mode: "0664"
     machine_id_mode: "0644"
 
 - name: Pin all installed packages with apt-mark
-  shell: dpkg-query -f '${binary:Package}\n' -W | xargs apt-mark hold
-
+  ansible.builtin.shell: dpkg-query -f '${binary:Package}\n' -W | xargs apt-mark hold
 - name: Remove extra repos
-  file:
-    path: "/etc/apt/sources.list.d/{{ item | basename }}"
+  ansible.builtin.file:
+    path: /etc/apt/sources.list.d/{{ item | basename }}
     state: absent
   loop: "{{ extra_repos.split() }}"
   when: remove_extra_repos and extra_repos != ""
 
 - name: Find disabled repo files
-  find:
+  ansible.builtin.find:
     depth: 1
     paths:
       - /etc/apt
       - /etc/apt/sources.list.d
-    patterns: '*.list.disabled'
+    patterns: "*.list.disabled"
   register: repo_files
   when: disable_public_repos|default(false)|bool and reenable_public_repos|default(true)|bool
 
 - name: Enable repos
-  command: "mv {{ item.path }} {{ item.path | regex_replace('.disabled') }}"
+  ansible.builtin.command: mv {{ item.path }} {{ item.path | regex_replace('.disabled') }}
   loop: "{{ repo_files.files }}"
   when: disable_public_repos|default(false)|bool and reenable_public_repos|default(true)|bool
 
 - name: Remove templated apt.conf.d/90proxy used for http(s)_proxy support
-  file:
+  ansible.builtin.file:
     path: etc/apt/apt.conf.d/90proxy
     state: absent
   when: http_proxy is defined or https_proxy is defined
 
 - name: Stop auditing
-  service:
+  ansible.builtin.service:
     name: rsyslog
     state: stopped
 
 - name: Remove apt package caches
-  apt:
+  ansible.builtin.apt:
     autoclean: true
     autoremove: true
     force_apt_get: true
 
 - name: Remove apt package lists
-  file:
+  ansible.builtin.file:
     state: "{{ item.state }}"
     path: "{{ item.path }}"
     owner: root
     group: root
     mode: "{{ item.mode }}"
   loop:
-    - { path: /var/lib/apt/lists, state: absent,    mode: "0755" }
+    - { path: /var/lib/apt/lists, state: absent, mode: "0755" }
     - { path: /var/lib/apt/lists, state: directory, mode: "0755" }
 
 - name: Disable apt-daily services
-  systemd:
+  ansible.builtin.systemd:
     name: "{{ item }}"
     state: stopped
     enabled: false
@@ -80,40 +79,40 @@
     - apt-daily-upgrade.timer
 
 - name: Get installed packages
-  package_facts:
+  ansible.builtin.package_facts:
 
 - name: Disable unattended upgrades if installed
-  systemd:
+  ansible.builtin.systemd:
     name: unattended-upgrades
     state: stopped
     enabled: false
   when: "'unattended-upgrades' in ansible_facts.packages"
 
 - name: Reset network interface IDs
-  file:
+  ansible.builtin.file:
     state: absent
     path: /etc/udev/rules.d/70-persistent-net.rules
 
 - name: Remvoing subiquity disable disable cloud-init networking config
-  file:
+  ansible.builtin.file:
     path: /etc/cloud/cloud.cfg.d/subiquity-disable-cloudinit-networking.cfg
     state: absent
   when: ansible_distribution_version is version('22.04', '>=')
 
 - name: Removing 99-installer.cfg which sets the cloud-init datasource to None
-  file:
+  ansible.builtin.file:
     path: /etc/cloud/cloud.cfg.d/99-installer.cfg
     state: absent
   when: ansible_distribution_version is version('22.04', '>=')
 
 - name: Removing subiquity curtin preserve sources config
-  file:
+  ansible.builtin.file:
     path: /etc/cloud/cloud.cfg.d/curtin-preserve-sources.cfg
     state: absent
   when: ansible_distribution_version is version('22.04', '>=')
 
 - name: Removing cloud-init ds identify config
-  file:
+  ansible.builtin.file:
     path: /etc/cloud/ds-identify.cfg
     state: absent
   when: ansible_distribution_version is version('22.04', '>=')

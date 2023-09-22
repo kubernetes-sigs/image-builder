@@ -13,22 +13,22 @@
 # limitations under the License.
 ---
 - name: Find existing repo files
-  find:
+  ansible.builtin.find:
     depth: 1
     paths: /etc/yum.repos.d
-    patterns: '*.repo'
+    patterns: "*.repo"
   register: repo_files
   when: disable_public_repos|bool
 
 - name: Disable repos
-  command: "mv {{ item.path }} {{ item.path }}.disabled"
+  ansible.builtin.command: mv {{ item.path }} {{ item.path }}.disabled
   loop: "{{ repo_files.files }}"
   when: disable_public_repos|bool
 
 - name: Install extra repos
-  copy:
+  ansible.builtin.copy:
     src: "{{ item }}"
-    dest: "/etc/yum.repos.d/{{ item | basename }}"
+    dest: /etc/yum.repos.d/{{ item | basename }}
     mode: "0644"
   loop: "{{ extra_repos.split() }}"
   when: extra_repos != ""

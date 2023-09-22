@@ -1,3 +1,4 @@
+---
 # Copyright 2020 The Kubernetes Authors.
 
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,8 +18,8 @@
 # - meta: noop
 
 - name: Set transparent huge pages to madvise
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /boot/photon.cfg
     backrefs: true
-    regexp: "^(?!.*transparent_hugepage=madvise)(photon_cmdline.*)"
-    line: '\1 transparent_hugepage=madvise'
+    regexp: ^(?!.*transparent_hugepage=madvise)(photon_cmdline.*)
+    line: \1 transparent_hugepage=madvise

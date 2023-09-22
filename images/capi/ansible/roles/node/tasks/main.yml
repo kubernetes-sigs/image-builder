@@ -12,32 +12,32 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- import_tasks: photon.yml
+- ansible.builtin.import_tasks: photon.yml
   when: ansible_os_family == "VMware Photon OS"
 
-- import_tasks: amazonLinux2.yml
+- ansible.builtin.import_tasks: amazonLinux2.yml
   when: ansible_distribution == "Amazon"
 
 # This is required until https://github.com/ansible/ansible/issues/77537 is fixed and used.
 - name: Override Flatcar's OS family
-  set_fact:
+  ansible.builtin.set_fact:
     ansible_os_family: Flatcar
   when: ansible_os_family == "Flatcar Container Linux by Kinvolk"
   tags:
     - facts
 
 - name: Ensure overlay module is present
-  modprobe:
+  community.general.system.modprobe:
     name: overlay
     state: present
 
 - name: Ensure br_netfilter module is present
-  modprobe:
+  community.general.system.modprobe:
     name: br_netfilter
     state: present
 
 - name: Persist required kernel modules
-  copy:
+  ansible.builtin.copy:
     content: |
       overlay
       br_netfilter
@@ -45,7 +45,7 @@
     mode: "0644"
 
 - name: Set and persist kernel params
-  sysctl:
+  ansible.posix.sysctl:
     name: "{{ item.param }}"
     value: "{{ item.val }}"
     state: present
@@ -66,29 +66,29 @@
     - { param: fs.inotify.max_user_watches, val: 524288 }
 
 - name: Disable swap memory
-  shell: |
+  ansible.builtin.shell: |
     swapoff -a
   when: ansible_memory_mb.swap.total != 0
 
 - name: Edit fstab file to disable swap
-  shell: sed -ri '/\sswap\s/s/^#?/#/' /etc/fstab
+  ansible.builtin.shell: sed -ri '/\sswap\s/s/^#?/#/' /etc/fstab
   when: ansible_memory_mb.swap.total != 0
 
 - name: Disable conntrackd service
-  systemd:
+  ansible.builtin.systemd:
     name: conntrackd
     state: stopped
     enabled: false
   when: ansible_os_family not in ["Common Base Linux Mariner", "Debian", "Flatcar"]
 
 - name: Ensure auditd is running and comes on at reboot
-  service:
+  ansible.builtin.service:
     name: auditd
     state: started
     enabled: true
 
 - name: Configure auditd rules for containerd
-  copy:
+  ansible.builtin.copy:
     src: etc/audit/rules.d/containerd.rules
     dest: /etc/audit/rules.d/containerd.rules
     owner: root
@@ -97,7 +97,7 @@
   when: ansible_os_family != "Flatcar" and enable_containerd_audit
 
 - name: Configure auditd rules for containerd (Flatcar)
-  copy:
+  ansible.builtin.copy:
     src: etc/audit/rules.d/containerd.rules-flatcar
     dest: /etc/audit/rules.d/containerd.rules
     owner: root
@@ -106,7 +106,7 @@
   when: ansible_os_family == "Flatcar" and enable_containerd_audit
 
 - name: Ensure reverse packet filtering is set as strict
-  sysctl:
+  ansible.posix.sysctl:
     name: net.ipv4.conf.all.rp_filter
     value: "1"
     state: present
@@ -115,21 +115,21 @@
   when: ansible_distribution == "Ubuntu"
 
 - name: Set transparent huge pages to madvise
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/default/grub
     backrefs: true
-    regexp: "^(?!.*transparent_hugepage=madvise)(GRUB_CMDLINE_LINUX=.*)(\"$)"
-    line: '\1 transparent_hugepage=madvise"'
+    regexp: ^(?!.*transparent_hugepage=madvise)(GRUB_CMDLINE_LINUX=.*)("$)
+    line: \1 transparent_hugepage=madvise"
   when: ansible_os_family == "RedHat"
 
 - name: Copy udev etcd network tuning rules
-  template:
+  ansible.builtin.template:
     src: etc/udev/rules.d/90-etcd-tuning.rules
     dest: /etc/udev/rules.d/90-etcd-tuning.rules
     mode: "0644"
 
 - name: Copy etcd network tuning script
-  copy:
+  ansible.builtin.copy:
     src: usr/local/bin/etcd-network-tuning.sh
     dest: "{{ external_binary_path }}/etcd-network-tuning.sh"
     mode: "0755"

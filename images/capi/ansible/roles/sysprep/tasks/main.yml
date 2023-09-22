@@ -12,35 +12,35 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- import_tasks: debian.yml
+- ansible.builtin.import_tasks: debian.yml
   when: ansible_os_family == "Debian"
 
-- import_tasks: flatcar.yml
+- ansible.builtin.import_tasks: flatcar.yml
   when: ansible_os_family == "Flatcar"
 
-- import_tasks: redhat.yml
+- ansible.builtin.import_tasks: redhat.yml
   when: ansible_os_family == "RedHat"
 
-- import_tasks: mariner.yml
+- ansible.builtin.import_tasks: mariner.yml
   when: ansible_os_family == "Common Base Linux Mariner"
 
-- import_tasks: photon.yml
+- ansible.builtin.import_tasks: photon.yml
   when: ansible_os_family == "VMware Photon OS"
 
 - name: Remove containerd http proxy conf file if needed
-  file:
+  ansible.builtin.file:
     path: /etc/systemd/system/containerd.service.d/http-proxy.conf
     state: absent
   when: http_proxy is defined or https_proxy is defined
 
 - name: Remove pip conf file if needed
-  file:
+  ansible.builtin.file:
     path: /etc/pip.conf
     state: absent
   when: remove_extra_repos and pip_conf_file != ""
 
 - name: Truncate machine id
-  file:
+  ansible.builtin.file:
     state: "{{ item.state }}"
     path: "{{ item.path }}"
     owner: root
@@ -48,11 +48,11 @@
     mode: "{{ item.mode }}"
   loop:
     - { path: /etc/machine-id, state: absent, mode: "{{ machine_id_mode }}" }
-    - { path: /etc/machine-id, state: touch,  mode: "{{ machine_id_mode }}" }
+    - { path: /etc/machine-id, state: touch, mode: "{{ machine_id_mode }}" }
   when: ansible_os_family not in ["Common Base Linux Mariner", "Flatcar"]
 
 - name: Truncate hostname file
-  file:
+  ansible.builtin.file:
     state: "{{ item.state }}"
     path: "{{ item.path }}"
     owner: root
@@ -60,15 +60,15 @@
     mode: "{{ item.mode }}"
   loop:
     - { path: /etc/hostname, state: absent, mode: "0644" }
-    - { path: /etc/hostname, state: touch,  mode: "0644" }
+    - { path: /etc/hostname, state: touch, mode: "0644" }
 
 - name: Set hostname
-  hostname:
+  ansible.builtin.hostname:
     name: localhost.local
   when: ansible_os_family not in ["Common Base Linux Mariner", "Flatcar", "VMware Photon OS"] and packer_build_name != "nutanix"
 
 - name: Reset hosts file
-  copy:
+  ansible.builtin.copy:
     src: files/etc/hosts
     dest: /etc/hosts
     owner: root
@@ -76,20 +76,20 @@
     mode: "0644"
 
 - name: Truncate audit logs
-  file:
+  ansible.builtin.file:
     state: "{{ item.state }}"
     path: "{{ item.path }}"
     owner: root
     group: utmp
     mode: "{{ item.mode }}"
   loop:
-    - { path: /var/log/wtmp,    state: absent, mode: "0664" }
+    - { path: /var/log/wtmp, state: absent, mode: "0664" }
     - { path: /var/log/lastlog, state: absent, mode: "{{ last_log_mode }}" }
-    - { path: /var/log/wtmp,    state: touch,  mode: "0664" }
-    - { path: /var/log/lastlog, state: touch,  mode: "{{ last_log_mode }}" }
+    - { path: /var/log/wtmp, state: touch, mode: "0664" }
+    - { path: /var/log/lastlog, state: touch, mode: "{{ last_log_mode }}" }
 
 - name: Remove cloud-init lib dir and logs
-  file:
+  ansible.builtin.file:
     state: absent
     path: "{{ item }}"
   loop:
@@ -104,34 +104,34 @@
 # directory on the remote host(s) is /tmp/.ansible. Thus, by removing /tmp,
 # Ansible can no longer access the remote host.
 - name: Find temp files
-  find:
+  ansible.builtin.find:
     depth: 1
     file_type: any
     paths:
       - /tmp
       - /var/tmp
-    pattern: '*'
+    pattern: "*"
   register: temp_files
 
 - name: Reset temp space
-  file:
+  ansible.builtin.file:
     state: absent
     path: "{{ item.path }}"
   loop: "{{ temp_files.files }}"
 
 - name: Find netplan files
-  find:
+  ansible.builtin.find:
     depth: 1
     file_type: any
     paths:
       - /lib/netplan
       - /etc/netplan
       - /run/netplan
-    pattern: '*.yaml'
+    pattern: "*.yaml"
   register: netplan_files
 
 - name: Delete netplan files
-  file:
+  ansible.builtin.file:
     state: absent
     path: "{{ item.path }}"
   loop: "{{ netplan_files.files }}"
@@ -140,26 +140,26 @@
 - name: Create netplan for KubeVirt
   vars:
     kubevirt: "{{ lookup('env', 'KUBEVIRT') }}"
-  copy:
+  ansible.builtin.copy:
     src: files/etc/netplan/51-kubevirt-netplan.yaml
     dest: /etc/netplan/51-kubevirt-netplan.yaml
     mode: "0644"
   when: ansible_os_family == "Debian" and kubevirt == "true"
 
 - name: Find SSH host keys
-  find:
+  ansible.builtin.find:
     path: /etc/ssh
-    pattern: 'ssh_host_*'
+    pattern: ssh_host_*
   register: ssh_host_keys
 
 - name: Remove SSH host keys
-  file:
+  ansible.builtin.file:
     state: absent
     path: "{{ item.path }}"
   loop: "{{ ssh_host_keys.files }}"
 
 - name: Remove SSH authorized users
-  file:
+  ansible.builtin.file:
     state: absent
     path: "{{ item.path }}"
   loop:
@@ -168,28 +168,27 @@
   when: ansible_os_family != "Flatcar"
 
 - name: Remove SSH authorized users for Flatcar
-  file:
+  ansible.builtin.file:
     state: absent
     path: "{{ item.path }}"
   loop:
     - { path: /root/.ssh/authorized_keys }
   when: ansible_os_family == "Flatcar"
 
-
 - name: Truncate all remaining log files in /var/log
-  shell:
+  ansible.builtin.shell:
     cmd: |
       find /var/log -type f -iname '*.log' | xargs truncate -s 0
   when: ansible_os_family != "Flatcar"
 
 - name: Delete all logrotated log zips
-  shell:
+  ansible.builtin.shell:
     cmd: |
       find /var/log -type f -name '*.gz' -exec rm {} +
   when: ansible_os_family != "Flatcar"
 
 - name: Remove swapfile
-  file:
+  ansible.builtin.file:
     state: "{{ item.state }}"
     path: "{{ item.path }}"
   loop:
@@ -199,7 +198,7 @@
   when: ansible_memory_mb.swap.total != 0
 
 - name: Truncate shell history
-  file:
+  ansible.builtin.file:
     state: absent
     path: "{{ item.path }}"
   loop:
@@ -207,18 +206,18 @@
     - { path: "/home/{{ ansible_env.SUDO_USER | default(ansible_user_id) }}/.bash_history" }
 
 - name: Rotate journalctl to archive logs
-  shell:
+  ansible.builtin.shell:
     cmd: |
       journalctl --rotate
   when: not ( ansible_os_family == "RedHat" and ansible_distribution_major_version|int <= 7 )
 
 - name: Remove archived journalctl logs
-  shell:
+  ansible.builtin.shell:
     cmd: |
       journalctl -m --vacuum-time=1s
 
 - name: Ensure ignition runs on next boot
-  file:
+  ansible.builtin.file:
     state: touch
     path: /boot/flatcar/first_boot
     owner: root
@@ -226,19 +225,19 @@
   when: ansible_os_family == "Flatcar"
 
 - name: Remove any default Ignition files used by Packer
-  file:
+  ansible.builtin.file:
     state: absent
     path: /usr/share/oem/config.ign
   when: ansible_os_family == "Flatcar"
 
 - name: Start fstrim
-  systemd:
+  ansible.builtin.systemd:
     name: fstrim.service
     state: started
   when: ansible_os_family == "Debian"
 
 - name: Start ssh
-  systemd:
+  ansible.builtin.systemd:
     name: ssh
     enabled: true
   when: ansible_os_family == "Debian"

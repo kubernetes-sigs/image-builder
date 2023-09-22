@@ -13,38 +13,35 @@
 # limitations under the License.
 ---
 - name: Define file modes
-  set_fact:
+  ansible.builtin.set_fact:
     last_log_mode: "0644"
     machine_id_mode: "0444"
 
 - name: Set hostname
-  command: hostnamectl set-hostname localhost.local
-
+  ansible.builtin.command: hostnamectl set-hostname localhost.local
 - name: Remove the kickstart log
-  file:
+  ansible.builtin.file:
     state: absent
     path: /root/anaconda-ks.cfg
 
 - name: Get installed packages
-  shell: tdnf list installed | cut -d ' ' -f 1
+  ansible.builtin.shell: tdnf list installed | cut -d ' ' -f 1
   register: packages
 
 - name: Create a package list
-  set_fact:
+  ansible.builtin.set_fact:
     package_list: "{{ packages.stdout_lines | join(' ') }}"
 
 - name: Exclude packages from upgrade
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/tdnf/tdnf.conf
-    regexp: '^excludepkgs='
+    regexp: ^excludepkgs=
     line: excludepkgs={{ package_list }}
 
-- import_tasks: rpm_repos.yml
-
+- ansible.builtin.import_tasks: rpm_repos.yml
 - name: Remove tdnf package caches
-  command: /usr/bin/tdnf -y clean all
-
+  ansible.builtin.command: /usr/bin/tdnf -y clean all
 - name: Lock root account
-  user:
+  ansible.builtin.user:
     name: root
     password_lock: true

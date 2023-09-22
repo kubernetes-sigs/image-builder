@@ -13,7 +13,7 @@
 # limitations under the License.
 ---
 - name: Download additional executables
-  get_url:
+  ansible.builtin.get_url:
     url: "{{ item }}"
     dest: "{{ additional_executables_destination_path }}"
     mode: "0711"
