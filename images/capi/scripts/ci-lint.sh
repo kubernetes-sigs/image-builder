@@ -28,4 +28,4 @@ cd "${CAPI_ROOT}" || exit 1
 export PATH=${PWD}/.local/bin:$PATH
 export PATH=${PYTHON_BIN_DIR:-"${HOME}/.local/bin"}:$PATH
 
-make lint
+NO_COLOR=1 make lint
