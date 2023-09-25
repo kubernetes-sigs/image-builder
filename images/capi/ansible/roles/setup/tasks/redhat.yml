@@ -13,7 +13,7 @@
 # limitations under the License.
 ---
 - name: RHEL subscription
-  community.general.packaging.os.redhat_subscription:
+  community.general.redhat_subscription:
     state: present
     username: "{{ lookup('env', 'RHSM_USER') }}"
     password: "{{ lookup('env', 'RHSM_PASS') }}"

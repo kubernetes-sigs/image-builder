@@ -40,7 +40,7 @@
     mode: "0700"
 
 - name: Execute cloud-init-vmware.sh
-  ansible.builtin.command: bash -o errexit -o pipefail /tmp/cloud-init-vmware.sh
+  ansible.builtin.shell: bash -o errexit -o pipefail /tmp/cloud-init-vmware.sh
   environment:
     REPO_SLUG: "{{ guestinfo_datasource_slug }}"
     GIT_REF: "{{ guestinfo_datasource_ref }}"

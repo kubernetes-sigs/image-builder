@@ -59,7 +59,7 @@
   when: ansible_os_family == "RedHat"
 
 - name: Install aws agents Ubuntu
-  ansible.builtin.command: snap install amazon-ssm-agent --classic
+  ansible.builtin.shell: snap install amazon-ssm-agent --classic
   when: ansible_distribution == "Ubuntu"
 
 - name: Ensure ssm agent is running Ubuntu

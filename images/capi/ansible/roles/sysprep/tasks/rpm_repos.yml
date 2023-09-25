@@ -28,6 +28,6 @@
   when: disable_public_repos|default(false)|bool and reenable_public_repos|default(true)|bool
 
 - name: Enable repos
-  ansible.builtin.command: mv {{ item.path }} {{ item.path | regex_replace('.disabled') }}
+  ansible.builtin.shell: mv {{ item.path }} {{ item.path | regex_replace('.disabled') }}
   loop: "{{ repo_files.files }}"
   when: disable_public_repos|default(false)|bool and reenable_public_repos|default(true)|bool

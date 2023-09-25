@@ -42,7 +42,7 @@
     create: true
 
 - name: Nutanix iSCSI client tuning recommendations
-  community.general.files.ini_file:
+  community.general.ini_file:
     path: /etc/iscsi/iscsid.conf
     section: ""
     option: "{{ item.key }}"
@@ -75,7 +75,7 @@
     state: directory
 
 - name: Set up iscsi-init.service override
-  community.general.files.ini_file:
+  community.general.ini_file:
     dest: /etc/systemd/system/iscsi-init.service.d/wait_fs.conf
     owner: root
     group: root

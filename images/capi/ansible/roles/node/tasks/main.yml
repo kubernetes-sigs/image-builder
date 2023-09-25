@@ -27,12 +27,12 @@
     - facts
 
 - name: Ensure overlay module is present
-  community.general.system.modprobe:
+  community.general.modprobe:
     name: overlay
     state: present
 
 - name: Ensure br_netfilter module is present
-  community.general.system.modprobe:
+  community.general.modprobe:
     name: br_netfilter
     state: present
 

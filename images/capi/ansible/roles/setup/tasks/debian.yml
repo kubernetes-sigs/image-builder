@@ -50,7 +50,7 @@
   when: disable_public_repos|bool
 
 - name: Disable repos
-  ansible.builtin.command: mv {{ item.path }} {{ item.path }}.disabled
+  ansible.builtin.shell: mv {{ item.path }} {{ item.path }}.disabled
   loop: "{{ repo_files.files }}"
   when: disable_public_repos|bool
 
@@ -69,7 +69,7 @@
   when: packer_build_name is search('cvm')
 
 - name: Add '--no-tpm --no-efivars' to nullboot post install script
-  ansible.builtin.command: sed -i 's/nullbootctl/nullbootctl --no-tpm --no-efivars/' /var/lib/dpkg/info/nullboot.postinst
+  ansible.builtin.shell: sed -i 's/nullbootctl/nullbootctl --no-tpm --no-efivars/' /var/lib/dpkg/info/nullboot.postinst
   when: packer_build_name is search('cvm')
 
 - name: Perform a dist-upgrade
@@ -115,5 +115,5 @@
   delay: 10
 
 - name: Remove '--no-tpm --no-efivars' from nullboot post install script
-  ansible.builtin.command: sed -i 's/nullbootctl --no-tpm --no-efivars/nullbootctl/' /var/lib/dpkg/info/nullboot.postinst
+  ansible.builtin.shell: sed -i 's/nullbootctl --no-tpm --no-efivars/nullbootctl/' /var/lib/dpkg/info/nullboot.postinst
   when: packer_build_name is search('cvm')

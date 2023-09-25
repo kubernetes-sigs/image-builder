@@ -14,7 +14,7 @@
 
 ---
 - name: Unload nouveau
-  community.general.system.modprobe:
+  community.general.modprobe:
     name: nouveau
     state: absent
   ignore_errors: true
@@ -105,7 +105,7 @@
 
 - name: Install NVIDIA driver
   become: true
-  ansible.builtin.command:
+  ansible.builtin.shell:
     cmd: /tmp/NVIDIA-Linux-gridd.run -s --dkms --no-cc-version-check
 
 - name: Remove the NVIDIA driver installer file

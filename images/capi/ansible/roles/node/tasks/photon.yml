@@ -14,7 +14,7 @@
 
 ---
 - name: Leak mDNS to DNS (cloud-init-nics) (enable .local domain lookups)
-  community.general.files.ini_file:
+  community.general.ini_file:
     path: /etc/systemd/network/10-cloud-init-nics.network
     section: Network
     option: Domains
@@ -22,7 +22,7 @@
   when: leak_local_mdns_to_dns
 
 - name: Leak mDNS to DNS (dhcp) (enable .local domain lookups)
-  community.general.files.ini_file:
+  community.general.ini_file:
     path: /etc/systemd/network/99-dhcp-en.network
     section: Network
     option: Domains

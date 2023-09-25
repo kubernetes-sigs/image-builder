@@ -22,7 +22,7 @@
 
 - ansible.builtin.import_tasks: rpm_repos.yml
 - name: Perform a tdnf distro-sync
-  ansible.builtin.command: tdnf distro-sync -y --refresh
+  ansible.builtin.shell: tdnf distro-sync -y --refresh
   register: distro
   changed_when: '"Nothing to do" not in distro.stderr'
 
@@ -31,11 +31,11 @@
     photon_rpms: "{{ rpms | join(' ') }}"
 
 - name: Install baseline dependencies
-  ansible.builtin.command: tdnf install {{ photon_rpms }} -y
+  ansible.builtin.shell: tdnf install {{ photon_rpms }} -y
   when: photon_rpms != ""
 
 - name: Install extra RPMs
-  ansible.builtin.command: tdnf install {{ extra_rpms }} -y
+  ansible.builtin.shell: tdnf install {{ extra_rpms }} -y
   when: extra_rpms != ""
 
 # Default size of 1G is insufficient when downloading additional components

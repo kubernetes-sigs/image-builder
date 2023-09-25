@@ -52,23 +52,23 @@
     - lookup('env', 'RHSM_PASS') | length > 0
   block:
     - name: Enable repo mgmt with subscription-manager
-      ansible.builtin.command: subscription-manager config --rhsm.manage_repos=1
+      ansible.builtin.shell: subscription-manager config --rhsm.manage_repos=1
     - name: Remove subscriptions
       community.general.packaging.os.rhsm_repository:
         name: "*"
         state: absent
     - name: Unregister system
-      community.general.packaging.os.redhat_subscription:
+      community.general.redhat_subscription:
         state: absent
     - name: Clean local subscription data
-      ansible.builtin.command: subscription-manager clean
+      ansible.builtin.shell: subscription-manager clean
 - name: Remove yum package caches
   ansible.builtin.yum:
     autoremove: true
     lock_timeout: 60
 
 - name: Remove yum package lists
-  ansible.builtin.command: /usr/bin/yum -y clean all
+  ansible.builtin.shell: /usr/bin/yum -y clean all
 - name: Reset network interface IDs
   ansible.builtin.shell: sed -i '/^\(HWADDR\|UUID\)=/d' /etc/sysconfig/network-scripts/ifcfg-*
   when: packer_builder_type != "googlecompute"

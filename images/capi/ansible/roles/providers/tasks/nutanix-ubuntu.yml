@@ -46,7 +46,7 @@
     create: true
 
 - name: Nutanix iSCSI client tuning recommendations
-  community.general.files.ini_file:
+  community.general.ini_file:
     path: /etc/iscsi/iscsid.conf
     section: ""
     option: "{{ item.key }}"

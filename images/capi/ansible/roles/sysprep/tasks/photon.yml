@@ -18,7 +18,7 @@
     machine_id_mode: "0444"
 
 - name: Set hostname
-  ansible.builtin.command: hostnamectl set-hostname localhost.local
+  ansible.builtin.shell: hostnamectl set-hostname localhost.local
 - name: Remove the kickstart log
   ansible.builtin.file:
     state: absent
@@ -40,7 +40,7 @@
 
 - ansible.builtin.import_tasks: rpm_repos.yml
 - name: Remove tdnf package caches
-  ansible.builtin.command: /usr/bin/tdnf -y clean all
+  ansible.builtin.shell: /usr/bin/tdnf -y clean all
 - name: Lock root account
   ansible.builtin.user:
     name: root
