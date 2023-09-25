@@ -21,7 +21,7 @@
   when: disable_public_repos|bool
 
 - name: Disable repos
-  ansible.builtin.shell: mv {{ item.path }} {{ item.path }}.disabled
+  ansible.builtin.command: mv {{ item.path }} {{ item.path }}.disabled
   loop: "{{ repo_files.files }}"
   when: disable_public_repos|bool
 

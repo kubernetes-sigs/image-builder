@@ -18,7 +18,7 @@
     machine_id_mode: "0644"
 
 - name: Pin all installed packages with apt-mark
-  ansible.builtin.shell: dpkg-query -f '${binary:Package}\n' -W | xargs apt-mark hold
+  ansible.builtin.command: dpkg-query -f '${binary:Package}\n' -W | xargs apt-mark hold
 - name: Remove extra repos
   ansible.builtin.file:
     path: /etc/apt/sources.list.d/{{ item | basename }}
@@ -37,7 +37,7 @@
   when: disable_public_repos|default(false)|bool and reenable_public_repos|default(true)|bool
 
 - name: Enable repos
-  ansible.builtin.shell: mv {{ item.path }} {{ item.path | regex_replace('.disabled') }}
+  ansible.builtin.command: mv {{ item.path }} {{ item.path | regex_replace('.disabled') }}
   loop: "{{ repo_files.files }}"
   when: disable_public_repos|default(false)|bool and reenable_public_repos|default(true)|bool
 

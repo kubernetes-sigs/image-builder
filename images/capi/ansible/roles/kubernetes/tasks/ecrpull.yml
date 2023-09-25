@@ -11,7 +11,7 @@
   register: images_list
 
 - name: Log into ECR
-  ansible.builtin.shell: >
+  ansible.builtin.command: >
     aws ecr get-authorization-token
     --registry-ids {{ kubernetes_container_registry.split('.')[0] }}
     --region {{ kubernetes_container_registry.split('.')[3] }}
@@ -20,7 +20,7 @@
   register: credentials
 
 - name: Pull images
-  ansible.builtin.shell: crictl pull --creds {{ credentials.stdout | b64decode }} {{ item }}
+  ansible.builtin.command: crictl pull --creds {{ credentials.stdout | b64decode }} {{ item }}
   loop: "{{ images_list.stdout_lines }}"
 
 - name: Delete kubeadm config

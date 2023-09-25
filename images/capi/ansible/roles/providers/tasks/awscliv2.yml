@@ -16,7 +16,7 @@
     remote_src: true
 
 - name: Install AWS CLI v2
-  ansible.builtin.shell: /tmp/aws/install -i /usr/local/aws-cli -b /usr/local/sbin
+  ansible.builtin.command: /tmp/aws/install -i /usr/local/aws-cli -b /usr/local/sbin
 - name: Remove temporary files
   ansible.builtin.file:
     path: /tmp/aws*
