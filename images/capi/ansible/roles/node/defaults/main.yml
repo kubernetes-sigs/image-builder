@@ -46,6 +46,12 @@ rh8_rpms:
   - python3-netifaces
   - python3-requests
 
+# Used for RedHat based distributions ==  8 (ex. RHEL-9, RockyLinux-9 etc.)
+rh9_rpms:
+  - nftables
+  - python3-netifaces
+  - python3-requests
+
 common_debs:
   - auditd
   - apt-transport-https

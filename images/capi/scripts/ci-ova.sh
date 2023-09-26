@@ -22,7 +22,7 @@ CAPI_ROOT=$(dirname "${BASH_SOURCE[0]}")/..
 cd "${CAPI_ROOT}" || exit 1
 
 export ARTIFACTS="${ARTIFACTS:-${PWD}/_artifacts}"
-TARGETS=("ubuntu-2004" "ubuntu-2204" "photon-3" "photon-4" "photon-5" "rockylinux-8" "flatcar")
+TARGETS=("ubuntu-2004" "ubuntu-2204" "photon-3" "photon-4" "photon-5" "rockylinux-8" "rockylinux-9" "flatcar")
 
 on_exit() {
   #Cleanup VMs
@@ -96,7 +96,7 @@ declare -A PIDS
 for target in ${TARGETS[@]};
 do
   export PACKER_VAR_FILES="ci-${target}.json scripts/ci-disable-goss-inspect.json"
-  if [[ "${target}" == 'photon-'* || "${target}" == 'rockylinux-8' || "${target}" == 'ubuntu-2204' ]]; then
+  if [[ "${target}" == 'photon-'* || "${target}" == 'rockylinux-8' || "${target}" == 'rockylinux-9' || "${target}" == 'ubuntu-2204' ]]; then
 cat << EOF > ci-${target}.json
 {
 "build_version": "capv-ci-${target}-${TIMESTAMP}",
