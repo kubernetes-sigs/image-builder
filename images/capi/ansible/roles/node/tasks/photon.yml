@@ -51,3 +51,9 @@
     backrefs: true
     regexp: "^(?!.*apparmor=0)(photon_cmdline.*)"
     line: '\1 apparmor=0'
+
+- name: Disable tdnf cache timer
+  systemd:
+    name: tdnf-cache-updateinfo.timer
+    enabled: false
+    state: stopped
