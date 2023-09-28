@@ -322,8 +322,7 @@
         "vsphere-iso-base"
       ],
       "inline": [
-        "cd {{user `output_dir`}}",
-        "../../hack/image-build-ova.py --vmx {{user `vmx_version`}} --eula ../../hack/ovf_eula.txt --ovf_template ../../hack/ovf_template.xml --vmdk_file {{user `build_version`}}-disk-0.vmdk"
+        "./hack/image-build-ova.py --vmx {{user `vmx_version`}} --eula ./hack/ovf_eula.txt --ovf_template ./hack/ovf_template.xml --vmdk_file {{user `build_version`}}-disk-0.vmdk {{user `output_dir`}}"
       ],
       "name": "vsphere",
       "type": "shell-local"
