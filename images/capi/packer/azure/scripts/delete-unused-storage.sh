@@ -17,7 +17,7 @@
 # building CAPZ reference images. It also archives existing accounts into one
 # main storage account to reduce the limited number of accounts in use.
 # Usage:
-#  <DRYRUN=true|false> delete-unused-storage.sh
+#  <DRY_RUN=true|false> delete-unused-storage.sh
 #
 # The `pub` tool (https://github.com/devigned/pub) and the `az` CLI tool
 # (https://docs.microsoft.com/en-us/cli/azure/install-azure-cli) must be found
@@ -32,10 +32,9 @@
 #   AZURE_TENANT_ID
 #
 # By default, the script will not modify any resources. Pass the environment variable
-# DRYRUN=false to enable the script to archive and to delete the storage accounts.
+# DRY_RUN=false to enable the script to archive and to delete the storage accounts.
 
 set -o errexit
-set -o nounset
 set -o pipefail
 
 [[ -n ${DEBUG:-} ]] && set -o xtrace
@@ -46,18 +45,46 @@ OFFERS=${OFFERS:-capi capi-windows}
 PREFIX=${PREFIX:-capi}
 LONG_PREFIX=${LONG_PREFIX:-${PREFIX}[0-9]{10\}}
 ARCHIVE_STORAGE_ACCOUNT=${ARCHIVE_STORAGE_ACCOUNT:-${PREFIX}archive}
-DRYRUN=${DRYRUN:-true}
+DAYS_OLD=${DAYS_OLD:-30}
+DRY_RUN=${DRY_RUN:-true}
+PUB_VERSION=${PUB_VERSION:-"v0.3.3"}
 RED='\033[0;31m'
-NC='\033[0m' 
+NC='\033[0m'
 
-if ${DRYRUN}; then
-  echo "DRYRUN: This script will not copy or delete any resources."
+required_env_vars=(
+    "AZURE_CLIENT_ID"
+    "AZURE_CLIENT_SECRET"
+    "AZURE_TENANT_ID"
+    "AZURE_CLIENT_ID_VHD"
+    "AZURE_CLIENT_SECRET_VHD"
+    "AZURE_SUBSCRIPTION_ID_VHD"
+    "AZURE_TENANT_ID_VHD"
+)
+
+for v in "${required_env_vars[@]}"
+do
+    if [ -z "${!v}" ]; then
+        echo "$v was not set!"
+        exit 1
+    fi
+done
+
+set -o nounset
+
+if ${DRY_RUN}; then
+  echo "DRY_RUN: This script will not copy or delete any resources."
   ECHO=echo
 else
   ECHO=
 fi
 
+echo "Getting pub..."
+curl -fsSL https://github.com/devigned/pub/releases/download/${PUB_VERSION}/pub_${PUB_VERSION}_linux_amd64.tar.gz -o pub.tgz; tar -xzf pub.tgz; mv ./pub_linux_amd64 ./pub
+export PATH=$PATH:$(pwd)
 which pub &> /dev/null || (echo "Please install pub from https://github.com/devigned/pub/releases" && exit 1)
+
+az login --service-principal -u ${AZURE_CLIENT_ID_VHD} -p ${AZURE_CLIENT_SECRET_VHD} --tenant ${AZURE_TENANT_ID_VHD}
+az account set -s ${AZURE_SUBSCRIPTION_ID_VHD}
 
 # Get URLs in use by the marketplace offers
 URLS=""
@@ -88,8 +115,8 @@ for account in $(az storage account list -g "${RESOURCE_GROUP}" -o tsv --query "
   IFS=$'\t' read -r storage_account creation_time <<< "$account"
   created=$(date -d "${creation_time}" +%s 2>/dev/null || date -j -f "%F" "${creation_time}" +%s 2>/dev/null)
   age=$(( (NOW - created) / 86400 ))
-  # if it's older than a month
-  if [[ $age -gt 30 ]]; then
+  # if it's too old
+  if [[ $age -gt ${DAYS_OLD} ]]; then
     # and it has the right naming pattern
     if [[ ${storage_account} =~ ^${LONG_PREFIX} ]]; then
       # but isn't referenced in the offer osVhdUrls
