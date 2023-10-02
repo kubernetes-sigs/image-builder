@@ -19,10 +19,10 @@
 
 - name: Add the Kubernetes repo
   apt_repository:
-    repo: "deb {{ kubernetes_deb_repo }} /"
+    repo: deb {{ kubernetes_deb_repo }} /
     update_cache: true
     state: present
-    mode: '0644'
+    mode: "0644"
     filename: kubernetes
 
 - name: Install Kubernetes
@@ -30,7 +30,7 @@
     name: "{{ packages }}"
   vars:
     packages:
-      - "kubelet={{ kubernetes_deb_version }}"
-      - "kubeadm={{ kubernetes_deb_version }}"
-      - "kubectl={{ kubernetes_deb_version }}"
-      - "kubernetes-cni={{ kubernetes_cni_deb_version }}"
+      - kubelet={{ kubernetes_deb_version }}
+      - kubeadm={{ kubernetes_deb_version }}
+      - kubectl={{ kubernetes_deb_version }}
+      - kubernetes-cni={{ kubernetes_cni_deb_version }}

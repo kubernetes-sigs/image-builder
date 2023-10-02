@@ -94,6 +94,7 @@ ansible/roles/providers/tasks/hcloud.yml fqcn[action-core]
 ansible/roles/providers/tasks/main.yml fqcn[action-core]
 ansible/roles/providers/tasks/main.yml name[missing]
 ansible/roles/providers/tasks/main.yml risky-file-permissions
+ansible/roles/providers/tasks/main.yml yaml[line-length]
 ansible/roles/providers/tasks/mariner.yml fqcn[action-core]
 ansible/roles/providers/tasks/nutanix-redhat.yml fqcn[action-core]
 ansible/roles/providers/tasks/nutanix-redhat.yml fqcn[action]
@@ -159,7 +160,6 @@ ansible/roles/sysprep/defaults/main.yml var-naming[no-role-prefix]
 ansible/roles/sysprep/tasks/debian.yml fqcn[action-core]
 ansible/roles/sysprep/tasks/debian.yml no-changed-when
 ansible/roles/sysprep/tasks/debian.yml risky-shell-pipe
-ansible/roles/sysprep/tasks/debian.yml yaml[commas]
 ansible/roles/sysprep/tasks/flatcar.yml fqcn[action-core]
 ansible/roles/sysprep/tasks/flatcar.yml no-changed-when
 ansible/roles/sysprep/tasks/main.yml fqcn[action-core]
@@ -167,7 +167,6 @@ ansible/roles/sysprep/tasks/main.yml name[missing]
 ansible/roles/sysprep/tasks/main.yml no-changed-when
 ansible/roles/sysprep/tasks/main.yml risky-file-permissions
 ansible/roles/sysprep/tasks/main.yml risky-shell-pipe
-ansible/roles/sysprep/tasks/main.yml yaml[commas]
 ansible/roles/sysprep/tasks/mariner.yml fqcn[action-core]
 ansible/roles/sysprep/tasks/mariner.yml name[missing]
 ansible/roles/sysprep/tasks/mariner.yml no-changed-when
@@ -188,9 +187,7 @@ ansible/windows/node_windows.yml fqcn[action-core]
 ansible/windows/node_windows.yml fqcn[action]
 ansible/windows/node_windows.yml name[missing]
 ansible/windows/node_windows.yml name[play]
-ansible/windows/node_windows.yml schema[playbook]
 ansible/windows/roles/cloudbase-init/tasks/main.yml fqcn[action]
-ansible/windows/roles/cloudbase-init/tasks/main.yml schema[tasks]
 ansible/windows/roles/debug/defaults/main.yml var-naming[no-role-prefix]
 ansible/windows/roles/debug/tasks/main.yml fqcn[action]
 ansible/windows/roles/gmsa/tasks/gmsa_keyvault.yml fqcn[action]
@@ -216,7 +213,6 @@ ansible/windows/roles/load_additional_components/tasks/registry.yml fqcn[action]
 ansible/windows/roles/load_additional_components/tasks/url.yml fqcn[action]
 ansible/windows/roles/providers/defaults/main.yml var-naming[no-role-prefix]
 ansible/windows/roles/providers/tasks/azure.yml fqcn[action]
-ansible/windows/roles/providers/tasks/azure.yml schema[tasks]
 ansible/windows/roles/providers/tasks/azure.yml yaml[line-length]
 ansible/windows/roles/providers/tasks/main.yml fqcn[action-core]
 ansible/windows/roles/providers/tasks/main.yml name[missing]
@@ -233,4 +229,3 @@ ansible/windows/roles/systemprep/tasks/main.yml ignore-errors
 ansible/windows/roles/systemprep/tasks/main.yml name[missing]
 ansible/windows/roles/systemprep/tasks/ssh-archive.yml fqcn[action]
 ansible/windows/roles/systemprep/tasks/ssh-feature.yml fqcn[action]
-ansible/windows/roles/systemprep/tasks/ssh-feature.yml schema[tasks]

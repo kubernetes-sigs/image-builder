@@ -14,8 +14,8 @@
 ---
 - name: Download gMSA Key Vault plugin
   win_get_url:
-    url: '{{ gmsa_keyvault_url }}'
-    dest: '{{ tempdir.stdout | trim }}\windows-gmsa-ccgakvplugin.zip'
+    url: "{{ gmsa_keyvault_url }}"
+    dest: "{{ tempdir.stdout | trim }}\\windows-gmsa-ccgakvplugin.zip"
   async: 1800
   poll: 60
   retries: 5
@@ -25,8 +25,8 @@
 
 - name: Unzip gMSA Key Vault Archive
   win_unzip:
-    src: '{{ gmsadownload.dest }}'
-    dest: '{{ kubernetes_install_path }}'
+    src: "{{ gmsadownload.dest }}"
+    dest: "{{ kubernetes_install_path }}"
     recurse: false
     delete_archive: true
 
@@ -40,7 +40,7 @@
 - name: Copy gMSA Key Vault installer file
   win_copy:
     src: install-gmsa-keyvault-plugin.ps1
-    dest: '{{ kubernetes_install_path }}'
+    dest: "{{ kubernetes_install_path }}"
 
 - name: Register gMSA Key Vault plugin
   win_shell: |

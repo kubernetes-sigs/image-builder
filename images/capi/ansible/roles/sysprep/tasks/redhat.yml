@@ -27,7 +27,7 @@
 - name: Exclude the packages from upgrades
   lineinfile:
     path: /etc/yum.conf
-    regexp: '^exclude='
+    regexp: ^exclude=
     line: exclude={{ package_list }}
 
 - import_tasks: rpm_repos.yml
@@ -57,7 +57,7 @@
       command: subscription-manager config --rhsm.manage_repos=1
     - name: Remove subscriptions
       rhsm_repository:
-        name: '*'
+        name: "*"
         state: absent
     - name: Unregister system
       redhat_subscription:
