@@ -36,7 +36,7 @@
 - name: Exclude packages from upgrade
   lineinfile:
     path: /etc/tdnf/tdnf.conf
-    regexp: ^excludepkgs=
+    regexp: '^excludepkgs='
     line: excludepkgs={{ package_list }}
 
 - import_tasks: rpm_repos.yml

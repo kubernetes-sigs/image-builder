@@ -15,8 +15,9 @@
 debs: ""
 extra_debs: ""
 pinned_debs: []
-redhat_epel_rpm: https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-epel_rpm_gpg_key: https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-7
+
+redhat_epel_rpm: "https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm"
+epel_rpm_gpg_key: "https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-7"
 rpms: ""
 extra_rpms: ""
 

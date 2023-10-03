@@ -14,7 +14,7 @@
 ---
 - name: Remove extra repos
   file:
-    path: /etc/yum.repos.d/{{ item | basename }}
+    path: "/etc/yum.repos.d/{{ item | basename }}"
     state: absent
   loop: "{{ extra_repos.split() }}"
   when: remove_extra_repos and extra_repos != ""
@@ -23,11 +23,11 @@
   find:
     depth: 1
     paths: /etc/yum.repos.d
-    patterns: "*.repo.disabled"
+    patterns: '*.repo.disabled'
   register: repo_files
   when: disable_public_repos|default(false)|bool and reenable_public_repos|default(true)|bool
 
 - name: Enable repos
-  command: mv {{ item.path }} {{ item.path | regex_replace('.disabled') }}
+  command: "mv {{ item.path }} {{ item.path | regex_replace('.disabled') }}"
   loop: "{{ repo_files.files }}"
   when: disable_public_repos|default(false)|bool and reenable_public_repos|default(true)|bool

@@ -1,4 +1,3 @@
----
 - name: Download cloud-int outscale package for Ubuntu
   copy:
     src: files/tmp/cloud-init_22.2-outscale.deb

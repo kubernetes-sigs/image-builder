@@ -1,4 +1,3 @@
----
 - name: Create kubeadm config file
   template:
     dest: /etc/kubeadm.yml
@@ -6,7 +5,7 @@
     mode: "0600"
 
 - name: Kubeadm pull images
-  shell: kubeadm config images pull --config /etc/kubeadm.yml --cri-socket {{ containerd_cri_socket }}
+  shell: 'kubeadm config images pull --config /etc/kubeadm.yml --cri-socket {{ containerd_cri_socket }}'
 
 - name: Delete kubeadm config
   file:

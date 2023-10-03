@@ -14,8 +14,8 @@
 ---
 - name: Get wins
   win_get_url:
-    url: "{{ wins_url }}"
-    dest: "{{ kubernetes_install_path }}"
+    url: '{{ wins_url }}'
+    dest: '{{ kubernetes_install_path }}'
   retries: 5
   delay: 3
   register: wins_download

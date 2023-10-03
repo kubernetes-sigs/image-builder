@@ -35,7 +35,7 @@
   become: true
   file:
     src: "{{ item.path }}"
-    path: /bin/{{ item.path | basename }}
+    path: "/bin/{{ item.path | basename }}"
     state: link
   with_items: "{{ find.files }}"
 

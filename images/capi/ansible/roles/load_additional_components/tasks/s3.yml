@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
+
 - name: Install packages for interacting with s3 endpoint
   become: true
   ansible.builtin.apt:

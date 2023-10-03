@@ -13,4 +13,4 @@
 # limitations under the License.
 ---
 
-gmsa_keyvault: "{{ true if (gmsa_keyvault_url is defined) and (gmsa_keyvault_url | length > 0) else false }}"
+gmsa_keyvault: '{{ true if (gmsa_keyvault_url is defined) and (gmsa_keyvault_url | length > 0) else false }}'

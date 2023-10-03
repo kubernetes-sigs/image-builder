@@ -14,8 +14,8 @@
 ---
 - name: Download nssm
   win_get_url:
-    url: "{{ nssm_url }}"
-    dest: "{{ kubernetes_install_path }}\\"
+    url: '{{ nssm_url }}'
+    dest: '{{ kubernetes_install_path }}\'
   retries: 5
   delay: 3
   register: nssm_download
@@ -24,16 +24,16 @@
 - name: Create kubelet start file for nssm
   win_template:
     src: templates/StartKubelet.ps1
-    dest: "{{ kubernetes_install_path }}\\StartKubelet.ps1"
+    dest: '{{ kubernetes_install_path }}\StartKubelet.ps1'
 
 - name: Install kubelet via nssm
   win_nssm:
     name: kubelet
     start_mode: auto
     state: present
-    application: "%SystemRoot%\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
-    arguments: -ExecutionPolicy Bypass -NoProfile {{ kubernetes_install_path }}\StartKubelet.ps1
+    application: '%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe'
+    arguments: '-ExecutionPolicy Bypass -NoProfile {{ kubernetes_install_path }}\StartKubelet.ps1'
     app_rotate_bytes: 10485760
-    stderr_file: "{{ systemdrive.stdout | trim }}\\var\\log\\kubelet\\kubelet.err.log"
-    stdout_file: "{{ systemdrive.stdout | trim }}\\var\\log\\kubelet\\kubelet.log"
+    stderr_file: '{{ systemdrive.stdout | trim }}\var\log\kubelet\kubelet.err.log'
+    stdout_file: '{{ systemdrive.stdout | trim }}\var\log\kubelet\kubelet.log'
     app_rotate_online: 1

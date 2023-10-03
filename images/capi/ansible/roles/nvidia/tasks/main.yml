@@ -13,6 +13,7 @@
 # limitations under the License.
 
 ---
+
 - name: Unload nouveau
   modprobe:
     name: nouveau
@@ -106,7 +107,7 @@
 - name: Install NVIDIA driver
   become: true
   ansible.builtin.command:
-    cmd: /tmp/NVIDIA-Linux-gridd.run -s --dkms --no-cc-version-check
+    cmd: "/tmp/NVIDIA-Linux-gridd.run -s --dkms --no-cc-version-check"
 
 - name: Remove the NVIDIA driver installer file
   file:

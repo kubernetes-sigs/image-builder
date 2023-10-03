@@ -17,10 +17,10 @@
     path: "{{ item }}"
     state: directory
   loop:
-    - "{{ systemdrive.stdout | trim }}\\var\\log\\kubelet"
-    - "{{ systemdrive.stdout | trim }}\\etc\\kubernetes"
-    - "{{ systemdrive.stdout | trim }}\\etc\\kubernetes\\manifests"
-    - "{{ systemdrive.stdout | trim }}\\etc\\kubernetes\\pki"
+    - '{{ systemdrive.stdout | trim }}\var\log\kubelet'
+    - '{{ systemdrive.stdout | trim }}\etc\kubernetes'
+    - '{{ systemdrive.stdout | trim }}\etc\kubernetes\manifests'
+    - '{{ systemdrive.stdout | trim }}\etc\kubernetes\pki'
 
 # this is required in 1.22 and below due to invalid absolute path handling
 # https://github.com/kubernetes-sigs/image-builder/issues/853

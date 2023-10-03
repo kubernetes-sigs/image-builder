@@ -108,7 +108,7 @@
     path: HKLM:\SOFTWARE\OpenSSH
     state: present
     name: DefaultShell
-    data: "{{ systemdrive.stdout | trim }}\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+    data: '{{ systemdrive.stdout | trim }}\Windows\System32\WindowsPowerShell\v1.0\powershell.exe'
     type: string
 
 - name: Create SSH program data folder
@@ -130,7 +130,7 @@
     path: HKLM:\SYSTEM\CurrentControlSet\Services\hns\State
     state: present
     name: HNSControlFlag
-    data: "0120"
+    data: 0x50
     type: dword
   when: distribution_version == "2019"
 

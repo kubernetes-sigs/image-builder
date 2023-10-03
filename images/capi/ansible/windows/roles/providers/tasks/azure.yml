@@ -9,6 +9,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
+
 - name: Create Azure wireserver access group
   ansible.windows.win_group:
     name: WireServerAccess

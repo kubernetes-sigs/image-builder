@@ -25,4 +25,4 @@
   lineinfile:
     path: "{{ cloud_cfg_file }}"
     regexp: "^repo_upgrade: security"
-    line: "repo_upgrade: none"
+    line: 'repo_upgrade: none'

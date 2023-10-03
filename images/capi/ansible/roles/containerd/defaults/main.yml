@@ -12,4 +12,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-containerd_config_file: etc/containerd/config.toml
+containerd_config_file: "etc/containerd/config.toml"

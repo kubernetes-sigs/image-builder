@@ -26,7 +26,7 @@
 - name: Download containerd
   get_url:
     url: "{{ containerd_url }}"
-    checksum: sha256:{{ containerd_sha256 }}
+    checksum: "sha256:{{ containerd_sha256 }}"
     dest: /tmp/containerd.tar.gz
     mode: "0600"
 
@@ -35,8 +35,8 @@
     sha256sums: "{{ containerd_wasm_shims_sha256 | from_json }}"
   get_url:
     url: "{{ containerd_wasm_shims_url | replace('<SHIM>', item) }}"
-    checksum: sha256:{{ sha256sums[item] }}
-    dest: /tmp/{{ item }}_wasm_shim.tar.gz
+    checksum: "sha256:{{ sha256sums[item] }}"
+    dest: "/tmp/{{ item }}_wasm_shim.tar.gz"
     mode: "0600"
   when: containerd_wasm_shims_runtimes | length > 0
   loop: "{{ containerd_wasm_shims_runtimes | split(',') }}"
@@ -62,7 +62,7 @@
 - name: Unpack containerd-wasm-shims
   unarchive:
     remote_src: true
-    src: /tmp/{{ item }}_wasm_shim.tar.gz
+    src: "/tmp/{{ item }}_wasm_shim.tar.gz"
     dest: "{{ sysusr_prefix }}/bin"
     extra_opts:
       - --no-overwrite-dir
@@ -77,18 +77,18 @@
     extra_opts:
       - --absolute-names
       - --transform
-      - s@usr@opt@
+      - 's@usr@opt@'
       - --transform
-      - s@sbin@bin@
+      - 's@sbin@bin@'
       - --transform
-      - s@opt/local@opt@
+      - 's@opt/local@opt@'
   when: ansible_os_family == "Flatcar"
 
 # Install containerd Wasm shims specified in a comma-separated string. Known runtimes are 'lunatic', 'slight', 'spin', and 'wws'.
 - name: Unpack containerd-wasm-shims for Flatcar to /opt/bin
   unarchive:
     remote_src: true
-    src: /tmp/{{ item }}_wasm_shim.tar.gz
+    src: "/tmp/{{ item }}_wasm_shim.tar.gz"
     dest: "{{ sysusr_prefix }}/bin"
     extra_opts:
       - --no-overwrite-dir

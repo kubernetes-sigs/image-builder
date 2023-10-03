@@ -28,10 +28,10 @@
     lock_timeout: 60
   vars:
     packages:
-      - kubelet-{{ kubernetes_rpm_version }}
-      - kubeadm-{{ kubernetes_rpm_version }}
-      - kubectl-{{ kubernetes_rpm_version }}
-      - kubernetes-cni-{{ kubernetes_cni_rpm_version }}
+      - "kubelet-{{ kubernetes_rpm_version }}"
+      - "kubeadm-{{ kubernetes_rpm_version }}"
+      - "kubectl-{{ kubernetes_rpm_version }}"
+      - "kubernetes-cni-{{ kubernetes_cni_rpm_version }}"
 
 - name: Allow Kubernetes API server through iptables
   iptables:
@@ -40,7 +40,7 @@
     destination_port: "{{ kubernetes_apiserver_port }}"
     jump: ACCEPT
     state: present
-    comment: Kubernetes API server
+    comment: "Kubernetes API server"
 
 - name: Persist iptables configuration
   shell: iptables-save -t filter > /etc/systemd/scripts/ip4save

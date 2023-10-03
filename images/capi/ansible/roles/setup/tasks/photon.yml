@@ -43,19 +43,19 @@
 - name: Increase tmpfs size
   mount:
     path: /tmp
-    src: tmpfs
+    src: "tmpfs"
     fstype: tmpfs
-    opts: size=5G
+    opts: "size=5G"
     state: remounted
 
 - name: Reset iptables rules input
   replace:
     path: /etc/systemd/scripts/ip4save
-    regexp: INPUT DROP
-    replace: INPUT ACCEPT
+    regexp: 'INPUT DROP'
+    replace: 'INPUT ACCEPT'
 
 - name: Reset ip6tables rules input
   replace:
     path: /etc/systemd/scripts/ip6save
-    regexp: INPUT DROP
-    replace: INPUT ACCEPT
+    regexp: 'INPUT DROP'
+    replace: 'INPUT ACCEPT'

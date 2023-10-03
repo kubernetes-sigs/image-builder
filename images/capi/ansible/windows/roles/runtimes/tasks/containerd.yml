@@ -14,10 +14,10 @@
 ---
 - name: Download containerd
   win_get_url:
-    url: "{{ containerd_url }}"
-    dest: "{{ tempdir.stdout | trim }}\\containerd.tar.gz"
-    checksum: "{{ containerd_sha256 }}"
-    checksum_algorithm: sha256
+    url: '{{ containerd_url }}'
+    dest: '{{ tempdir.stdout | trim }}\containerd.tar.gz'
+    checksum: '{{ containerd_sha256 }}'
+    checksum_algorithm: "sha256"
     url_timeout: 300
   register: containerd
   retries: 5
@@ -29,15 +29,15 @@
     path: "{{ item }}"
     state: directory
   loop:
-    - "{{ programfiles.stdout | trim }}\\containerd"
-    - "{{ alluserprofile.stdout | trim }}\\containerd\\state"
-    - "{{ alluserprofile.stdout | trim }}\\containerd\\root"
-    - "{{ systemdrive.stdout | trim }}/opt/cni/bin"
-    - "{{ systemdrive.stdout | trim }}/etc/cni/net.d"
+    - '{{ programfiles.stdout | trim }}\containerd'
+    - '{{ alluserprofile.stdout | trim }}\containerd\state'
+    - '{{ alluserprofile.stdout | trim }}\containerd\root'
+    - '{{ systemdrive.stdout | trim }}/opt/cni/bin'
+    - '{{ systemdrive.stdout | trim }}/etc/cni/net.d'
 
 - name: Check if containerd exists
   win_stat:
-    path: "{{ programfiles.stdout | trim }}\\containerd\\containerd.exe"
+    path: '{{ programfiles.stdout | trim }}\containerd\containerd.exe'
   register: containerd_file
 
 - name: Unpack containerd binaries
@@ -47,12 +47,12 @@
 - name: Add containerd to path
   win_path:
     elements:
-      - "{{ programfiles.stdout | trim }}\\containerd"
+      - '{{ programfiles.stdout | trim }}\containerd'
     scope: machine
 
 - name: Copy containerd config file {{ containerd_config_file }}
   win_template:
-    dest: "{{ programfiles.stdout | trim }}\\containerd\\config.toml"
+    dest: '{{ programfiles.stdout | trim }}\containerd\config.toml'
     src: "{{ containerd_config_file }}"
   vars:
     allusersprofile: "{{ alluserprofile.stdout | trim }}"

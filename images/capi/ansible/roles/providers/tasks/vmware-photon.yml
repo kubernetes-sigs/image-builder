@@ -16,7 +16,7 @@
 - name: Install cloud-init and tools for VMware Photon OS
   command: tdnf install {{ packages }} -y
   vars:
-    packages: cloud-init cloud-utils python3-netifaces
+    packages: "cloud-init cloud-utils python3-netifaces"
 
 - name: Remove cloud-init /etc/cloud/cloud.cfg.d/99-disable-networking-config.cfg
   file:
@@ -63,8 +63,8 @@
     dest: "{{ item.dest }}"
     mode: a+x
   vars:
-    server_dir: /var/lib/dhclient
-    chrony_helper_dir: /usr/libexec
+    server_dir: "/var/lib/dhclient"
+    chrony_helper_dir: "/usr/libexec"
   loop:
     - { src: files/etc/networkd-dispatcher/routable.d/20-chrony.j2, dest: /etc/networkd-dispatcher/routable.d/20-chrony }
     - { src: files/etc/networkd-dispatcher/off.d/20-chrony.j2, dest: /etc/networkd-dispatcher/off.d/20-chrony }

@@ -16,7 +16,7 @@
 
 - name: Perform a yum update
   yum:
-    name: "*"
+    name: '*'
     state: latest
     lock_timeout: 60
 

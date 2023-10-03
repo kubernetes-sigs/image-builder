@@ -14,14 +14,14 @@
 ---
 - name: Create temporary download dir
   win_file:
-    path: "{{ tempdir.stdout | trim }}\\images"
+    path: '{{ tempdir.stdout | trim }}\images'
     state: directory
   when: runtime == "containerd"
 
 - name: Download additional images from url
   win_get_url:
     url: "{{ item }}"
-    dest: "{{ tempdir.stdout | trim }}\\images\\"
+    dest: '{{ tempdir.stdout | trim }}\images\'
   register: images
   loop: "{{ additional_url_images_list.split(',') }}"
   async: 1800
@@ -79,5 +79,5 @@
 - name: Remove downloaded files
   win_file:
     state: absent
-    path: "{{ tempdir.stdout | trim }}\\images"
+    path: '{{ tempdir.stdout | trim }}\images'
   when: runtime == "containerd"

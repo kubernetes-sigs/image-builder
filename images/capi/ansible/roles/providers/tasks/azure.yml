@@ -30,7 +30,7 @@
 - name: Ensure makestep parameter set as per Azure recommendation
   lineinfile:
     path: /etc/chrony/chrony.conf
-    regexp: ^makestep
+    regexp: '^makestep'
     line: makestep 1.0 -1
 
 - name: Install iptables persistence

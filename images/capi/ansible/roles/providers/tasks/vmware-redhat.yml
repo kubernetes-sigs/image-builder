@@ -35,15 +35,15 @@
 # cloud-init is < 21.3
 - name: Download cloud-init datasource for VMware Guestinfo
   get_url:
-    url: "{{ guestinfo_datasource_script }}"
+    url: '{{ guestinfo_datasource_script }}'
     dest: /tmp/cloud-init-vmware.sh
     mode: "0700"
 
 - name: Execute cloud-init-vmware.sh
   shell: bash -o errexit -o pipefail /tmp/cloud-init-vmware.sh
   environment:
-    REPO_SLUG: "{{ guestinfo_datasource_slug }}"
-    GIT_REF: "{{ guestinfo_datasource_ref }}"
+    REPO_SLUG: '{{ guestinfo_datasource_slug }}'
+    GIT_REF: '{{ guestinfo_datasource_ref }}'
 
 - name: Remove cloud-init-vmware.sh
   file:
