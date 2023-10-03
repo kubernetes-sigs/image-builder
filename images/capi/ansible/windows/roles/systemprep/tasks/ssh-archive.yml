@@ -1,3 +1,4 @@
+---
 # Copyright 2021 The Kubernetes Authors.
 
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,8 +18,8 @@
     path: "{{ item }}"
     state: directory
   loop:
-    - '{{ programfiles.stdout | trim }}\OpenSSH'
-    - '{{ alluserprofile.stdout | trim }}\ssh'
+    - "{{ programfiles.stdout | trim }}\\OpenSSH"
+    - "{{ alluserprofile.stdout | trim }}\\ssh"
 
 # Win32-OpenSSH requires SYSTEM and Administrator groups having Write
 # permissions on directory 'C:\Program Files\OpenSSH', authenticated
@@ -37,23 +38,23 @@
 # to the sshd server, just remove it.
 - name: Disable inheritance of OpenSSH directory
   win_acl_inheritance:
-    path: '{{ programfiles.stdout | trim }}\OpenSSH'
+    path: "{{ programfiles.stdout | trim }}\\OpenSSH"
     state: absent
     reorganize: true
 - name: Remove permission for Users
   win_acl:
-    path: '{{ programfiles.stdout | trim }}\OpenSSH'
+    path: "{{ programfiles.stdout | trim }}\\OpenSSH"
     user: BUILTIN\Users
     rights: ReadAndExecute,Synchronize
     type: allow
     state: absent
-    inherit: 'None'
-    propagation: 'None'
+    inherit: None
+    propagation: None
 
 - name: Download OpenSSH Archive
   win_get_url:
-    url: '{{ ssh_source_url }}'
-    dest: '{{ tempdir.stdout | trim }}\OpenSSH.zip'
+    url: "{{ ssh_source_url }}"
+    dest: "{{ tempdir.stdout | trim }}\\OpenSSH.zip"
   register: ssh
   retries: 5
   delay: 3
@@ -61,8 +62,8 @@
 
 - name: Unzip OpenSSH Archive
   win_unzip:
-    src: '{{ ssh.dest }}'
-    dest: '{{ tempdir.stdout | trim }}'
+    src: "{{ ssh.dest }}"
+    dest: "{{ tempdir.stdout | trim }}"
     recurse: false
     delete_archive: true
 

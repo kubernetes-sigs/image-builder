@@ -26,8 +26,8 @@
 
 - name: Symlink cri-tools
   file:
-    src: "/usr/local/bin/{{ item }}"
-    dest: "/usr/bin/{{ item }}"
+    src: /usr/local/bin/{{ item }}
+    dest: /usr/bin/{{ item }}
     mode: "0777"
     state: link
     force: true

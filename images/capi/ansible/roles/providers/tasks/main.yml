@@ -22,8 +22,7 @@
   when: packer_builder_type.startswith('outscale')
 
 - include_tasks: vmware.yml
-  when: packer_builder_type is search('vmware') or
-    packer_builder_type is search('vsphere')
+  when: packer_builder_type is search('vmware') or packer_builder_type is search('vsphere')
 
 - include_tasks: googlecompute.yml
   when: packer_builder_type.startswith('googlecompute')
@@ -35,17 +34,13 @@
   when: packer_builder_type.startswith('oracle-oci')
 
 - include_tasks: qemu.yml
-  when: packer_builder_type is search('qemu') and
-    build_target is not search('raw')
+  when: packer_builder_type is search('qemu') and build_target is not search('raw')
 
 - include_tasks: cloudstack.yml
-  when: packer_builder_type is search('qemu') and
-    provider is defined and
-    provider is search('cloudstack')
+  when: packer_builder_type is search('qemu') and provider is defined and provider is search('cloudstack')
 
 - include_tasks: raw.yml
-  when: packer_builder_type is search('qemu') and
-    build_target is search('raw')
+  when: packer_builder_type is search('qemu') and build_target is search('raw')
 
 - include_tasks: nutanix.yml
   when: packer_builder_type is search('nutanix')
@@ -132,8 +127,5 @@
     state: started
     daemon_reload: true
     name: chronyd
-  when: (packer_builder_type.startswith('amazon') or
-    packer_builder_type.startswith('azure') or
-    packer_builder_type is search('vmware') or
-    packer_builder_type is search('vsphere')) and
-    ansible_os_family != "Flatcar"
+  when: (packer_builder_type.startswith('amazon') or packer_builder_type.startswith('azure') or packer_builder_type is search('vmware') or packer_builder_type is
+    search('vsphere')) and ansible_os_family != "Flatcar"
