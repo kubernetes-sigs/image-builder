@@ -237,6 +237,8 @@
       "resource_pool": "{{user `resource_pool`}}",
       "shutdown_command": "echo '{{user `ssh_password`}}' | sudo -S -E sh -c 'userdel -f -r {{user `ssh_username`}} && rm -f /etc/sudoers.d/{{user `ssh_username` }} && {{user `shutdown_command`}}'",
       "ssh_password": "{{user `ssh_password`}}",
+      "ssh_proxy_host": "{{user `ssh_proxy_host`}}",
+      "ssh_proxy_port": "{{user `ssh_proxy_port`}}",
       "ssh_timeout": "4h",
       "ssh_username": "{{user `ssh_username`}}",
       "storage": [
