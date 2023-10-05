@@ -21,6 +21,9 @@
 - include_tasks: vmware-redhat.yml
   when: ansible_os_family == "RedHat"
 
+- include_tasks: vmware-rocky.yml
+  when: ansible_os_family == "Rocky"
+
 - name: Create provider vmtools config drop-in file
   copy:
     src: files/etc/vmware-tools/tools.conf

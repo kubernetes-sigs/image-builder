@@ -1,0 +1,83 @@
+# Copyright 2019 The Kubernetes Authors.
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+
+# http://www.apache.org/licenses/LICENSE-2.0
+
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+---
+- name: Define file modes
+  set_fact:
+    last_log_mode: "0644"
+    machine_id_mode: "0444"
+
+- name: Get installed packages
+  package_facts:
+
+- name: Create the package list
+  set_fact:
+    package_list: "{{ ansible_facts.packages.keys() | join(' ') }}"
+
+- name: Exclude the packages from upgrades
+  lineinfile:
+    path: /etc/yum.conf
+    regexp: '^exclude='
+    line: exclude={{ package_list }}
+
+- import_tasks: rpm_repos.yml
+
+# Oracle Linux does not have temp-disk-swapfile service
+- name: Disable swap service and ensure it is masked
+  systemd:
+    name: temp-disk-swapfile
+    enabled: false
+    masked: true
+  when: ansible_memory_mb.swap.total != 0 and ansible_distribution_major_version|int <= 7
+
+- name: Disable swap service and ensure it is masked on RHEL 8
+  systemd:
+    name: swap.target
+    enabled: false
+    masked: true
+  when: ansible_memory_mb.swap.total != 0 and ansible_distribution_major_version|int == 8
+
+- name: Remove RHEL subscription
+  when:
+    - ansible_distribution == "RedHat"
+    - lookup('env', 'RHSM_USER') | length > 0
+    - lookup('env', 'RHSM_PASS') | length > 0
+  block:
+    - name: Enable repo mgmt with subscription-manager
+      command: subscription-manager config --rhsm.manage_repos=1
+    - name: Remove subscriptions
+      rhsm_repository:
+        name: '*'
+        state: absent
+    - name: Unregister system
+      redhat_subscription:
+        state: absent
+    - name: Clean local subscription data
+      command: subscription-manager clean
+
+- name: Remove yum package caches
+  yum:
+    autoremove: true
+    lock_timeout: 60
+
+- name: Remove yum package lists
+  command: /usr/bin/yum -y clean all
+
+- name: Reset network interface IDs
+  shell: sed -i '/^\(HWADDR\|UUID\)=/d' /etc/sysconfig/network-scripts/ifcfg-*
+  when: packer_builder_type != "googlecompute"
+
+- name: Remove the kickstart log
+  file:
+    state: absent
+    path: /root/anaconda-ks.cfg

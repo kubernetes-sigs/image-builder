@@ -21,6 +21,9 @@
 - import_tasks: redhat.yml
   when: ansible_os_family == "RedHat"
 
+- import_tasks: rocky.yml
+  when: ansible_os_family == "Rocky"
+
 - import_tasks: mariner.yml
   when: ansible_os_family == "Common Base Linux Mariner"
 
@@ -65,7 +68,7 @@
 - name: Set hostname
   hostname:
     name: localhost.local
-  when: ansible_os_family not in ["Common Base Linux Mariner", "Flatcar", "VMware Photon OS"] and packer_build_name != "nutanix"
+  when: ansible_os_family not in ["Common Base Linux Mariner", "Flatcar", "VMware Photon OS", "Rocky"] and packer_build_name != "nutanix"
 
 - name: Reset hosts file
   copy:
