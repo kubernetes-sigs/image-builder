@@ -13,4 +13,4 @@
 # limitations under the License.
 ---
 - name: Install libseccomp package
-  command: tdnf install libseccomp -y
+  ansible.builtin.command: tdnf install libseccomp -y

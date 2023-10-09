@@ -15,4 +15,4 @@
 
 # no-op task just to have something for the role to do. Right now
 # all the work happens in the setup role
-- meta: noop
+- ansible.builtin.meta: noop

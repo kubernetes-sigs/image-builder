@@ -13,7 +13,7 @@
 # limitations under the License.
 ---
 - name: Install cloud-init packages
-  apt:
+  ansible.builtin.apt:
     name: "{{ packages }}"
     state: present
     force_apt_get: true
@@ -26,7 +26,7 @@
   when: ansible_os_family == "Debian"
 
 - name: Install cloud-tools and tools packages
-  apt:
+  ansible.builtin.apt:
     name: "{{ packages }}"
     state: present
     force_apt_get: true
@@ -37,7 +37,7 @@
   when: ansible_os_family == "Debian"
 
 - name: Install cloud-init packages
-  yum:
+  ansible.builtin.yum:
     name: "{{ packages }}"
     state: present
   vars:
@@ -47,7 +47,7 @@
   when: ansible_os_family == "RedHat"
 
 - name: Install CSI prerequisites on Ubuntu
-  apt:
+  ansible.builtin.apt:
     name: "{{ packages }}"
     state: present
     force_apt_get: true
@@ -60,7 +60,7 @@
   when: ansible_os_family == "Debian"
 
 - name: Install CSI prerequisites on RedHat
-  yum:
+  ansible.builtin.yum:
     name: "{{ packages }}"
     state: present
   vars:
@@ -72,14 +72,14 @@
   when: ansible_os_family == "RedHat"
 
 - name: Enable iSCSI initiator daemon on Ubuntu or RedHat
-  systemd:
+  ansible.builtin.systemd:
     name: iscsid
     state: started
     enabled: true
   when: ansible_os_family in ["Debian", "Redhat"]
 
 - name: Disable Hyper-V KVP protocol daemon on Ubuntu
-  systemd:
+  ansible.builtin.systemd:
     name: hv-kvp-daemon
     state: stopped
     enabled: false

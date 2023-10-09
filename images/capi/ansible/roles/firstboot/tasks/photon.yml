@@ -18,7 +18,7 @@
 # - meta: noop
 
 - name: Set transparent huge pages to madvise
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /boot/photon.cfg
     backrefs: true
     regexp: ^(?!.*transparent_hugepage=madvise)(photon_cmdline.*)

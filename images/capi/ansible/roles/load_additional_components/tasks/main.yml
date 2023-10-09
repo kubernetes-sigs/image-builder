@@ -12,16 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- import_tasks: executables.yml
+- ansible.builtin.import_tasks: executables.yml
   when: additional_executables | bool
 
-- import_tasks: registry.yml
+- ansible.builtin.import_tasks: registry.yml
   when: additional_registry_images | bool
 
-- import_tasks: url.yml
+- ansible.builtin.import_tasks: url.yml
   when: additional_url_images | bool
 
 # We have to use include_tasks for the S3 task due to ansible pre-processing the task when import_tasks is used.
 # This causes a failure when using any other additional_component.
-- include_tasks: s3.yml
+- ansible.builtin.include_tasks: s3.yml
   when: additional_s3 | bool

@@ -13,12 +13,12 @@
 # limitations under the License.
 ---
 - name: Add the Kubernetes repo key
-  apt_key:
+  ansible.builtin.apt_key:
     url: "{{ kubernetes_deb_gpg_key }}"
     state: present
 
 - name: Add the Kubernetes repo
-  apt_repository:
+  ansible.builtin.apt_repository:
     repo: deb {{ kubernetes_deb_repo }} /
     update_cache: true
     state: present
@@ -26,7 +26,7 @@
     filename: kubernetes
 
 - name: Install Kubernetes
-  apt:
+  ansible.builtin.apt:
     name: "{{ packages }}"
   vars:
     packages:

@@ -12,10 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- include_tasks: bootstrap-flatcar.yml
-
+- ansible.builtin.include_tasks: bootstrap-flatcar.yml
 - name: Create /opt/libexec overlay directories
-  file:
+  ansible.builtin.file:
     path: "{{ item }}"
     state: directory
   with_items:
@@ -23,7 +22,7 @@
     - /opt/libexec.work
 
 - name: Create usr-libexec.mount unit
-  copy:
+  ansible.builtin.copy:
     src: etc/systemd/system/usr-libexec.mount
     dest: /etc/systemd/system/usr-libexec.mount
     owner: root
@@ -31,18 +30,18 @@
     mode: "0644"
 
 - name: Enable usr-libexec.mount unit
-  systemd:
+  ansible.builtin.systemd:
     daemon_reload: true
     enabled: true
     name: usr-libexec.mount
 
 - name: Create system-environment-generators directory
-  file:
+  ansible.builtin.file:
     path: /etc/systemd/system-environment-generators
     state: directory
 
 - name: Add env generator that includes system PATH on service path
-  copy:
+  ansible.builtin.copy:
     src: etc/systemd/system-environment-generators/10-flatcar-path
     dest: /etc/systemd/system-environment-generators/10-flatcar-path
     owner: root
@@ -50,6 +49,6 @@
     mode: "0755"
 
 - name: Enable systemd-timesyncd unit
-  systemd:
+  ansible.builtin.systemd:
     enabled: true
     name: systemd-timesyncd.service

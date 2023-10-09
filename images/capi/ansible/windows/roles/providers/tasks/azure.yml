@@ -25,7 +25,7 @@
 #
 # View the details of the SDDL string used with ConvertFrom-SddlString and see well known sids: https://docs.microsoft.com/en-us/windows/win32/secauthz/well-known-sids
 - name: Block traffic to 168.63.129.16 port 80 for cve-2021-27075
-  win_shell: |
+  ansible.windows.win_shell: |
     $wsg = Get-LocalGroup -n "WireServerAccess"
     $r = New-NetFirewallRule -DisplayName 'Block-Outbound-168.63.129.16-port-80-for-cve-2021-27075' -Direction Outbound -RemoteAddress '168.63.129.16' -RemotePort '80' -Protocol TCP -Action Block
     $r | Get-NetFirewallSecurityFilter | Set-NetFirewallSecurityFilter -LocalUser "O:LSD:(D;;CC;;;S-1-5-18)(D;;CC;;;$($wsg.SID.Value))(A;;CC;;;S-1-1-0)"

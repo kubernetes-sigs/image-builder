@@ -14,24 +14,22 @@
 ---
 # Requires license. If you running on Azure License is currently provided with Windows Server images.
 - name: Install Docker via OneGet
-  win_shell: |
+  ansible.windows.win_shell: |
     Install-PackageProvider -Name DockerMsftProvider -Force -ForceBootstrap | Out-Null
     $package = Find-Package -Name Docker -ProviderName DockerMsftProvider -RequiredVersion {{ docker_ee_version }}
     $package | Install-Package -Force | Out-Null
-
 - name: Start Docker Service
-  win_service:
+  ansible.windows.win_service:
     name: docker
     start_mode: auto
     state: started
 
 - name: Set up Docker Network
-  win_shell: |
+  ansible.windows.win_shell: |
     $exists=docker network ls -f name=host -q
     if (-not $exists) { docker network create -d nat host }
-
 - name: Pre-pull Docker images
-  win_command: docker pull {{ item }}
+  ansible.windows.win_command: docker pull {{ item }}
   loop: "{{ images }}"
   async: 1800
   poll: 60

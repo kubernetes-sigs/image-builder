@@ -13,7 +13,7 @@
 # limitations under the License.
 ---
 - name: Get wins
-  win_get_url:
+  ansible.windows.win_get_url:
     url: "{{ wins_url }}"
     dest: "{{ kubernetes_install_path }}"
   retries: 5
@@ -22,8 +22,7 @@
   until: wins_download is not failed
 
 - name: Register wins.exe
-  win_command: wins.exe srv app run --register
-
+  ansible.windows.win_command: wins.exe srv app run --register
 - name: Ensure that wins service is running
-  win_service:
+  ansible.windows.win_service:
     name: rancher-wins

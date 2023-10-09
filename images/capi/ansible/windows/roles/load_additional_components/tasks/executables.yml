@@ -13,12 +13,12 @@
 # limitations under the License.
 ---
 - name: Create temporary download dir
-  win_file:
+  ansible.windows.win_file:
     path: "{{ additional_executables_destination_path }}/"
     state: directory
 
 - name: Download additional executables
-  win_get_url:
+  ansible.windows.win_get_url:
     url: "{{ item }}"
     dest: "{{ additional_executables_destination_path }}/"
   loop: "{{ additional_executables_list.split(',') }}"

@@ -13,7 +13,7 @@
 # limitations under the License.
 ---
 - name: Download Cloudbase-init
-  win_get_url:
+  ansible.windows.win_get_url:
     url: "{{ cloudbase_init_url }}"
     dest: "{{ tempdir.stdout | trim }}\\CloudbaseInitSetup.msi"
   register: installer
@@ -22,29 +22,29 @@
   until: installer is not failed
 
 - name: Ensure log directory
-  win_file:
+  ansible.windows.win_file:
     path: "{{ systemdrive.stdout | trim }}\\logs"
     state: directory
 
 - name: Install Cloudbase-init
-  win_package:
+  ansible.windows.win_package:
     path: "{{ installer.dest }}"
     log_path: '{{ systemdrive.stdout | trim }}\logs\cloudbase-install-log-{{ lookup("pipe", "date +%Y%m%dT%H%M%S") }}.log'
 
 # configuration modified from https://github.com/cloudbase/windows-openstack-imaging-tools/tree/master/Examples/config/azure
 - name: Set up cloudbase-init unattend configuration
-  win_template:
+  ansible.windows.win_template:
     src: templates/cloudbase-init-unattend.conf
     dest: "{{ programfiles.stdout | trim }}\\Cloudbase Solutions\\Cloudbase-Init\\conf\\cloudbase-init-unattend.conf"
 
 # configuration modified from https://github.com/cloudbase/windows-openstack-imaging-tools/tree/master/Examples/config/azure
 - name: Set up cloudbase-init configuration
-  win_template:
+  ansible.windows.win_template:
     src: templates/cloudbase-init.conf
     dest: "{{ programfiles.stdout | trim }}\\Cloudbase Solutions\\Cloudbase-Init\\conf\\cloudbase-init.conf"
 
 - name: Configure set up complete
-  win_shell: |
+  ansible.windows.win_shell: |
     # If this file already exists then the following command fails
     Remove-Item -Force {{ systemdrive.stdout | trim }}\Windows\Setup\Scripts\SetupComplete.cmd
     & "{{ programfiles.stdout | trim }}\Cloudbase Solutions\Cloudbase-Init\bin\SetSetupComplete.cmd"

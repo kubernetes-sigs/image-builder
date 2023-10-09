@@ -13,7 +13,7 @@
 # limitations under the License.
 ---
 - name: Install cloud-init packages
-  yum:
+  ansible.builtin.yum:
     name: "{{ packages }}"
     state: present
   vars:
@@ -22,7 +22,7 @@
       - cloud-utils-growpart
 
 - name: Install CAPX prerequisites
-  yum:
+  ansible.builtin.yum:
     name: "{{ packages }}"
     state: present
   vars:
@@ -42,7 +42,7 @@
     create: true
 
 - name: Nutanix iSCSI client tuning recommendations
-  ini_file:
+  community.general.ini_file:
     path: /etc/iscsi/iscsid.conf
     section: ""
     option: "{{ item.key }}"
@@ -61,13 +61,13 @@
       discovery.sendtargets.iscsi.MaxRecvDataSegmentLength: 1048576
 
 - name: Enable iSCSI initiator daemon
-  systemd:
+  ansible.builtin.systemd:
     name: iscsid
     state: stopped
     enabled: true
 
 - name: Create a iscsi-init.service override directory
-  file:
+  ansible.builtin.file:
     owner: root
     group: root
     mode: "0755"
@@ -75,7 +75,7 @@
     state: directory
 
 - name: Set up iscsi-init.service override
-  ini_file:
+  community.general.ini_file:
     dest: /etc/systemd/system/iscsi-init.service.d/wait_fs.conf
     owner: root
     group: root

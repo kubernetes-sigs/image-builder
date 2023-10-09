@@ -13,7 +13,7 @@
 # limitations under the License.
 ---
 - name: Install cloud-init packages
-  apt:
+  ansible.builtin.apt:
     name: "{{ packages }}"
     state: present
     force_apt_get: true
@@ -25,7 +25,7 @@
       - cloud-initramfs-dyn-netconf
 
 - name: Install CAPX prerequisites
-  apt:
+  ansible.builtin.apt:
     name: "{{ packages }}"
     state: present
     force_apt_get: true
@@ -46,7 +46,7 @@
     create: true
 
 - name: Nutanix iSCSI client tuning recommendations
-  ini_file:
+  community.general.ini_file:
     path: /etc/iscsi/iscsid.conf
     section: ""
     option: "{{ item.key }}"
@@ -65,13 +65,13 @@
       discovery.sendtargets.iscsi.MaxRecvDataSegmentLength: 1048576
 
 - name: Enable iSCSI initiator daemon
-  systemd:
+  ansible.builtin.systemd:
     name: iscsid
     state: stopped
     enabled: true
 
 - name: Disable Hyper-V KVP protocol daemon
-  systemd:
+  ansible.builtin.systemd:
     name: hv-kvp-daemon
     state: stopped
     enabled: false
