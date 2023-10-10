@@ -32,8 +32,7 @@ cd "$(dirname "${BASH_SOURCE[0]}")/.."
 export PIP_DISABLE_PIP_VERSION_CHECK=1 PIP_ROOT_USER_ACTION=ignore
 
 if ! command -v ansible >/dev/null 2>&1; then
-    ensure_py3
-    pip3 install --user "ansible-core==${_version}"
+    pip3_install "ansible-core==${_version}"
     ensure_py3_bin ansible
     ensure_py3_bin ansible-playbook
 fi
