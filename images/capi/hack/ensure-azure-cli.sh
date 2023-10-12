@@ -32,6 +32,5 @@ if command -v az >/dev/null 2>&1; then exit 0; fi
 export PIP_DISABLE_PIP_VERSION_CHECK=1 PIP_ROOT_USER_ACTION=ignore
 
 ensure_py3
-pip install -U pip setuptools
-pip3 install --user azure-cli
+pip3_install azure-cli
 ensure_py3_bin az azure-cli

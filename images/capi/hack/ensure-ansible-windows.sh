@@ -40,6 +40,5 @@ export PIP_DISABLE_PIP_VERSION_CHECK=1 PIP_ROOT_USER_ACTION=ignore
 
 if pip3 show pywinrm >/dev/null 2>&1; then exit 0; fi
 
-ensure_py3
-pip3 install --user "pywinrm==${_version}"
+pip3_install "pywinrm==${_version}"
 if ! pip3 show pywinrm ; then exit 1; fi
