@@ -220,7 +220,7 @@ command:
     - True
     stderr: []
     timeout: 30000
-  
+
   # this could be moved to place for other providers if they want to install it
   Key Vault gMSA binary is installed:
     exec: powershell -command "Test-Path -Path  C:\Windows\System32\CCGAKVPlugin.dll"
@@ -246,6 +246,9 @@ command:
     stdout:
     - "ICcgDomainAuthCredentials"
     timeout: 30000
+  Check Azure CLI is installed via alias:
+    exec: powershell -command "az"
+    exit-status: 0
 {{end}}
 
 {{ if ne .Vars.ssh_source_url "" }}
