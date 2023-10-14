@@ -69,6 +69,8 @@
   "post-processors": [
     {
       "custom_data": {
+        "containerd_gvisor_runtime": "{{user `containerd_gvisor_runtime`}}",
+        "containerd_gvisor_version": "{{user `containerd_gvisor_version`}}",
         "containerd_version": "{{user `containerd_version`}}",
         "kubernetes_cni_version": "{{user `kubernetes_cni_semver`}}",
         "kubernetes_version": "{{user `kubernetes_semver`}}"
@@ -156,6 +158,8 @@
     "aws_session_token": "",
     "build_timestamp": "{{timestamp}}",
     "builder_instance_type": "t3.small",
+    "containerd_gvisor_runtime": "false",
+    "containerd_gvisor_version": "latest",
     "containerd_sha256": null,
     "containerd_url": "https://github.com/containerd/containerd/releases/download/v{{user `containerd_version`}}/cri-containerd-cni-{{user `containerd_version`}}-linux-amd64.tar.gz",
     "containerd_version": null,

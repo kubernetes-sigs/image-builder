@@ -105,6 +105,8 @@
     "base_image_ocid": "",
     "build_timestamp": "{{timestamp}}",
     "compartment_ocid": "",
+    "containerd_gvisor_runtime": "false",
+    "containerd_gvisor_version": "latest",
     "containerd_sha256": null,
     "containerd_url": "https://github.com/containerd/containerd/releases/download/v{{user `containerd_version`}}/cri-containerd-cni-{{user `containerd_version`}}-linux-amd64.tar.gz",
     "containerd_version": null,
