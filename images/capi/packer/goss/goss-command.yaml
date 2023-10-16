@@ -63,7 +63,7 @@ command:
     stdout: ["coredns", "etcd", "kube-apiserver", "kube-controller-manager", "kube-proxy", "kube-scheduler", "pause"]
 {{end}}
 {{if eq .Vars.kubernetes_source_type "http"}}
-  kubectl version --short --client=true -o json | jq .clientVersion.gitVersion | tr -d '"' | awk '{print substr($1,2); }':
+  kubectl version --client -o json | jq .clientVersion.gitVersion | tr -d '"' | awk '{print substr($1,2); }':
     exit-status: 0
     stdout: [{{ .Vars.kubernetes_version }}]
     stderr: []
@@ -99,7 +99,7 @@ command:
     {{$key}}: {{$val}}
   {{end}}
 {{end}}
-{{end}} #End linux only 
+{{end}} #End linux only
 
 {{ if eq .Vars.OS "windows" }} # Windows
   automatic updates set to notify:
@@ -126,7 +126,7 @@ command:
     stdout:
     - "True"
     timeout: 30000
-  kubectl version --client:
+  kubectl version --client -o json:
     exit-status: 0
     stdout:
     - {{.Vars.kubernetes_version}}
@@ -186,7 +186,7 @@ command:
     exit-status: 0
     exec: powershell -command "(Get-MpPreference | select ExclusionProcess)"
     stdout:
-    - \Program Files\containerd\containerd.exe, 
+    - \Program Files\containerd\containerd.exe,
     - \Program Files\containerd\ctr.exe
   Check SMB CompartmentNamespace Flag:
     exit-status: 0
@@ -220,7 +220,7 @@ command:
     - True
     stderr: []
     timeout: 30000
-  
+
   # this could be moved to place for other providers if they want to install it
   Key Vault gMSA binary is installed:
     exec: powershell -command "Test-Path -Path  C:\Windows\System32\CCGAKVPlugin.dll"
