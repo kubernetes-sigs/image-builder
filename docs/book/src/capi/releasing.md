@@ -1,6 +1,6 @@
 # Image Builder Releases
 
-The current release of Image Builder is [v0.1.19][] (September 13, 2023). The corresponding container image is `registry.k8s.io/scl-image-builder/cluster-node-image-builder-amd64:v0.1.19`.
+The current release of Image Builder is [v0.1.20][] (October 16, 2023). The corresponding container image is `registry.k8s.io/scl-image-builder/cluster-node-image-builder-amd64:v0.1.20`.
 
 ## Release Process
 
@@ -22,7 +22,7 @@ Releases in image-builder follow [semantic versioning][semver] conventions. Curr
     - *If signing tags with GPG, makes your key available to the `git tag` command.*
 - Create a new tag:
   - `export IB_VERSION=v0.1.x`
-    - *Replace `x` with the next patch version. For example: `v0.1.20`.*
+    - *Replace `x` with the next patch version. For example: `v0.1.21`.*
   - `git tag -s -m "Image Builder ${IB_VERSION}" ${IB_VERSION}`
   - `git push upstream ${IB_VERSION}`
 
@@ -36,6 +36,7 @@ Pushing the tag in the previous step triggered a job to build the container imag
 - Create a GitHub pull request to promote the image:
   - `export GITHUB_TOKEN=<your GH token>`
   - `make -C images/capi promote-image`
+  - Note: If your own fork isn't used as the `origin` remote you'll need to set the `USER_FORK` variable, e.g. `make -C images/capi promote-image USER_FORK=AverageMarcus`
 
 This will create a PR in [k8s.io](https://github.com/kubernetes/k8s.io) and assign the image-builder maintainers. Example PR: https://github.com/kubernetes/k8s.io/pull/5262.
 
@@ -73,11 +74,11 @@ Wait for this PR to merge before communicating the release to users, so image-bu
 In the [#image-builder channel][] on the Kubernetes Slack, post a message announcing the new release. Include a link to the GitHub release and a thanks to the contributors:
 
 ```
-Image-builder v0.1.20 is now available: https://github.com/kubernetes-sigs/image-builder/releases/tag/v0.1.20
+Image-builder v0.1.21 is now available: https://github.com/kubernetes-sigs/image-builder/releases/tag/v0.1.21
 Thanks to all contributors!
 ```
 
-[v0.1.19]: https://github.com/kubernetes-sigs/image-builder/releases/tag/v0.1.19
+[v0.1.20]: https://github.com/kubernetes-sigs/image-builder/releases/tag/v0.1.20
 [#image-builder channel]: https://kubernetes.slack.com/archives/C01E0Q35A8J
 [Personal access tokens]: https://github.com/settings/tokens
 [pr-container-image-build]: https://testgrid.k8s.io/sig-cluster-lifecycle-image-builder#pr-container-image-build
