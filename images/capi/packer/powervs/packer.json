@@ -71,6 +71,8 @@
     "capture_cos_bucket": "",
     "capture_cos_region": "",
     "capture_cos_secret_key": "",
+    "containerd_gvisor_runtime": "false",
+    "containerd_gvisor_version": "latest",
     "containerd_sha256": null,
     "containerd_url": null,
     "containerd_version": null,

@@ -21,5 +21,6 @@
   - [VirtualBox](./capi/providers/virtualbox.md)
   - [Testing the Images](./capi/goss/goss.md)
   - [Using Container Images](./capi/container-image.md)
+  - [Customizing containerd](./capi/containerd/customizing-containerd.md)
   - [Releasing](./capi/releasing.md)
 - [Glossary](./glossary.md)

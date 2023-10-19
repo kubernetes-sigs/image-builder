@@ -13,3 +13,5 @@
 # limitations under the License.
 ---
 containerd_config_file: "etc/containerd/config.toml"
+containerd_gvisor_runtime: false
+containerd_gvisor_version: latest

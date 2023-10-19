@@ -58,6 +58,10 @@ ESXi (formerly ESX) is an enterprise-class, type-1 hypervisor developed by VMwar
 
 [Goss](https://github.com/goss-org/goss) is a YAML based serverspec alternative tool for validating a server’s configuration.  It is used in conjunction with [packer-provisioner-goss](https://github.com/YaleUniversity/packer-provisioner-goss/releases) to test if the images have all requisite components to work with cluster API.
 
+## gVisor
+
+[gVisor](https://gvisor.dev/docs/) an application kernel that provides isolation between running applications and the host operating system. See also [sandboxed container](#sandboxed-container).
+
 # K
 ---
 
@@ -96,6 +100,12 @@ Power Systems Virtual Server
 IBM Power Systems Virtual Server is a Power Systems offering.
 
 [docs](https://cloud.ibm.com/docs/power-iaas?topic=power-iaas-about-virtual-server)
+
+# S
+
+## Sandboxed container
+
+A container run in a specialized environment that is isolated from the host kernel.
 
 # V
 ---
