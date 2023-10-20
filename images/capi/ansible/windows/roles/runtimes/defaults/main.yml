@@ -14,7 +14,7 @@
 ---
 pause_image: mcr.microsoft.com/oss/kubernetes/pause:3.9
 containerd_additional_settings: ""
-containerd_config_file: "config.toml"
+containerd_config_file: config.toml
 
 prepull: false
 prepull_images:

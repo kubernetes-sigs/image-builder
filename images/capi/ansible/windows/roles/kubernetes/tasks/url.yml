@@ -15,7 +15,7 @@
 - name: Download kubernetes binaries
   win_get_url:
     url: "{{ kubernetes_base_url }}/{{ item }}.exe"
-    dest: '{{ kubernetes_install_path }}\'
+    dest: "{{ kubernetes_install_path }}\\"
   loop: "{{ kubernetes_bins }}"
   retries: 5
   delay: 3

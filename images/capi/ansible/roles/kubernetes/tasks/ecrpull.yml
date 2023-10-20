@@ -1,3 +1,4 @@
+---
 # TODO: This task will be deprecated once https://github.com/containerd/cri/issues/1131 is fixed
 - name: Create kubeadm config file
   template:
@@ -6,7 +7,7 @@
     mode: "0600"
 
 - name: Get images list
-  shell: 'kubeadm config images list --config /etc/kubeadm.yml'
+  shell: kubeadm config images list --config /etc/kubeadm.yml
   register: images_list
 
 - name: Log into ECR
@@ -19,7 +20,7 @@
   register: credentials
 
 - name: Pull images
-  command: "crictl pull --creds {{ credentials.stdout | b64decode }} {{ item }}"
+  command: crictl pull --creds {{ credentials.stdout | b64decode }} {{ item }}
   loop: "{{ images_list.stdout_lines }}"
 
 - name: Delete kubeadm config

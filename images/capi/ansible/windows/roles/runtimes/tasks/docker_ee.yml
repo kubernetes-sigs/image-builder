@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-
 # Requires license. If you running on Azure License is currently provided with Windows Server images.
 - name: Install Docker via OneGet
   win_shell: |

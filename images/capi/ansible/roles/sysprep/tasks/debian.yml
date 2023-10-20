@@ -22,7 +22,7 @@
 
 - name: Remove extra repos
   file:
-    path: "/etc/apt/sources.list.d/{{ item | basename }}"
+    path: /etc/apt/sources.list.d/{{ item | basename }}
     state: absent
   loop: "{{ extra_repos.split() }}"
   when: remove_extra_repos and extra_repos != ""
@@ -33,12 +33,12 @@
     paths:
       - /etc/apt
       - /etc/apt/sources.list.d
-    patterns: '*.list.disabled'
+    patterns: "*.list.disabled"
   register: repo_files
   when: disable_public_repos|default(false)|bool and reenable_public_repos|default(true)|bool
 
 - name: Enable repos
-  command: "mv {{ item.path }} {{ item.path | regex_replace('.disabled') }}"
+  command: mv {{ item.path }} {{ item.path | regex_replace('.disabled') }}
   loop: "{{ repo_files.files }}"
   when: disable_public_repos|default(false)|bool and reenable_public_repos|default(true)|bool
 
@@ -67,7 +67,7 @@
     group: root
     mode: "{{ item.mode }}"
   loop:
-    - { path: /var/lib/apt/lists, state: absent,    mode: "0755" }
+    - { path: /var/lib/apt/lists, state: absent, mode: "0755" }
     - { path: /var/lib/apt/lists, state: directory, mode: "0755" }
 
 - name: Disable apt-daily services

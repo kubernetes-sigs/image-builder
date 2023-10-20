@@ -16,14 +16,14 @@
   lineinfile:
     path: /etc/iptables/rules.v4
     state: absent
-    regexp: "-A INPUT -j REJECT --reject-with icmp-host-prohibited"
+    regexp: -A INPUT -j REJECT --reject-with icmp-host-prohibited
   when: ansible_distribution == "Ubuntu"
 
 - name: Remove the default input reject all iptable rule
   lineinfile:
     path: /etc/iptables/rules.v4
     state: absent
-    regexp: "-A FORWARD -j REJECT --reject-with icmp-host-prohibited"
+    regexp: -A FORWARD -j REJECT --reject-with icmp-host-prohibited
   when: ansible_distribution == "Ubuntu"
 
 - name: Disable firewalld service
