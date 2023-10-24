@@ -37,6 +37,19 @@ if ! command -v ansible >/dev/null 2>&1; then
     ensure_py3_bin ansible-playbook
 fi
 
+ansible_version=""
+IFS=" " read -ra ansible_version <<< "$(ansible --version)"
+if [[ "${_version}" != $(echo -e "${_version}\n${ansible_version[2]}" | sort -s -t. -k 1,1 -k 2,2n -k 3,3n | head -n1) && "${ansible_version[2]}" != "devel" ]]; then
+  cat <<EOF
+Detected ansible version: ${ansible_version[*]}.
+Image builder requires ${_version} or greater.
+Please install ${_version} or later.
+EOF
+  exit 2
+fi
+
+echo ${ansible_version[*]}
+
 ansible-galaxy collection install \
   community.general \
   ansible.posix \
