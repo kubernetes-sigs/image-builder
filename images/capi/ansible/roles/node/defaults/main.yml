@@ -40,7 +40,7 @@ rh7_rpms:
   - python-netifaces
   - python-requests
 
-# Used for RedHat based distributions ==  8 (ex. RHEL-8, RockyLinux-8 etc.)
+# Used for RedHat based distributions =!  7 (ex. RHEL-8, RockyLinux-8, RockyLinux-9 etc.)
 rh8_rpms:
   - nftables
   - python3-netifaces
