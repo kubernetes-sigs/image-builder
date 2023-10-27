@@ -98,6 +98,23 @@
     - /var/log/cloud-init-output.log
     - /var/run/cloud-init
 
+- name: Reset cloud-init
+  shell:
+    cmd: |
+      cloud-init clean --machine-id
+  when: ansible_os_family == "Debian"
+
+- name: Reset cloud-init
+  shell:
+    cmd: |
+      cloud-init clean
+  when: ansible_os_family == "RedHat"
+
+- name: Remove cloud-init.disabled
+  file:
+    state: absent
+    path: /etc/cloud/cloud-init.disabled
+
 # A shallow search in /tmp and /var/tmp is used to declare which files or
 # directories will be removed as part of resetting temp space. The reason
 # a state absent->directory task isn't used is because Ansible's own data

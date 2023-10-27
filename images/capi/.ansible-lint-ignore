@@ -153,6 +153,8 @@ ansible/roles/setup/tasks/redhat.yml fqcn[action-core]
 ansible/roles/setup/tasks/redhat.yml fqcn[action]
 ansible/roles/setup/tasks/redhat.yml name[missing]
 ansible/roles/setup/tasks/redhat.yml package-latest
+ansible/roles/setup/tasks/redhat.yml command-instead-of-module
+ansible/roles/setup/tasks/redhat.yml no-changed-when
 ansible/roles/setup/tasks/rpm_repos.yml fqcn[action-core]
 ansible/roles/setup/tasks/rpm_repos.yml no-changed-when
 ansible/roles/sysprep/defaults/main.yml var-naming[no-role-prefix]
