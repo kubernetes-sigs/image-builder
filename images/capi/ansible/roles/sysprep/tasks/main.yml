@@ -48,7 +48,7 @@
     mode: "{{ item.mode }}"
   loop:
     - { path: /etc/machine-id, state: absent, mode: "{{ machine_id_mode }}" }
-    - { path: /etc/machine-id, state: touch,  mode: "{{ machine_id_mode }}" }
+    - { path: /etc/machine-id, state: touch, mode: "{{ machine_id_mode }}" }
   when: ansible_os_family not in ["Common Base Linux Mariner", "Flatcar"]
 
 - name: Truncate hostname file
@@ -60,7 +60,7 @@
     mode: "{{ item.mode }}"
   loop:
     - { path: /etc/hostname, state: absent, mode: "0644" }
-    - { path: /etc/hostname, state: touch,  mode: "0644" }
+    - { path: /etc/hostname, state: touch, mode: "0644" }
 
 - name: Set hostname
   hostname:
@@ -83,10 +83,10 @@
     group: utmp
     mode: "{{ item.mode }}"
   loop:
-    - { path: /var/log/wtmp,    state: absent, mode: "0664" }
+    - { path: /var/log/wtmp, state: absent, mode: "0664" }
     - { path: /var/log/lastlog, state: absent, mode: "{{ last_log_mode }}" }
-    - { path: /var/log/wtmp,    state: touch,  mode: "0664" }
-    - { path: /var/log/lastlog, state: touch,  mode: "{{ last_log_mode }}" }
+    - { path: /var/log/wtmp, state: touch, mode: "0664" }
+    - { path: /var/log/lastlog, state: touch, mode: "{{ last_log_mode }}" }
 
 - name: Remove cloud-init lib dir and logs
   file:
@@ -127,7 +127,7 @@
     paths:
       - /tmp
       - /var/tmp
-    pattern: '*'
+    pattern: "*"
   register: temp_files
 
 - name: Reset temp space
@@ -144,7 +144,7 @@
       - /lib/netplan
       - /etc/netplan
       - /run/netplan
-    pattern: '*.yaml'
+    pattern: "*.yaml"
   register: netplan_files
 
 - name: Delete netplan files
@@ -166,7 +166,7 @@
 - name: Find SSH host keys
   find:
     path: /etc/ssh
-    pattern: 'ssh_host_*'
+    pattern: ssh_host_*
   register: ssh_host_keys
 
 - name: Remove SSH host keys
@@ -191,7 +191,6 @@
   loop:
     - { path: /root/.ssh/authorized_keys }
   when: ansible_os_family == "Flatcar"
-
 
 - name: Truncate all remaining log files in /var/log
   shell:

@@ -18,7 +18,7 @@
     path: /etc/systemd/network/10-cloud-init-nics.network
     section: Network
     option: Domains
-    value: "~local"
+    value: ~local
   when: leak_local_mdns_to_dns
 
 - name: Leak mDNS to DNS (dhcp) (enable .local domain lookups)
@@ -26,7 +26,7 @@
     path: /etc/systemd/network/99-dhcp-en.network
     section: Network
     option: Domains
-    value: "~local"
+    value: ~local
   when: leak_local_mdns_to_dns
 
 - name: Double TCP small queue limit to be the same as Ubuntu
@@ -49,8 +49,8 @@
   lineinfile:
     path: /boot/photon.cfg
     backrefs: true
-    regexp: "^(?!.*apparmor=0)(photon_cmdline.*)"
-    line: '\1 apparmor=0'
+    regexp: ^(?!.*apparmor=0)(photon_cmdline.*)
+    line: \1 apparmor=0
 
 - name: Disable tdnf cache timer
   systemd:

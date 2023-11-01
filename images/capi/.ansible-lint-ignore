@@ -55,7 +55,6 @@ ansible/roles/load_additional_components/tasks/url.yml fqcn[action-core]
 ansible/roles/load_additional_components/tasks/url.yml no-changed-when
 ansible/roles/load_additional_components/tasks/url.yml risky-file-permissions
 ansible/roles/node/defaults/main.yml var-naming[no-role-prefix]
-ansible/roles/node/defaults/main.yml yaml[line-length]
 ansible/roles/node/meta/main.yml yaml[line-length]
 ansible/roles/node/tasks/amazonLinux2.yml fqcn[action-core]
 ansible/roles/node/tasks/main.yml command-instead-of-module
@@ -149,19 +148,18 @@ ansible/roles/setup/tasks/photon.yml fqcn[action-core]
 ansible/roles/setup/tasks/photon.yml fqcn[action]
 ansible/roles/setup/tasks/photon.yml name[missing]
 ansible/roles/setup/tasks/photon.yml no-changed-when
+ansible/roles/setup/tasks/redhat.yml command-instead-of-module
 ansible/roles/setup/tasks/redhat.yml fqcn[action-core]
 ansible/roles/setup/tasks/redhat.yml fqcn[action]
 ansible/roles/setup/tasks/redhat.yml name[missing]
-ansible/roles/setup/tasks/redhat.yml package-latest
-ansible/roles/setup/tasks/redhat.yml command-instead-of-module
 ansible/roles/setup/tasks/redhat.yml no-changed-when
+ansible/roles/setup/tasks/redhat.yml package-latest
 ansible/roles/setup/tasks/rpm_repos.yml fqcn[action-core]
 ansible/roles/setup/tasks/rpm_repos.yml no-changed-when
 ansible/roles/sysprep/defaults/main.yml var-naming[no-role-prefix]
 ansible/roles/sysprep/tasks/debian.yml fqcn[action-core]
 ansible/roles/sysprep/tasks/debian.yml no-changed-when
 ansible/roles/sysprep/tasks/debian.yml risky-shell-pipe
-ansible/roles/sysprep/tasks/debian.yml yaml[commas]
 ansible/roles/sysprep/tasks/flatcar.yml fqcn[action-core]
 ansible/roles/sysprep/tasks/flatcar.yml no-changed-when
 ansible/roles/sysprep/tasks/main.yml fqcn[action-core]
@@ -169,7 +167,6 @@ ansible/roles/sysprep/tasks/main.yml name[missing]
 ansible/roles/sysprep/tasks/main.yml no-changed-when
 ansible/roles/sysprep/tasks/main.yml risky-file-permissions
 ansible/roles/sysprep/tasks/main.yml risky-shell-pipe
-ansible/roles/sysprep/tasks/main.yml yaml[commas]
 ansible/roles/sysprep/tasks/mariner.yml fqcn[action-core]
 ansible/roles/sysprep/tasks/mariner.yml name[missing]
 ansible/roles/sysprep/tasks/mariner.yml no-changed-when
@@ -228,7 +225,6 @@ ansible/windows/roles/runtimes/tasks/docker_ee.yml fqcn[action]
 ansible/windows/roles/runtimes/tasks/main.yml fqcn[action-core]
 ansible/windows/roles/runtimes/tasks/main.yml name[missing]
 ansible/windows/roles/systemprep/defaults/main.yml var-naming[no-role-prefix]
-ansible/windows/roles/systemprep/defaults/main.yml yaml[line-length]
 ansible/windows/roles/systemprep/tasks/main.yml fqcn[action-core]
 ansible/windows/roles/systemprep/tasks/main.yml fqcn[action]
 ansible/windows/roles/systemprep/tasks/main.yml ignore-errors

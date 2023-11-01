@@ -13,7 +13,7 @@
 # limitations under the License.
 ---
 - name: Get distribution name from lsb-release
-  raw: "grep DISTRIB_ID /etc/lsb-release || echo '/etc/lsb-release not found'"
+  raw: grep DISTRIB_ID /etc/lsb-release || echo '/etc/lsb-release not found'
   register: distrib_id
 
 - include_tasks: flatcar.yml

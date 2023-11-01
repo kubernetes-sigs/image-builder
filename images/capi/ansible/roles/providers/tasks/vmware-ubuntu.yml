@@ -37,8 +37,8 @@
     dest: "{{ item.dest }}"
     mode: a+x
   vars:
-    server_dir: "/var/lib/dhcp"
-    chrony_helper_dir: "/usr/lib/chrony"
+    server_dir: /var/lib/dhcp
+    chrony_helper_dir: /usr/lib/chrony
   loop:
     - { src: files/etc/networkd-dispatcher/routable.d/20-chrony.j2, dest: /etc/networkd-dispatcher/routable.d/20-chrony }
     - { src: files/etc/networkd-dispatcher/off.d/20-chrony.j2, dest: /etc/networkd-dispatcher/off.d/20-chrony }
