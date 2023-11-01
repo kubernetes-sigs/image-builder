@@ -11,11 +11,53 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+# v1.0.1 2023/11/01 - Modified by Daniel Kao <dk@armada.ai> to remediate
+# Ubuntu 20.04 CIS STIG hardening.
 ---
 - name: Define file modes
   set_fact:
     last_log_mode: "0664"
     machine_id_mode: "0644"
+
+- name: Install git client on system
+  ansible.builtin.apt:
+    name: git
+    state: present
+
+- name: Install ansible on system
+  ansible.builtin.apt:
+    name: ansible
+    state: present
+
+- name: Git checkout ubuntu2004_cis to /srv/ubuntu2004_cis for CIS hardening on system
+  ansible.builtin.git:
+    repo: 'https://github.com/florianutz/ubuntu2004_cis.git'
+    dest: /srv/ubuntu2004_cis
+
+- name: Create /srv/site.yml for Ubuntu 20.04 CIS hardening script
+  ansible.builtin.shell: "/bin/echo -e '- name: Harden Server\n  hosts: localhost\n  become: yes\n\n  roles:\n    - ubuntu2004_cis' > /srv/site.yml"
+
+- name: Modify /srv/ubuntu2004_cis/defaults/main.yml to skip Sections 3 through 6
+  ansible.builtin.shell: "sed -i -e 's/ubuntu2004cis_section3: true/ubuntu2004cis_section3: false/g' -e 's/ubuntu2004cis_section4: true/ubuntu2004cis_section4: false/g' -e 's/ubuntu2004cis_section5: true/ubuntu2004cis_section5: false/g' -e 's/ubuntu2004cis_section6: true/ubuntu2004cis_section6: false/g' /srv/ubuntu2004_cis/defaults/main.yml"
+
+- name: Run Ansible Playbook on ubuntu2004_cis to harden the system
+  ansible.builtin.command: /usr/bin/ansible-playbook site.yml
+  args:
+    chdir: /srv
+
+- name: Remove git from system
+  ansible.builtin.apt:
+    name: git
+    state: absent
+
+- name: Remove ansible from system
+  ansible.builtin.apt:
+    name: ansible
+    state: absent
+
+- name: Remove files used for ubuntu2004_cis
+  ansible.builtin.shell: "rm -rf /srv/site.yml && rm -rf /srv/ubuntu2004_cis/"
 
 - name: Pin all installed packages with apt-mark
   shell: dpkg-query -f '${binary:Package}\n' -W | xargs apt-mark hold

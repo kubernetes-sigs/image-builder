@@ -1,5 +1,11 @@
 # Image Builder
 
+## Armada Image Builder
+
+This is a fork of [this](https://github.com/kubernetes-sigs/image-builder) repo. With the added changes of Anisble tasks designed to create a hardened Debian/Ubuntu VM image, in this case, Ubuntu 20.04 with CIS STIG hardening remediation scripts which is base off of [this](https://github.com/florianutz/ubuntu2004_cis) repo there. Sections 1 and 2 are remdiated as directed.
+
+For any questions, please reach out to Daniel Kao <dk@armada.ai>.
+
 ## Please see our [Book](https://image-builder.sigs.k8s.io) for more in-depth documentation.
 
 ## What is Image Builder?
