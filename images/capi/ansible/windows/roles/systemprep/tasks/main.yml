@@ -130,7 +130,7 @@
     path: HKLM:\SYSTEM\CurrentControlSet\Services\hns\State
     state: present
     name: HNSControlFlag
-    data: 0x50
+    data: 80
     type: dword
   when: distribution_version == "2019"
 
