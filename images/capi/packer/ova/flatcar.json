@@ -21,5 +21,5 @@
   "systemd_prefix": "/etc/systemd",
   "sysusr_prefix": "/opt",
   "sysusrlocal_prefix": "/opt",
-  "vsphere_guest_os_type": "other3xLinux64Guest"
+  "vsphere_guest_os_type": "other4xLinux64Guest"
 }
