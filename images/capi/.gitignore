@@ -7,3 +7,7 @@
 /.local/bin/
 manifest.json
 **.DS_Store
+
+# Goss test droppings
+debug-goss-spec.yaml
+goss-spec.yaml
