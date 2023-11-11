@@ -114,7 +114,7 @@ def main():
                  "rhel8-64": {"id": "80", "version": "8", "type": "rhel8_64Guest"},
                  "rockylinux-64": {"id": "80", "version": "", "type": "rockylinux_64Guest"},
                  "ubuntu-64": {"id": "94", "version": "", "type": "ubuntu64Guest"},
-                 "flatcar-64": {"id": "100", "version": "", "type": "otherLinux64Guest"},
+                 "flatcar-64": {"id": "100", "version": "", "type": "other4xLinux64Guest"},
                  "Windows2019Server-64": {"id": "112", "version": "", "type": "windows2019srv_64Guest"}}
 
     # Create the OVF file.
