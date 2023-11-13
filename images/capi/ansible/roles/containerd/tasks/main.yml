@@ -181,11 +181,11 @@
 - name: Download runsc for gvisor
   ansible.builtin.get_url:
     dest: "{{ sysusr_prefix }}/bin/{{ item }}"
-    url: "https://storage.googleapis.com/gvisor/releases/release/{{ containerd_gvisor_version }}/{{ ansible_architecture }}/{{ item }}"
+    url: https://storage.googleapis.com/gvisor/releases/release/{{ containerd_gvisor_version }}/{{ ansible_architecture }}/{{ item }}
     mode: "0755"
     owner: root
     group: root
-    checksum: "sha512:https://storage.googleapis.com/gvisor/releases/release/{{ containerd_gvisor_version }}/{{ ansible_architecture }}/{{ item }}.sha512"
+    checksum: sha512:https://storage.googleapis.com/gvisor/releases/release/{{ containerd_gvisor_version }}/{{ ansible_architecture }}/{{ item }}.sha512
   loop:
     - runsc
     - containerd-shim-runsc-v1

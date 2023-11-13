@@ -15,7 +15,6 @@ ansible/roles/containerd/tasks/main.yml risky-file-permissions
 ansible/roles/containerd/tasks/photon.yml fqcn[action-core]
 ansible/roles/containerd/tasks/photon.yml no-changed-when
 ansible/roles/containerd/tasks/redhat.yml fqcn[action-core]
-ansible/roles/firstboot/meta/main.yml yaml[line-length]
 ansible/roles/firstboot/tasks/main.yaml fqcn[action-core]
 ansible/roles/firstboot/tasks/main.yaml name[missing]
 ansible/roles/firstboot/tasks/photon.yml fqcn[action-core]
@@ -38,7 +37,6 @@ ansible/roles/kubernetes/tasks/mariner.yml fqcn[action-core]
 ansible/roles/kubernetes/tasks/mariner.yml no-changed-when
 ansible/roles/kubernetes/tasks/photon.yml fqcn[action-core]
 ansible/roles/kubernetes/tasks/photon.yml no-changed-when
-ansible/roles/kubernetes/tasks/photon.yml yaml[line-length]
 ansible/roles/kubernetes/tasks/redhat.yml fqcn[action-core]
 ansible/roles/kubernetes/tasks/url.yml command-instead-of-shell
 ansible/roles/kubernetes/tasks/url.yml fqcn[action-core]
@@ -55,7 +53,6 @@ ansible/roles/load_additional_components/tasks/url.yml fqcn[action-core]
 ansible/roles/load_additional_components/tasks/url.yml no-changed-when
 ansible/roles/load_additional_components/tasks/url.yml risky-file-permissions
 ansible/roles/node/defaults/main.yml var-naming[no-role-prefix]
-ansible/roles/node/meta/main.yml yaml[line-length]
 ansible/roles/node/tasks/amazonLinux2.yml fqcn[action-core]
 ansible/roles/node/tasks/main.yml command-instead-of-module
 ansible/roles/node/tasks/main.yml fqcn[action-core]
@@ -126,7 +123,6 @@ ansible/roles/providers/tasks/vmware.yml name[missing]
 ansible/roles/python/defaults/main.yml var-naming[no-role-prefix]
 ansible/roles/python/tasks/flatcar.yml fqcn[action-core]
 ansible/roles/python/tasks/flatcar.yml no-changed-when
-ansible/roles/python/tasks/flatcar.yml yaml[line-length]
 ansible/roles/python/tasks/main.yml fqcn[action-core]
 ansible/roles/python/tasks/main.yml name[missing]
 ansible/roles/python/tasks/main.yml no-changed-when

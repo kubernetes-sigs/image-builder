@@ -22,7 +22,7 @@ set -o pipefail
 
 source hack/utils.sh
 
-_version="6.20.3"
+_version="6.21.1"
 
 # Change directories to the parent directory of the one in which this
 # script is located.

@@ -21,4 +21,8 @@
 - name: Install Kubernetes
   command: tdnf install {{ packages }} --nogpgcheck -y
   vars:
-    packages: kubelet-{{ kubernetes_rpm_version }} kubeadm-{{ kubernetes_rpm_version }} kubectl-{{ kubernetes_rpm_version }} kubernetes-cni-{{ kubernetes_cni_rpm_version }}
+    packages: >-
+      kubelet-{{ kubernetes_rpm_version }}
+      kubeadm-{{ kubernetes_rpm_version }}
+      kubectl-{{ kubernetes_rpm_version }}
+      kubernetes-cni-{{ kubernetes_cni_rpm_version }}
