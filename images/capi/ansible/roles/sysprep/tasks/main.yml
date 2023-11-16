@@ -242,3 +242,19 @@
     name: ssh
     enabled: true
   when: ansible_os_family == "Debian"
+
+- name: 1.1.9 Ensure that the Container Network Interface file permissions are set to 600 or more restrictive and ownership is set to root:root.
+  file:
+    path: /etc/cni
+    state: directory
+    recurse: true
+    owner: root
+    group: root
+    mode: 0600 
+
+- name: 1.1.20 Ensure that the Kubernetes PKI certificate file permissions are set to 600 or more restrictive.
+  file:
+    path: /etc/kubernetes/pki
+    state: directory
+    recurse: true
+    mode: 0600
