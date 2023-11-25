@@ -184,6 +184,7 @@ deps-lint: ## Installs/checks dependencies for image-builder code linting
 deps-lint: deps-common
 	hack/ensure-ansible-windows.sh
 	hack/ensure-ansible-lint.sh
+	hack/ensure-shellcheck.sh
 
 ## --------------------------------------
 ## Container variables
@@ -967,8 +968,11 @@ validate-all: ## Validates the Packer config for all build targets
 
 .PHONY: lint
 lint: ## Runs linters on image-builder code
+sh_files = $(shell find . -type f -name "*.sh")
 lint: deps-lint
 	ansible-lint ansible/
+# ignore error code since shellcheck exits with Error 1 if problems are found despite running properly
+	-@for f in $(sh_files); do (shellcheck -x $$f); done
 
 .PHONY: lint-fix
 lint-fix: ## Runs linters on image-builder code and fixes issues
