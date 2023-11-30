@@ -79,3 +79,15 @@
     group: root
     mode: "0644"
   when: ansible_os_family == "Debian"
+
+# Temporary workaround for a kernel bug that stopped CIFS from working.
+# See https://bugs.launchpad.net/ubuntu/+source/linux-azure/+bug/2042092.
+- name: Install linux-modules-extra-azure
+  apt:
+    name: "{{ packages }}"
+    state: present
+    force_apt_get: true
+  vars:
+    packages:
+      - linux-modules-extra-azure
+  when: ansible_os_family == "Debian"
