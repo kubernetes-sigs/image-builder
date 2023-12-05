@@ -53,6 +53,7 @@
     owner: root
     group: root
     mode: "0755"
+  when: nvidia_tok_location is defined
 
 - name: Download NVIDIA License Token
   amazon.aws.s3_object:
@@ -66,6 +67,7 @@
     ceph: "{{ nvidia_ceph }}"
   retries: 5
   delay: 3
+  when: nvidia_tok_location is defined
 
 - name: Set Permissions of NVIDIA License Token
   file:
@@ -74,6 +76,7 @@
     owner: root
     group: root
     mode: "0744"
+  when: nvidia_tok_location is defined
 
 - name: Create GRIDD licensing config
   become: true
@@ -81,6 +84,7 @@
     src: templates/gridd.conf.j2
     dest: /etc/nvidia/gridd.conf
     mode: "0644"
+  when: gridd_feature_type is defined
 
 - name: Download NVIDIA driver installer file
   amazon.aws.s3_object:
@@ -89,7 +93,7 @@
     secret_key: "{{ nvidia_bucket_secret }}"
     bucket: "{{ nvidia_bucket }}"
     object: "{{ nvidia_installer_location }}"
-    dest: /tmp/NVIDIA-Linux-gridd.run
+    dest: /tmp/NVIDIA-Linux.run
     mode: get
     ceph: "{{ nvidia_ceph }}"
   retries: 5
@@ -97,7 +101,7 @@
 
 - name: Set Permissions of NVIDIA driver installer file
   file:
-    path: /tmp/NVIDIA-Linux-gridd.run
+    path: /tmp/NVIDIA-Linux.run
     state: file
     owner: root
     group: root
@@ -106,11 +110,11 @@
 - name: Install NVIDIA driver
   become: true
   ansible.builtin.command:
-    cmd: /tmp/NVIDIA-Linux-gridd.run -s --dkms --no-cc-version-check
+    cmd: /tmp/NVIDIA-Linux.run -s --dkms --no-cc-version-check
 
 - name: Remove the NVIDIA driver installer file
   file:
-    path: /tmp/NVIDIA-Linux-gridd.run
+    path: /tmp/NVIDIA-Linux.run
     state: absent
 
 - name: Cleanup packages for interacting with s3 endpoint
