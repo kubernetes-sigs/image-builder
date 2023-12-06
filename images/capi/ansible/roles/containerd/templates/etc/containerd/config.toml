@@ -18,19 +18,19 @@ imports = ["/etc/containerd/conf.d/*.toml"]
     SystemdCgroup = true
 {% if 'lunatic' in containerd_wasm_shims_runtimes %}
   [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.lunatic]
-    runtime_type = "io.containerd.lunatic.v1"
+    runtime_type = "io.containerd.lunatic.{{ runtime_versions['lunatic'] }}"
 {% endif %}
 {% if 'slight' in containerd_wasm_shims_runtimes %}
   [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.slight]
-    runtime_type = "io.containerd.slight.v1"
+    runtime_type = "io.containerd.slight.{{ runtime_versions['slight'] }}"
 {% endif %}
 {% if 'spin' in containerd_wasm_shims_runtimes %}
   [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.spin]
-    runtime_type = "io.containerd.spin.v1"
+    runtime_type = "io.containerd.spin.{{ runtime_versions['spin'] }}"
 {% endif %}
 {% if 'wws' in containerd_wasm_shims_runtimes %}
   [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.wws]
-    runtime_type = "io.containerd.wws.v1"
+    runtime_type = "io.containerd.wws.{{ runtime_versions['wws'] }}"
 {% endif %}
 {% if containerd_gvisor_runtime %}
   [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.gvisor]

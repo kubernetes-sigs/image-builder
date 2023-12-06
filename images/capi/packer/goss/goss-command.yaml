@@ -21,17 +21,17 @@ command:
     stdout: [ ]
     stderr: ["io.containerd.slight.v1: InvalidArgument(\"Shim namespace cannot be empty\")"]
     timeout: 0
-  containerd-shim-spin-v1:
+  containerd-shim-spin-v2:
     exit-status: 1
     stdout: [ ]
-    stderr: ["io.containerd.spin.v1: InvalidArgument(\"Shim namespace cannot be empty\")"]
+    stderr: ["io.containerd.spin.v2: InvalidArgument(\"Shim namespace cannot be empty\")"]
     timeout: 0
   containerd-shim-wws-v1:
     exit-status: 1
     stdout: [ ]
     stderr: ["io.containerd.wws.v1: InvalidArgument(\"Shim namespace cannot be empty\")"]
     timeout: 0
-  grep -E 'io\.containerd\.(lunatic|slight|spin|wws)\.v1' /etc/containerd/config.toml:
+  grep -E 'io\.containerd\.(lunatic|slight|spin|wws)\.v' /etc/containerd/config.toml:
     exit-status: 0
     stdout: [ ]
     stderr: [ ]
