@@ -43,9 +43,8 @@
   vars:
     dependencies:
       containerd: containerd
-      docker-ee: docker
-      default: docker
-    runtime_service: "{{ dependencies[runtime] | default(dependencies['docker']) }}"
+      default: containerd
+    runtime_service: "{{ dependencies[runtime] | default(dependencies['containerd']) }}"
 
 - name: Add firewall rule for kubelet
   win_firewall_rule:

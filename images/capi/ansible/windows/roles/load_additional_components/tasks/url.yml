@@ -64,18 +64,6 @@
   loop: "{{ images.results }}"
   when: runtime == "containerd"
 
-- name: Load additional Docker images
-  win_shell: |
-    docker import {{ item }}
-  loop: "{{ additional_url_images_list.split(',') }}"
-  async: 1800
-  poll: 60
-  retries: 5
-  delay: 3
-  register: docker_import
-  until: docker_import is not failed
-  when: runtime == "docker"
-
 - name: Remove downloaded files
   win_file:
     state: absent

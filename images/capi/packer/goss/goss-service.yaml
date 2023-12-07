@@ -55,16 +55,6 @@ command:
     {{end}}
 {{end}}
 
-{{ if eq .Vars.runtime "docker-ee" }}
-
-  "Windows Service - docker":
-    exec: powershell -command "(Get-Service docker | select *)"
-    exit-status: 0
-    stdout: 
-    - Automatic
-    - Running
-{{end}}
-
 {{ if eq .Vars.runtime "containerd"}}
   "Windows Service - containerd":
     exec: powershell -command "(Get-Service containerd | select *)"

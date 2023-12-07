@@ -14,6 +14,3 @@
 ---
 - import_tasks: containerd.yml
   when: runtime == "containerd"
-
-- import_tasks: docker_ee.yml
-  when: runtime == "docker-ee"

@@ -25,14 +25,3 @@
   register: pull
   until: pull is not failed
   when: runtime == "containerd"
-
-- name: Pre-pull Docker additional images
-  win_shell: docker pull {{ item }}
-  loop: "{{ additional_registry_images_list.split(',') }}"
-  async: 1800
-  poll: 60
-  retries: 5
-  delay: 3
-  register: pull
-  until: pull is not failed
-  when: runtime == "docker-ee"

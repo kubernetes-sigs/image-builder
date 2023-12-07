@@ -203,15 +203,6 @@ command:
     timeout: 30000
 {{end}}
 
-{{ if eq .Vars.runtime "docker-ee" }}
-  Correct Docker Version:
-    exec: "docker.exe version"
-    exit-status: 0
-    stdout:
-    - "{{.Vars.docker_ee_version}}"
-    timeout: 30000
-{{end}}
-
 {{if eq .Vars.PROVIDER "azure"}}
   Verify firewall rule to block 168.63.129.16:80 for cve-2021-27075:
     exit-status: 0

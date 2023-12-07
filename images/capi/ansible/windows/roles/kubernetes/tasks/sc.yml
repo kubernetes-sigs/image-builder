@@ -12,14 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
+
 # Install kubelet as a windows service
 # Requires --windows-service flag: https://github.com/kubernetes/kubernetes/blob/7f23a743e8c23ac6489340bbb34fa6f1d392db9d/cmd/kubelet/app/options/osflags_windows.go#L26
 # Does not support kubeadm KUBELET_KUBEADM_ARGS which is used by Cluster API to pass extra user args
-- name: Set dockershim args
-  set_fact:
-    additional_kubelet_args: --image-pull-progress-deadline=20m --network-plugin=cni
-  when: runtime == "docker-ee" and kubernetes_semver is version('v1.24.0', '<')
-
 - name: Install kubelet as service
   win_service:
     name: kubelet

@@ -214,7 +214,6 @@
         "PROVIDER": "ova",
         "containerd_version": "{{user `containerd_version`}}",
         "distribution_version": "{{user `distro_version`}}",
-        "docker_ee_version": "{{user `docker_ee_version`}}",
         "kubernetes_version": "{{user `kubernetes_semver`}}",
         "pause_image": "{{user `pause_image`}}",
         "runtime": "{{user `runtime`}}",
