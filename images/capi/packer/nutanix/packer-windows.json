@@ -157,7 +157,6 @@
     "nutanix_subnet_name": "{{env `NUTANIX_SUBNET_NAME`}}",
     "nutanix_username": "{{env `NUTANIX_USERNAME`}}",
     "scp_extra_vars": "",
-    "vm_force_delete": "false",
-    "wins_url": null
+    "vm_force_delete": "false"
   }
 }

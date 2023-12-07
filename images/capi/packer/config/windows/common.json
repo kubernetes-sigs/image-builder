@@ -12,6 +12,5 @@
   "ssh_source_url": "",
   "windows_service_manager": "nssm",
   "windows_updates_categories": "",
-  "windows_updates_kbs": "",
-  "wins_version": "0.0.4"
+  "windows_updates_kbs": ""
 }
