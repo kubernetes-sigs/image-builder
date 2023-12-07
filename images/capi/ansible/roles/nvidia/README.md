@@ -5,6 +5,7 @@ To install the NVIDIA GPU driver as part of the image build process, you must ha
 Then all you need to do is reference those files in your packer file.
 
 An example of the fields you need are defined below. Make sure to review and change any fields where required.
+If the gridd configuration or licensing .tok file are not required then you can omit the `gridd_feature_type` and `nvidia_tok_location` respectively. 
 
 ```json
 {
