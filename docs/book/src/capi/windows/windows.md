@@ -78,3 +78,16 @@ To fix the issue on macOS is to set the no_proxy environment variable. Example:
 ```
 'no_proxy=* make build-azure-vhd-windows-2019'
 ```
+
+## Annual Channel
+The [Windows Server Annual](https://techcommunity.microsoft.com/t5/windows-server-news-and-best/windows-server-annual-channel-for-containers/ba-p/3866248) channel licensing  requires users to host their own image.  
+
+In Azure this can be uploaded to an [Azure SIG](https://learn.microsoft.com/en-us/azure/virtual-machines/azure-compute-gallery), and the following environment variables should be set to use the source [shared image gallery](https://developer.hashicorp.com/packer/integrations/hashicorp/azure/v1.4.5/components/builder/arm#shared-image-gallery).
+
+```
+export SOURCE_SIG_SUB_ID=<azure sub>
+export SOURCE_SIG_RESOURCE_GROUP=<resource group>
+export SOURCE_SIG_NAME=<sig name>
+export SOURCE_SIG_IMAGE_NAME=<image name>
+export SOURCE_SIG_IMAGE_VERSION=<image version>
+```

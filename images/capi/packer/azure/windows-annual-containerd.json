@@ -1,0 +1,19 @@
+{
+  "additional_registry_images": "false",
+  "additional_registry_images_list": "",
+  "build_name": "windows-annual-containerd",
+  "distribution": "windows",
+  "distribution_version": "annual",
+  "load_additional_components": "false",
+  "runtime": "containerd",
+  "shared_image_gallery_name": "{{env `GALLERY_NAME`}}",
+  "source_sig_image_name": "{{env `SOURCE_SIG_IMAGE_NAME`}}",
+  "source_sig_image_version": "{{env `SOURCE_SIG_IMAGE_VERSION`}}",
+  "source_sig_name": "{{env `SOURCE_SIG_NAME`}}",
+  "source_sig_resource_group_name": "{{env `SOURCE_SIG_RESOURCE_GROUP`}}",
+  "source_sig_subscription_id": "{{env `SOURCE_SIG_SUB_ID`}}",
+  "storage_account_type": "Standard_LRS",
+  "vm_size": "Standard_D4s_v3",
+  "windows_updates_kbs": "",
+  "wins_url": ""
+}

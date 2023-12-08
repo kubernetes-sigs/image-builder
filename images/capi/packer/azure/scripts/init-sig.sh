@@ -76,6 +76,9 @@ case ${SIG_TARGET} in
   windows-2022-containerd)
     create_image_definition ${SIG_TARGET} "win-2022-containerd" "V1" "Windows"
   ;;
+  windows-annual-containerd)
+    create_image_definition ${SIG_TARGET} "win-annual-containerd" "V1" "Windows"
+  ;;
   windows-2019-containerd-cvm)
     SKU="windows-2019-cvm-containerd"
     create_image_definition ${SKU} ${SKU} "V2" "Windows" ${SECURITY_TYPE_CVM_SUPPORTED_FEATURE}

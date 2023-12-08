@@ -665,6 +665,7 @@ build-azure-vhd-rhel-8: ## Builds RHEL 8 VHD image for Azure
 build-azure-vhd-windows-2019: ## Builds for Windows Server 2019
 build-azure-vhd-windows-2019-containerd: ## Builds for Windows Server 2019 with containerd
 build-azure-vhd-windows-2022-containerd: ## Builds for Windows Server 2022 with containerd
+build-azure-sig-windows-annual-containerd: ## Builds for Windows Server Annual Channel with containerd
 build-azure-sig-centos-7-gen2: ## Builds CentOS Gen2 managed image in Shared Image Gallery
 build-azure-sig-mariner-2-gen2: ## Builds Mariner Gen2 managed image in Shared Image Gallery
 build-azure-sig-flatcar: ## Builds Flatcar Azure managed image in Shared Image Gallery
@@ -834,6 +835,7 @@ validate-azure-sig-ubuntu-2204: ## Validates Ubuntu 22.04 Azure managed image in
 validate-azure-sig-windows-2019: ## Validate Windows Server 2019 Azure managed image in Shared Image Gallery Packer config
 validate-azure-sig-windows-2019-containerd: ## Validate Windows Server 2019 with containerd Azure managed image in Shared Image Gallery Packer config
 validate-azure-sig-windows-2022-containerd: ## Validate Windows Server 2022 with containerd Azure managed image in Shared Image Gallery Packer config
+validate-azure-sig-windows-annual-containerd: ## Validate Windows Server Annual Channel with containerd Azure managed image in Shared Image Gallery Packer config
 validate-azure-vhd-centos-7: ## Validates CentOS 7 VHD image Azure Packer config
 validate-azure-vhd-mariner-2: ## Validates Mariner 2 VHD image Azure Packer config
 validate-azure-vhd-rhel-8: ## Validates RHEL 8 VHD image Azure Packer config
