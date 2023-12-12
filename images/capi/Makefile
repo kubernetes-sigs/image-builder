@@ -179,6 +179,13 @@ deps-proxmox: deps-common
 	$(PACKER) init packer/config.pkr.hcl
 	$(PACKER) init packer/proxmox/config.pkr.hcl
 
+.PHONY: deps-ionos
+deps-ionos: ## Installs/checks dependencies for IONOS builds
+deps-ionos: deps-common
+	hack/ensure-goss.sh
+	$(PACKER) init packer/config.pkr.hcl
+	$(PACKER) init packer/ionos/config.pkr.hcl
+
 .PHONY: deps-lint
 deps-lint: ## Installs/checks dependencies for image-builder code linting
 deps-lint: deps-common
@@ -383,6 +390,8 @@ HCLOUD_BUILD_NAMES ?= hcloud-ubuntu-2004 hcloud-ubuntu-2204 hcloud-centos-7 hclo
 
 PROXMOX_BUILD_NAMES 		?= proxmox-ubuntu-2204
 
+IONOS_BUILD_NAMES ?= ionos-ubuntu-2204
+
 ## --------------------------------------
 ## Dynamic build targets
 ## --------------------------------------
@@ -429,6 +438,8 @@ HCLOUD_BUILD_TARGETS		:= $(addprefix build-,$(HCLOUD_BUILD_NAMES))
 HCLOUD_VALIDATE_TARGETS		:= $(addprefix validate-,$(HCLOUD_BUILD_NAMES))
 PROXMOX_BUILD_TARGETS		:= $(addprefix build-,$(PROXMOX_BUILD_NAMES))
 PROXMOX_VALIDATE_TARGETS	:= $(addprefix validate-,$(PROXMOX_BUILD_NAMES))
+IONOS_BUILD_TARGETS		:= $(addprefix build-,$(IONOS_BUILD_NAMES))
+IONOS_VALIDATE_TARGETS	:= $(addprefix validate-,$(IONOS_BUILD_NAMES))
 
 .PHONY: $(NODE_OVA_LOCAL_BUILD_TARGETS)
 $(NODE_OVA_LOCAL_BUILD_TARGETS): deps-ova
@@ -609,6 +620,14 @@ $(PROXMOX_BUILD_TARGETS): deps-proxmox
 .PHONY: $(PROXMOX_VALIDATE_TARGETS)
 $(PROXMOX_VALIDATE_TARGETS): deps-proxmox
 	$(PACKER) validate $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/proxmox/$(subst validate-proxmox-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/proxmox/packer.json
+
+.PHONY: $(IONOS_BUILD_TARGETS)
+$(IONOS_BUILD_TARGETS): deps-ionos
+	$(PACKER) build $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/ionos/$(subst build-ionos-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/ionos/packer.json
+
+.PHONY: $(IONOS_VALIDATE_TARGETS)
+$(IONOS_VALIDATE_TARGETS): deps-ionos
+	$(PACKER) validate $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/ionos/$(subst validate-ionos-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/ionos/packer.json
 
 ## --------------------------------------
 ## Dynamic clean targets
@@ -813,6 +832,8 @@ build-hcloud-all: $(HCLOUD_BUILD_TARGETS) ## Builds all Hetzner Cloud image
 
 build-proxmox-ubuntu-2204: ## Builds the Proxmox ubuntu-2204 image
 
+build-ionos-ubuntu-2204: ## Builds the IONOS ubuntu-2204 image
+
 ## --------------------------------------
 ## Document dynamic validate targets
 ## --------------------------------------
@@ -954,6 +975,8 @@ validate-hcloud-flatcar: ## Validates the Hetzner Cloud Flatcar Nutanix Packer c
 validate-hcloud-all: $(HCLOUD_VALIDATE_TARGETS) ## Validates all Hetzner Cloud Packer config
 
 validate-proxmox-ubuntu-2204: ## Validates Ubuntu 22.04 Proxmox Packer config
+
+validate-ionos-ubuntu-2204: ## Validates Ubuntu 22.04 IONOS Packer config
 
 validate-all: validate-ami-all \
 	validate-azure-all \
