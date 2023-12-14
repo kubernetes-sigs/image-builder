@@ -22,7 +22,8 @@ set -o pipefail
 
 source hack/utils.sh
 
-_version="2.16.1"
+# Note: ansible-core v2.16.x requires Python >= 3.10.
+_version="2.15.8"
 
 # Change directories to the parent directory of the one in which this
 # script is located.
