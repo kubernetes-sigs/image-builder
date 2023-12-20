@@ -1,0 +1,19 @@
+{
+  "ansible_extra_vars": "ansible_python_interpreter=/usr/bin/python extra_arguments =vvvv",
+  "boot_command_prefix": "<tab> text inst.ks=",
+  "boot_command_suffix": "/9/ks.cfg<enter><wait><enter>",
+  "boot_media_path": "http://{{ .HTTPIP }}:{{ .HTTPPort }}",
+  "build_name": "centos-9",
+  "distribution_version": "9",
+  "distro_arch": "amd64",
+  "distro_name": "centos",
+  "distro_version": "9",
+  "epel_rpm_gpg_key": "https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-9",
+  "guest_os_type": "centos9-64",
+  "iso_checksum": "2080b8ff7b4bd06982323a8bf3d1c030678b48656e5c6d12e79c22a838e2490e",
+  "iso_checksum_type": "sha256",
+  "iso_url": "https://mirror.stream.centos.org/9-stream/BaseOS/x86_64/iso/CentOS-Stream-9-20231211.0-x86_64-dvd1.iso",
+  "os_display_name": "CentOS 9 Stream",
+  "redhat_epel_rpm": "https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm",
+  "shutdown_command": "/sbin/halt -h -p"
+}

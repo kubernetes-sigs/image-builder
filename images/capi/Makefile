@@ -369,7 +369,7 @@ OPENSTACK_BUILD_NAMES	?=	openstack-ubuntu-2004 openstack-ubuntu-2204 openstack-f
 
 OSC_BUILD_NAMES 			?=	osc-ubuntu-2004
 
-QEMU_BUILD_NAMES			?=	qemu-ubuntu-2004 qemu-ubuntu-2204 qemu-ubuntu-2304 qemu-ubuntu-2204-efi qemu-centos-7 qemu-ubuntu-2004-efi qemu-rhel-8 qemu-rockylinux-8 qemu-rockylinux-9 qemu-flatcar
+QEMU_BUILD_NAMES			?=	qemu-ubuntu-2004 qemu-ubuntu-2204 qemu-ubuntu-2304 qemu-ubuntu-2204-efi qemu-centos-7 qemu-centos-9 qemu-ubuntu-2004-efi qemu-rhel-8 qemu-rockylinux-8 qemu-rockylinux-9 qemu-flatcar
 
 QEMU_KUBEVIRT_BUILD_NAMES	:= $(addprefix kubevirt-,$(QEMU_BUILD_NAMES))
 
@@ -769,6 +769,7 @@ build-qemu-ubuntu-2204: ## Builds Ubuntu 22.04 QEMU image
 build-qemu-ubuntu-2204-efi: ## Builds Ubuntu 22.04 QEMU image that EFI boots
 build-qemu-ubuntu-2304: ## Builds Ubuntu 23.04 QEMU image
 build-qemu-centos-7: ## Builds CentOS 7 QEMU image
+build-qemu-centos-9: ## Builds CentOS 9 Stream QEMU image
 build-qemu-rhel-8: ## Builds RHEL 8 QEMU image
 build-qemu-rockylinux-8: ## Builds Rocky 8 QEMU image
 build-qemu-rockylinux-9: ## Builds Rocky 9 QEMU image
