@@ -176,10 +176,12 @@
     path: /tmp/containerd.tar.gz
     state: absent
 
-- name: Delete containerd-wasm-shims tarball
+- name: Delete containerd-wasm-shims tarballs
   file:
-    path: /tmp/containerd_wasm_shims.tar.gz
+    path: /tmp/{{ item }}_wasm_shims.tar.gz
     state: absent
+  when: containerd_wasm_shims_runtimes | length > 0
+  loop: "{{ containerd_wasm_shims_runtimes | split(',') }}"
 
 - name: Download runsc for gvisor
   ansible.builtin.get_url:
