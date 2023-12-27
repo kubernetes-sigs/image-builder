@@ -112,14 +112,23 @@
     mode: "0644"
   when: ansible_os_family == "Debian"
 
-- name: Set cloudinit feature flags for redhat
+- name: Set cloudinit feature flags for redhat 8
   copy:
     src: usr/lib/python3/site-packages/cloudinit/feature_overrides.py
     dest: /usr/lib/python3.6/site-packages/cloudinit/feature_overrides.py
     owner: root
     group: root
     mode: "0644"
-  when: ansible_os_family == "RedHat" and ansible_distribution == "RedHat"
+  when: ansible_os_family == "RedHat" and ansible_distribution == "RedHat" and ansible_distribution_major_version == "8"
+
+- name: Set cloudinit feature flags for redhat 9
+  copy:
+    src: usr/lib/python3/site-packages/cloudinit/feature_overrides.py
+    dest: /usr/lib/python3.9/site-packages/cloudinit/feature_overrides.py
+    owner: root
+    group: root
+    mode: "0644"
+  when: ansible_os_family == "RedHat" and ansible_distribution == "RedHat" and ansible_distribution_major_version == "9"
 
 - name: Ensure chrony is running
   systemd:
