@@ -198,10 +198,10 @@
       find /var/log -type f -iname '*.log' | xargs truncate -s 0
   when: ansible_os_family != "Flatcar"
 
-- name: Delete all logrotated log zips
+- name: Delete all logrotated logs
   shell:
     cmd: |
-      find /var/log -type f -name '*.gz' -exec rm {} +
+      find /var/log -type f -regex '.*[0-9z]$' -exec rm {} +
   when: ansible_os_family != "Flatcar"
 
 - name: Remove swapfile
