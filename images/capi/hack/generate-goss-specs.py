@@ -34,7 +34,6 @@ def generate_goss(provider, system, versions, runtime, dryrun=False, save=False)
     vars = {'OS': system, 'PROVIDER': provider,
             'OS_VERSION': versions['os'],
             'containerd_version': versions['containerd'],
-            'docker_ee_version': versions['docker'],
             'distribution_version': versions['os'],
             'kubernetes_version': versions['k8s'],
             'kubernetes_deb_version': versions['k8s_deb'],
@@ -114,9 +113,6 @@ def main():
     containerd = read_json_file(os.path.join(root_path, 'packer', 'config', 'containerd.json'))
     versions['containerd'] = containerd['containerd_version']
 
-    docker = read_json_file(os.path.join(root_path, 'packer', 'config', 'windows', 'docker.json'))
-    versions['docker'] = docker['docker_ee_version']
-
     wincommon = read_json_file(os.path.join(root_path, 'packer', 'config', 'windows', 'common.json'))
     versions['ssh_url'] = wincommon['ssh_source_url']
 
@@ -140,7 +136,7 @@ def main():
     for provider, system in itertools.product(providers, oss):
         if system in builds[provider]:
             if system == 'windows':
-                runtimes = ["docker-ee","containerd"]
+                runtimes = ["containerd"]
                 os_versions = ["2019", "2022"]
             elif system == 'rhel':
                 runtimes = ["containerd"]

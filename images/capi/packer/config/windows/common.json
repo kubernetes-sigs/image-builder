@@ -8,10 +8,9 @@
   "no_proxy": "",
   "nssm_url": "https://upstreamartifacts.azureedge.net/nssm/nssm.exe",
   "prepull": "true",
-  "runtime": "docker-ee",
+  "runtime": "containerd",
   "ssh_source_url": "",
   "windows_service_manager": "nssm",
   "windows_updates_categories": "",
-  "windows_updates_kbs": "",
-  "wins_version": "0.0.4"
+  "windows_updates_kbs": ""
 }

@@ -27,17 +27,5 @@ $args = "--cert-dir=$env:SYSTEMDRIVE/var/lib/kubelet/pki",
         "--enforce-node-allocatable=`"`"",
         "--resolv-conf=`"`""
 
-{% if runtime == "docker-ee" and kubernetes_semver is version('v1.24.0', '<') %}
-{% raw %}
-$netId = docker network ls -f name=host --format "{{ .ID }}"
-{% endraw %}
-if ($netId.Length -lt 1) {
-    docker network create -d nat host
-}
-
-$args += "--image-pull-progress-deadline=20m",
-        "--network-plugin=cni"
-{% endif %}
-
 $kubeletCommandLine = "{{ kubernetes_install_path }}\kubelet.exe " + ($args -join " ") + " $kubeAdmArgs"
 Invoke-Expression $kubeletCommandLine

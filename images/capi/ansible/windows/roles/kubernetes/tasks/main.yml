@@ -26,6 +26,3 @@
     scope: Machine
 
 - import_tasks: kubelet.yml
-
-- import_tasks: wins.yml
-  when: use_wins

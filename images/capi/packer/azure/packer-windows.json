@@ -170,7 +170,6 @@
         "PROVIDER": "azure",
         "containerd_version": "{{user `containerd_version`}}",
         "distribution_version": "{{user `distribution_version`}}",
-        "docker_ee_version": "{{user `docker_ee_version`}}",
         "kubernetes_version": "{{user `kubernetes_semver`}}",
         "pause_image": "{{user `pause_image`}}",
         "runtime": "{{user `runtime`}}",
@@ -238,7 +237,6 @@
     "vm_size": "",
     "windows_service_manager": null,
     "windows_updates_kbs": null,
-    "wins_url": "https://github.com/rancher/wins/releases/download/v{{user `wins_version`}}/wins.exe",
     "wire_server_users": ""
   }
 }

@@ -11,6 +11,5 @@
   "load_additional_components": "false",
   "runtime": "containerd",
   "vm_size": "Standard_D4s_v3",
-  "windows_updates_kbs": "",
-  "wins_url": ""
+  "windows_updates_kbs": ""
 }

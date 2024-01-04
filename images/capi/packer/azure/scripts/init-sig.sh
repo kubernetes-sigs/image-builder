@@ -67,9 +67,6 @@ case ${SIG_TARGET} in
   rhel-8)
     create_image_definition "rhel-8" "rhel-8" "V1" "Linux"
   ;;
-  windows-2019)
-    create_image_definition "windows-2019-docker-ee" "win-2019-docker-ee" "V1" "Windows"
-  ;;
   windows-2019-containerd)
     create_image_definition ${SIG_TARGET} "win-2019-containerd" "V1" "Windows"
   ;;

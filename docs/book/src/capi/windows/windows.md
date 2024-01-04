@@ -18,11 +18,6 @@ Image-builder provides you two ways to configure Windows services. The default i
 
 **Important: sc.exe does not support kubeadm KUBELET_KUBEADM_ARGS which is used by Cluster API to pass extra user args**
 
-## Wins (by rancher)
-
-As a workaround for the lack of privileged containers on Windows nodes, SIG Windows utilise [Wins](https://github.com/rancher/wins/) to allow pods to run processes on hosts, an example is when you are using kube-proxy or a cni provider in a pod. This means that by default we install wins using image-builder. This may be undesirable, if you do not need pod to have the ability to run processes on the host. Additionally, Alpha support for Windows [Host Processes](https://github.com/kubernetes/enhancements/tree/master/keps/sig-windows/1981-windows-privileged-container-support), which is the Windows equivalent for privileged containers, will be introduced in 1.22 which negates the need for wins entirely. To skip installing wins on the host you can add `"wins_url": ""` to your variables.
-
-When using containerd, due to lack of host networking, there is currently no way to run cni inside a pod.   To work around this, containerd needs to be installed with an additional custom Ansible module or after the image has been created.  With CAPI, the additional configuration can be done with pre/postKubeadm scripts when the node is created.
 
 ## Windows Updates
 

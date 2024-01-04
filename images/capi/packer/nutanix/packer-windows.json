@@ -100,7 +100,6 @@
         "PROVIDER": "nutanix",
         "containerd_version": "{{user `containerd_version`}}",
         "distribution_version": "{{user `distro_version`}}",
-        "docker_ee_version": "{{user `docker_ee_version`}}",
         "kubernetes_version": "{{user `kubernetes_semver`}}",
         "pause_image": "{{user `pause_image`}}",
         "runtime": "{{user `runtime`}}",
@@ -157,7 +156,6 @@
     "nutanix_subnet_name": "{{env `NUTANIX_SUBNET_NAME`}}",
     "nutanix_username": "{{env `NUTANIX_USERNAME`}}",
     "scp_extra_vars": "",
-    "vm_force_delete": "false",
-    "wins_url": null
+    "vm_force_delete": "false"
   }
 }
