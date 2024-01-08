@@ -193,9 +193,12 @@
   when: ansible_os_family == "Flatcar"
 
 - name: Truncate all remaining log files in /var/log
-  shell:
-    cmd: |
+  shell: |
+      set -o pipefail
       find /var/log -type f -iname '*.log' | xargs truncate -s 0
+  args:
+    executable: /bin/bash
+
   when: ansible_os_family != "Flatcar"
 
 - name: Delete all logrotated logs

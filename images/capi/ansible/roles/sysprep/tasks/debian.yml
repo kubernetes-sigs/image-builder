@@ -18,7 +18,11 @@
     machine_id_mode: "0644"
 
 - name: Pin all installed packages with apt-mark
-  shell: dpkg-query -f '${binary:Package}\n' -W | xargs apt-mark hold
+  shell: |
+    set -o pipefail
+    dpkg-query -f '${binary:Package}\n' -W | xargs apt-mark hold
+  args:
+    executable: /bin/bash
 
 - name: Remove extra repos
   file:
