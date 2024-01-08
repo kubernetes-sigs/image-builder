@@ -38,18 +38,24 @@ if ! command -v ansible >/dev/null 2>&1; then
     ensure_py3_bin ansible-playbook
 fi
 
-ansible_version=""
-IFS=" " read -ra ansible_version <<< "$(ansible --version)"
-if [[ "${_version}" != $(echo -e "${_version}\n${ansible_version[2]}" | sort -s -t. -k 1,1 -k 2,2n -k 3,3n | head -n1) && "${ansible_version[2]}" != "devel" ]]; then
+# Get Ansible version
+ansible_version_line=$(ansible --version | head -n1)
+IFS=" " read -ra ansible_version <<< "$ansible_version_line"
+
+# Extract just the version number (e.g., "2.10.8")
+version_number=${ansible_version[1]}
+
+# Your existing version comparison logic, with "version_number" instead of "ansible_version[2]"
+if [[ "${_version}" != $(echo -e "${_version}\n${version_number}" | sort -s -t. -k 1,1 -k 2,2n -k 3,3n | head -n1) && "${version_number}" != "devel" ]]; then
   cat <<EOF
-Detected ansible version: ${ansible_version[*]}.
+Detected ansible version: ${version_number}.
 Image builder requires ${_version} or greater.
 Please install ${_version} or later.
 EOF
   exit 2
 fi
 
-echo ${ansible_version[*]}
+echo ${version_number}
 
 ansible-galaxy collection install \
   community.general \
