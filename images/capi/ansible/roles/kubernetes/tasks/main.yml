@@ -66,6 +66,32 @@
     src: etc/kubernetes-version
     mode: "0644"
 
+- name: Create libexec directory
+  file:
+    state: directory
+    path: "{{ sysusr_prefix }}/libexec/kubernetes"
+    mode: "0755"
+    owner: root
+    group: root
+
+- name: Drop kubelet resource sizing script
+  copy:
+    src: files/usr/libexec/kubernetes/kubelet-resource-sizing.sh
+    dest: "{{ sysusr_prefix }}/libexec/kubernetes/kubelet-resource-sizing.sh"
+    owner: root
+    group: root
+    mode: "0755"
+  when: kubernetes_enable_automatic_resource_sizing
+
+- name: Drop kubelet resource sizing systemd unit file
+  template:
+    src: usr/lib/systemd/system/kubelet.service.d/11-resource-sizing.conf
+    dest: "{{ systemd_prefix }}/system/kubelet.service.d/11-resource-sizing.conf"
+    owner: root
+    group: root
+    mode: "0644"
+  when: kubernetes_enable_automatic_resource_sizing
+
 # TODO: This section will be deprecated once https://github.com/containerd/cri/issues/1131 is fixed. It is used to support ECR with containerd.
 - name: Check if Kubernetes container registry is using Amazon ECR
   set_fact:

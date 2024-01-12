@@ -180,6 +180,7 @@
     "kubernetes_deb_gpg_key": null,
     "kubernetes_deb_repo": null,
     "kubernetes_deb_version": null,
+    "kubernetes_enable_automatic_resource_sizing": "false",
     "kubernetes_http_source": null,
     "kubernetes_load_additional_imgs": null,
     "kubernetes_rpm_gpg_check": null,
