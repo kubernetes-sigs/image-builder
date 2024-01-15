@@ -1,6 +1,6 @@
 # Image Builder Releases
 
-The current release of Image Builder is [v0.1.21][] (November 16, 2023). The corresponding container image is `registry.k8s.io/scl-image-builder/cluster-node-image-builder-amd64:v0.1.21`.
+The current release of Image Builder is [v0.1.22][] (Januarty 15, 2024). The corresponding container image is `registry.k8s.io/scl-image-builder/cluster-node-image-builder-amd64:v0.1.22`.
 
 ## Release Process
 
@@ -78,7 +78,7 @@ Image-builder v0.1.22 is now available: https://github.com/kubernetes-sigs/image
 Thanks to all contributors!
 ```
 
-[v0.1.21]: https://github.com/kubernetes-sigs/image-builder/releases/tag/v0.1.21
+[v0.1.22]: https://github.com/kubernetes-sigs/image-builder/releases/tag/v0.1.22
 [#image-builder channel]: https://kubernetes.slack.com/archives/C01E0Q35A8J
 [Personal access tokens]: https://github.com/settings/tokens
 [pr-container-image-build]: https://testgrid.k8s.io/sig-cluster-lifecycle-image-builder#pr-container-image-build
