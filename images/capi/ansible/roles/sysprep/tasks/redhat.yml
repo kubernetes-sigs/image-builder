@@ -77,6 +77,10 @@
   shell: sed -i '/^\(HWADDR\|UUID\)=/d' /etc/sysconfig/network-scripts/ifcfg-*
   when: packer_builder_type != "googlecompute" and ansible_distribution_major_version|int != 9
 
+- name: Migrate interface configuration files to NetworkManager keyfiles
+  command: nmcli connection migrate
+  when: packer_builder_type != "googlecompute" and ansible_distribution_major_version|int == 9
+
 - name: Reset network interface IDs
   shell: sed -i '/^\(uuid\)=/d' /etc/NetworkManager/system-connections/*.nmconnection
   when: packer_builder_type != "googlecompute" and ansible_distribution_major_version|int == 9
