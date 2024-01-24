@@ -9,11 +9,13 @@ kubernetes_version: &kubernetes_version
 
 kubernetes_cni_version: &kubernetes_cni_version
   versions:
+{{ if or .Vars.kubernetes_cni_deb_version .Vars.kubernetes_cni_rpm_version }}
     or:
       - contain-element:
           match-regexp: "^\\Q{{ .Vars.kubernetes_cni_deb_version }}\\E$"
       - contain-element:
           match-regexp: "^\\Q{{ .Vars.kubernetes_cni_rpm_version }}\\E$"
+{{ end }}
 
 package:
 # Flatcar uses Ignition instead of cloud-init

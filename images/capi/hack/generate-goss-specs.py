@@ -103,7 +103,7 @@ def main():
     cni = read_json_file(os.path.join(root_path, 'packer', 'config', 'cni.json'))
     versions['cni'] = cni['kubernetes_cni_semver'].lstrip('v')
     versions['cni_deb'] = cni['kubernetes_cni_deb_version']
-    versions['cni_rpm'] = cni['kubernetes_cni_rpm_version'].split('-')[0]
+    versions['cni_rpm'] = cni['kubernetes_cni_rpm_version'].split('-')[0] if cni['kubernetes_cni_rpm_version'] else None
 
     k8s = read_json_file(os.path.join(root_path, 'packer', 'config', 'kubernetes.json'))
     versions['k8s'] = k8s['kubernetes_semver'].lstrip('v')
@@ -144,14 +144,14 @@ def main():
             elif system == 'photon':
                 runtimes = ["containerd"]
                 os_versions = ["3", "4", "5"]
-            else: 
+            else:
                 runtimes = ["containerd"]
                 os_versions = [""]
             for runtime in runtimes:
                 for version in os_versions:
                     versions["os"] = version
                     generate_goss(provider, system, versions, runtime, args.dry_run, args.write)
-            
+
 
 if __name__ == '__main__':
     main()
