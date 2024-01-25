@@ -92,6 +92,32 @@
     mode: "0644"
   when: kubernetes_enable_automatic_resource_sizing
 
+- name: Generate kubectl bash completion
+  shell:
+    cmd: "{{ sysusr_prefix }}/bin/kubectl completion bash > {{ sysusr_prefix }}/share/bash-completion/completions/kubectl"
+    creates: "{{ sysusr_prefix }}/share/bash-completion/completions/kubectl"
+  when: ansible_os_family != "Flatcar"
+
+- name: Generate kubeadm bash completion
+  shell:
+    cmd: "{{ sysusr_prefix }}/bin/kubeadm completion bash > {{ sysusr_prefix }}/share/bash-completion/completions/kubeadm"
+    creates: "{{ sysusr_prefix }}/share/bash-completion/completions/kubeadm"
+  when: ansible_os_family != "Flatcar"
+
+- name: Generate crictl bash completion
+  shell:
+    cmd: "{{ sysusr_prefix }}/bin/crictl completion bash > {{ sysusr_prefix }}/share/bash-completion/completions/crictl"
+    creates: "{{ sysusr_prefix }}/share/bash-completion/completions/crictl"
+  when: ansible_os_family != "Flatcar"
+
+- name: Set KUBECONFIG variable and alias
+  copy:
+    dest: /etc/profile.d/kubernetes.sh
+    src: etc/profile.d/kubernetes.sh
+    owner: root
+    group: root
+    mode: "0644"
+
 # TODO: This section will be deprecated once https://github.com/containerd/cri/issues/1131 is fixed. It is used to support ECR with containerd.
 - name: Check if Kubernetes container registry is using Amazon ECR
   set_fact:
