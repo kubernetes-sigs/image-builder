@@ -38,8 +38,23 @@ source hack/utils.sh
 # invoked, so we are timeboxing it to 10 seconds. This shouldn't be the
 # case with Packer installed from Hashicorp releases, which should give
 # us a version number. This helps us distinguish the two Packer executables.
-if (command -v packer && timeout 10 packer version) >/dev/null 2>&1; then exit 0; fi
 
+if (command -v packer) >/dev/null 2>&1; then
+  echo "Packer is already installed, checking version..."
+  # if it's not the hashicorp packer, return "unexpected packer found"
+  if !(timeout 10 packer version) >/dev/null 2>&1; then
+    echo "unexpected packer found";
+    exit 1;
+  fi
+  existing_packer_version=$(packer version | head -1 | cut -d 'v' -f 2)
+  if [ "$existing_packer_version" != "$_version" ]; then
+    echo "unsupported packer version ($existing_packer_version) found"
+    echo "current packer version: $existing_packer_version is not supported"
+    echo "Downgrading packer to ${_version}"
+  fi
+fi
+
+echo "Installing packer v${_version} in .local/bin"
 mkdir -p .local/bin && cd .local/bin
 
 SED="sed"
