@@ -240,6 +240,7 @@ command:
   Check Azure CLI is installed via alias:
     exec: powershell -command "az"
     exit-status: 0
+    timeout: 30000
 {{end}}
 
 {{ if ne .Vars.ssh_source_url "" }}
