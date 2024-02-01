@@ -321,7 +321,7 @@ PHOTON_VERSIONS			:=	photon-3 photon-4 photon-5
 RHEL_VERSIONS			:=	rhel-7 rhel-8
 ROCKYLINUX_VERSIONS     :=  rockylinux-8
 UBUNTU_VERSIONS			:=	ubuntu-2004 ubuntu-2004-efi ubuntu-2204 ubuntu-2204-efi
-WINDOWS_VERSIONS		:=	windows-2019 windows-2022
+WINDOWS_VERSIONS		:=	windows-2019 windows-2019-efi windows-2022 windows-2022-efi
 
 # Set Flatcar Container Linux channel and version if not supplied
 FLATCAR_CHANNEL ?= stable
@@ -709,7 +709,9 @@ build-node-ova-vsphere-ubuntu-2004-efi: ## Builds Ubuntu 20.04 Node OVA and temp
 build-node-ova-vsphere-ubuntu-2204: ## Builds Ubuntu 22.04 Node OVA and template on vSphere
 build-node-ova-vsphere-ubuntu-2204-efi: ## Builds Ubuntu 22.04 Node OVA and template on vSphere that EFI boots
 build-node-ova-vsphere-windows-2019: ## Builds for Windows Server 2019 and template on vSphere
+build-node-ova-vsphere-windows-2019-efi: ## Builds for Windows Server 2019 and template on vSphere that EFI boots
 build-node-ova-vsphere-windows-2022: ## Builds for Windows Server 2022 template on vSphere
+build-node-ova-vsphere-windows-2022-efi: ## Builds for Windows Server 2022 template on vSphere that EFI boots
 build-node-ova-vsphere-all: $(NODE_OVA_VSPHERE_BUILD_TARGETS) ## Builds all Node OVAs and templates on vSphere
 
 build-node-ova-vsphere-clone-centos-7: ## Builds CentOS 7 Node OVA and template on vSphere

@@ -1,4 +1,5 @@
 {
+  "boot_command": null,
   "boot_wait": "10s",
   "convert_to_template": "false",
   "cpu": "4",

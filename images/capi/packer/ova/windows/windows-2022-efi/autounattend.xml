@@ -31,40 +31,48 @@ Installation Notes:
                     <CreatePartitions>
                         <CreatePartition wcm:action="add">
                             <Order>1</Order>
-                            <Size>350</Size>
-                            <Type>Primary</Type>
+                            <Type>EFI</Type>
+                            <Size>100</Size>
                         </CreatePartition>
                         <CreatePartition wcm:action="add">
                             <Order>2</Order>
-                            <Extend>true</Extend>
+                            <Type>MSR</Type>
+                            <Size>16</Size>
+                        </CreatePartition>
+                        <CreatePartition wcm:action="add">
+                            <Order>3</Order>
                             <Type>Primary</Type>
+                            <Extend>true</Extend>
                         </CreatePartition>
                     </CreatePartitions>
                     <ModifyPartitions>
                         <ModifyPartition wcm:action="add">
-                            <Format>NTFS</Format>
-                            <Label>System</Label>
                             <Order>1</Order>
+                            <Format>FAT32</Format>
+                            <Label>System</Label>
                             <PartitionID>1</PartitionID>
-                            <TypeID>0x27</TypeID>
                         </ModifyPartition>
                         <ModifyPartition wcm:action="add">
                             <Order>2</Order>
                             <PartitionID>2</PartitionID>
-                            <Letter>C</Letter>
-                            <Label>OS</Label>
+                        </ModifyPartition>
+                        <ModifyPartition wcm:action="add">
+                            <Order>3</Order>
                             <Format>NTFS</Format>
+                            <Label>Windows</Label>
+                            <Letter>C</Letter>
+                            <PartitionID>3</PartitionID>
                         </ModifyPartition>
                     </ModifyPartitions>
-                    <DiskID>0</DiskID>
                     <WillWipeDisk>true</WillWipeDisk>
+                    <DiskID>0</DiskID>
                 </Disk>
             </DiskConfiguration>
             <ImageInstall>
                 <OSImage>
                     <InstallTo>
                         <DiskID>0</DiskID>
-                        <PartitionID>2</PartitionID>
+                        <PartitionID>3</PartitionID>
                     </InstallTo>
                     <InstallFrom>
                         <MetaData wcm:action="add">
