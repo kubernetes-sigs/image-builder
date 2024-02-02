@@ -44,13 +44,17 @@ if (command -v packer) >/dev/null 2>&1; then
   # if it's not the hashicorp packer, return "unexpected packer found"
   if !(timeout 10 packer version) >/dev/null 2>&1; then
     echo "unexpected packer found";
-    exit 1;
   fi
   existing_packer_version=$(packer version | head -1 | cut -d 'v' -f 2)
+  echo "existing packer version: $existing_packer_version"
   if [ "$existing_packer_version" != "$_version" ]; then
     echo "unsupported packer version ($existing_packer_version) found"
     echo "current packer version: $existing_packer_version is not supported"
     echo "Downgrading packer to ${_version}"
+  else
+    echo "Packer version is as expected"
+    echo "Packer version $existing_packer_version is already installed"
+    exit 0
   fi
 fi
 
