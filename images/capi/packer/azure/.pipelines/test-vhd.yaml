@@ -110,7 +110,7 @@ jobs:
       # Install required binaries
       mkdir ~/test-binaries
       export PATH=${PATH}:~/test-binaries
-      az capi install -a -ip ~/test-binaries
+      az capi install -a -p ~/test-binaries
 
       echo "##vso[task.setvariable variable=PATH;]$PATH"
     displayName: Install and configure az capi extension
