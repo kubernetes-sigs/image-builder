@@ -79,3 +79,21 @@
     group: root
     mode: "0644"
   when: ansible_os_family == "Debian"
+
+- name: Create the credential provider path
+  file:
+    path: /var/lib/kubelet/credential-provider
+    state: directory
+    mode: "0755"
+
+- name: Download OOT credential provider
+  get_url:
+    url: https://github.com/kubernetes-sigs/cloud-provider-azure/releases/latest/download/azure-acr-credential-provider-linux-amd64
+    dest: /var/lib/kubelet/credential-provider/acr-credential-provider
+    mode: "0755"
+
+- name: Download OOT credential provider config file
+  get_url:
+    url: https://raw.githubusercontent.com/kubernetes-sigs/cloud-provider-azure/master/examples/out-of-tree/credential-provider-config.yaml
+    dest: /var/lib/kubelet/credential-provider-config.yaml
+    mode: "0644"

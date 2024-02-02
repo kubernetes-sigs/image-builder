@@ -60,3 +60,24 @@
   ansible.windows.win_file:
     path: C:\azure-cli.msi
     state: absent
+
+- name: Create the credential provider path
+  win_file:
+    path: C:\var\lib\kubelet\credential-provider
+    state: directory
+
+- name: Download OOT credential provider
+  win_get_url:
+    url: https://github.com/kubernetes-sigs/cloud-provider-azure/releases/latest/download/azure-acr-credential-provider-windows-amd64.exe
+    dest: C:\var\lib\kubelet\credential-provider\acr-credential-provider.exe
+
+# It is a workaround for K8s < 1.30.
+# Detail: https://github.com/kubernetes-sigs/cloud-provider-azure/issues/4533
+- name: Copy OOT credential provider binary
+  when: kubernetes_semver is version('v1.30.0', '<')
+  win_shell: copy C:\var\lib\kubelet\credential-provider\acr-credential-provider.exe C:\var\lib\kubelet\credential-provider\acr-credential-provider
+
+- name: Download OOT credential provider config file
+  win_get_url:
+    url: https://raw.githubusercontent.com/kubernetes-sigs/cloud-provider-azure/master/examples/out-of-tree/credential-provider-config-win.yaml
+    dest: C:\var\lib\kubelet\credential-provider-config.yaml
