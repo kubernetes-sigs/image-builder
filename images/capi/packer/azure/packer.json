@@ -192,6 +192,8 @@
       ],
       "inline": [
         "if [[ $BUILD_NAME != \"flatcar\"* ]]; then exit 0; fi",
+        "which python || echo 'python not found'",
+        "which python3 || echo 'python3 not found'",
         "sudo bash -c \"/usr/share/oem/python/bin/python /usr/share/oem/bin/waagent -force -deprovision+user && ln -sf ../run/systemd/resolve/resolv.conf /etc/resolv.conf && sync\""
       ],
       "inline_shebang": "/bin/bash -x",
