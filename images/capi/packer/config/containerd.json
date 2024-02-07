@@ -3,7 +3,7 @@
   "containerd_cri_socket": "/var/run/containerd/containerd.sock",
   "containerd_gvisor_runtime": "false",
   "containerd_gvisor_version": "latest",
-  "containerd_sha256": "38fce887eafe047571d9cdd0f1cc768315af5a68ab2d1726ab3cd0d43dd77377",
-  "containerd_sha256_windows": "a334db85f8a8d54441c38087ecbfe9b62db54cbf2cb8b43276682923976202bb",
-  "containerd_version": "1.7.10"
+  "containerd_sha256": "9be621c0206b5c20a1dea05fae12fc698e5083cc81f65c9d918c644090696d19",
+  "containerd_sha256_windows": "a576160771eba9b3e0d85a841fa4f6dba60a14c5c4f45e34f2148e2fe138ebb7",
+  "containerd_version": "1.7.13"
 }
