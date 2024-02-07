@@ -1,4 +1,4 @@
-# Copyright 2023 The Kubernetes Authors.
+# Copyright 2024 The Kubernetes Authors.
 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,11 +13,6 @@
 # limitations under the License.
 
 ---
-- name: Unload nouveau
-  modprobe:
-    name: nouveau
-    state: absent
-  ignore_errors: true
 
 - name: Add NVIDIA package signing key
   ansible.builtin.apt_key:
@@ -25,7 +20,7 @@
   when: ansible_os_family == "Debian"
 
 - name: Perform a cache update
-  apt:
+  ansible.builtin.apt:
     force_apt_get: true
     update_cache: true
   register: apt_lock_status
@@ -47,7 +42,7 @@
 
 - name: Make /etc/nvidia/ClientConfigToken directory
   become: true
-  file:
+  ansible.builtin.file:
     path: /etc/nvidia/ClientConfigToken
     state: directory
     owner: root
@@ -70,7 +65,7 @@
   when: nvidia_tok_location is defined
 
 - name: Set Permissions of NVIDIA License Token
-  file:
+  ansible.builtin.file:
     path: /etc/nvidia/ClientConfigToken/client_configuration_token.tok
     state: file
     owner: root
@@ -80,7 +75,7 @@
 
 - name: Create GRIDD licensing config
   become: true
-  template:
+  ansible.builtin.template:
     src: templates/gridd.conf.j2
     dest: /etc/nvidia/gridd.conf
     mode: "0644"
@@ -100,7 +95,7 @@
   delay: 3
 
 - name: Set Permissions of NVIDIA driver installer file
-  file:
+  ansible.builtin.file:
     path: /tmp/NVIDIA-Linux.run
     state: file
     owner: root
@@ -113,7 +108,7 @@
     cmd: /tmp/NVIDIA-Linux.run -s --dkms --no-cc-version-check
 
 - name: Remove the NVIDIA driver installer file
-  file:
+  ansible.builtin.file:
     path: /tmp/NVIDIA-Linux.run
     state: absent
 

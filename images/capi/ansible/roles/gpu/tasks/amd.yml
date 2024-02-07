@@ -1,0 +1,53 @@
+# Copyright 2024 The Kubernetes Authors.
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+
+# http://www.apache.org/licenses/LICENSE-2.0
+
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+---
+
+- name: Add the root user to the render and video groups
+  ansible.builtin.user:
+    name: root
+    groups: render,video
+    append: true
+  when: ansible_os_family == "Debian"
+
+- name: Install the .deb for AMDGPU-Install
+  ansible.builtin.apt:
+    deb: "https://repo.radeon.com/amdgpu-install/{{ amd_version }}/ubuntu/jammy/amdgpu-install_{{ amd_deb_version }}_all.deb"
+  when: ansible_os_family == "Debian"
+
+- name: Perform a cache update
+  ansible.builtin.apt:
+    force_apt_get: true
+    update_cache: true
+  register: apt_lock_status
+  until: apt_lock_status is not failed
+  retries: 5
+  delay: 10
+  when: ansible_os_family == "Debian"
+
+- name: Install packages required for AMD driver installation
+  become: true
+  ansible.builtin.apt:
+    pkg:
+      - "linux-headers-{{ ansible_kernel }}"
+      - "linux-modules-extra-{{ ansible_kernel }}"
+      - build-essential
+      - dkms
+      - rocminfo
+      - clinfo
+  when: ansible_os_family == "Debian"
+
+- name: Run AMDGPU_Install binary with use-cases
+  ansible.builtin.command:
+    cmd: "amdgpu-install -y --usecase={{ gpu_amd_usecase }}"
