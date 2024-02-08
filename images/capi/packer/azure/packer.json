@@ -192,7 +192,7 @@
       ],
       "inline": [
         "if [[ $BUILD_NAME != \"flatcar\"* ]]; then exit 0; fi",
-        "sudo bash -c \"/usr/share/oem/python/bin/python /usr/share/oem/bin/waagent -force -deprovision+user && ln -sf ../run/systemd/resolve/resolv.conf /etc/resolv.conf && sync\""
+        "sudo PATH=\"$PATH:/usr/share/oem/python/bin:/usr/share/oem/bin\" bash -c \"waagent -force -deprovision && userdel -f -r $USER && ln -sf ../run/systemd/resolve/resolv.conf /etc/resolv.conf && sync\""
       ],
       "inline_shebang": "/bin/bash -x",
       "remote_folder": "{{user `provisioner_remote_folder`}}",
