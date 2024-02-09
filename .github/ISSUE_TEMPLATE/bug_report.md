@@ -4,30 +4,58 @@ about: Tell us about a problem you are experiencing
 
 ---
 
-**What steps did you take and what happened:**
-[A clear and concise description on how to REPRODUCE the bug.]
+<!--
+Thank you so much for taking the time to report your issue to `image-builder` ❤️
+
+Before submitting a new issue please ensure the following:
+- You have checked the current open issues to see if there is already a matching report
+- You are able to reproduce the issue with image-builder alone.
+
+Unfortunately we are unable to provide support for issues where image-builder is used as part of another solution (for example EKS-Anywhere) and in those situation we recommend raising the issue with the project making use of image-builder.
+
+If you'd like to discuss any issues or would like to confirm if something is an issue with image-builder or not before raising an issue please reach out to us with any of the communication methods listed on the readme (https://github.com/kubernetes-sigs/image-builder#community-discussion-contribution-and-support).
+-->
+
+## Environment
+
+- **Make target:** `make _______`
+- **Run using container image? (Y/N):**
+- **Environment vars:**
+```
+
+```
+- **Vars file:**
+```
+
+```
+
+## What steps did you take and what happened?
+<!-- A clear and concise description on how to REPRODUCE the bug -->
 
 
-**What did you expect to happen:**
+
+## What did you expect to happen?
 
 
-**Anything else you would like to add:**
-[Miscellaneous information that will assist in solving the issue.]
+
+## Relevant log output
+
+<details>
+<summary>Log Output</summary>
+
+```
+<!--
+If you have any relevant build logs that could help debug this issue please include them here
+but MAKE SURE ANY SENSITIVE INFO IS REMOVED!
+-->
+```
+</details>
+
+## Anything else you would like to add?
+<!-- Miscellaneous information that will assist in solving the issue -->
 
 
-**Environment:**
 
-Project ([Image Builder for Cluster API](https://github.com/kubernetes-sigs/image-builder/tree/master/images/capi):
-
-Additional info for Image Builder for Cluster API related issues:
-
-- OS (e.g. from `/etc/os-release`, or `cmd /c ver`):
-- Packer Version:
-- Packer Provider:
-- Ansible Version:
-- Cluster-api version (if using):
-- Kubernetes version: (use `kubectl version`):
+---
 
 /kind bug
-[One or more /area label. See https://github.com/kubernetes-sigs/cluster-api/labels?q=area for the list of labels]
-
