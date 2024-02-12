@@ -135,5 +135,5 @@
     mode: "0755"
 
 - name: Set default HOME_MODE in login.defs (Flatcar)
-  shell: sed -ri "/^#?HOME_MODE\>/s:.*:HOME_MODE 0700:" /etc/login.defs
+  shell: sed -ri "s/^#?HOME_MODE\>.*/HOME_MODE 0700/" /etc/login.defs
   when: ansible_os_family == "Flatcar"
