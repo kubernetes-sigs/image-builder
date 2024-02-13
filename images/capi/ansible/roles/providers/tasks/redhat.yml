@@ -13,10 +13,10 @@
 # limitations under the License.
 ---
 - name: Import the Microsoft repository key
-  command: rpm --import https://packages.microsoft.com/keys/microsoft.asc
+  ansible.builtin.command: rpm --import https://packages.microsoft.com/keys/microsoft.asc
 
 - name: Add the yum repository for the azure cli
-  yum_repository:
+  ansible.builtin.yum_repository:
     name: azure_cli
     description: Azure CLI
     baseurl: https://packages.microsoft.com/yumrepos/azure-cli
@@ -25,6 +25,6 @@
     enabled: true
 
 - name: Install Azure CLI
-  package:
+  ansible.builtin.package:
     name: azure-cli
     state: present

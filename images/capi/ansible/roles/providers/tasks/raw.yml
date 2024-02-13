@@ -13,7 +13,7 @@
 # limitations under the License.
 ---
 - name: Install cloud-init packages
-  apt:
+  ansible.builtin.apt:
     name: "{{ packages }}"
     state: present
     force_apt_get: true
@@ -26,7 +26,7 @@
   when: ansible_os_family == "Debian"
 
 - name: Install cloud-init packages
-  yum:
+  ansible.builtin.yum:
     name: "{{ packages }}"
     state: present
   vars:
@@ -36,11 +36,11 @@
   when: ansible_os_family == "RedHat"
 
 - name: Run dracut cmd to regenerate initramfs with all drivers - needed when converting to different hypervisor templates
-  shell: dracut --force --no-hostonly
+  ansible.builtin.shell: dracut --force --no-hostonly
   when: ansible_os_family == "RedHat"
 
 - name: Symlink /usr/libexec/cloud-init to /usr/lib/cloud-init
-  file:
+  ansible.builtin.file:
     src: /usr/libexec/cloud-init
     dest: /usr/lib/cloud-init
     mode: "0777"
@@ -48,7 +48,7 @@
   when: ansible_os_family == "RedHat"
 
 - name: Disable Hyper-V KVP protocol daemon on Ubuntu
-  systemd:
+  ansible.builtin.systemd:
     name: hv-kvp-daemon
     state: stopped
     enabled: false

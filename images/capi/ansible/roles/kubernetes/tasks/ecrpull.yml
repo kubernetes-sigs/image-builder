@@ -1,17 +1,17 @@
 ---
 # TODO: This task will be deprecated once https://github.com/containerd/cri/issues/1131 is fixed
 - name: Create kubeadm config file
-  template:
+  ansible.builtin.template:
     dest: /etc/kubeadm.yml
     src: etc/kubeadm.yml
     mode: "0600"
 
 - name: Get images list
-  shell: kubeadm config images list --config /etc/kubeadm.yml
+  ansible.builtin.shell: kubeadm config images list --config /etc/kubeadm.yml
   register: images_list
 
 - name: Log into ECR
-  command: >
+  ansible.builtin.command: >
     aws ecr get-authorization-token
     --registry-ids {{ kubernetes_container_registry.split('.')[0] }}
     --region {{ kubernetes_container_registry.split('.')[3] }}
@@ -20,11 +20,11 @@
   register: credentials
 
 - name: Pull images
-  command: crictl pull --creds {{ credentials.stdout | b64decode }} {{ item }}
+  ansible.builtin.command: crictl pull --creds {{ credentials.stdout | b64decode }} {{ item }}
   loop: "{{ images_list.stdout_lines }}"
 
 - name: Delete kubeadm config
-  file:
+  ansible.builtin.file:
     path: /etc/kubeadm.yml
     state: absent
   when: ansible_os_family != "Flatcar"

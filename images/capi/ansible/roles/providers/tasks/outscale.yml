@@ -1,6 +1,6 @@
 ---
 - name: Change cloud-init metadata outscale config in Ubuntu
-  copy:
+  ansible.builtin.copy:
     src: files/etc/cloud/cloud.cfg.d/99_metadata.cfg
     dest: /etc/cloud/cloud.cfg.d/99_metadata.cfg
     owner: root

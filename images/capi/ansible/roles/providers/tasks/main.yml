@@ -12,53 +12,52 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- include_tasks: aws.yml
+- ansible.builtin.include_tasks: aws.yml
   when: packer_builder_type.startswith('amazon')
 
-- include_tasks: azure.yml
+- ansible.builtin.include_tasks: azure.yml
   when: packer_builder_type.startswith('azure')
-
-- include_tasks: outscale.yml
+- ansible.builtin.include_tasks: outscale.yml
   when: packer_builder_type.startswith('outscale')
 
-- include_tasks: vmware.yml
+- ansible.builtin.include_tasks: vmware.yml
   when: packer_builder_type is search('vmware') or packer_builder_type is search('vsphere')
 
-- include_tasks: googlecompute.yml
+- ansible.builtin.include_tasks: googlecompute.yml
   when: packer_builder_type.startswith('googlecompute')
 
-- include_tasks: openstack.yml
+- ansible.builtin.include_tasks: openstack.yml
   when: packer_builder_type.startswith('openstack')
 
-- include_tasks: oci.yml
+- ansible.builtin.include_tasks: oci.yml
   when: packer_builder_type.startswith('oracle-oci')
 
-- include_tasks: qemu.yml
+- ansible.builtin.include_tasks: qemu.yml
   when: packer_builder_type is search('qemu') and build_target is not search('raw')
 
-- include_tasks: cloudstack.yml
+- ansible.builtin.include_tasks: cloudstack.yml
   when: packer_builder_type is search('qemu') and provider is defined and provider is search('cloudstack')
 
-- include_tasks: raw.yml
+- ansible.builtin.include_tasks: raw.yml
   when: packer_builder_type is search('qemu') and build_target is search('raw')
 
-- include_tasks: nutanix.yml
+- ansible.builtin.include_tasks: nutanix.yml
   when: packer_builder_type is search('nutanix')
 
-- include_tasks: hcloud.yml
+- ansible.builtin.include_tasks: hcloud.yml
   when: packer_builder_type is search('hcloud')
 
 # Create a boot order configuration
 # b/w containerd and cloud final, cloud config services
 
 - name: Creates unit file directory for cloud-final
-  file:
+  ansible.builtin.file:
     path: /etc/systemd/system/cloud-final.service.d
     state: directory
   when: ansible_os_family != "Flatcar"
 
 - name: Create cloud-final boot order drop in file
-  copy:
+  ansible.builtin.copy:
     dest: /etc/systemd/system/cloud-final.service.d/boot-order.conf
     src: etc/systemd/system/cloud-final.service.d/boot-order.conf
     owner: root
@@ -67,13 +66,13 @@
   when: ansible_os_family != "Flatcar"
 
 - name: Creates unit file directory for cloud-config
-  file:
+  ansible.builtin.file:
     path: /etc/systemd/system/cloud-config.service.d
     state: directory
   when: ansible_os_family != "Flatcar"
 
 - name: Create cloud-config boot order drop in file
-  copy:
+  ansible.builtin.copy:
     dest: /etc/systemd/system/cloud-config.service.d/boot-order.conf
     src: etc/systemd/system/cloud-config.service.d/boot-order.conf
     owner: root
@@ -84,7 +83,7 @@
 # Some OS might disable cloud-final service on boot (rhel 7).
 # Enable all cloud-init services on boot.
 - name: Make sure all cloud init services are enabled
-  service:
+  ansible.builtin.service:
     name: "{{ item }}"
     enabled: true
   with_items:
@@ -95,7 +94,7 @@
   when: ansible_os_family != "Flatcar"
 
 - name: Create cloud-init config file
-  copy:
+  ansible.builtin.copy:
     src: files/etc/cloud/cloud.cfg.d/05_logging.cfg
     dest: /etc/cloud/cloud.cfg.d/05_logging.cfg
     owner: root
@@ -104,7 +103,7 @@
   when: ansible_os_family != "Flatcar"
 
 - name: Set cloudinit feature flags
-  copy:
+  ansible.builtin.copy:
     src: usr/lib/python3/dist-packages/cloudinit/feature_overrides.py
     dest: /usr/lib/python3/dist-packages/cloudinit/feature_overrides.py
     owner: root
@@ -113,7 +112,7 @@
   when: ansible_os_family == "Debian"
 
 - name: Set cloudinit feature flags for redhat 8
-  copy:
+  ansible.builtin.copy:
     src: usr/lib/python3/site-packages/cloudinit/feature_overrides.py
     dest: /usr/lib/python3.6/site-packages/cloudinit/feature_overrides.py
     owner: root
@@ -122,7 +121,7 @@
   when: ansible_os_family == "RedHat" and ansible_distribution == "RedHat" and ansible_distribution_major_version == "8"
 
 - name: Set cloudinit feature flags for redhat 9
-  copy:
+  ansible.builtin.copy:
     src: usr/lib/python3/site-packages/cloudinit/feature_overrides.py
     dest: /usr/lib/python3.9/site-packages/cloudinit/feature_overrides.py
     owner: root
@@ -131,7 +130,7 @@
   when: ansible_os_family == "RedHat" and ansible_distribution == "RedHat" and ansible_distribution_major_version == "9"
 
 - name: Ensure chrony is running
-  systemd:
+  ansible.builtin.systemd:
     enabled: true
     state: started
     daemon_reload: true

@@ -14,23 +14,23 @@
 
 ---
 - name: Install cloud-init and tools for VMware Photon OS
-  command: tdnf install {{ packages }} -y
+  ansible.builtin.command: tdnf install {{ packages }} -y
   vars:
     packages: cloud-init cloud-utils python3-netifaces
 
 - name: Remove cloud-init /etc/cloud/cloud.cfg.d/99-disable-networking-config.cfg
-  file:
+  ansible.builtin.file:
     path: /etc/cloud/cloud.cfg.d/99-disable-networking-config.cfg
     state: absent
 
 - name: Install networkd-dispatcher service (Download from source)
-  unarchive:
+  ansible.builtin.unarchive:
     src: "{{ networkd_dispatcher_download_url }}"
     dest: /tmp
     remote_src: true
 
 - name: Create needed directories
-  file:
+  ansible.builtin.file:
     path: "{{ item.dir }}"
     state: directory
   loop:
@@ -45,20 +45,20 @@
     - { dir: /etc/networkd-dispatcher/routable.d }
 
 - name: Install networkd-dispatcher service (Move files)
-  command: mv "{{ item.src }}" "{{ item.dest }}"
+  ansible.builtin.command: mv "{{ item.src }}" "{{ item.dest }}"
   loop:
     - { src: /tmp/networkd-dispatcher-2.1/networkd-dispatcher, dest: /usr/bin }
     - { src: /tmp/networkd-dispatcher-2.1/networkd-dispatcher.service, dest: /etc/systemd/system }
     - { src: /tmp/networkd-dispatcher-2.1/networkd-dispatcher.conf, dest: /etc/conf.d }
 
 - name: Install networkd-dispatcher service (Run networkd-dispatcher)
-  systemd:
+  ansible.builtin.systemd:
     name: networkd-dispatcher
     state: started
     enabled: true
 
 - name: Copy networkd-dispatcher scripts to add DHCP provided NTP servers
-  template:
+  ansible.builtin.template:
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
     mode: a+x
@@ -71,7 +71,7 @@
     - { src: files/etc/networkd-dispatcher/no-carrier.d/20-chrony.j2, dest: /etc/networkd-dispatcher/no-carrier.d/20-chrony }
 
 - name: Copy chrony-helper script
-  copy:
+  ansible.builtin.copy:
     src: files/usr/libexec/chrony-helper
     dest: /usr/libexec/chrony-helper
     owner: root

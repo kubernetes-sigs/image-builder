@@ -12,20 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- import_tasks: debian.yml
+- ansible.builtin.import_tasks: debian.yml
   when: kubernetes_source_type == "pkg" and ansible_os_family == "Debian"
 
-- import_tasks: mariner.yml
+- ansible.builtin.import_tasks: mariner.yml
   when: kubernetes_source_type == "pkg" and ansible_os_family == "Common Base Linux Mariner"
 
-- import_tasks: redhat.yml
+- ansible.builtin.import_tasks: redhat.yml
   when: kubernetes_source_type == "pkg" and ansible_os_family == "RedHat"
 
-- import_tasks: photon.yml
+- ansible.builtin.import_tasks: photon.yml
   when: kubernetes_source_type == "pkg" and ansible_os_family == "VMware Photon OS"
 
 - name: Symlink cri-tools
-  file:
+  ansible.builtin.file:
     src: /usr/local/bin/{{ item }}
     dest: /usr/bin/{{ item }}
     mode: "0777"
@@ -37,16 +37,16 @@
     - critest
   when: ansible_os_family != "Flatcar"
 
-- import_tasks: url.yml
+- ansible.builtin.import_tasks: url.yml
   when: kubernetes_source_type == "http" and kubernetes_cni_source_type == "http"
 
 # must include crictl-url.yml after installing containerd,
 # as the cri-containerd tarball also includes crictl.
-- import_tasks: crictl-url.yml
+- ansible.builtin.import_tasks: crictl-url.yml
   when: crictl_source_type == "http"
 
 - name: Create kubelet default config file
-  template:
+  ansible.builtin.template:
     src: etc/sysconfig/kubelet
     dest: "{{ '/etc/default/kubelet' if ansible_os_family == 'Debian' else '/etc/sysconfig/kubelet' }}"
     owner: root
@@ -54,20 +54,20 @@
     mode: "0644"
 
 - name: Enable kubelet service
-  systemd:
+  ansible.builtin.systemd:
     name: kubelet
     daemon_reload: true
     enabled: true
     state: stopped
 
 - name: Create the Kubernetes version file
-  template:
+  ansible.builtin.template:
     dest: /etc/kubernetes-version
     src: etc/kubernetes-version
     mode: "0644"
 
 - name: Create libexec directory
-  file:
+  ansible.builtin.file:
     state: directory
     path: "{{ sysusr_prefix }}/libexec/kubernetes"
     mode: "0755"
@@ -75,7 +75,7 @@
     group: root
 
 - name: Drop kubelet resource sizing script
-  copy:
+  ansible.builtin.copy:
     src: files/usr/libexec/kubernetes/kubelet-resource-sizing.sh
     dest: "{{ sysusr_prefix }}/libexec/kubernetes/kubelet-resource-sizing.sh"
     owner: root
@@ -84,7 +84,7 @@
   when: kubernetes_enable_automatic_resource_sizing | bool
 
 - name: Drop kubelet resource sizing systemd unit file
-  template:
+  ansible.builtin.template:
     src: usr/lib/systemd/system/kubelet.service.d/11-resource-sizing.conf
     dest: "{{ systemd_prefix }}/system/kubelet.service.d/11-resource-sizing.conf"
     owner: root
@@ -93,25 +93,25 @@
   when: kubernetes_enable_automatic_resource_sizing | bool
 
 - name: Generate kubectl bash completion
-  shell:
+  ansible.builtin.shell:
     cmd: "{{ sysusr_prefix }}/bin/kubectl completion bash > {{ sysusr_prefix }}/share/bash-completion/completions/kubectl"
     creates: "{{ sysusr_prefix }}/share/bash-completion/completions/kubectl"
   when: ansible_os_family != "Flatcar"
 
 - name: Generate kubeadm bash completion
-  shell:
+  ansible.builtin.shell:
     cmd: "{{ sysusr_prefix }}/bin/kubeadm completion bash > {{ sysusr_prefix }}/share/bash-completion/completions/kubeadm"
     creates: "{{ sysusr_prefix }}/share/bash-completion/completions/kubeadm"
   when: ansible_os_family != "Flatcar"
 
 - name: Generate crictl bash completion
-  shell:
+  ansible.builtin.shell:
     cmd: "{{ sysusr_prefix }}/bin/crictl completion bash > {{ sysusr_prefix }}/share/bash-completion/completions/crictl"
     creates: "{{ sysusr_prefix }}/share/bash-completion/completions/crictl"
   when: ansible_os_family != "Flatcar"
 
 - name: Set KUBECONFIG variable and alias
-  copy:
+  ansible.builtin.copy:
     dest: /etc/profile.d/kubernetes.sh
     src: etc/profile.d/kubernetes.sh
     owner: root
@@ -120,11 +120,11 @@
 
 # TODO: This section will be deprecated once https://github.com/containerd/cri/issues/1131 is fixed. It is used to support ECR with containerd.
 - name: Check if Kubernetes container registry is using Amazon ECR
-  set_fact:
+  ansible.builtin.set_fact:
     ecr: '{{ kubernetes_container_registry is regex("^[0-9]{12}.dkr.ecr.[^.]+.amazonaws.com$") }}'
 
-- import_tasks: kubeadmpull.yml
+- ansible.builtin.import_tasks: kubeadmpull.yml
   when: (kubernetes_source_type == "pkg" and not ecr) or ansible_os_family == "Flatcar"
 
-- import_tasks: ecrpull.yml
+- ansible.builtin.import_tasks: ecrpull.yml
   when: kubernetes_source_type != "http" and ecr

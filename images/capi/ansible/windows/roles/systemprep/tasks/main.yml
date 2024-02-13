@@ -14,24 +14,24 @@
 ---
 # This file was adapted from https://github.com/Azure/aks-engine/blob/master/vhd/packer/configure-windows-vhd.ps1 for ansible
 - name: Remove Windows updates default registry settings
-  win_regedit:
+  ansible.windows.win_regedit:
     path: HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\
     state: absent
     delete_key: true
 
 - name: Add Windows update registry path
-  win_regedit:
+  ansible.windows.win_regedit:
     path: HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate
     state: present
 
 - name: Add Windows automatic update registry path
-  win_regedit:
+  ansible.windows.win_regedit:
     path: HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU
     state: present
 
 # https://docs.microsoft.com/en-us/windows/deployment/update/waas-wu-settings#configuring-automatic-updates-by-editing-the-registry
 - name: Disable Windows automatic updates in registry
-  win_regedit:
+  ansible.windows.win_regedit:
     path: HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU
     state: present
     name: NoAutoUpdate
@@ -39,7 +39,7 @@
     type: dword
 
 - name: Set Windows automatic updates to notify only in registry
-  win_regedit:
+  ansible.windows.win_regedit:
     path: HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU
     state: present
     name: AUOptions
@@ -50,14 +50,14 @@
 # causing issues with communication over winrm and setting winrm to delayed start
 # gives Hyper-V enough time to finish configuration before having packer continue.
 - name: Set WinRm Service to delayed start
-  win_command: sc.exe config winrm start=delayed-auto
+  ansible.windows.win_command: sc.exe config winrm start=delayed-auto
 
 # Best effort to update defender signatures
 # This can fail if there is already a signature
 # update running which means we will get them anyways
 # Also at the time the VM is provisioned Defender will trigger any required updates
 - name: Update Windows Defender signatures
-  win_shell: |
+  ansible.windows.win_shell: |
     $service = Get-Service "Windefend"
     $service.WaitForStatus("Running","00:5:00")
     Update-MpSignature
@@ -70,7 +70,7 @@
 # won't install the update unless the category matches. Setting windows_updates_kbs_numbers to []
 # will skip this task.
 - name: Install Windows updates based on KB numbers
-  win_updates:
+  ansible.windows.win_updates:
     whitelist: "{{ windows_updates_kbs_numbers }}"
     reboot: true
     category_names:
@@ -92,19 +92,19 @@
 # Task to install any outstanding updates that belong to specific categories. Setting
 # windows_updates_category_names to [] will skip this task.
 - name: Install Windows updates based on Categories
-  win_updates:
+  ansible.windows.win_updates:
     category_names: "{{ windows_updates_category_names }}"
     reboot: true
   when: windows_updates_category_names|length > 0
 
-- import_tasks: ssh-feature.yml
+- ansible.builtin.import_tasks: ssh-feature.yml
   when: ssh_source_url == ""
 
-- import_tasks: ssh-archive.yml
+- ansible.builtin.import_tasks: ssh-archive.yml
   when: ssh_source_url != ""
 
 - name: Set default SSH shell to Powershell
-  win_regedit:
+  ansible.windows.win_regedit:
     path: HKLM:\SOFTWARE\OpenSSH
     state: present
     name: DefaultShell
@@ -112,13 +112,13 @@
     type: string
 
 - name: Create SSH program data folder
-  win_shell: If (-Not (Test-Path -Path "$env:ProgramData\ssh")) { mkdir "$env:ProgramData\ssh" }
+  ansible.windows.win_shell: If (-Not (Test-Path -Path "$env:ProgramData\ssh")) { mkdir "$env:ProgramData\ssh" }
 
 - name: Enable ssh login without a password
-  win_shell: Add-Content -Path "$env:ProgramData\ssh\sshd_config" -Value "PasswordAuthentication no`nPubkeyAuthentication yes"
+  ansible.windows.win_shell: Add-Content -Path "$env:ProgramData\ssh\sshd_config" -Value "PasswordAuthentication no`nPubkeyAuthentication yes"
 
 - name: Set SSH service startup mode to auto and ensure it is started
-  win_service:
+  ansible.windows.win_service:
     name: sshd
     start_mode: auto
     state: started
@@ -126,7 +126,7 @@
 # Apply HNS flags for fixes that need to be enabled via Registry
 # these eventually get turned on automatically and can be removed in future releases
 - name: Apply HNS control Flags 0x40 and 0x10 in 2022-11B patches
-  win_regedit:
+  ansible.windows.win_regedit:
     path: HKLM:\SYSTEM\CurrentControlSet\Services\hns\State
     state: present
     name: HNSControlFlag
@@ -135,7 +135,7 @@
   when: distribution_version == "2019"
 
 - name: Apply WCIFS fix
-  win_regedit:
+  ansible.windows.win_regedit:
     path: HKLM:\SYSTEM\CurrentControlSet\Services\wcifs
     state: present
     name: WcifsSOPCountDisabled
@@ -144,10 +144,10 @@
   when: distribution_version == "2019"
 
 - name: Expand dynamic port range to 34000-65535 to avoid port exhaustion
-  win_shell: netsh int ipv4 set dynamicportrange tcp 34000 31536
+  ansible.windows.win_shell: netsh int ipv4 set dynamicportrange tcp 34000 31536
 
 - name: Add required Windows Features
-  win_feature:
+  ansible.windows.win_feature:
     name:
       - Containers
       - Hyper-V-PowerShell
@@ -163,17 +163,17 @@
 # https://github.com/microsoft/Windows-Containers/issues/80
 
 - name: Add Hyper-V
-  win_shell: |
+  ansible.windows.win_shell: |
     dism /online /enable-feature /featurename:Microsoft-Hyper-V /all /NoRestart
   register: hyperv_installed
   failed_when: hyperv_installed.rc != 1 and hyperv_installed.rc != 0
 
 - name: Disable Hypervisor
-  win_shell: |
+  ansible.windows.win_shell: |
     dism /online /disable-feature /featurename:Microsoft-Hyper-V-Online /NoRestart
   when: (disable_hypervisor | default(false) | bool)
   register: hypervisor_disabled
   failed_when: hypervisor_disabled.rc != 1 and hypervisor_disabled.rc != 0
 
 - name: Reboot
-  win_reboot:
+  ansible.windows.win_reboot:

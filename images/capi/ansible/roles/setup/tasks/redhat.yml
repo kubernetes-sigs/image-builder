@@ -13,7 +13,7 @@
 # limitations under the License.
 ---
 - name: RHEL subscription
-  redhat_subscription:
+  community.general.redhat_subscription:
     state: present
     username: "{{ lookup('env', 'RHSM_USER') }}"
     password: "{{ lookup('env', 'RHSM_PASS') }}"
@@ -24,37 +24,37 @@
     - lookup('env', 'RHSM_PASS') | length > 0
 
 - name: Perform dnf clean
-  command: /usr/bin/yum -y clean all
+  ansible.builtin.command: /usr/bin/yum -y clean all
 
 - name: Import epel gpg key
-  rpm_key:
+  ansible.builtin.rpm_key:
     state: present
     key: "{{ epel_rpm_gpg_key }}"
   when: epel_rpm_gpg_key != ""
 
 - name: Add epel repo
-  yum:
+  ansible.builtin.yum:
     name: "{{ redhat_epel_rpm }}"
     state: present
     lock_timeout: 60
   when: redhat_epel_rpm != ""
 
-- import_tasks: rpm_repos.yml
+- ansible.builtin.import_tasks: rpm_repos.yml
 
 - name: Perform a yum update
-  yum:
+  ansible.builtin.yum:
     name: "*"
     state: latest
     lock_timeout: 60
 
 - name: Install baseline dependencies
-  yum:
+  ansible.builtin.yum:
     name: "{{ rpms }}"
     state: present
     lock_timeout: 60
 
 - name: Install extra rpms
-  yum:
+  ansible.builtin.yum:
     name: "{{ extra_rpms.split() }}"
     state: present
     lock_timeout: 60

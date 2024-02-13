@@ -13,20 +13,20 @@
 # limitations under the License.
 ---
 - name: Add debug tools directory
-  win_file:
+  ansible.windows.win_file:
     path: "{{ kubernetes_install_path }}\\debug"
     state: directory
   when: (debug_tools | default(true) | bool) or (additional_debug_files_list|length > 0)
 
 - name: Get debug files
-  win_get_url:
+  ansible.windows.win_get_url:
     url: "{{ item }}"
     dest: "{{ kubernetes_install_path }}\\debug\\"
   loop: "{{ debug_files }}"
   when: debug_tools | default(true)|bool
 
 - name: Get additional debug files
-  win_get_url:
+  ansible.windows.win_get_url:
     url: "{{ item }}"
     dest: "{{ kubernetes_install_path }}\\debug\\"
   loop: "{{ additional_debug_files_list }}"

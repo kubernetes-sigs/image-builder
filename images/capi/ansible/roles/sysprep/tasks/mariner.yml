@@ -13,30 +13,30 @@
 # limitations under the License.
 ---
 - name: Define file modes
-  set_fact:
+  ansible.builtin.set_fact:
     last_log_mode: "0644"
     machine_id_mode: "0444"
 
 - name: Get installed packages
-  package_facts:
+  ansible.builtin.package_facts:
 
 - name: Create the package list
-  set_fact:
+  ansible.builtin.set_fact:
     package_list: "{{ ansible_facts.packages.keys() | join(' ') }}"
 
-- import_tasks: rpm_repos.yml
+- ansible.builtin.import_tasks: rpm_repos.yml
 
 - name: Ensure nftables config ends with a newline
-  shell: /bin/echo "" >> /etc/sysconfig/nftables.conf
+  ansible.builtin.shell: /bin/echo "" >> /etc/sysconfig/nftables.conf
 
 - name: Disable swap service and ensure it is masked
-  systemd:
+  ansible.builtin.systemd:
     name: swap.target
     enabled: false
     masked: true
   when: ansible_memory_mb.swap.total != 0
 
 - name: Remove the kickstart log
-  file:
+  ansible.builtin.file:
     state: absent
     path: /root/anaconda-ks.cfg

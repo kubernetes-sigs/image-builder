@@ -14,7 +14,7 @@
 
 ---
 - name: Install cloud-init packages
-  apt:
+  ansible.builtin.apt:
     name: "{{ packages }}"
     state: present
     force_apt_get: true
@@ -26,13 +26,13 @@
       - cloud-initramfs-dyn-netconf
 
 - name: Disable Hyper-V KVP protocol daemon on Ubuntu
-  systemd:
+  ansible.builtin.systemd:
     name: hv-kvp-daemon
     state: stopped
     enabled: false
 
 - name: Copy networkd-dispatcher scripts to add DHCP provided NTP servers
-  template:
+  ansible.builtin.template:
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
     mode: a+x
@@ -45,7 +45,7 @@
     - { src: files/etc/networkd-dispatcher/no-carrier.d/20-chrony.j2, dest: /etc/networkd-dispatcher/no-carrier.d/20-chrony }
 
 - name: Create cloud-init datasource config file
-  copy:
+  ansible.builtin.copy:
     dest: /etc/cloud/ds-identify.cfg
     force: true
     content: |

@@ -21,12 +21,12 @@
 
   tasks:
     - name: Check if cloudbase-init url is set
-      set_fact:
+      ansible.builtin.set_fact:
         install_cloudbase_init: "{{ true if (cloudbase_init_url is defined) and (cloudbase_init_url | length > 0) else false }}"
 
     # https://docs.ansible.com/ansible/latest/user_guide/windows_performance.html
     - name: Optimise powershell
-      win_shell: |
+      ansible.windows.win_shell: |
         function Optimize-PowershellAssemblies {
           # NGEN powershell assembly, improves startup time of powershell by 10x
           $old_path = $env:path
@@ -50,46 +50,46 @@
       become_user: SYSTEM
 
     - name: Get Install Drive
-      win_shell: $env:SYSTEMDRIVE
+      ansible.windows.win_shell: $env:SYSTEMDRIVE
       register: systemdrive
 
     - name: Get Program Files Directory
-      win_shell: $env:ProgramFiles
+      ansible.windows.win_shell: $env:ProgramFiles
       register: programfiles
 
     - name: Get All Users profile path
-      win_shell: $env:ALLUSERSPROFILE.Replace("\", "\\")
+      ansible.windows.win_shell: $env:ALLUSERSPROFILE.Replace("\", "\\")
       register: alluserprofile
 
     - name: Get TEMP Directory
-      win_shell: $env:TEMP
+      ansible.windows.win_shell: $env:TEMP
       register: tempdir
 
-    - include_role:
+    - ansible.builtin.include_role:
         name: "{{ role }}"
       loop: "{{ node_custom_roles_pre.split() }}"
       loop_control:
         loop_var: role
       when: node_custom_roles_pre != ""
-    - include_role:
+    - ansible.builtin.include_role:
         name: systemprep
-    - include_role:
+    - ansible.builtin.include_role:
         name: cloudbase-init
       when: install_cloudbase_init
-    - include_role:
+    - ansible.builtin.include_role:
         name: providers
-    - include_role:
+    - ansible.builtin.include_role:
         name: runtimes
-    - include_role:
+    - ansible.builtin.include_role:
         name: kubernetes
-    - include_role:
+    - ansible.builtin.include_role:
         name: gmsa
-    - include_role:
+    - ansible.builtin.include_role:
         name: load_additional_components
       when: load_additional_components | bool
-    - include_role:
+    - ansible.builtin.include_role:
         name: debug
-    - include_role:
+    - ansible.builtin.include_role:
         name: "{{ role }}"
       loop: "{{ custom_role_names.split() + node_custom_roles_post.split() }}"
       loop_control:

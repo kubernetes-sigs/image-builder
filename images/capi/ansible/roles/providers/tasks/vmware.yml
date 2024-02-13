@@ -12,17 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- include_tasks: vmware-photon.yml
+- ansible.builtin.include_tasks: vmware-photon.yml
   when: ansible_os_family == "VMware Photon OS"
 
-- include_tasks: vmware-ubuntu.yml
+- ansible.builtin.include_tasks: vmware-ubuntu.yml
   when: ansible_os_family == "Debian"
 
-- include_tasks: vmware-redhat.yml
+- ansible.builtin.include_tasks: vmware-redhat.yml
   when: ansible_os_family == "RedHat"
 
 - name: Create provider vmtools config drop-in file
-  copy:
+  ansible.builtin.copy:
     src: files/etc/vmware-tools/tools.conf
     dest: /etc/vmware-tools/tools.conf
     owner: root
@@ -31,7 +31,7 @@
   when: ansible_os_family != "Flatcar"
 
 - name: Create service to modify cloud-init config
-  copy:
+  ansible.builtin.copy:
     src: files/etc/systemd/system/modify-cloud-init-cfg.service
     dest: /etc/systemd/system/modify-cloud-init-cfg.service
     owner: root
@@ -40,7 +40,7 @@
   when: ansible_os_family != "Flatcar"
 
 - name: Copy cloud-init modification script
-  copy:
+  ansible.builtin.copy:
     src: files/usr/local/bin/modify-cloud-init-cfg.sh
     dest: /usr/local/bin/modify-cloud-init-cfg.sh
     owner: root
@@ -49,7 +49,7 @@
   when: ansible_os_family != "Flatcar"
 
 - name: Enable modify-cloud-init-cfg.service
-  systemd:
+  ansible.builtin.systemd:
     name: modify-cloud-init-cfg.service
     daemon_reload: true
     enabled: true

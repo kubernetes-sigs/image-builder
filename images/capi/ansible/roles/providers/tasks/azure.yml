@@ -12,29 +12,29 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- import_tasks: mariner.yml
+- ansible.builtin.import_tasks: mariner.yml
   when: ansible_os_family == "Common Base Linux Mariner"
 
-- import_tasks: redhat.yml
+- ansible.builtin.import_tasks: redhat.yml
   when: ansible_os_family == "RedHat"
 
-- import_tasks: debian.yml
+- ansible.builtin.import_tasks: debian.yml
   when: ansible_os_family == "Debian"
 
 - name: Configure PTP
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/chrony/chrony.conf
     create: true
     line: refclock PHC /dev/ptp0 poll 3 dpoll -2 offset 0
 
 - name: Ensure makestep parameter set as per Azure recommendation
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/chrony/chrony.conf
     regexp: ^makestep
     line: makestep 1.0 -1
 
 - name: Install iptables persistence
-  apt:
+  ansible.builtin.apt:
     name: "{{ packages }}"
     state: present
     force_apt_get: true
@@ -44,7 +44,7 @@
   when: ansible_os_family == "Debian"
 
 - name: Block traffic to 168.63.129.16 port 80 for cve-2021-27075
-  copy:
+  ansible.builtin.copy:
     src: files/etc/azure/iptables
     dest: /etc/iptables/rules.v4
     owner: root
@@ -59,7 +59,7 @@
   when: ansible_os_family == "Debian"
 
 - name: Install netbase and nfs-common
-  apt:
+  ansible.builtin.apt:
     name: "{{ packages }}"
     state: present
     force_apt_get: true
@@ -72,7 +72,7 @@
 ## refer to ../files/etc/cloud/cloud.cfg.d/15_azure-vnet.cfg
 ## for more context on below file addition
 - name: Create azure-vnet config file
-  copy:
+  ansible.builtin.copy:
     src: files/etc/cloud/cloud.cfg.d/15_azure-vnet.cfg
     dest: /etc/cloud/cloud.cfg.d/15_azure-vnet.cfg
     owner: root
@@ -81,19 +81,19 @@
   when: ansible_os_family == "Debian"
 
 - name: Create the credential provider path
-  file:
+  ansible.builtin.file:
     path: /var/lib/kubelet/credential-provider
     state: directory
     mode: "0755"
 
 - name: Download OOT credential provider
-  get_url:
+  ansible.builtin.get_url:
     url: https://github.com/kubernetes-sigs/cloud-provider-azure/releases/latest/download/azure-acr-credential-provider-linux-amd64
     dest: /var/lib/kubelet/credential-provider/acr-credential-provider
     mode: "0755"
 
 - name: Download OOT credential provider config file
-  get_url:
+  ansible.builtin.get_url:
     url: https://raw.githubusercontent.com/kubernetes-sigs/cloud-provider-azure/master/examples/out-of-tree/credential-provider-config.yaml
     dest: /var/lib/kubelet/credential-provider-config.yaml
     mode: "0644"

@@ -16,7 +16,7 @@
 # Requires admin rights to install
 # https://docs.ansible.com/ansible/latest/user_guide/become.html#become-and-windows
 - name: Install OpenSSH
-  win_shell: Add-WindowsCapability -Online -Name OpenSSH.Server~~~~0.0.1.0
+  ansible.windows.win_shell: Add-WindowsCapability -Online -Name OpenSSH.Server~~~~0.0.1.0
   become: true
   become_method: runas
   become_user: SYSTEM

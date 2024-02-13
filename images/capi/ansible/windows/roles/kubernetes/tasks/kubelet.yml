@@ -13,7 +13,7 @@
 # limitations under the License.
 ---
 - name: Create kubelet directory structure
-  win_file:
+  ansible.windows.win_file:
     path: "{{ item }}"
     state: directory
   loop:
@@ -25,18 +25,18 @@
 # this is required in 1.22 and below due to invalid absolute path handling
 # https://github.com/kubernetes-sigs/image-builder/issues/853
 - name: Symlink kubelet pki folder
-  win_shell: New-Item -path $env:SystemDrive\var\lib\kubelet\etc\kubernetes\pki -type SymbolicLink -value  $env:SystemDrive\etc\kubernetes\pki\ -Force
+  ansible.windows.win_shell: New-Item -path $env:SystemDrive\var\lib\kubelet\etc\kubernetes\pki -type SymbolicLink -value  $env:SystemDrive\etc\kubernetes\pki\ -Force
   when: kubernetes_semver is version('v1.23.0', '<')
 
-- import_tasks: nssm.yml
+- ansible.builtin.import_tasks: nssm.yml
   when: windows_service_manager == "nssm"
 
-- import_tasks: sc.yml
+- ansible.builtin.import_tasks: sc.yml
   when: windows_service_manager == "windows_service"
 
 # Dependency selection: https://www.reddit.com/r/ansible/comments/imfdgn/setting_a_variable_conditionally/g41anaf/?utm_source=reddit&utm_medium=web2x&context=3
 - name: Ensure kubelet is installed
-  win_service:
+  ansible.windows.win_service:
     name: kubelet
     dependencies: ["{{ runtime_service }}"]
     start_mode: auto
@@ -47,7 +47,7 @@
     runtime_service: "{{ dependencies[runtime] | default(dependencies['containerd']) }}"
 
 - name: Add firewall rule for kubelet
-  win_firewall_rule:
+  community.windows.win_firewall_rule:
     name: kubelet
     localport: 10250
     action: allow
