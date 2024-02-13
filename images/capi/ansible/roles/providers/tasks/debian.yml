@@ -12,19 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- name: Upgrade pip to latest
-  pip:
-    name: pip
-    executable: pip3
-    state: latest
-
-- name: Upgrade pyOpenSSL and cryptography
-  pip:
-    name:
-      - pyOpenSSL==22.0.*
-      - cryptography==38.0.*
-    executable: pip3
-
 - name: Install Azure client
   pip:
     executable: pip3
