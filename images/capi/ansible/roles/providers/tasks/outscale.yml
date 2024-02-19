@@ -1,20 +1,4 @@
 ---
-- name: Download cloud-int outscale package for Ubuntu
-  copy:
-    src: files/tmp/cloud-init_22.2-outscale.deb
-    dest: /tmp/cloud-init_22.2-outscale.deb
-    owner: root
-    group: root
-    mode: "0755"
-  when: ansible_distribution == "Ubuntu"
-
-- name: Install cloud-init outscale package
-  apt:
-    deb: /tmp/cloud-init_22.2-outscale.deb
-    force: true
-    force_apt_get: true
-  when: ansible_distribution == "Ubuntu"
-
 - name: Change cloud-init metadata outscale config in Ubuntu
   copy:
     src: files/etc/cloud/cloud.cfg.d/99_metadata.cfg
