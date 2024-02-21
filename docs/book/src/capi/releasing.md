@@ -1,6 +1,6 @@
 # Image Builder Releases
 
-The current release of Image Builder is [v0.1.23][] (February 7, 2024). The corresponding container image is `registry.k8s.io/scl-image-builder/cluster-node-image-builder-amd64:v0.1.23`.
+The current release of Image Builder is [v0.1.24][] (February 21, 2024). The corresponding container image is `registry.k8s.io/scl-image-builder/cluster-node-image-builder-amd64:v0.1.24`.
 
 ## Release Process
 
@@ -22,7 +22,7 @@ Releases in image-builder follow [semantic versioning][semver] conventions. Curr
     - *If signing tags with GPG, makes your key available to the `git tag` command.*
 - Create a new tag:
   - `export IB_VERSION=v0.1.x`
-    - *Replace `x` with the next patch version. For example: `v0.1.23`.*
+    - *Replace `x` with the next patch version. For example: `v0.1.25`.*
   - `git tag -s -m "Image Builder ${IB_VERSION}" ${IB_VERSION}`
   - `git push upstream ${IB_VERSION}`
 
@@ -65,7 +65,9 @@ While waiting for the above PR to merge, create a GitHub draft release for the t
 
 ### Update Documentation
 
-There are several files in image-builder itself that refer to the latest release (including this one). Create a pull request that updates these to the newly published version. ([Example PR](https://github.com/kubernetes-sigs/image-builder/pull/1375))
+There are several files in image-builder itself that refer to the latest release (including this one).
+
+Run `make update-release-docs` and then create a pull request with the generated changes.
 
 Wait for this PR to merge before communicating the release to users, so image-builder documentation is consistent.
 
@@ -74,11 +76,11 @@ Wait for this PR to merge before communicating the release to users, so image-bu
 In the [#image-builder channel][] on the Kubernetes Slack, post a message announcing the new release. Include a link to the GitHub release and a thanks to the contributors:
 
 ```
-Image-builder v0.1.23 is now available: https://github.com/kubernetes-sigs/image-builder/releases/tag/v0.1.23
+Image-builder v0.1.24 is now available: https://github.com/kubernetes-sigs/image-builder/releases/tag/v0.1.24
 Thanks to all contributors!
 ```
 
-[v0.1.23]: https://github.com/kubernetes-sigs/image-builder/releases/tag/v0.1.23
+[v0.1.24]: https://github.com/kubernetes-sigs/image-builder/releases/tag/v0.1.24
 [#image-builder channel]: https://kubernetes.slack.com/archives/C01E0Q35A8J
 [Personal access tokens]: https://github.com/settings/tokens
 [post-image-builder-push-images]: https://testgrid.k8s.io/sig-cluster-lifecycle-image-pushes#post-image-builder-push-images
