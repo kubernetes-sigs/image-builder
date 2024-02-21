@@ -29,5 +29,9 @@ build-book: ## Build the image-builder book
 serve-book: ## Build and serve the image-builder book with live-reloading enabled
 	$(MAKE) -C docs/book serve
 
+.PHONY: update-release-docs
+update-release-docs: ## Updates the docs with reference to the latest release version
+	images/capi/scripts/release-update-docs.sh
+
 .DEFAULT:
 	$(MAKE) -C images/capi $@
