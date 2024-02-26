@@ -13,13 +13,13 @@
 # limitations under the License.
 ---
 - name: Add the kubernetes repo
-  template:
+  ansible.builtin.template:
     dest: /etc/yum.repos.d/kubernetes.repo
     src: etc/yum.repos.d/kubernetes.repo
     mode: "0644"
 
 - name: Install Kubernetes
-  command: tdnf install {{ packages }} --nogpgcheck -y
+  ansible.builtin.command: tdnf install {{ packages }} --nogpgcheck -y
   vars:
     packages: >-
       kubelet-{{ kubernetes_rpm_version }}

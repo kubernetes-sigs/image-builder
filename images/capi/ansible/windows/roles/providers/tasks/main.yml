@@ -9,5 +9,5 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- include_tasks: azure.yml
+- ansible.builtin.include_tasks: azure.yml
   when: packer_builder_type.startswith('azure')

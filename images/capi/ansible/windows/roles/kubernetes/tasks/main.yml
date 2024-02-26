@@ -13,16 +13,16 @@
 # limitations under the License.
 ---
 - name: Create kubernetes directory structure
-  win_file:
+  ansible.windows.win_file:
     path: "{{ kubernetes_install_path }}"
     state: directory
 
-- import_tasks: url.yml
+- ansible.builtin.import_tasks: url.yml
 
 - name: Add kubernetes folder to path
-  win_path:
+  ansible.windows.win_path:
     elements:
       - "{{ kubernetes_install_path }}"
     scope: Machine
 
-- import_tasks: kubelet.yml
+- ansible.builtin.import_tasks: kubelet.yml

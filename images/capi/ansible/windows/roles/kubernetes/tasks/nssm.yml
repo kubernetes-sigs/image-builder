@@ -13,7 +13,7 @@
 # limitations under the License.
 ---
 - name: Download nssm
-  win_get_url:
+  ansible.windows.win_get_url:
     url: "{{ nssm_url }}"
     dest: "{{ kubernetes_install_path }}\\"
   retries: 5
@@ -22,12 +22,12 @@
   until: nssm_download is not failed
 
 - name: Create kubelet start file for nssm
-  win_template:
+  ansible.windows.win_template:
     src: templates/StartKubelet.ps1
     dest: "{{ kubernetes_install_path }}\\StartKubelet.ps1"
 
 - name: Install kubelet via nssm
-  win_nssm:
+  community.windows.win_nssm:
     name: kubelet
     start_mode: auto
     state: present

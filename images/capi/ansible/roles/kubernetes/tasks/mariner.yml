@@ -13,7 +13,7 @@
 # limitations under the License.
 ---
 - name: Add the Kubernetes repo
-  yum_repository:
+  ansible.builtin.yum_repository:
     name: kubernetes
     description: the kubernetes yum repo
     baseurl: "{{ kubernetes_rpm_repo }}"
@@ -21,7 +21,7 @@
     gpgkey: "{{ kubernetes_rpm_gpg_key }}"
 
 - name: Install Kubernetes
-  yum:
+  ansible.builtin.yum:
     name: "{{ packages }}"
     allow_downgrade: true
     state: present
@@ -34,7 +34,7 @@
       - kubernetes-cni{{ '-'+kubernetes_cni_rpm_version if kubernetes_cni_rpm_version else '' }}
 
 - name: Allow Kubernetes API server through iptables
-  iptables:
+  ansible.builtin.iptables:
     chain: INPUT
     protocol: tcp
     destination_port: "{{ kubernetes_apiserver_port }}"
@@ -43,4 +43,4 @@
     comment: Kubernetes API server
 
 - name: Persist iptables configuration
-  shell: iptables-save -t filter > /etc/systemd/scripts/ip4save
+  ansible.builtin.shell: iptables-save -t filter > /etc/systemd/scripts/ip4save

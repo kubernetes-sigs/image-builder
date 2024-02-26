@@ -13,8 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-- include_tasks: photon.yml
+- ansible.builtin.include_tasks: photon.yml
   when: ansible_os_family == "VMware Photon OS"
 
-- include_tasks: qemu.yml
+- ansible.builtin.include_tasks: qemu.yml
   when: packer_builder_type is search('qemu')

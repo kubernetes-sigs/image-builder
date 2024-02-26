@@ -12,27 +12,27 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- import_tasks: debian.yml
+- ansible.builtin.import_tasks: debian.yml
   when: ansible_os_family == "Debian"
 
-- import_tasks: flatcar.yml
+- ansible.builtin.import_tasks: flatcar.yml
   # This task overrides ansible_os_family to "Flatcar" as a workaround for
   # regression between Flatcar and Ansible, so rest of the code can use just
   # "Flatcar" for comparison, which is the correct value.
   when: ansible_os_family in ["Flatcar", "Flatcar Container Linux by Kinvolk"]
 
-- import_tasks: mariner.yml
+- ansible.builtin.import_tasks: mariner.yml
   when: ansible_os_family == "Common Base Linux Mariner"
 
-- import_tasks: redhat.yml
+- ansible.builtin.import_tasks: redhat.yml
   when: ansible_os_family == "RedHat"
 
-- import_tasks: photon.yml
+- ansible.builtin.import_tasks: photon.yml
   when: ansible_os_family == "VMware Photon OS"
 
 # Copy in pip config file when defined
 - name: Install pip config file
-  copy:
+  ansible.builtin.copy:
     src: "{{ pip_conf_file }}"
     dest: /etc/pip.conf
     mode: "0644"

@@ -19,15 +19,15 @@
     firstboot_custom_roles_post: ""
 
   tasks:
-    - include_role:
+    - ansible.builtin.include_role:
         name: "{{ role }}"
       loop: "{{ firstboot_custom_roles_pre.split() }}"
       loop_control:
         loop_var: role
       when: firstboot_custom_roles_pre != ""
-    - include_role:
+    - ansible.builtin.include_role:
         name: firstboot
-    - include_role:
+    - ansible.builtin.include_role:
         name: "{{ role }}"
       loop: "{{ firstboot_custom_roles_post.split() }}"
       loop_control:

@@ -13,7 +13,7 @@
 # limitations under the License.
 ---
 - name: Download gMSA Key Vault plugin
-  win_get_url:
+  ansible.windows.win_get_url:
     url: "{{ gmsa_keyvault_url }}"
     dest: "{{ tempdir.stdout | trim }}\\windows-gmsa-ccgakvplugin.zip"
   async: 1800
@@ -24,40 +24,37 @@
   until: gmsadownload is not failed
 
 - name: Unzip gMSA Key Vault Archive
-  win_unzip:
+  community.windows.win_unzip:
     src: "{{ gmsadownload.dest }}"
     dest: "{{ kubernetes_install_path }}"
     recurse: false
     delete_archive: true
 
 - name: Copy gMSA Key Vault plugin to System32
-  win_shell: |
+  ansible.windows.win_shell: |
     Move-Item -Force -Path {{ kubernetes_install_path }}\CCGAKVPlugin.dll -Destination {{ systemdrive.stdout | trim }}\Windows\System32\
 
 # This is done via a script because Ansible doesn't have the ability to take ownership of registry keys
 # The script enables the privilege for the process running and modifies the reg keys. Once process exits it no longer has privileges
 # See https://groups.google.com/g/ansible-project/c/5Bt7jgq6ZFA/m/_XJtVzmhBwAJ
 - name: Copy gMSA Key Vault installer file
-  win_copy:
+  ansible.windows.win_copy:
     src: install-gmsa-keyvault-plugin.ps1
     dest: "{{ kubernetes_install_path }}"
 
 - name: Register gMSA Key Vault plugin
-  win_shell: |
+  ansible.windows.win_shell: |
     {{ kubernetes_install_path }}\install-gmsa-keyvault-plugin.ps1
-
 - name: Install registry CCG logging manifest
-  win_shell: |
+  ansible.windows.win_shell: |
     wevtutil.exe um {{ kubernetes_install_path }}\CCGEvents.man
     wevtutil.exe im {{ kubernetes_install_path }}\CCGEvents.man
-
 - name: Install registry Key Vault plugin logging manifest
-  win_shell: |
+  ansible.windows.win_shell: |
     wevtutil.exe um {{ kubernetes_install_path }}\CCGAKVPluginEvents.man
     wevtutil.exe im {{ kubernetes_install_path }}\CCGAKVPluginEvents.man
-
 - name: Clean up gMSA install files
-  win_shell: |
+  ansible.windows.win_shell: |
     Remove-Item {{ kubernetes_install_path }}\CCGEvents.man
     Remove-Item {{ kubernetes_install_path }}\CCGAKVPluginEvents.man
     Remove-Item {{ kubernetes_install_path }}\registerplugin.reg

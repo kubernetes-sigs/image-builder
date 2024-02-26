@@ -2,7 +2,7 @@
 # Flatcar ships without Python installed
 
 - name: Check if bootstrap is needed
-  raw: stat /opt/bin/.bootstrapped
+  ansible.builtin.raw: stat /opt/bin/.bootstrapped
   register: need_bootstrap
   environment: {}
   failed_when: false
@@ -11,7 +11,7 @@
     - facts
 
 - name: Set the ansible_python_interpreter fact
-  set_fact:
+  ansible.builtin.set_fact:
     ansible_python_interpreter: "{{ external_binary_path }}/python"
   tags:
     - facts
@@ -21,7 +21,7 @@
 #
 # This is required until https://github.com/ansible/ansible/issues/77537 is fixed and used.
 - name: Override Flatcar's OS family
-  set_fact:
+  ansible.builtin.set_fact:
     ansible_os_family: Flatcar
   when: ansible_os_family == "Flatcar Container Linux by Kinvolk"
   tags:

@@ -1,24 +1,24 @@
 ---
 - name: Install AWS CLI
-  yum:
+  ansible.builtin.yum:
     name: unzip
     state: present
 
 - name: Download AWS CLI v2
-  get_url:
+  ansible.builtin.get_url:
     url: https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip
     dest: /tmp/awscliv2.zip
 
 - name: Unzip AWS CLI v2
-  unarchive:
+  ansible.builtin.unarchive:
     src: /tmp/awscliv2.zip
     dest: /tmp
     remote_src: true
 
 - name: Install AWS CLI v2
-  command: /tmp/aws/install -i /usr/local/aws-cli -b /usr/local/sbin
+  ansible.builtin.command: /tmp/aws/install -i /usr/local/aws-cli -b /usr/local/sbin
 
 - name: Remove temporary files
-  file:
+  ansible.builtin.file:
     path: /tmp/aws*
     state: absent

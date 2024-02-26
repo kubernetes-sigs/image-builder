@@ -12,22 +12,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- import_tasks: rpm_repos.yml
+- ansible.builtin.import_tasks: rpm_repos.yml
 
 - name: Perform a yum update
-  yum:
+  ansible.builtin.yum:
     name: "*"
     state: latest
     lock_timeout: 60
 
 - name: Install baseline dependencies on Mariner
-  yum:
+  ansible.builtin.yum:
     name: "{{ rpms }}"
     state: present
     lock_timeout: 60
 
 - name: Install extra rpms
-  yum:
+  ansible.builtin.yum:
     name: "{{ extra_rpms.split() }}"
     state: present
     lock_timeout: 60

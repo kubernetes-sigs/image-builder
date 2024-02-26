@@ -13,13 +13,13 @@
 # limitations under the License.
 ---
 - name: Upgrade pip to latest
-  pip:
+  ansible.builtin.pip:
     name: pip
     executable: pip3
     state: latest
 
 - name: Install aws clients
-  pip:
+  ansible.builtin.pip:
     name: "{{ packages }}"
     executable: pip3
   vars:
@@ -27,12 +27,12 @@
       - awscli
   when: ansible_distribution != "Amazon" and ansible_distribution != "RedHat"
 
-- include_tasks: awscliv2.yml
+- ansible.builtin.include_tasks: awscliv2.yml
   when: ansible_distribution == "RedHat"
 
 # Remove after https://github.com/aws/amazon-ssm-agent/issues/235 is fixed.
 - name: Install aws agents RPM on Redhat distributions
-  package:
+  ansible.builtin.package:
     name: "{{ item }}"
     state: present
     disable_gpg_check: true
@@ -43,7 +43,7 @@
     - ansible_distribution != "Amazon"
 
 - name: Install aws agents RPM
-  package:
+  ansible.builtin.package:
     name: "{{ item }}"
     state: present
   with_items:
@@ -52,25 +52,25 @@
   when: ansible_distribution == "Amazon"
 
 - name: Ensure ssm agent is running RPM
-  service:
+  ansible.builtin.service:
     name: amazon-ssm-agent
     state: started
     enabled: true
   when: ansible_os_family == "RedHat"
 
 - name: Install aws agents Ubuntu
-  shell: snap install amazon-ssm-agent --classic
+  ansible.builtin.shell: snap install amazon-ssm-agent --classic
   when: ansible_distribution == "Ubuntu"
 
 - name: Ensure ssm agent is running Ubuntu
-  service:
+  ansible.builtin.service:
     name: snap.amazon-ssm-agent.amazon-ssm-agent.service
     state: started
     enabled: true
   when: ansible_distribution == "Ubuntu"
 
 - name: Disable Hyper-V KVP protocol daemon on Ubuntu
-  systemd:
+  ansible.builtin.systemd:
     name: hv-kvp-daemon
     state: stopped
     enabled: false

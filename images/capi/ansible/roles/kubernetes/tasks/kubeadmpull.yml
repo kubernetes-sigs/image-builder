@@ -1,15 +1,15 @@
 ---
 - name: Create kubeadm config file
-  template:
+  ansible.builtin.template:
     dest: /etc/kubeadm.yml
     src: "{{ kubeadm_template }}"
     mode: "0600"
 
 - name: Kubeadm pull images
-  shell: kubeadm config images pull --config /etc/kubeadm.yml --cri-socket {{ containerd_cri_socket }}
+  ansible.builtin.shell: kubeadm config images pull --config /etc/kubeadm.yml --cri-socket {{ containerd_cri_socket }}
 
 - name: Delete kubeadm config
-  file:
+  ansible.builtin.file:
     path: /etc/kubeadm.yml
     state: absent
   when: ansible_os_family != "Flatcar"

@@ -25,7 +25,7 @@
 #
 # View the details of the SDDL string used with ConvertFrom-SddlString and see well known sids: https://docs.microsoft.com/en-us/windows/win32/secauthz/well-known-sids
 - name: Block traffic to 168.63.129.16 port 80 for cve-2021-27075
-  win_shell: |
+  ansible.windows.win_shell: |
     $wsg = Get-LocalGroup -n "WireServerAccess"
     $r = New-NetFirewallRule -DisplayName 'Block-Outbound-168.63.129.16-port-80-for-cve-2021-27075' -Direction Outbound -RemoteAddress '168.63.129.16' -RemotePort '80' -Protocol TCP -Action Block
     $r | Get-NetFirewallSecurityFilter | Set-NetFirewallSecurityFilter -LocalUser "O:LSD:(D;;CC;;;S-1-5-18)(D;;CC;;;$($wsg.SID.Value))(A;;CC;;;S-1-1-0)"
@@ -62,12 +62,12 @@
     state: absent
 
 - name: Create the credential provider path
-  win_file:
+  ansible.windows.win_file:
     path: C:\var\lib\kubelet\credential-provider
     state: directory
 
 - name: Download OOT credential provider
-  win_get_url:
+  ansible.windows.win_get_url:
     url: https://github.com/kubernetes-sigs/cloud-provider-azure/releases/latest/download/azure-acr-credential-provider-windows-amd64.exe
     dest: C:\var\lib\kubelet\credential-provider\acr-credential-provider.exe
 
@@ -75,9 +75,8 @@
 # Detail: https://github.com/kubernetes-sigs/cloud-provider-azure/issues/4533
 - name: Copy OOT credential provider binary
   when: kubernetes_semver is version('v1.30.0', '<')
-  win_shell: copy C:\var\lib\kubelet\credential-provider\acr-credential-provider.exe C:\var\lib\kubelet\credential-provider\acr-credential-provider
-
+  ansible.windows.win_shell: copy C:\var\lib\kubelet\credential-provider\acr-credential-provider.exe C:\var\lib\kubelet\credential-provider\acr-credential-provider
 - name: Download OOT credential provider config file
-  win_get_url:
+  ansible.windows.win_get_url:
     url: https://raw.githubusercontent.com/kubernetes-sigs/cloud-provider-azure/master/examples/out-of-tree/credential-provider-config-win.yaml
     dest: C:\var\lib\kubelet\credential-provider-config.yaml

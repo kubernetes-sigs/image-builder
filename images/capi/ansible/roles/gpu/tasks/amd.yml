@@ -13,7 +13,6 @@
 # limitations under the License.
 
 ---
-
 - name: Add the root user to the render and video groups
   ansible.builtin.user:
     name: root
@@ -23,7 +22,7 @@
 
 - name: Install the .deb for AMDGPU-Install
   ansible.builtin.apt:
-    deb: "https://repo.radeon.com/amdgpu-install/{{ amd_version }}/ubuntu/jammy/amdgpu-install_{{ amd_deb_version }}_all.deb"
+    deb: https://repo.radeon.com/amdgpu-install/{{ amd_version }}/ubuntu/jammy/amdgpu-install_{{ amd_deb_version }}_all.deb
   when: ansible_os_family == "Debian"
 
 - name: Perform a cache update
@@ -40,8 +39,8 @@
   become: true
   ansible.builtin.apt:
     pkg:
-      - "linux-headers-{{ ansible_kernel }}"
-      - "linux-modules-extra-{{ ansible_kernel }}"
+      - linux-headers-{{ ansible_kernel }}
+      - linux-modules-extra-{{ ansible_kernel }}
       - build-essential
       - dkms
       - rocminfo
@@ -50,4 +49,4 @@
 
 - name: Run AMDGPU_Install binary with use-cases
   ansible.builtin.command:
-    cmd: "amdgpu-install -y --usecase={{ gpu_amd_usecase }}"
+    cmd: amdgpu-install -y --usecase={{ gpu_amd_usecase }}

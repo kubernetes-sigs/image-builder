@@ -13,7 +13,7 @@
 # limitations under the License.
 ---
 - name: Download containerd
-  win_get_url:
+  ansible.windows.win_get_url:
     url: "{{ containerd_url }}"
     dest: "{{ tempdir.stdout | trim }}\\containerd.tar.gz"
     checksum: "{{ containerd_sha256 }}"
@@ -25,7 +25,7 @@
   until: containerd is not failed
 
 - name: Create containerd directory structure
-  win_file:
+  ansible.windows.win_file:
     path: "{{ item }}"
     state: directory
   loop:
@@ -36,22 +36,22 @@
     - "{{ systemdrive.stdout | trim }}/etc/cni/net.d"
 
 - name: Check if containerd exists
-  win_stat:
+  ansible.windows.win_stat:
     path: "{{ programfiles.stdout | trim }}\\containerd\\containerd.exe"
   register: containerd_file
 
 - name: Unpack containerd binaries
-  win_command: cmd /c tar -zxvf {{ containerd.dest }} -C "{{ programfiles.stdout | trim }}\containerd" --strip-components 1
+  ansible.windows.win_command: cmd /c tar -zxvf {{ containerd.dest }} -C "{{ programfiles.stdout | trim }}\containerd" --strip-components 1
   when: not containerd_file.stat.exists
 
 - name: Add containerd to path
-  win_path:
+  ansible.windows.win_path:
     elements:
       - "{{ programfiles.stdout | trim }}\\containerd"
     scope: machine
 
 - name: Copy containerd config file {{ containerd_config_file }}
-  win_template:
+  ansible.windows.win_template:
     dest: "{{ programfiles.stdout | trim }}\\containerd\\config.toml"
     src: "{{ containerd_config_file }}"
   vars:
@@ -63,12 +63,12 @@
     containerd_conf_dir: '{{ programfiles.stdout | trim | regex_replace("\\", "\\\\") }}\\\\containerd'
 
 - name: Check if a Containerd service is installed
-  win_service:
+  ansible.windows.win_service:
     name: containerd
   register: containerd_service
 
 - name: Register Containerd
-  win_shell: |
+  ansible.windows.win_shell: |
     #refresh the path to ensure ansible sees update
     $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine")
     containerd.exe --register-service
@@ -77,7 +77,7 @@
 # Enables DNS resolution of SMB shares
 # https://github.com/kubernetes-sigs/windows-gmsa/issues/30#issuecomment-802240945
 - name: Apply SMB Resolution Fix for containerd
-  win_regedit:
+  ansible.windows.win_regedit:
     path: HKLM:\SYSTEM\CurrentControlSet\Services\hns\State
     state: present
     name: EnableCompartmentNamespace
@@ -85,18 +85,17 @@
     type: dword
 
 - name: Create Windows Defender Exclusions
-  win_shell: |
+  ansible.windows.win_shell: |
     Add-MpPreference -ExclusionProcess "{{ programfiles.stdout | trim }}\containerd\containerd.exe"
     Add-MpPreference -ExclusionProcess "{{ programfiles.stdout | trim }}\containerd\ctr.exe"
-
 - name: Ensure Containerd Service is running
-  win_service:
+  ansible.windows.win_service:
     name: containerd
     start_mode: auto
     state: started
 
 - name: Pre-pull containerd images
-  win_shell: |
+  ansible.windows.win_shell: |
     #refresh the path to ensure ansible sees update
     $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine")
     ctr.exe -n k8s.io images pull {{ item }}

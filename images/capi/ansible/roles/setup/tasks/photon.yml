@@ -13,35 +13,35 @@
 # limitations under the License.
 ---
 - name: Add bash_profile
-  template:
+  ansible.builtin.template:
     dest: /home/builder/.bash_profile
     src: photon_bash_profile
     mode: "0600"
     owner: builder
     group: builder
 
-- import_tasks: rpm_repos.yml
+- ansible.builtin.import_tasks: rpm_repos.yml
 
 - name: Perform a tdnf distro-sync
-  command: tdnf distro-sync -y --refresh
+  ansible.builtin.command: tdnf distro-sync -y --refresh
   register: distro
   changed_when: '"Nothing to do" not in distro.stderr'
 
 - name: Concatenate the Photon RPMs
-  set_fact:
+  ansible.builtin.set_fact:
     photon_rpms: "{{ rpms | join(' ') }}"
 
 - name: Install baseline dependencies
-  command: tdnf install {{ photon_rpms }} -y
+  ansible.builtin.command: tdnf install {{ photon_rpms }} -y
   when: photon_rpms != ""
 
 - name: Install extra RPMs
-  command: tdnf install {{ extra_rpms }} -y
+  ansible.builtin.command: tdnf install {{ extra_rpms }} -y
   when: extra_rpms != ""
 
 # Default size of 1G is insufficient when downloading additional components
 - name: Increase tmpfs size
-  mount:
+  ansible.posix.mount:
     path: /tmp
     src: tmpfs
     fstype: tmpfs
@@ -49,13 +49,13 @@
     state: remounted
 
 - name: Reset iptables rules input
-  replace:
+  ansible.builtin.replace:
     path: /etc/systemd/scripts/ip4save
     regexp: INPUT DROP
     replace: INPUT ACCEPT
 
 - name: Reset ip6tables rules input
-  replace:
+  ansible.builtin.replace:
     path: /etc/systemd/scripts/ip6save
     regexp: INPUT DROP
     replace: INPUT ACCEPT

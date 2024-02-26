@@ -12,15 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- include_tasks: bootstrap-flatcar.yml
+- ansible.builtin.include_tasks: bootstrap-flatcar.yml
 
 - name: Create system-environment-generators directory
-  file:
+  ansible.builtin.file:
     path: /etc/systemd/system-environment-generators
     state: directory
 
 - name: Add env generator that includes system PATH on service path
-  copy:
+  ansible.builtin.copy:
     src: etc/systemd/system-environment-generators/10-flatcar-path
     dest: /etc/systemd/system-environment-generators/10-flatcar-path
     owner: root
@@ -28,6 +28,6 @@
     mode: "0755"
 
 - name: Enable systemd-timesyncd unit
-  systemd:
+  ansible.builtin.systemd:
     enabled: true
     name: systemd-timesyncd.service

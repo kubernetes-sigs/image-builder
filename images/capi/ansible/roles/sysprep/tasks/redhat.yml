@@ -13,35 +13,35 @@
 # limitations under the License.
 ---
 - name: Define file modes
-  set_fact:
+  ansible.builtin.set_fact:
     last_log_mode: "0644"
     machine_id_mode: "0444"
 
 - name: Get installed packages
-  package_facts:
+  ansible.builtin.package_facts:
 
 - name: Create the package list
-  set_fact:
+  ansible.builtin.set_fact:
     package_list: "{{ ansible_facts.packages.keys() | join(' ') }}"
 
 - name: Exclude the packages from upgrades
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/yum.conf
     regexp: ^exclude=
     line: exclude={{ package_list }}
 
-- import_tasks: rpm_repos.yml
+- ansible.builtin.import_tasks: rpm_repos.yml
 
 # Oracle Linux does not have temp-disk-swapfile service
 - name: Disable swap service and ensure it is masked
-  systemd:
+  ansible.builtin.systemd:
     name: temp-disk-swapfile
     enabled: false
     masked: true
   when: ansible_memory_mb.swap.total != 0 and ansible_distribution_major_version|int <= 7
 
 - name: Disable swap service and ensure it is masked on RHEL 8
-  systemd:
+  ansible.builtin.systemd:
     name: swap.target
     enabled: false
     masked: true
@@ -54,40 +54,40 @@
     - lookup('env', 'RHSM_PASS') | length > 0
   block:
     - name: Enable repo mgmt with subscription-manager
-      command: subscription-manager config --rhsm.manage_repos=1
+      ansible.builtin.command: subscription-manager config --rhsm.manage_repos=1
     - name: Remove subscriptions
-      rhsm_repository:
+      community.general.rhsm_repository:
         name: "*"
         state: absent
     - name: Unregister system
-      redhat_subscription:
+      community.general.redhat_subscription:
         state: absent
     - name: Clean local subscription data
-      command: subscription-manager clean
+      ansible.builtin.command: subscription-manager clean
 
 - name: Remove yum package caches
-  yum:
+  ansible.builtin.yum:
     autoremove: true
     lock_timeout: 60
 
 - name: Remove yum package lists
-  command: /usr/bin/yum -y clean all
+  ansible.builtin.command: /usr/bin/yum -y clean all
 
 - name: Reset network interface IDs
-  shell: |
+  ansible.builtin.shell: |
     set -o pipefail
     sed -i '/^\(HWADDR\|UUID\)=/d' /etc/sysconfig/network-scripts/ifcfg-*
   when: packer_builder_type != "googlecompute" and ansible_distribution_major_version|int != 9
 
 - name: Migrate interface configuration files to NetworkManager keyfiles
-  command: nmcli connection migrate
+  ansible.builtin.command: nmcli connection migrate
   when: packer_builder_type != "googlecompute" and ansible_distribution_major_version|int == 9
 
 - name: Reset network interface IDs
-  shell: sed -i '/^\(uuid\)=/d' /etc/NetworkManager/system-connections/*.nmconnection
+  ansible.builtin.shell: sed -i '/^\(uuid\)=/d' /etc/NetworkManager/system-connections/*.nmconnection
   when: packer_builder_type != "googlecompute" and ansible_distribution_major_version|int == 9
 
 - name: Remove the kickstart log
-  file:
+  ansible.builtin.file:
     state: absent
     path: /root/anaconda-ks.cfg

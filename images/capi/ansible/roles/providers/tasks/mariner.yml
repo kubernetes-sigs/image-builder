@@ -13,6 +13,6 @@
 # limitations under the License.
 ---
 - name: Install Azure CLI
-  package:
+  ansible.builtin.package:
     name: azure-cli
     state: present

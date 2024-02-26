@@ -13,7 +13,7 @@
 # limitations under the License.
 ---
 - name: Pull additional images from registry
-  shell: CONTAINERD_NAMESPACE="k8s.io" {{ sysusr_prefix }}/bin/ctr --address={{ containerd_cri_socket }} images pull {{ item }}
+  ansible.builtin.shell: CONTAINERD_NAMESPACE="k8s.io" {{ sysusr_prefix }}/bin/ctr --address={{ containerd_cri_socket }} images pull {{ item }}
   loop: "{{ additional_registry_images_list.split(',') }}"
   retries: 5
   delay: 3

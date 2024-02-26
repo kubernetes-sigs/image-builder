@@ -13,34 +13,34 @@
 # limitations under the License.
 ---
 - name: Download gcloud SDK
-  get_url:
+  ansible.builtin.get_url:
     url: https://sdk.cloud.google.com/
     dest: /tmp/install-gcloud.sh
     mode: "0700"
 
 - name: Execute install-gcloud.sh
-  shell: bash -o errexit -o pipefail /tmp/install-gcloud.sh --disable-prompts --install-dir=/
+  ansible.builtin.shell: bash -o errexit -o pipefail /tmp/install-gcloud.sh --disable-prompts --install-dir=/
 
 - name: Remove install-gcloud.sh
-  file:
+  ansible.builtin.file:
     path: /tmp/install-gcloud.sh
     state: absent
 
 - name: Find all files in /google-cloud-sdk/bin/
-  find:
+  ansible.builtin.find:
     paths: /google-cloud-sdk/bin/
   register: find
 
 - name: Create symlinks to /bin
   become: true
-  file:
+  ansible.builtin.file:
     src: "{{ item.path }}"
     path: /bin/{{ item.path | basename }}
     state: link
   with_items: "{{ find.files }}"
 
 - name: Install cloud-init packages
-  yum:
+  ansible.builtin.yum:
     name: "{{ packages }}"
     state: present
   vars:
@@ -50,7 +50,7 @@
   when: ansible_os_family == "RedHat"
 
 - name: Disable Hyper-V KVP protocol daemon on Ubuntu
-  systemd:
+  ansible.builtin.systemd:
     name: hv-kvp-daemon
     state: stopped
     enabled: false

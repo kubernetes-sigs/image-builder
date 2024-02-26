@@ -12,19 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- import_tasks: debian.yml
+- ansible.builtin.import_tasks: debian.yml
   when: ansible_os_family == "Debian"
 
-- import_tasks: redhat.yml
+- ansible.builtin.import_tasks: redhat.yml
   when: ansible_os_family in ["Common Base Linux Mariner", "RedHat"]
 
-- import_tasks: photon.yml
+- ansible.builtin.import_tasks: photon.yml
   when: ansible_os_family == "VMware Photon OS"
 
 # TODO(vincepri): Use deb/rpm packages once available.
 # See https://github.com/containerd/containerd/issues/1508 for context.
 - name: Download containerd
-  get_url:
+  ansible.builtin.get_url:
     url: "{{ containerd_url }}"
     checksum: sha256:{{ containerd_sha256 }}
     dest: /tmp/containerd.tar.gz
@@ -34,7 +34,7 @@
   vars:
     sha256sums: "{{ containerd_wasm_shims_sha256 | from_json }}"
     runtime_versions: "{{ containerd_wasm_shims_runtime_versions | from_json }}"
-  get_url:
+  ansible.builtin.get_url:
     url: "{{ containerd_wasm_shims_url | replace('<SHIM>', item) | replace('<RTVERSION>', runtime_versions[item]) }}"
     checksum: sha256:{{ sha256sums[item] }}
     dest: /tmp/{{ item }}_wasm_shim.tar.gz
@@ -43,7 +43,7 @@
   loop: "{{ containerd_wasm_shims_runtimes | split(',') }}"
 
 - name: Create a directory if it does not exist
-  file:
+  ansible.builtin.file:
     path: "{{ sysusr_prefix }}/bin"
     state: directory
     mode: "0755"
@@ -51,7 +51,7 @@
 # TODO(vincepri): This unpacks the entire tar in the root directory
 # we should find a better way to check what's being unpacked and where.
 - name: Unpack containerd
-  unarchive:
+  ansible.builtin.unarchive:
     remote_src: true
     src: /tmp/containerd.tar.gz
     dest: "{{ containerd_prefix | default('/') }}"
@@ -61,7 +61,7 @@
 
 # Install containerd Wasm shims specified in a comma-separated string. Known runtimes are 'lunatic', 'slight', 'spin', and 'wws'.
 - name: Unpack containerd-wasm-shims
-  unarchive:
+  ansible.builtin.unarchive:
     remote_src: true
     src: /tmp/{{ item }}_wasm_shim.tar.gz
     dest: "{{ sysusr_prefix }}/bin"
@@ -71,7 +71,7 @@
   loop: "{{ containerd_wasm_shims_runtimes | split(',') }}"
 
 - name: Unpack containerd for Flatcar to /opt/bin
-  unarchive:
+  ansible.builtin.unarchive:
     remote_src: true
     src: /tmp/containerd.tar.gz
     dest: "{{ containerd_prefix | default('/') }}"
@@ -87,7 +87,7 @@
 
 # Install containerd Wasm shims specified in a comma-separated string. Known runtimes are 'lunatic', 'slight', 'spin', and 'wws'.
 - name: Unpack containerd-wasm-shims for Flatcar to /opt/bin
-  unarchive:
+  ansible.builtin.unarchive:
     remote_src: true
     src: /tmp/{{ item }}_wasm_shim.tar.gz
     dest: "{{ sysusr_prefix }}/bin"
@@ -98,86 +98,86 @@
 
 # Remove /opt/cni directory, as we will install cni later
 - name: Delete /opt/cni directory
-  file:
+  ansible.builtin.file:
     path: /opt/cni
     state: absent
 
 # Remove /etc/cni directory, as we will configure cni later
 - name: Delete /etc/cni directory
-  file:
+  ansible.builtin.file:
     path: /etc/cni
     state: absent
 
 - name: Create unit file directory
-  file:
+  ansible.builtin.file:
     path: /etc/systemd/system/containerd.service.d
     state: directory
 
 - name: Create systemd unit drop-in file for containerd to run from /opt/bin
-  template:
+  ansible.builtin.template:
     dest: /etc/systemd/system/containerd.service.d/10-opt-bin-custom.conf
     src: etc/systemd/system/containerd-flatcar.conf
     mode: "0600"
   when: ansible_os_family == "Flatcar"
 
 - name: Create containerd memory pressure drop-in file
-  template:
+  ansible.builtin.template:
     dest: /etc/systemd/system/containerd.service.d/memory-pressure.conf
     src: etc/systemd/system/containerd.service.d/memory-pressure.conf
     mode: "0644"
 
 - name: Create containerd max tasks drop-in file
-  template:
+  ansible.builtin.template:
     dest: /etc/systemd/system/containerd.service.d/max-tasks.conf
     src: etc/systemd/system/containerd.service.d/max-tasks.conf
     mode: "0644"
 
 - name: Create containerd LimitNOFILE drop in file
-  template:
+  ansible.builtin.template:
     dest: /etc/systemd/system/containerd.service.d/limit-nofile.conf
     src: etc/systemd/system/containerd.service.d/limit-nofile.conf
     mode: "0644"
   when: ansible_os_family == "Common Base Linux Mariner"
 
 - name: Create containerd http proxy conf file if needed
-  template:
+  ansible.builtin.template:
     dest: /etc/systemd/system/containerd.service.d/http-proxy.conf
     src: etc/systemd/system/containerd.service.d/http-proxy.conf
     mode: "0644"
   when: http_proxy is defined or https_proxy is defined
 
 - name: Creates containerd config directory
-  file:
+  ansible.builtin.file:
     path: /etc/containerd
     state: directory
 
 - name: Copy in containerd config file {{ containerd_config_file }}
   vars:
     runtime_versions: "{{ containerd_wasm_shims_runtime_versions | from_json }}"
-  template:
+  ansible.builtin.template:
     dest: /etc/containerd/config.toml
     src: "{{ containerd_config_file }}"
     mode: "0644"
 
 - name: Copy in crictl config
-  template:
+  ansible.builtin.template:
     dest: /etc/crictl.yaml
     src: etc/crictl.yaml
 
 - name: Start containerd service
-  systemd:
+  ansible.builtin.systemd:
     name: containerd
     daemon_reload: true
     enabled: true
     state: restarted
 
 - name: Delete containerd tarball
-  file:
+  ansible.builtin.file:
     path: /tmp/containerd.tar.gz
     state: absent
 
 - name: Delete containerd-wasm-shims tarballs
-  file:
+  ansible.builtin.file:
     path: /tmp/{{ item }}_wasm_shims.tar.gz
     state: absent
   when: containerd_wasm_shims_runtimes | length > 0

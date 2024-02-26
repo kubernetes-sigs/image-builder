@@ -13,7 +13,7 @@
 # limitations under the License.
 ---
 - name: Put templated sources.list in place
-  template:
+  ansible.builtin.template:
     src: etc/apt/sources.list.j2
     dest: /etc/apt/sources.list
     mode: "0644"
@@ -22,14 +22,14 @@
   when: packer_builder_type != "oracle-oci"
 
 - name: Put templated apt.conf.d/90proxy in place when defined
-  template:
+  ansible.builtin.template:
     src: etc/apt/apt.conf.d/90proxy
     dest: /etc/apt/apt.conf.d/90proxy
     mode: "0644"
   when: http_proxy is defined or https_proxy is defined
 
 - name: Ensure cloud-final is in a running state
-  service:
+  ansible.builtin.service:
     name: cloud-final
     state: started
   check_mode: true
@@ -40,7 +40,7 @@
   when: packer_builder_type == "oracle-oci" and extra_repos != ""
 
 - name: Find existing repo files
-  find:
+  ansible.builtin.find:
     depth: 1
     paths:
       - /etc/apt
@@ -50,12 +50,12 @@
   when: disable_public_repos|bool
 
 - name: Disable repos
-  command: mv {{ item.path }} {{ item.path }}.disabled
+  ansible.builtin.command: mv {{ item.path }} {{ item.path }}.disabled
   loop: "{{ repo_files.files }}"
   when: disable_public_repos|bool
 
 - name: Install extra repos
-  copy:
+  ansible.builtin.copy:
     src: "{{ item }}"
     dest: /etc/apt/sources.list.d/{{ item | basename }}
     mode: "0644"
@@ -69,11 +69,11 @@
   when: packer_build_name is search('cvm')
 
 - name: Add '--no-tpm --no-efivars' to nullboot post install script
-  command: sed -i 's/nullbootctl/nullbootctl --no-tpm --no-efivars/' /var/lib/dpkg/info/nullboot.postinst
+  ansible.builtin.command: sed -i 's/nullbootctl/nullbootctl --no-tpm --no-efivars/' /var/lib/dpkg/info/nullboot.postinst
   when: packer_build_name is search('cvm')
 
 - name: Perform a dist-upgrade
-  apt:
+  ansible.builtin.apt:
     force_apt_get: true
     update_cache: true
     upgrade: dist
@@ -83,7 +83,7 @@
   delay: 10
 
 - name: Install baseline dependencies
-  apt:
+  ansible.builtin.apt:
     force_apt_get: true
     update_cache: true
     name: "{{ debs }}"
@@ -94,7 +94,7 @@
   delay: 10
 
 - name: Install extra debs
-  apt:
+  ansible.builtin.apt:
     force_apt_get: true
     name: "{{ extra_debs.split() }}"
     state: latest
@@ -104,7 +104,7 @@
   delay: 10
 
 - name: Install pinned debs
-  apt:
+  ansible.builtin.apt:
     force_apt_get: true
     name: "{{ pinned_debs }}"
     state: present
@@ -115,5 +115,5 @@
   delay: 10
 
 - name: Remove '--no-tpm --no-efivars' from nullboot post install script
-  command: sed -i 's/nullbootctl --no-tpm --no-efivars/nullbootctl/' /var/lib/dpkg/info/nullboot.postinst
+  ansible.builtin.command: sed -i 's/nullbootctl --no-tpm --no-efivars/nullbootctl/' /var/lib/dpkg/info/nullboot.postinst
   when: packer_build_name is search('cvm')

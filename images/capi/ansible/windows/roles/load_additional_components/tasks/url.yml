@@ -13,13 +13,13 @@
 # limitations under the License.
 ---
 - name: Create temporary download dir
-  win_file:
+  ansible.windows.win_file:
     path: "{{ tempdir.stdout | trim }}\\images"
     state: directory
   when: runtime == "containerd"
 
 - name: Download additional images from url
-  win_get_url:
+  ansible.windows.win_get_url:
     url: "{{ item }}"
     dest: "{{ tempdir.stdout | trim }}\\images\\"
   register: images
@@ -31,7 +31,7 @@
   when: runtime == "containerd"
 
 - name: Load additional images to containerd
-  win_shell: |
+  ansible.windows.win_shell: |
     Function DeGZip-File{
       Param(
           $infile,
@@ -65,7 +65,7 @@
   when: runtime == "containerd"
 
 - name: Remove downloaded files
-  win_file:
+  ansible.windows.win_file:
     state: absent
     path: "{{ tempdir.stdout | trim }}\\images"
   when: runtime == "containerd"

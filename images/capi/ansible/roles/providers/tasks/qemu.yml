@@ -13,7 +13,7 @@
 # limitations under the License.
 ---
 - name: Install cloud-init packages
-  apt:
+  ansible.builtin.apt:
     name: "{{ packages }}"
     state: present
     force_apt_get: true
@@ -26,7 +26,7 @@
   when: ansible_os_family == "Debian"
 
 - name: Install cloud-init packages
-  yum:
+  ansible.builtin.yum:
     name: "{{ packages }}"
     state: present
   vars:
@@ -36,14 +36,14 @@
   when: ansible_os_family == "RedHat"
 
 - name: Disable Hyper-V KVP protocol daemon on Ubuntu
-  systemd:
+  ansible.builtin.systemd:
     name: hv-kvp-daemon
     state: stopped
     enabled: false
   when: ansible_os_family == "Debian"
 
 - name: Copy networkd-dispatcher scripts to add DHCP provided NTP servers
-  template:
+  ansible.builtin.template:
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
     mode: a+x
