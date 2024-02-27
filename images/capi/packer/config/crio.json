@@ -1,0 +1,5 @@
+{
+  "crio_additional_settings": null,
+  "crio_cri_socket": "/var/run/crio/crio.sock",
+  "crio_version": "1.26.4"
+}
