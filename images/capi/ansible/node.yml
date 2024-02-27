@@ -32,6 +32,10 @@
         name: providers
     - ansible.builtin.include_role:
         name: containerd
+      when: cri_flavour == "containerd"
+    - ansible.builtin.include_role:
+        name: crio
+      when: cri_flavour == "crio" 
     - ansible.builtin.include_role:
         name: kubernetes
     - ansible.builtin.include_role:

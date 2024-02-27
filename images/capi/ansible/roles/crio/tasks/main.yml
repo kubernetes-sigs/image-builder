@@ -1,0 +1,97 @@
+# Copyright 2023 The Kubernetes Authors.
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+
+# http://www.apache.org/licenses/LICENSE-2.0
+
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+---
+- ansible.builtin.import_tasks: debian.yml
+  when: ansible_os_family == "Debian"
+
+- name: Determine Version
+  block:
+    - set_fact: 
+        crio_repo_os: "x{{ ansible_distribution }}_{{ ansible_distribution_version }}"
+        crio_repo_version: "{{ crio_version.split('.')[:2] | join('.') }}"
+      when: ansible_distribution == "Ubuntu"
+    - set_fact: 
+        crio_repo_os: "{{ ansible_distribution }}_{{ ansible_distribution_version }}"
+        crio_repo_version: "{{ crio_version.split('.')[:2] | join('.') }}"
+      when: ansible_distribution == "Debian"
+
+- name: Configure repo and import certificate
+  block:
+    - ansible.builtin.get_url:
+        url: "https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/{{ crio_repo_os }}/Release.key"
+        dest: /tmp/libcontainers-archive-keyring.key
+    - ansible.builtin.command: gpg --dearmor /tmp/libcontainers-archive-keyring.key > /usr/share/keyrings/libcontainers-archive-keyring.gpg
+    - ansible.builtin.get_url:
+        url: "https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable:/cri-o:/{{ crio_repo_version }}/{{ crio_repo_os }}/Release.key"
+        dest: /usr/share/keyrings/libcontainers-crio-archive-keyring.gpg
+    - ansible.builtin.command: gpg --dearmor /tmp/libcontainers-crio-archive-keyring.key > /usr/share/keyrings/libcontainers-crio-archive-keyring.gpg
+    - ansible.builtin.apt_repository:
+        repo: "deb [signed-by=/usr/share/keyrings/libcontainers-archive-keyring.gpg] https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/{{ crio_repo_os }}/ /"
+        state: present
+        filename: devel:kubic:libcontainers:stable 
+    - ansible.builtin.apt_repository:
+        repo: "deb [signed-by=/usr/share/keyrings/libcontainers-crio-archive-keyring.gpg] https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable:/cri-o:/{{ crio_repo_version }}/{{ crio_repo_os }}/ /"
+        state: present
+        filename: "devel:kubic:libcontainers:stable:cri-o:{{ crio_repo_os }}"
+
+- name: Install crio
+  ansible.builtin.apt:
+    name: crio
+
+- name: Create unit file directory
+  ansible.builtin.file:
+    path: /etc/systemd/system/crio.service.d
+    state: directory
+
+- name: Create crio memory pressure drop-in file
+  ansible.builtin.template:
+    dest: /etc/systemd/system/crio.service.d/memory-pressure.conf
+    src: etc/systemd/system/crio.service.d/memory-pressure.conf
+    mode: "0644"
+
+- name: Create crio max tasks drop-in file
+  ansible.builtin.template:
+    dest: /etc/systemd/system/crio.service.d/max-tasks.conf
+    src: etc/systemd/system/crio.service.d/max-tasks.conf
+    mode: "0644"
+
+- name: Create crio http proxy conf file if needed
+  ansible.builtin.template:
+    dest: /etc/systemd/system/crio.service.d/http-proxy.conf
+    src: etc/systemd/system/crio.service.d/http-proxy.conf
+    mode: "0644"
+  when: http_proxy is defined or https_proxy is defined
+
+- name: Creates crio config directory
+  ansible.builtin.file:
+    path: /etc/crio
+    state: directory
+
+- name: Copy in crio config file {{ crio_config_file }}
+  ansible.builtin.template:
+    dest: "/{{ crio_config_file }}"
+    src: "{{ crio_config_file }}"
+    mode: "0644"
+
+- name: Copy in crictl config
+  ansible.builtin.template:
+    dest: /etc/crictl.yaml
+    src: etc/crictl.yaml
+
+- name: Start crio service
+  ansible.builtin.systemd:
+    name: crio
+    daemon_reload: true
+    enabled: true
+    state: restarted
