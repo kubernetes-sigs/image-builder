@@ -6,8 +6,8 @@ aliases:
     - jsturtevant
     - kkeshavamurthy
     - mboersma
-  image-builder-reviewers:
     - drew-viles
+  image-builder-reviewers:
     - randomvariable
   image-builder-azure-reviewers:
     - jsturtevant
@@ -15,7 +15,6 @@ aliases:
   image-builder-openstack-reviewers:
     - hidekazuna
   image-builder-openstack-maintainers:
-    - drew-viles
     - yankcrime
   image-builder-cloudstack-reviewers:
     - rohityadavcloud
