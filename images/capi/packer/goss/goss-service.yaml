@@ -1,8 +1,14 @@
 service:
 {{ if ne .Vars.OS "windows"}} # Linux
+{{ if eq .Vars.cri_flavour "containerd"}}
   containerd:
     enabled: true
     running: true
+{{ else if eq .Vars.cri_flavour "crio"}}
+  crio:
+    enabled: true
+    running: true
+{{ end }}
   dockerd:
     enabled: false
     running: false
