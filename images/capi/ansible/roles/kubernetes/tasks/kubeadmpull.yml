@@ -6,7 +6,7 @@
     mode: "0600"
 
 - name: Kubeadm pull images
-  ansible.builtin.shell: kubeadm config images pull --config /etc/kubeadm.yml --cri-socket {{ containerd_cri_socket }}
+  ansible.builtin.shell: kubeadm config images pull --config /etc/kubeadm.yml --cri-socket {{ cri_socket }}
 
 - name: Delete kubeadm config
   ansible.builtin.file:

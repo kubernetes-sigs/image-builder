@@ -21,6 +21,10 @@
 - ansible.builtin.import_tasks: photon.yml
   when: ansible_os_family == "VMware Photon OS"
 
+- name: Export crisocket
+  set_fact:
+    cri_socket: "{{ containerd_cri_socket }}"
+
 # TODO(vincepri): Use deb/rpm packages once available.
 # See https://github.com/containerd/containerd/issues/1508 for context.
 - name: Download containerd

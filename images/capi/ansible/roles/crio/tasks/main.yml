@@ -15,6 +15,10 @@
 - ansible.builtin.import_tasks: debian.yml
   when: ansible_os_family == "Debian"
 
+- name: Export crisocket
+  set_fact:
+    cri_socket: "{{ crio_cri_socket }}"
+
 - name: Determine Version
   block:
     - set_fact: 
@@ -28,26 +32,32 @@
 
 - name: Configure repo and import certificate
   block:
-    - ansible.builtin.get_url:
+    - name: get gpg sign key
+      ansible.builtin.get_url:
         url: "https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/{{ crio_repo_os }}/Release.key"
-        dest: /tmp/libcontainers-archive-keyring.key
-    - ansible.builtin.command: gpg --dearmor /tmp/libcontainers-archive-keyring.key > /usr/share/keyrings/libcontainers-archive-keyring.gpg
-    - ansible.builtin.get_url:
+        dest: /usr/share/keyrings/libcontainers-archive-keyring.asc
+    - name: get gpg sign key
+      ansible.builtin.get_url:
         url: "https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable:/cri-o:/{{ crio_repo_version }}/{{ crio_repo_os }}/Release.key"
-        dest: /usr/share/keyrings/libcontainers-crio-archive-keyring.gpg
-    - ansible.builtin.command: gpg --dearmor /tmp/libcontainers-crio-archive-keyring.key > /usr/share/keyrings/libcontainers-crio-archive-keyring.gpg
-    - ansible.builtin.apt_repository:
-        repo: "deb [signed-by=/usr/share/keyrings/libcontainers-archive-keyring.gpg] https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/{{ crio_repo_os }}/ /"
+        dest: /usr/share/keyrings/libcontainers-crio-archive-keyring.asc
+    - name: add repository
+      ansible.builtin.apt_repository:
+        repo: "deb [signed-by=/usr/share/keyrings/libcontainers-archive-keyring.asc] https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/{{ crio_repo_os }}/ /"
         state: present
         filename: devel:kubic:libcontainers:stable 
-    - ansible.builtin.apt_repository:
-        repo: "deb [signed-by=/usr/share/keyrings/libcontainers-crio-archive-keyring.gpg] https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable:/cri-o:/{{ crio_repo_version }}/{{ crio_repo_os }}/ /"
+    - name: add repository
+      ansible.builtin.apt_repository:
+        repo: "deb [signed-by=/usr/share/keyrings/libcontainers-crio-archive-keyring.asc] https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable:/cri-o:/{{ crio_repo_version }}/{{ crio_repo_os }}/ /"
         state: present
         filename: "devel:kubic:libcontainers:stable:cri-o:{{ crio_repo_os }}"
 
 - name: Install crio
   ansible.builtin.apt:
-    name: crio
+    update_cache: true
+    name: "{{ item }}"
+  with_items:
+    - cri-o
+    - cri-o-runc
 
 - name: Create unit file directory
   ansible.builtin.file:
@@ -77,12 +87,6 @@
   ansible.builtin.file:
     path: /etc/crio
     state: directory
-
-- name: Copy in crio config file {{ crio_config_file }}
-  ansible.builtin.template:
-    dest: "/{{ crio_config_file }}"
-    src: "{{ crio_config_file }}"
-    mode: "0644"
 
 - name: Copy in crictl config
   ansible.builtin.template:
