@@ -49,6 +49,7 @@
     {
       "CPUs": "{{user `cpu`}}",
       "RAM": "{{user `memory`}}",
+      "boot_command": "{{user `boot_command`}}",
       "boot_wait": "{{user `boot_wait`}}",
       "cluster": "{{user `cluster`}}",
       "communicator": "winrm",
@@ -60,7 +61,7 @@
         "force": true,
         "output_directory": "{{user `output_dir`}}"
       },
-      "firmware": "bios",
+      "firmware": "{{user `firmware`}}",
       "floppy_dirs": [
         "./packer/ova/windows/pvscsi"
       ],
@@ -233,6 +234,7 @@
     "ansible_common_vars": "",
     "ansible_extra_vars": "",
     "ansible_user_vars": "",
+    "boot_command": null,
     "build_name": null,
     "build_timestamp": "{{timestamp}}",
     "build_version": "{{user `build_name`}}-kube-{{user `kubernetes_semver`}}",
@@ -246,6 +248,7 @@
     "containerd_version": null,
     "disable_hypervisor": null,
     "disk_size": "81920",
+    "firmware": "bios",
     "http_port_max": "",
     "http_port_min": "",
     "ib_version": "{{env `IB_VERSION`}}",
