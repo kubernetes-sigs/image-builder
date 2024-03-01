@@ -13,3 +13,5 @@
 # limitations under the License.
 ---
 crio_config_file: etc/crio/crio.conf
+crio_gvisor_runtime: false
+crio_gvisor_version: latest

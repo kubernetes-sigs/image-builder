@@ -88,6 +88,12 @@
     path: /etc/crio
     state: directory
 
+- name: Copy in crio config file {{ crio_config_file }}
+  ansible.builtin.template:
+    dest: /etc/crio/crio.conf
+    src: "{{ crio_config_file }}"
+    mode: "0644"
+
 - name: Copy in crictl config
   ansible.builtin.template:
     dest: /etc/crictl.yaml
@@ -99,3 +105,26 @@
     daemon_reload: true
     enabled: true
     state: restarted
+
+- name: Download runsc for gvisor
+  ansible.builtin.get_url:
+    dest: "{{ sysusr_prefix }}/bin/{{ item }}"
+    url: https://storage.googleapis.com/gvisor/releases/release/{{ crio_gvisor_version }}/{{ ansible_architecture }}/{{ item }}
+    mode: "0755"
+    owner: root
+    group: root
+    checksum: sha512:https://storage.googleapis.com/gvisor/releases/release/{{ crio_gvisor_version }}/{{ ansible_architecture }}/{{ item }}.sha512
+  loop:
+    - runsc
+    - containerd-shim-runsc-v1
+  when: crio_gvisor_runtime
+
+- name: Install runsc as a runtime
+  ansible.builtin.command:
+    cmd: >
+      {{ sysusr_prefix }}/bin/runsc install
+  register: runsc_install_output
+  when: crio_gvisor_runtime
+  changed_when:
+    - runsc_install_output.rc == 0
+    - runsc_install_output.stderr is search('Successfully added')
