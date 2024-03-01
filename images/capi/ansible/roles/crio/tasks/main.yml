@@ -99,6 +99,11 @@
     dest: /etc/crictl.yaml
     src: etc/crictl.yaml
 
+- name: Remove CRIO default CNI config file
+  ansible.builtin.file:
+    path: /etc/cni/net.d/100-crio-bridge.conflist
+    state: absent
+
 - name: Start crio service
   ansible.builtin.systemd:
     name: crio
