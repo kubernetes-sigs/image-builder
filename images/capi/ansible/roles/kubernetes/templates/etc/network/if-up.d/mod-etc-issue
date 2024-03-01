@@ -1,0 +1,25 @@
+#!/bin/sh
+
+if [ "$METHOD" = loopback ]; then
+    exit 0
+fi
+
+# Only run from ifup.
+if [ "$MODE" != start ]; then
+    exit 0
+fi
+
+IPADDR=`ip a s eth0 | grep inet | awk '{ print $2 }' | head -1`
+
+# First time, back up /etc/issue
+if [ ! -f /etc/issue.orig ]
+then
+  cp /etc/issue /etc/issue.orig
+fi
+
+# "Reset" /etc/issue to original state
+cp /etc/issue.orig /etc/issue
+
+# Append IP address to /etc/issue
+echo "eth0 address: $IPADDR" >> /etc/issue
+echo "" >> /etc/issue
