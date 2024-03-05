@@ -1081,3 +1081,41 @@ json-sort: ## Sort all JSON files alphabetically
 ignition_files = bootstrap-pass-auth bootstrap-cloud
 gen-ignition: deps-ignition ## Generates Ignition files from CLC
 	for f in $(ignition_files); do (ct < packer/files/flatcar/clc/$$f.yaml | jq '.' > packer/files/flatcar/ignition/$$f.json) || exit 1; done
+
+## --------------------------------------
+## ISO checksum updates
+## --------------------------------------
+##@ ISO checksum updates
+.PHONY: update-all-iso-checksums
+update-all-iso-checksums: update-ubuntu-iso-checksums \
+	update-rockylinux-iso-checksums \
+	update-centos-7-iso-checksums \
+	update-centos-9-iso-checksums \
+	update-photon-iso-checksums \
+
+update-all-iso-checksums: ## Updates checksums for all ISOs
+
+.PHONY: update-ubuntu-iso-checksums
+update-ubuntu-iso-checksums: ## Updates checksums for Ubuntu ISOs
+	hack/update-iso-checksums.sh ubuntu false SHA256SUMS "*iso_file_name" 1
+	$(MAKE) json-sort
+
+.PHONY: update-rockylinux-iso-checksums
+update-rockylinux-iso-checksums: ## Updates checksums for Rocky Linux ISOs
+	hack/update-iso-checksums.sh rockylinux false CHECKSUM "SHA256 (iso_file_name)" 4
+	$(MAKE) json-sort
+
+.PHONY: update-centos-7-iso-checksums
+update-centos-7-iso-checksums: ## Updates checksums for Centos 7 ISOs
+	hack/update-iso-checksums.sh centos-7 false sha256sum.txt "iso_file_name" 1
+	$(MAKE) json-sort
+
+.PHONY: update-centos-9-iso-checksums
+update-centos-9-iso-checksums: ## Updates checksums for Centos 9 ISOs
+	hack/update-iso-checksums.sh centos-9 false SHA256SUM "SHA256 (iso_file_name)" 4
+	$(MAKE) json-sort
+
+.PHONY: update-photon-iso-checksums
+update-photon-iso-checksums: ## Updates checksums for Photon ISOs
+	hack/update-iso-checksums.sh photon true
+	$(MAKE) json-sort
