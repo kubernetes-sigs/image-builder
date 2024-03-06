@@ -13,7 +13,7 @@ flag to `true`. For example, in a packer configuration file:
 
 ```json
 {
-    "containerd_gvisor_runtime": "true",
+    "containerd_gvisor_runtime": true,
     "containerd_gvisor_version": "yyyymmdd",
 }
 ```
