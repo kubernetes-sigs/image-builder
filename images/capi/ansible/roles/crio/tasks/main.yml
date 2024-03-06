@@ -103,6 +103,7 @@
   ansible.builtin.file:
     path: /etc/cni/net.d/100-crio-bridge.conflist
     state: absent
+  when: crio_disable_builtin_cni | bool
 
 - name: Start crio service
   ansible.builtin.systemd:
@@ -122,14 +123,14 @@
   loop:
     - runsc
     - containerd-shim-runsc-v1
-  when: crio_gvisor_runtime
+  when: crio_gvisor_runtime | bool
 
 - name: Install runsc as a runtime
   ansible.builtin.command:
     cmd: >
       {{ sysusr_prefix }}/bin/runsc install
   register: runsc_install_output
-  when: crio_gvisor_runtime
+  when: crio_gvisor_runtime | bool
   changed_when:
     - runsc_install_output.rc == 0
     - runsc_install_output.stderr is search('Successfully added')

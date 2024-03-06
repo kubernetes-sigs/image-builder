@@ -1,6 +1,12 @@
 # Container Runtime
 
-The image-builder project support different implementation, referred as flavour in this book, as CRI. The preferred one is containerd but cri-o is supported for some kind of platforms - depending on cri-o supported operating systems.
+The image-builder project support different implementation, referred as flavour in this book, as CRI. The preferred one is containerd but cri-o is supported for some kind of platforms - depending on cri-o supported operating systems. By default the built-in CNI provided by CRI-O is disabled, to enabled use the following variable:
+
+```json
+{
+  "crio_disable_default_cni": "false",
+}
+```
 
 ## crictl
 
@@ -18,7 +24,7 @@ As of now gVisor support is implemented but broken - [gvisor/issue/3283](https:/
 
 ```json
 {
-    "crio_gvisor_runtime": "true",
+    "crio_gvisor_runtime": true,
     "crio_gvisor_version": "yyyymmdd", // or latest
 }
 ```
@@ -26,5 +32,5 @@ As of now gVisor support is implemented but broken - [gvisor/issue/3283](https:/
 For example you can build the qcow2 image with gvisor enabled with this snippet:
 
 ```sh
-PACKER_FLAGS="--var 'crio_gvisor_runtime=\"true\"'" make build-qemu-ubuntu-2204-crio
+PACKER_FLAGS="--var 'crio_gvisor_runtime=true'" make build-qemu-ubuntu-2204-crio
 ```

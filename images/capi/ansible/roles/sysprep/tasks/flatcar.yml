@@ -46,7 +46,7 @@
     - docker.socket
     - docker.service
 
-- name: Set cgroup v1 to match the cgroupfs driver in containerd and kubelet
+- name: Set cgroup v1 to match the cgroupfs driver for best compatibility of cri and kubelet
   ansible.builtin.shell: |
     echo 'set linux_append="$linux_append systemd.unified_cgroup_hierarchy=0 systemd.legacy_systemd_cgroup_controller"' >> /usr/share/oem/grub.cfg
   when: kubernetes_semver is version('v1.21.0', '<')

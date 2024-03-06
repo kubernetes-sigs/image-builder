@@ -1,5 +1,6 @@
 {
   "crio_additional_settings": null,
+  "crio_disable_builtin_cni": "true",
   "crio_cri_socket": "/var/run/crio/crio.sock",
   "crio_gvisor_runtime": "false",
   "crio_gvisor_version": "latest",
