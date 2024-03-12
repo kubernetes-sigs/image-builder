@@ -23,7 +23,7 @@
       - cloud-utils-growpart
 
 - name: Install python2 pip
-  yum:
+  ansible.builtin.yum:
     name: "{{ packages }}"
     state: present
   vars:
