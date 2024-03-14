@@ -372,7 +372,7 @@ QEMU_BUILD_NAMES			?=	qemu-ubuntu-2004 qemu-ubuntu-2204 qemu-ubuntu-2304 qemu-ub
 
 QEMU_KUBEVIRT_BUILD_NAMES	:= $(addprefix kubevirt-,$(QEMU_BUILD_NAMES))
 
-RAW_BUILD_NAMES				?=      raw-ubuntu-2004 raw-ubuntu-2004-efi raw-flatcar raw-rhel-8
+RAW_BUILD_NAMES				?=      raw-ubuntu-2004 raw-ubuntu-2004-efi raw-flatcar raw-rhel-8 raw-rhel-9 raw-rhel-9-efi
 VBOX_BUILD_NAMES			?=      vbox-windows-2019
 
 POWERVS_BUILD_NAMES         ?= powervs-centos-8
@@ -785,6 +785,8 @@ build-raw-flatcar: ## Builds Flatcar RAW image
 build-raw-ubuntu-2004: ## Builds Ubuntu 20.04 RAW image
 build-raw-ubuntu-2004-efi: ## Builds Ubuntu 20.04 RAW image that EFI boots
 build-raw-rhel-8: ## Builds RHEL 8 RAW image
+build-raw-rhel-9: ## Builds RHEL 9 RAW image
+build-raw-rhel-9-efi: ## Builds RHEL 9 RAW image that EFI boots
 build-raw-all: $(RAW_BUILD_TARGETS) ## Builds all RAW images
 
 build-oci-ubuntu-2004: ## Builds the OCI ubuntu-2004 image
