@@ -1,3 +1,6 @@
+# Copyright 2024 The Kubernetes Authors.
+
+# Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 
@@ -9,8 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- ansible.builtin.include_tasks: azure.yml
-  when: packer_builder_type.startswith('azure')
-
-- ansible.builtin.include_tasks: vmware.yml
-  when: packer_builder_type is search('vmware') or packer_builder_type is search('vsphere')
+- name: Create provider vmtools config file
+  ansible.windows.win_copy:
+    src: vmware/vmtools/tools.conf
+    dest: 'C:\ProgramData\VMware\VMware Tools\tools.conf'
