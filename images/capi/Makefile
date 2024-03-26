@@ -51,7 +51,7 @@ version: ## Display version of image-builder
 
 .PHONY: deps
 deps: ## Installs/checks all dependencies
-deps: deps-ami deps-azure deps-do deps-gce deps-ova deps-openstack deps-qemu deps-raw deps-oci deps-osc deps-vbox deps-powervs deps-nutanix deps-hcloud
+deps: deps-ami deps-azure deps-do deps-gce deps-ova deps-openstack deps-qemu deps-raw deps-oci deps-osc deps-powervs deps-nutanix deps-hcloud
 
 .PHONY: deps-common
 deps-common: ## Installs/checks dependencies common to most builds
@@ -130,13 +130,6 @@ deps-oci: deps-common
 	hack/ensure-ansible-windows.sh
 	$(PACKER) init packer/config.pkr.hcl
 	$(PACKER) plugins install github.com/hashicorp/oracle
-
-.PHONY: deps-vbox
-deps-vbox: ## Installs/checks dependencies for VirtualBox builds
-deps-vbox: deps-common
-	hack/ensure-ansible-windows.sh
-	hack/ensure-goss.sh
-	$(PACKER) init packer/config.pkr.hcl
 
 .PHONY: deps-powervs
 deps-powervs: ## Installs/checks dependencies for PowerVS builds
@@ -373,7 +366,6 @@ QEMU_BUILD_NAMES			?=	qemu-ubuntu-2004 qemu-ubuntu-2204 qemu-ubuntu-2304 qemu-ub
 QEMU_KUBEVIRT_BUILD_NAMES	:= $(addprefix kubevirt-,$(QEMU_BUILD_NAMES))
 
 RAW_BUILD_NAMES				?=      raw-ubuntu-2004 raw-ubuntu-2004-efi raw-flatcar raw-rhel-8 raw-rhel-9 raw-rhel-9-efi
-VBOX_BUILD_NAMES			?=      vbox-windows-2019
 
 POWERVS_BUILD_NAMES         ?= powervs-centos-8
 
@@ -419,8 +411,6 @@ OCI_BUILD_TARGETS	:= $(addprefix build-,$(OCI_BUILD_NAMES))
 OCI_VALIDATE_TARGETS	:= $(addprefix validate-,$(OCI_BUILD_NAMES))
 OSC_BUILD_TARGETS 	:= $(addprefix build-,$(OSC_BUILD_NAMES))
 OSC_VALIDATE_TARGETS       := $(addprefix validate-,$(OSC_BUILD_NAMES))
-VBOX_BUILD_TARGETS      := $(addprefix build-,$(VBOX_BUILD_NAMES))
-VBOX_VALIDATE_TARGETS   := $(addprefix validate-,$(VBOX_BUILD_NAMES))
 POWERVS_BUILD_TARGETS      := $(addprefix build-,$(POWERVS_BUILD_NAMES))
 POWERVS_VALIDATE_TARGETS   := $(addprefix validate-,$(POWERVS_BUILD_NAMES))
 NUTANIX_BUILD_TARGETS		:= $(addprefix build-,$(NUTANIX_BUILD_NAMES))
@@ -570,14 +560,6 @@ $(OSC_BUILD_TARGETS): deps-osc
 $(OSC_VALIDATE_TARGETS): deps-osc
 	$(PACKER) validate $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/outscale/$(subst validate-osc-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/outscale/packer.json
 
-.PHONY: $(VBOX_BUILD_TARGETS)
-$(VBOX_BUILD_TARGETS): deps-vbox
-	$(PACKER) build $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="packer/vbox/packer-common.json" -var-file="$(abspath packer/vbox/$(subst build-vbox-,,$@).json)" -only=virtualbox-iso $(ABSOLUTE_PACKER_VAR_FILES) packer/vbox/packer-$(if $(findstring windows,$@),windows).json
-
-.PHONY: $(VBOX_VALIDATE_TARGETS)
-$(VBOX_VALIDATE_TARGETS): deps-vbox
-	$(PACKER) validate $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="packer/vbox/packer-common.json" -var-file="$(abspath packer/vbox/$(subst validate-vbox-,,$@).json)" -only=virtualbox-iso $(ABSOLUTE_PACKER_VAR_FILES) packer/vbox/packer-$(if $(findstring windows,$@),windows).json
-
 .PHONY: $(POWERVS_BUILD_TARGETS)
 $(POWERVS_BUILD_TARGETS): deps-powervs
 	$(PACKER) build $(PACKER_POWERVS_NODE_FLAGS) -var-file="$(abspath packer/powervs/$(subst build-powervs-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) -except=flatcar packer/powervs/packer.json
@@ -627,11 +609,6 @@ RAW_CLEAN_TARGETS := $(subst build-,clean-,$(RAW_BUILD_TARGETS))
 .PHONY: $(RAW_CLEAN_TARGETS)
 $(RAW_CLEAN_TARGETS):
 	rm -fr output/$(subst clean-raw-,,$@)-kube*
-
-VBOX_CLEAN_TARGETS := $(subst build-,clean-,$(VBOX_BUILD_TARGETS))
-.PHONY: $(VBOX_CLEAN_TARGETS)
-$(VBOX_CLEAN_TARGETS):
-	rm -fr output/$(subst clean-vbox-,,$@)-kube*
 
 ## --------------------------------------
 ## Document dynamic build targets
@@ -801,9 +778,6 @@ build-osc-ubuntu-2004: ## Builds Ubuntu 20.04 Outscale Snapshot
 build-osc-ubuntu-2204: ## Builds Ubuntu 22.04 Outscale Snapshot
 build-osc-all: $(OSC_BUILD_TARGETS) ## Builds all Outscale Snapshot
 
-build-vbox-windows-2019: ## Builds for Windows Server 2019 Node VirtualBox w local hypervisor
-build-vbox-all: $(VBOX_BUILD_TARGETS) ## Builds all Qemu images
-
 build-nutanix-ubuntu-2004: ## Builds the Nutanix ubuntu-2004 image
 build-nutanix-ubuntu-2204: ## Builds the Nutanix ubuntu-2204 image
 build-nutanix-rhel-8: ## Builds the Nutanix RedHat Enterprise Linux 8 image
@@ -943,9 +917,6 @@ validate-osc-ubuntu-2004: ## Validates Ubuntu 20.04 Outscale Snapshot Packer con
 validate-osc-ubuntu-2204: ## Validates Ubuntu 20.04 Outscale Snapshot Packer config
 validate-osc-all: $(OSC_VALIDATE_TARGETS) ## Validates all Outscale Snapshot Packer config
 
-validate-vbox-windows-2019: ## Validates Windows Server 2019 Node VirtualBox Packer config w local hypervisor
-validate-vbox-all: $(VBOX_VALIDATE_TARGETS) ## Validates all RAW Packer config
-
 validate-powervs-centos-8: ## Validates the PowerVS CentOS image packer config
 validate-powervs-all: $(POWERVS_VALIDATE_TARGETS) ## Validates all PowerVS Packer config
 
@@ -978,7 +949,6 @@ validate-all: validate-ami-all \
 	validate-raw-all \
 	validate-oci-all \
 	validate-osc-all \
-	validate-vbox-all \
 	validate-powervs-all \
 	validate-nutanix-all \
 	validate-hcloud-all
@@ -1009,7 +979,7 @@ lint-ignore: deps-lint
 ##@ Cleaning
 .PHONY: clean
 clean: ## Removes all image output directories and packer image cache
-clean: $(NODE_OVA_LOCAL_CLEAN_TARGETS) $(QEMU_CLEAN_TARGETS) $(VBOX_CLEAN_TARGETS) clean-packer-cache
+clean: $(NODE_OVA_LOCAL_CLEAN_TARGETS) $(QEMU_CLEAN_TARGETS) clean-packer-cache
 
 .PHONY: clean-ova
 clean-ova: ## Removes all ova image output directories (see NOTE at top of help)
@@ -1022,10 +992,6 @@ clean-qemu: $(QEMU_CLEAN_TARGETS)
 .PHONY: clean-raw
 clean-raw: ## Removes all raw image output directories (see NOTE at top of help)
 clean-raw: $(RAW_CLEAN_TARGETS)
-
-.PHONY: clean-vbox
-clean-vbox: ## Removes all vbox image output directories (see NOTE at top of help)
-clean-vbox: $(VBOX_CLEAN_TARGETS)
 
 .PHONY: clean-packer-cache
 clean-packer-cache: ## Removes the packer cache
