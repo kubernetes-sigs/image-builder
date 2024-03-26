@@ -66,6 +66,7 @@ deps-ami: deps-common
 	hack/ensure-ansible-windows.sh
 	hack/ensure-goss.sh
 	$(PACKER) init packer/config.pkr.hcl
+	$(PACKER) init packer/ami/config.pkr.hcl
 
 .PHONY: deps-azure
 deps-azure: ## Installs/checks dependencies for Azure builds
@@ -95,6 +96,7 @@ deps-gce: ## Installs/checks dependencies for GCE builds
 deps-gce: deps-common
 	hack/ensure-goss.sh
 	$(PACKER) init packer/config.pkr.hcl
+	$(PACKER) init packer/gce/config.pkr.hcl
 
 .PHONY: deps-ova
 deps-ova: ## Installs/checks dependencies for OVA builds
@@ -103,6 +105,7 @@ deps-ova: deps-common
 	hack/ensure-goss.sh
 	hack/ensure-ovftool.sh
 	$(PACKER) init packer/config.pkr.hcl
+	$(PACKER) init packer/ova/config.pkr.hcl
 
 .PHONY: deps-openstack
 deps-openstack: ## Installs/checks dependencies for OpenStack builds
@@ -117,6 +120,7 @@ deps-qemu: ## Installs/checks dependencies for QEMU builds
 deps-qemu: deps-common
 	hack/ensure-goss.sh
 	$(PACKER) init packer/config.pkr.hcl
+	$(PACKER) init packer/qemu/config.pkr.hcl
 
 .PHONY: deps-raw
 deps-raw: ## Installs/checks dependencies for RAW builds
@@ -137,6 +141,7 @@ deps-vbox: deps-common
 	hack/ensure-ansible-windows.sh
 	hack/ensure-goss.sh
 	$(PACKER) init packer/config.pkr.hcl
+	$(PACKER) init packer/vbox/config.pkr.hcl
 
 .PHONY: deps-powervs
 deps-powervs: ## Installs/checks dependencies for PowerVS builds
