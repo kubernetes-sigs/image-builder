@@ -1,0 +1,8 @@
+{
+  "build_name": "ubuntu-2204",
+  "distribution_version": "2204",
+  "distro_name": "ubuntu",
+  "os_display_name": "Ubuntu 22.04",
+  "source_image": "Ubuntu-22.04",
+  "version": "22.04"
+}
