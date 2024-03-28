@@ -17,9 +17,49 @@
     repo: http://deb.debian.org/debian buster-backports main
     state: present
     filename: backports
-  when: ansible_distribution_major_version == 10
+  when: ansible_distribution_major_version <= 10
 
 - name: Install libseccomp2 package
   ansible.builtin.apt:
     name: libseccomp2
     state: present
+
+- name: Determine Version
+  block:
+    - set_fact: 
+        crio_repo_os: "x{{ ansible_distribution }}_{{ ansible_distribution_version }}"
+        crio_repo_version: "{{ crio_version.split('.')[:2] | join('.') }}"
+      when: ansible_distribution == "Ubuntu"
+    - set_fact: 
+        crio_repo_os: "{{ ansible_distribution }}_{{ ansible_distribution_version }}"
+        crio_repo_version: "{{ crio_version.split('.')[:2] | join('.') }}"
+      when: ansible_distribution == "Debian"
+
+- name: Configure repo and import certificate
+  block:
+    - name: get gpg sign key
+      ansible.builtin.get_url:
+        url: "https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/{{ crio_repo_os }}/Release.key"
+        dest: /usr/share/keyrings/libcontainers-archive-keyring.asc
+    - name: get gpg sign key
+      ansible.builtin.get_url:
+        url: "https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable:/cri-o:/{{ crio_repo_version }}/{{ crio_repo_os }}/Release.key"
+        dest: /usr/share/keyrings/libcontainers-crio-archive-keyring.asc
+    - name: add repository
+      ansible.builtin.apt_repository:
+        repo: "deb [signed-by=/usr/share/keyrings/libcontainers-archive-keyring.asc] https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/{{ crio_repo_os }}/ /"
+        state: present
+        filename: devel:kubic:libcontainers:stable 
+    - name: add repository
+      ansible.builtin.apt_repository:
+        repo: "deb [signed-by=/usr/share/keyrings/libcontainers-crio-archive-keyring.asc] https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable:/cri-o:/{{ crio_repo_version }}/{{ crio_repo_os }}/ /"
+        state: present
+        filename: "devel:kubic:libcontainers:stable:cri-o:{{ crio_repo_os }}"
+
+- name: Install crio
+  ansible.builtin.apt:
+    update_cache: true
+    name: "{{ item }}"
+  with_items:
+    - cri-o
+    - cri-o-runc

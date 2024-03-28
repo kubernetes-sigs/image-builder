@@ -15,49 +15,12 @@
 - ansible.builtin.import_tasks: debian.yml
   when: ansible_os_family == "Debian"
 
+- ansible.builtin.import_tasks: redhat.yml
+  when: ansible_os_family == "RedHat"
+
 - name: Export crisocket
   set_fact:
     cri_socket: "{{ crio_cri_socket }}"
-
-- name: Determine Version
-  block:
-    - set_fact: 
-        crio_repo_os: "x{{ ansible_distribution }}_{{ ansible_distribution_version }}"
-        crio_repo_version: "{{ crio_version.split('.')[:2] | join('.') }}"
-      when: ansible_distribution == "Ubuntu"
-    - set_fact: 
-        crio_repo_os: "{{ ansible_distribution }}_{{ ansible_distribution_version }}"
-        crio_repo_version: "{{ crio_version.split('.')[:2] | join('.') }}"
-      when: ansible_distribution == "Debian"
-
-- name: Configure repo and import certificate
-  block:
-    - name: get gpg sign key
-      ansible.builtin.get_url:
-        url: "https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/{{ crio_repo_os }}/Release.key"
-        dest: /usr/share/keyrings/libcontainers-archive-keyring.asc
-    - name: get gpg sign key
-      ansible.builtin.get_url:
-        url: "https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable:/cri-o:/{{ crio_repo_version }}/{{ crio_repo_os }}/Release.key"
-        dest: /usr/share/keyrings/libcontainers-crio-archive-keyring.asc
-    - name: add repository
-      ansible.builtin.apt_repository:
-        repo: "deb [signed-by=/usr/share/keyrings/libcontainers-archive-keyring.asc] https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/{{ crio_repo_os }}/ /"
-        state: present
-        filename: devel:kubic:libcontainers:stable 
-    - name: add repository
-      ansible.builtin.apt_repository:
-        repo: "deb [signed-by=/usr/share/keyrings/libcontainers-crio-archive-keyring.asc] https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable:/cri-o:/{{ crio_repo_version }}/{{ crio_repo_os }}/ /"
-        state: present
-        filename: "devel:kubic:libcontainers:stable:cri-o:{{ crio_repo_os }}"
-
-- name: Install crio
-  ansible.builtin.apt:
-    update_cache: true
-    name: "{{ item }}"
-  with_items:
-    - cri-o
-    - cri-o-runc
 
 - name: Create unit file directory
   ansible.builtin.file:
@@ -101,8 +64,11 @@
 
 - name: Remove CRIO default CNI config file
   ansible.builtin.file:
-    path: /etc/cni/net.d/100-crio-bridge.conflist
+    path: "{{ item }}"
     state: absent
+  loop:
+  - /etc/cni/net.d/100-crio-bridge.conflist
+  - /etc/cni/net.d/200-loopback.conflist 
   when: crio_disable_builtin_cni | bool
 
 - name: Start crio service
