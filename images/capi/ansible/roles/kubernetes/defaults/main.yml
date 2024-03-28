@@ -36,6 +36,6 @@ kubernetes_cni_http_checksum: sha1:{{ kubernetes_cni_http_source }}/{{ kubernete
 
 kubeadm_template: etc/kubeadm.yml
 
-kubelet_extra_args: --pod-infra-container-image={{ pause_image }}
+kubelet_extra_args: --pod-infra-container-image={{ pause_image }}{{ " --cgroup-driver=cgroupfs" if crio_gvisor_runtime | bool and cri_flavour == "crio" }}
 
 kubernetes_enable_automatic_resource_sizing: false

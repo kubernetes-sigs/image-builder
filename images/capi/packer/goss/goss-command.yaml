@@ -1,11 +1,12 @@
 command:
 {{ if ne .Vars.OS "windows" }} # Linux Only
-  containerd --version | awk -F' ' '{print substr($3,2); }':
+  crictl ps:
     exit-status: 0
     stdout: []
     stderr: []
     timeout: 0
-  crictl ps:
+{{ if eq .Vars.cri_flavour "containerd"}}
+  containerd --version | awk -F' ' '{print substr($3,2); }':
     exit-status: 0
     stdout: []
     stderr: []
@@ -36,6 +37,13 @@ command:
     stdout: [ ]
     stderr: [ ]
     timeout: 0
+{{end}}
+{{ else if eq .Vars.cri_flavour "crio"}}
+  crio version -j 2>/dev/null | jq ".version" -r:
+    exit-status: 0
+    stdout: []
+    stderr: []
+    timeout: 0 
 {{end}}
 {{if eq .Vars.kubernetes_source_type "pkg"}}
 {{if eq .Vars.kubernetes_cni_source_type "pkg"}}
