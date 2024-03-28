@@ -1,0 +1,19 @@
+{
+  "boot_command": "<wait><enter><return>",
+  "boot_wait": "2s",
+  "build_name": "windows-2019-efi",
+  "disk_controller_type": "pvscsi",
+  "distro_arch": "amd64",
+  "distro_name": "windows",
+  "distro_version": "2019",
+  "firmware": "efi",
+  "guest_os_type": "Windows2019Server-64",
+  "iso_checksum": "none",
+  "local_guest_os_type": "windows9srv-64",
+  "os_display_name": "Windows Server 2019",
+  "os_iso_path": "[datastore] ISO/en_windows_server_2019_x64_dvd_4cb967d8.iso",
+  "os_iso_url": "file:/path/en_windows_server_2019_x64_dvd_4cb967d8.iso",
+  "vmtools_iso_path": "[datastore] ISO/vmtools/windows-11.1.5.iso",
+  "vmtools_iso_url": "file:/path/VMware-tools-windows-11.1.5-16724464.iso",
+  "vsphere_guest_os_type": "windows9Server64Guest"
+}

@@ -6,7 +6,7 @@
   "guest_os_type": "ubuntu-64",
   "iso_checksum": "c7cda48494a6d7d9665964388a3fc9c824b3bef0c9ea3818a1be982bc80d346b",
   "iso_checksum_type": "sha256",
-  "iso_url": "https://releases.ubuntu.com/23.04/ubuntu-23.04-live-server-amd64.iso",
+  "iso_url": "https://old-releases.ubuntu.com/releases/23.04/ubuntu-23.04-live-server-amd64.iso",
   "os_display_name": "Ubuntu 23.04",
   "shutdown_command": "shutdown -P now",
   "unmount_iso": "true"

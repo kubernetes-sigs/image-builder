@@ -28,6 +28,11 @@ rh8_rpms: &rh8_rpms
   python3-netifaces:
   python3-requests:
 
+rh9_rpms: &rh9_rpms
+  nftables:
+  python3-netifaces:
+  python3-requests:
+
 common_debs: &common_debs
   auditd:
   apt-transport-https:
@@ -257,8 +262,18 @@ rockylinux:
   ova:
     package:
       open-vm-tools:
-      python2-pip:
-      <<: *rh8_rpms
+    os_version:
+    - distro_version: "7"
+      package:
+        python2-pip:
+        <<: *rh7_rpms
+    - distro_version: "8"
+      package:
+        python2-pip:
+        <<: *rh8_rpms
+    - distro_version: "9"
+      package:
+        <<: *rh9_rpms
   qemu:
     package:
       open-vm-tools:
@@ -580,6 +595,7 @@ windows:
         - "cloudbaseinit.plugins.common.ephemeraldisk.EphemeralDiskPlugin"
         - "cloudbaseinit.plugins.common.mtu.MTUPlugin"
         - "cloudbaseinit.plugins.common.sethostname.SetHostNamePlugin"
+        - "cloudbaseinit.plugins.common.networkconfig.NetworkConfigPlugin"
         - "cloudbaseinit.plugins.common.sshpublickeys.SetUserSSHPublicKeysPlugin"
         - "cloudbaseinit.plugins.common.userdata.UserDataPlugin"
         - "cloudbaseinit.plugins.common.localscripts.LocalScriptsPlugin"

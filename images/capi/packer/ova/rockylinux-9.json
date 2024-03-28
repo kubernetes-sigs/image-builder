@@ -1,0 +1,19 @@
+{
+  "boot_command_prefix": "<up>e<down><down><end><bs><bs><bs><bs><bs>text inst.ks=",
+  "boot_command_suffix": "/9/ks.cfg<leftCtrlOn>x<leftCtrlOff>",
+  "boot_media_path": "http://{{ .HTTPIP }}:{{ .HTTPPort }}",
+  "build_name": "rockylinux-9",
+  "distro_arch": "amd64",
+  "distro_name": "rockylinux",
+  "distro_version": "9",
+  "epel_rpm_gpg_key": "https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-9",
+  "firmware": "efi",
+  "guest_os_type": "rockylinux-64",
+  "iso_checksum": "eef8d26018f4fcc0dc101c468f65cbf588f2184900c556f243802e9698e56729",
+  "iso_checksum_type": "sha256",
+  "iso_url": "https://download.rockylinux.org/pub/rocky/9/isos/x86_64/Rocky-9.3-x86_64-minimal.iso",
+  "os_display_name": "RockyLinux 9",
+  "redhat_epel_rpm": "https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm",
+  "shutdown_command": "/sbin/halt -h -p",
+  "vsphere_guest_os_type": "rockylinux_64Guest"
+}

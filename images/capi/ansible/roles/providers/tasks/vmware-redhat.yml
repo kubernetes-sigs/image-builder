@@ -21,7 +21,15 @@
     packages:
       - cloud-init
       - cloud-utils-growpart
+
+- name: Install python2 pip
+  ansible.builtin.yum:
+    name: "{{ packages }}"
+    state: present
+  vars:
+    packages:
       - python2-pip
+  when: ansible_distribution_major_version|int <= 8
 
 # pip on CentOS needs to be upgraded, but since it's still
 # Python 2.7, need < 21.0

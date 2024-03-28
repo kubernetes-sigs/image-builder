@@ -320,9 +320,9 @@ CENTOS_VERSIONS					:=	centos-7
 FLATCAR_VERSIONS				:=	flatcar
 PHOTON_VERSIONS					:=	photon-3 photon-4 photon-5
 RHEL_VERSIONS			  		:=	rhel-7 rhel-8
-ROCKYLINUX_VERSIONS     :=  rockylinux-8
+ROCKYLINUX_VERSIONS		:=  rockylinux-8 rockylinux-9
 UBUNTU_VERSIONS					:=	ubuntu-2004 ubuntu-2004-efi ubuntu-2204 ubuntu-2204-efi
-WINDOWS_VERSIONS				:=	windows-2019 windows-2022
+WINDOWS_VERSIONS				:=	windows-2019 windows-2019-efi windows-2022 windows-2022-efi
 
 # Set Flatcar Container Linux channel and version if not supplied
 FLATCAR_CHANNEL ?= stable
@@ -361,19 +361,19 @@ AZURE_BUILD_SIG_NAMES	   ?= $(addprefix azure-sig-,$(SIG_TARGETS))
 AZURE_BUILD_SIG_GEN2_NAMES ?= $(addsuffix -gen2,$(addprefix azure-sig-,$(SIG_GEN2_TARGETS)))
 AZURE_BUILD_SIG_CVM_NAMES ?= $(addsuffix -cvm,$(addprefix azure-sig-,$(SIG_CVM_TARGETS)))
 
-OCI_BUILD_NAMES			   ?= oci-ubuntu-2004 oci-ubuntu-2204 oci-oracle-linux-8 oci-oracle-linux-9 oci-windows-2019 oci-windows-2022
+OCI_BUILD_NAMES				?= oci-ubuntu-2004 oci-ubuntu-2204 oci-oracle-linux-8 oci-oracle-linux-9 oci-windows-2019 oci-windows-2022
 
-DO_BUILD_NAMES 			?=	do-centos-7 do-ubuntu-2004
+DO_BUILD_NAMES 				?=	do-centos-7 do-ubuntu-2004
 
-OPENSTACK_BUILD_NAMES	?=	openstack-ubuntu-2004 openstack-ubuntu-2204 openstack-flatcar
+OPENSTACK_BUILD_NAMES		?=	openstack-ubuntu-2004 openstack-ubuntu-2204 openstack-flatcar
 
 OSC_BUILD_NAMES 			?=	osc-ubuntu-2004 osc-ubuntu-2204
 
-QEMU_BUILD_NAMES			?=	qemu-ubuntu-2004 qemu-ubuntu-2204 qemu-ubuntu-2304 qemu-ubuntu-2204-efi qemu-centos-7 qemu-centos-9 qemu-ubuntu-2004-efi qemu-rhel-8 qemu-rockylinux-8 qemu-rockylinux-9 qemu-flatcar qemu-ubuntu-2204-crio qemu-centos-9-crio
+QEMU_BUILD_NAMES			?=	qemu-ubuntu-2004 qemu-ubuntu-2204 qemu-ubuntu-2304 qemu-ubuntu-2204-efi qemu-centos-7 qemu-centos-9 qemu-ubuntu-2004-efi qemu-rhel-8 qemu-rhel-9 qemu-rockylinux-8 qemu-rockylinux-9 qemu-flatcar qemu-ubuntu-2204-crio qemu-centos-9-crio
 
 QEMU_KUBEVIRT_BUILD_NAMES	:= $(addprefix kubevirt-,$(QEMU_BUILD_NAMES))
 
-RAW_BUILD_NAMES				?=      raw-ubuntu-2004 raw-ubuntu-2004-efi raw-flatcar raw-rhel-8
+RAW_BUILD_NAMES				?=      raw-ubuntu-2004 raw-ubuntu-2004-efi raw-flatcar raw-rhel-8 raw-rhel-9 raw-rhel-9-efi
 VBOX_BUILD_NAMES			?=      vbox-windows-2019
 
 POWERVS_BUILD_NAMES         ?= powervs-centos-8
@@ -693,6 +693,7 @@ build-node-ova-local-photon-5: ## Builds Photon 5 Node OVA w local hypervisor
 build-node-ova-local-rhel-7: ## Builds RHEL 7 Node OVA w local hypervisor
 build-node-ova-local-rhel-8: ## Builds RHEL 8 Node OVA w local hypervisor
 build-node-ova-local-rockylinux-8: ## Builds RockyLinux 8 Node OVA w local hypervisor
+build-node-ova-local-rockylinux-9: ## Builds RockyLinux 9 Node OVA w local hypervisor
 build-node-ova-local-ubuntu-2004: ## Builds Ubuntu 20.04 Node OVA w local hypervisor
 build-node-ova-local-windows-2019: ## Builds for Windows Server 2019 Node OVA w local hypervisor
 build-node-ova-local-all: $(NODE_OVA_LOCAL_BUILD_TARGETS) ## Builds all Node OVAs w local hypervisor
@@ -705,12 +706,15 @@ build-node-ova-vsphere-photon-5: ## Builds Photon 5 Node OVA and template on vSp
 build-node-ova-vsphere-rhel-7: ## Builds RHEL 7 Node OVA and template on vSphere
 build-node-ova-vsphere-rhel-8: ## Builds RHEL 8 Node OVA and template on vSphere
 build-node-ova-vsphere-rockylinux-8: ## Builds RockyLinux 8 Node OVA and template on vSphere
+build-node-ova-vsphere-rockylinux-9: ## Builds RockyLinux 9 Node OVA and template on vSphere
 build-node-ova-vsphere-ubuntu-2004: ## Builds Ubuntu 20.04 Node OVA and template on vSphere
 build-node-ova-vsphere-ubuntu-2004-efi: ## Builds Ubuntu 20.04 Node OVA and template on vSphere that EFI boots
 build-node-ova-vsphere-ubuntu-2204: ## Builds Ubuntu 22.04 Node OVA and template on vSphere
 build-node-ova-vsphere-ubuntu-2204-efi: ## Builds Ubuntu 22.04 Node OVA and template on vSphere that EFI boots
 build-node-ova-vsphere-windows-2019: ## Builds for Windows Server 2019 and template on vSphere
+build-node-ova-vsphere-windows-2019-efi: ## Builds for Windows Server 2019 and template on vSphere that EFI boots
 build-node-ova-vsphere-windows-2022: ## Builds for Windows Server 2022 template on vSphere
+build-node-ova-vsphere-windows-2022-efi: ## Builds for Windows Server 2022 template on vSphere that EFI boots
 build-node-ova-vsphere-all: $(NODE_OVA_VSPHERE_BUILD_TARGETS) ## Builds all Node OVAs and templates on vSphere
 
 build-node-ova-vsphere-clone-centos-7: ## Builds CentOS 7 Node OVA and template on vSphere
@@ -720,6 +724,7 @@ build-node-ova-vsphere-clone-photon-5: ## Builds Photon 5 Node OVA and template 
 build-node-ova-vsphere-clone-rhel-7: ## Builds RHEL 7 Node OVA and template on vSphere
 build-node-ova-vsphere-clone-rhel-8: ## Builds RHEL 8 Node OVA and template on vSphere
 build-node-ova-vsphere-clone-rockylinux-8: ## Builds RockyLinux 8 Node OVA and template on vSphere
+build-node-ova-vsphere-clone-rockylinux-9: ## Builds RockyLinux 9 Node OVA and template on vSphere
 build-node-ova-vsphere-clone-ubuntu-2004: ## Builds Ubuntu 20.04 Node OVA and template on vSphere
 build-node-ova-vsphere-clone-ubuntu-2204: ## Builds Ubuntu 22.04 Node OVA and template on vSphere
 build-node-ova-vsphere-clone-ubuntu-2204-efi: ## ## Builds Ubuntu 22.04 Node OVA and template on vSphere that EFI boots
@@ -732,6 +737,7 @@ build-node-ova-vsphere-base-photon-5: ## Builds base Photon 5 Node OVA and templ
 build-node-ova-vsphere-base-rhel-7: ## Builds base RHEL 7 Node OVA and template on vSphere
 build-node-ova-vsphere-base-rhel-8: ## Builds base RHEL 8 Node OVA and template on vSphere
 build-node-ova-vsphere-base-rockylinux-8: ## Builds base RockyLinux 8 Node OVA and template on vSphere
+build-node-ova-vsphere-base-rockylinux-9: ## Builds base RockyLinux 9 Node OVA and template on vSphere
 build-node-ova-vsphere-base-ubuntu-2004: ## Builds base Ubuntu 20.04 Node OVA and template on vSphere
 build-node-ova-vsphere-base-ubuntu-2204: ## Builds base Ubuntu 22.04 Node OVA and template on vSphere
 build-node-ova-vsphere-base-ubuntu-2204-efi: ## Builds Ubuntu 22.04 Node OVA and template on vSphere that EFI boots
@@ -744,6 +750,7 @@ build-node-ova-local-vmx-centos-7: ## Builds Centos 7 Node OVA from VMX file w l
 build-node-ova-local-vmx-rhel-7: ## Builds RHEL 7 Node OVA from VMX file w local hypervisor
 build-node-ova-local-vmx-rhel-8: ## Builds RHEL 8 Node OVA from VMX file w local hypervisor
 build-node-ova-local-vmx-rockylinux-8: ## Builds RockyLinux 8 Node OVA from VMX file w local hypervisor
+build-node-ova-local-vmx-rockylinux-9: ## Builds RockyLinux 9 Node OVA from VMX file w local hypervisor
 build-node-ova-local-vmx-ubuntu-2004: ## Builds Ubuntu 20.04 Node OVA from VMX file w local hypervisor
 
 build-node-ova-local-base-photon-3: ## Builds Photon 3 Base Node OVA w local hypervisor
@@ -753,6 +760,7 @@ build-node-ova-local-base-centos-7: ## Builds Centos 7 Base Node OVA w local hyp
 build-node-ova-local-base-rhel-7: ## Builds RHEL 7 Base Node OVA w local hypervisor
 build-node-ova-local-base-rhel-8: ## Builds RHEL 8 Base Node OVA w local hypervisor
 build-node-ova-local-base-rockylinux-8: ## Builds RockyLinux 8 Base Node OVA w local hypervisor
+build-node-ova-local-base-rockylinux-9: ## Builds RockyLinux 9 Base Node OVA w local hypervisor
 build-node-ova-local-base-ubuntu-2004: ## Builds Ubuntu 20.04 Base Node OVA w local hypervisor
 
 build-openstack-ubuntu-2004: ## Builds Ubuntu 20.04 OpenStack image
@@ -771,6 +779,7 @@ build-qemu-centos-7: ## Builds CentOS 7 QEMU image
 build-qemu-centos-9: ## Builds CentOS 9 Stream QEMU image
 build-qemu-centos-9-crio: ## Builds CentOOS 9 Stream image using CRI-O as CRI
 build-qemu-rhel-8: ## Builds RHEL 8 QEMU image
+build-qemu-rhel-9: ## Builds RHEL 9 QEMU image
 build-qemu-rockylinux-8: ## Builds Rocky 8 QEMU image
 build-qemu-rockylinux-9: ## Builds Rocky 9 QEMU image
 build-qemu-all: $(QEMU_BUILD_TARGETS) ## Builds all Qemu images
@@ -779,6 +788,8 @@ build-raw-flatcar: ## Builds Flatcar RAW image
 build-raw-ubuntu-2004: ## Builds Ubuntu 20.04 RAW image
 build-raw-ubuntu-2004-efi: ## Builds Ubuntu 20.04 RAW image that EFI boots
 build-raw-rhel-8: ## Builds RHEL 8 RAW image
+build-raw-rhel-9: ## Builds RHEL 9 RAW image
+build-raw-rhel-9-efi: ## Builds RHEL 9 RAW image that EFI boots
 build-raw-all: $(RAW_BUILD_TARGETS) ## Builds all RAW images
 
 build-oci-ubuntu-2004: ## Builds the OCI ubuntu-2004 image
@@ -875,6 +886,7 @@ validate-node-ova-local-photon-5: ## Validates Photon 5 Node OVA Packer config w
 validate-node-ova-local-rhel-7: ## Validates RHEL 7 Node OVA Packer config w local hypervisor
 validate-node-ova-local-rhel-8: ## Validates RHEL 8 Node OVA Packer config w local hypervisor
 validate-node-ova-local-rockylinux-8: ## Validates RockyLinux 8 Node OVA Packer config w local hypervisor
+validate-node-ova-local-rockylinux-9: ## Validates RockyLinux 9 Node OVA Packer config w local hypervisor
 validate-node-ova-local-ubuntu-2004: ## Validates Ubuntu 20.04 Node OVA Packer config w local hypervisor
 validate-node-ova-local-ubuntu-2204: ## Validates Ubuntu 22.04 Node OVA Packer config w local hypervisor
 validate-node-ova-local-windows-2019: ## Validates Windows Server 2019 Node OVA Packer config w local hypervisor
@@ -888,6 +900,7 @@ validate-node-ova-local-vmx-centos-7: ## Validates Centos 7 Node OVA from VMX fi
 validate-node-ova-local-vmx-rhel-7: ## Validates RHEL 7 Node OVA from VMX file w local hypervisor
 validate-node-ova-local-vmx-rhel-8: ## Validates RHEL 8 Node OVA from VMX file w local hypervisor
 validate-node-ova-local-vmx-rockylinux-8: ## Validates RockyLinux 8 Node OVA from VMX file w local hypervisor
+validate-node-ova-local-vmx-rockylinux-9: ## Validates RockyLinux 9 Node OVA from VMX file w local hypervisor
 validate-node-ova-local-vmx-ubuntu-2004: ## Validates Ubuntu 20.04 Node OVA from VMX file w local hypervisor
 validate-node-ova-local-vmx-ubuntu-2204: ## Validates Ubuntu 22.04 Node OVA from VMX file w local hypervisor
 
@@ -898,6 +911,7 @@ validate-node-ova-local-base-centos-7: ## Validates Centos 7 Base Node OVA w loc
 validate-node-ova-local-base-rhel-7: ## Validates RHEL 7 Base Node OVA w local hypervisor
 validate-node-ova-local-base-rhel-8: ## Validates RHEL 8 Base Node OVA w local hypervisor
 validate-node-ova-local-base-rockylinux-8: ## Validates RockyLinux 8 Base Node OVA w local hypervisor
+validate-node-ova-local-base-rockylinux-9: ## Validates RockyLinux 9 Base Node OVA w local hypervisor
 validate-node-ova-local-base-ubuntu-2004: ## Validates Ubuntu 20.04 Base Node OVA w local hypervisor
 validate-node-ova-local-base-ubuntu-2204: ## Validates Ubuntu 22.04 Base Node OVA w local hypervisor
 
@@ -912,6 +926,7 @@ validate-qemu-centos-7: ## Validates CentOS 7 QEMU image packer config
 validate-qemu-centos-9: ## Validates CentOS 7 QEMU image packer config
 validate-qemu-centos-9-crio: ## Validates CentOS 7 QEMU CRIO image packer config 
 validate-qemu-rhel-8: ## Validates RHEL 8 QEMU image
+validate-qemu-rhel-9: ## Validates RHEL 9 QEMU image
 validate-qemu-rockylinux-8: ## Validates Rocky Linux 8 QEMU image packer config
 validate-qemu-rockylinux-9: ## Validates Rocky Linux 9 QEMU image packer config
 validate-qemu-all: $(QEMU_VALIDATE_TARGETS) ## Validates all Qemu Packer config
@@ -1085,3 +1100,41 @@ json-sort: ## Sort all JSON files alphabetically
 ignition_files = bootstrap-pass-auth bootstrap-cloud
 gen-ignition: deps-ignition ## Generates Ignition files from CLC
 	for f in $(ignition_files); do (ct < packer/files/flatcar/clc/$$f.yaml | jq '.' > packer/files/flatcar/ignition/$$f.json) || exit 1; done
+
+## --------------------------------------
+## ISO checksum updates
+## --------------------------------------
+##@ ISO checksum updates
+.PHONY: update-all-iso-checksums
+update-all-iso-checksums: update-ubuntu-iso-checksums \
+	update-rockylinux-iso-checksums \
+	update-centos-7-iso-checksums \
+	update-centos-9-iso-checksums \
+	update-photon-iso-checksums \
+
+update-all-iso-checksums: ## Updates checksums for all ISOs
+
+.PHONY: update-ubuntu-iso-checksums
+update-ubuntu-iso-checksums: ## Updates checksums for Ubuntu ISOs
+	hack/update-iso-checksums.sh ubuntu false SHA256SUMS "*iso_file_name" 1
+	$(MAKE) json-sort
+
+.PHONY: update-rockylinux-iso-checksums
+update-rockylinux-iso-checksums: ## Updates checksums for Rocky Linux ISOs
+	hack/update-iso-checksums.sh rockylinux false CHECKSUM "SHA256 (iso_file_name)" 4
+	$(MAKE) json-sort
+
+.PHONY: update-centos-7-iso-checksums
+update-centos-7-iso-checksums: ## Updates checksums for Centos 7 ISOs
+	hack/update-iso-checksums.sh centos-7 false sha256sum.txt "iso_file_name" 1
+	$(MAKE) json-sort
+
+.PHONY: update-centos-9-iso-checksums
+update-centos-9-iso-checksums: ## Updates checksums for Centos 9 ISOs
+	hack/update-iso-checksums.sh centos-9 false SHA256SUM "SHA256 (iso_file_name)" 4
+	$(MAKE) json-sort
+
+.PHONY: update-photon-iso-checksums
+update-photon-iso-checksums: ## Updates checksums for Photon ISOs
+	hack/update-iso-checksums.sh photon true
+	$(MAKE) json-sort

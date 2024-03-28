@@ -31,45 +31,53 @@ Installation Notes:
                     <CreatePartitions>
                         <CreatePartition wcm:action="add">
                             <Order>1</Order>
-                            <Size>350</Size>
-                            <Type>Primary</Type>
+                            <Type>EFI</Type>
+                            <Size>100</Size>
                         </CreatePartition>
                         <CreatePartition wcm:action="add">
                             <Order>2</Order>
-                            <Extend>true</Extend>
+                            <Type>MSR</Type>
+                            <Size>16</Size>
+                        </CreatePartition>
+                        <CreatePartition wcm:action="add">
+                            <Order>3</Order>
                             <Type>Primary</Type>
+                            <Extend>true</Extend>
                         </CreatePartition>
                     </CreatePartitions>
                     <ModifyPartitions>
                         <ModifyPartition wcm:action="add">
-                            <Format>NTFS</Format>
-                            <Label>System</Label>
                             <Order>1</Order>
+                            <Format>FAT32</Format>
+                            <Label>System</Label>
                             <PartitionID>1</PartitionID>
-                            <TypeID>0x27</TypeID>
                         </ModifyPartition>
                         <ModifyPartition wcm:action="add">
                             <Order>2</Order>
                             <PartitionID>2</PartitionID>
-                            <Letter>C</Letter>
-                            <Label>OS</Label>
+                        </ModifyPartition>
+                        <ModifyPartition wcm:action="add">
+                            <Order>3</Order>
                             <Format>NTFS</Format>
+                            <Label>Windows</Label>
+                            <Letter>C</Letter>
+                            <PartitionID>3</PartitionID>
                         </ModifyPartition>
                     </ModifyPartitions>
-                    <DiskID>0</DiskID>
                     <WillWipeDisk>true</WillWipeDisk>
+                    <DiskID>0</DiskID>
                 </Disk>
             </DiskConfiguration>
             <ImageInstall>
                 <OSImage>
                     <InstallTo>
                         <DiskID>0</DiskID>
-                        <PartitionID>2</PartitionID>
+                        <PartitionID>3</PartitionID>
                     </InstallTo>
                     <InstallFrom>
                         <MetaData wcm:action="add">
                             <Key>/IMAGE/NAME</Key>
-                            <Value>Windows Server 2022 SERVERSTANDARDCORE</Value>
+                            <Value>Windows Server 2019 SERVERSTANDARDCORE</Value>
                         </MetaData>
                     </InstallFrom>
                 </OSImage>
@@ -79,7 +87,7 @@ Installation Notes:
                 <FullName>Administrator</FullName>
                 <Organization>Organization</Organization>
                 <ProductKey>
-                    <Key>VDYBN-27WPP-V4HQT-9VMD4-VMK7H</Key>
+                    <Key>N69G4-B89J2-4G8F4-WWYCC-J464C</Key>
                     <WillShowUI>OnError</WillShowUI>
                 </ProductKey>
             </UserData>
@@ -147,7 +155,7 @@ Installation Notes:
             xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State"
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
             <ComputerName></ComputerName>
-            <ProductKey>VDYBN-27WPP-V4HQT-9VMD4-VMK7H</ProductKey>
+            <ProductKey>N69G4-B89J2-4G8F4-WWYCC-J464C</ProductKey>
         </component>
     </settings>
     <settings pass="oobeSystem">

@@ -28,6 +28,7 @@
     "motd",
     "net-tools",
     "openssh-server",
+    "open-vm-tools",
     "pkg-config",
     "photon-release",
     "photon-repos",
