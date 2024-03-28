@@ -56,4 +56,4 @@ ansible-galaxy collection install \
   ansible.posix \
   'ansible.windows:>=1.7.0' \
   community.windows \
-  devsec.hardening
+  'devsec.hardening:==8.7.0'
