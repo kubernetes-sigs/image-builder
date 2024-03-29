@@ -12,20 +12,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- ansible.builtin.import_tasks: debian.yml
+- name: Debian based
+  ansible.builtin.import_tasks: debian.yml
   when: ansible_os_family == "Debian"
 
-- ansible.builtin.import_tasks: redhat.yml
+- name: RedHat based
+  ansible.builtin.import_tasks: redhat.yml
   when: ansible_os_family == "RedHat"
 
 - name: Export crisocket
-  set_fact:
+  ansible.builtin.set_fact:
     cri_socket: "{{ crio_cri_socket }}"
 
 - name: Create unit file directory
   ansible.builtin.file:
     path: /etc/systemd/system/crio.service.d
     state: directory
+    mode: "0755"
 
 - name: Create crio memory pressure drop-in file
   ansible.builtin.template:
@@ -50,6 +53,7 @@
   ansible.builtin.file:
     path: /etc/crio
     state: directory
+    mode: "0755"
 
 - name: Copy in crio config file {{ crio_config_file }}
   ansible.builtin.template:
@@ -61,14 +65,15 @@
   ansible.builtin.template:
     dest: /etc/crictl.yaml
     src: etc/crictl.yaml
+    mode: "0644"
 
 - name: Remove CRIO default CNI config file
   ansible.builtin.file:
     path: "{{ item }}"
     state: absent
   loop:
-  - /etc/cni/net.d/100-crio-bridge.conflist
-  - /etc/cni/net.d/200-loopback.conflist 
+    - /etc/cni/net.d/100-crio-bridge.conflist
+    - /etc/cni/net.d/200-loopback.conflist
   when: crio_disable_builtin_cni | bool
 
 - name: Start crio service

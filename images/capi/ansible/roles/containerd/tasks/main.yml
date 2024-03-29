@@ -22,7 +22,7 @@
   when: ansible_os_family == "VMware Photon OS"
 
 - name: Export crisocket
-  set_fact:
+  ansible.builtin.set_fact:
     cri_socket: "{{ containerd_cri_socket }}"
 
 # TODO(vincepri): Use deb/rpm packages once available.

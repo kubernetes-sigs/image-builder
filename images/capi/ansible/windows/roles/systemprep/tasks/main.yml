@@ -61,7 +61,7 @@
     $service = Get-Service "Windefend"
     $service.WaitForStatus("Running","00:5:00")
     Update-MpSignature
-  failed_when: false 
+  ignore_errors: true
 
 # Find KB Article numbers:
 #  - WS 2019 https://support.microsoft.com/en-us/help/4464619

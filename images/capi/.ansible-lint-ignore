@@ -128,3 +128,6 @@ ansible/windows/roles/systemprep/defaults/main.yml var-naming[no-role-prefix]
 ansible/windows/roles/systemprep/tasks/main.yml ignore-errors
 ansible/windows/roles/systemprep/tasks/main.yml name[missing]
 ansible/windows/roles/systemprep/tasks/ssh-feature.yml schema[tasks]
+ansible/roles/crio/defaults/main.yml yaml[line-length]
+ansible/roles/crio/tasks/debian.yml yaml[line-length]
+ansible/roles/crio/tasks/redhat.yml yaml[line-length]
