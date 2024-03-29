@@ -1,5 +1,6 @@
 {
   "build_target": "virt",
+  "cri_flavour": "containerd",
   "disable_public_repos": "false",
   "extra_debs": "",
   "extra_repos": "",
@@ -15,6 +16,5 @@
   "pip_conf_file": "",
   "redhat_epel_rpm": "https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm",
   "reenable_public_repos": "true",
-  "remove_extra_repos": "false",
-  "cri_flavour": "containerd"
+  "remove_extra_repos": "false"
 }
