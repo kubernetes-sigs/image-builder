@@ -1,6 +1,5 @@
 # Required pipeline variables:
 # - BUILD_POOL - Azure DevOps build pool to use
-# - CONTAINER_IMAGE - Dev container image URL to use. Should have Azure CLI, Packer and Ansible.
 # - AZURE_CLIENT_ID_SKU - Service principal ID to PUT the SKU
 # - AZURE_CLIENT_SECRET_SKU - Service principal secret to PUT the SKU
 # - AZURE_TENANT_ID_SKU - tenant ID to PUT the SKU
@@ -27,7 +26,6 @@ stages:
   - stage: clean
     jobs:
     - job:
-      container: $[ variables['CONTAINER_IMAGE'] ]
       timeoutInMinutes: 120
       pool:
         name: $(BUILD_POOL)

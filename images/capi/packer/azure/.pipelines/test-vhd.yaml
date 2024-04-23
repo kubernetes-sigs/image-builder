@@ -1,6 +1,5 @@
 # Required pipeline variables:
 # - BUILD_POOL - Azure DevOps build pool to use
-# - CONTAINER_IMAGE - Dev container image URL to use. Should have Azure CLI, Packer, and Ansible.
 # - AZ_CAPI_EXTENSION_URL - URL to the Azure CAPI extension build.
 # - AZURE_TENANT_ID - tenant ID
 # - AZURE_CLIENT_ID - Service principal ID
@@ -12,7 +11,6 @@
 
 jobs:
 - job: test_vhd
-  container: $[ variables['CONTAINER_IMAGE'] ]
   timeoutInMinutes: 120
   strategy:
     maxParallel: 0
@@ -104,7 +102,6 @@ jobs:
       # Set up the Azure CLI Cluster API extension
       # https://github.com/Azure/azure-capi-cli-extension/releases/download/az-capi-nightly/capi-0.0.vnext-py2.py3-none-any.whl
       python3 -m pip install --upgrade pip
-      az upgrade --yes
       az extension add --yes --source "${AZ_CAPI_EXTENSION_URL}"
 
       # Install required binaries
