@@ -1,6 +1,6 @@
 {
   "build_timestamp": "nightly",
-  "kubernetes_deb_version": "1.29.4-1.1",
+  "kubernetes_deb_version": "1.29.4-2.1",
   "kubernetes_rpm_version": "1.29.4",
   "kubernetes_semver": "v1.29.4",
   "kubernetes_series": "v1.29",
