@@ -1,6 +1,5 @@
 # Required pipeline variables:
 # - BUILD_POOL - Azure DevOps build pool to use
-# - CONTAINER_IMAGE - Dev container image URL to use. Should have Azure CLI, Packer and Ansible.
 # - AZURE_TENANT_ID_VHD - tenant ID to build the vhd
 # - AZURE_CLIENT_ID_VHD - Service principal ID to build the vhd
 # - AZURE_CLIENT_SECRET_VHD - Service principal secret to build the vhd
