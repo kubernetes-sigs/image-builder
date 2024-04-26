@@ -4,7 +4,7 @@
 
 - A DigitalOcean account
 - The DigitalOcean CLI ([doctl](https://github.com/digitalocean/doctl#installing-doctl)) installed and configured
-- Set environment variables for `DIGITALOCEAN_ACCESS_TOKEN`,
+- Set an environment variable for your `DIGITALOCEAN_ACCESS_TOKEN`
 
 ## Building Images
 
@@ -27,3 +27,5 @@ the different operating systems.
 |------|-------------|
 | `centos-7.json`    | The settings for the CentOS 7 image |
 | `ubuntu-2004.json` | The settings for the Ubuntu 20.04 image |
+| `ubuntu-2204.json` | The settings for the Ubuntu 22.04 image |
+| `ubuntu-2404.json` | The settings for the Ubuntu 24.04 image |
