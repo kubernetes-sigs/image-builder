@@ -45,7 +45,6 @@ common_debs: &common_debs
   libnetfilter-acct1:
   libnetfilter-cttimeout1:
   libnetfilter-log1:
-  python3-distutils:
   python3-netifaces:
   python3-pip:
   socat:
