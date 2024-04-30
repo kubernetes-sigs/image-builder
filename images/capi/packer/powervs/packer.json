@@ -12,6 +12,7 @@
         },
         "name": "capibm-powervs-{{user `build_name`}}-{{user `kubernetes_rpm_version` | clean_resource_name}}-{{user `build_timestamp`}}"
       },
+      "dhcp_network": "{{user `dhcp_network`}}",
       "instance_name": "capibm-{{user `build_name`}}-{{user `build_timestamp`}}",
       "key_pair_name": "{{user `key_pair_name`}}",
       "region": "{{user `region`}}",
@@ -78,6 +79,7 @@
     "containerd_version": null,
     "crictl_url": null,
     "crictl_version": null,
+    "dhcp_network": "false",
     "existing_ansible_ssh_args": "{{env `ANSIBLE_SSH_ARGS`}}",
     "key_pair_name": "",
     "kubernetes_cni_deb_version": null,
