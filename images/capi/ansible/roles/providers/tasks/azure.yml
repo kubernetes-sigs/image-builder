@@ -12,14 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- ansible.builtin.import_tasks: mariner.yml
-  when: ansible_os_family == "Common Base Linux Mariner"
-
-- ansible.builtin.import_tasks: redhat.yml
-  when: ansible_os_family == "RedHat"
-
-- ansible.builtin.import_tasks: debian.yml
-  when: ansible_os_family == "Debian"
+- ansible.builtin.import_tasks: azurecli.yml
+  when: debug_tools | bool
 
 - name: Configure PTP
   ansible.builtin.lineinfile:

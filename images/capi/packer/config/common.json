@@ -1,5 +1,6 @@
 {
   "build_target": "virt",
+  "debug_tools": "false",
   "disable_public_repos": "false",
   "extra_debs": "",
   "extra_repos": "",

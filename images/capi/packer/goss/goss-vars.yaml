@@ -151,7 +151,6 @@ centos:
   azure:
     package:
       open-vm-tools:
-      azure-cli:
   ova:
     package:
       python2-pip:
@@ -238,7 +237,6 @@ mariner:
   azure:
     package:
       open-vm-tools:
-      azure-cli:
 rockylinux:
   common-package: *common_rpms
   amazon:
@@ -322,7 +320,6 @@ rhel:
   azure:
     package:
       open-vm-tools:
-      azure-cli:
     os_version:
       - distro_version: "8"
         package:
@@ -390,11 +387,6 @@ ubuntu:
       running: false
   azure:
     command:
-      pip3 list --format=columns | grep 'azure-cli' | awk -F' ' '{print $1}':
-        exit-status: 0
-        stdout: ["azure-cli"]
-        stderr: []
-        timeout: 0
       iptables -C FORWARD -d 168.63.129.16/32 -p tcp -m tcp --dport 80 -m comment --comment "block traffic to 168.63.129.16 for cve-2021-27075" -j DROP:
         exit-status: 0
         timeout: 0
