@@ -369,7 +369,7 @@ RAW_BUILD_NAMES				?=      raw-ubuntu-2004 raw-ubuntu-2004-efi raw-flatcar raw-r
 
 POWERVS_BUILD_NAMES         ?= powervs-centos-8
 
-NUTANIX_BUILD_NAMES ?= nutanix-ubuntu-2004 nutanix-ubuntu-2204 nutanix-rhel-8 nutanix-rhel-9 nutanix-rockylinux-8 nutanix-rockylinux-9 nutanix-flatcar nutanix-windows-2022
+NUTANIX_BUILD_NAMES ?= nutanix-ubuntu-2004 nutanix-ubuntu-2204 nutanix-ubuntu-2404 nutanix-rhel-8 nutanix-rhel-9 nutanix-rockylinux-8 nutanix-rockylinux-9 nutanix-flatcar nutanix-windows-2022
 
 HCLOUD_BUILD_NAMES ?= hcloud-ubuntu-2004 hcloud-ubuntu-2204 hcloud-centos-7 hcloud-rockylinux-8 hcloud-rockylinux-9 hcloud-flatcar
 
@@ -781,6 +781,7 @@ build-osc-all: $(OSC_BUILD_TARGETS) ## Builds all Outscale Snapshot
 
 build-nutanix-ubuntu-2004: ## Builds the Nutanix ubuntu-2004 image
 build-nutanix-ubuntu-2204: ## Builds the Nutanix ubuntu-2204 image
+build-nutanix-ubuntu-2404: ## Builds the Nutanix ubuntu-2404 image
 build-nutanix-rhel-8: ## Builds the Nutanix RedHat Enterprise Linux 8 image
 build-nutanix-rhel-9: ## Builds the Nutanix edHat Enterprise Linux 9 image
 build-nutanix-rockylinux-8: ## Builds the Nutanix Rocky Linux 8 image
@@ -924,6 +925,7 @@ validate-powervs-all: $(POWERVS_VALIDATE_TARGETS) ## Validates all PowerVS Packe
 
 validate-nutanix-ubuntu-2004: ## Validates Ubuntu 20.04 Nutanix Packer config
 validate-nutanix-ubuntu-2204: ## Validates Ubuntu 22.04 Nutanix Packer config
+validate-nutanix-ubuntu-2404: ## Validates Ubuntu 24.04 Nutanix Packer config
 validate-nutanix-rhel-8: ## Validates RedHat Enterprise Linux 8 Nutanix Packer config
 validate-nutanix-rhel-9: ## Validates RedHat Enterprise Linux 9 Nutanix Packer config
 validate-nutanix-rockylinux-8: ## Validates Rocky Linux 8 Nutanix Packer config
@@ -936,8 +938,8 @@ validate-hcloud-ubuntu-2004: ## Validates Ubuntu 20.04 Hetzner Cloud Packer conf
 validate-hcloud-ubuntu-2204: ## Validates Ubuntu 22.04 Hetzner Cloud Packer config
 validate-hcloud-centos-7: ## Validates CentOS 7 Hetzner Cloud Packer config
 validate-hcloud-rockylinux-8: ## Validates Rocky Linux 8 Hetzner Cloud Packer config
-validate-hcloud-rockylinux-9: ## Validates the Hetzner Cloud Rocky Linux 9 Nutanix Packer config
-validate-hcloud-flatcar: ## Validates the Hetzner Cloud Flatcar Nutanix Packer config
+validate-hcloud-rockylinux-9: ## Validates the Hetzner Cloud Rocky Linux 9 Packer config
+validate-hcloud-flatcar: ## Validates the Hetzner Cloud Flatcar Packer config
 validate-hcloud-all: $(HCLOUD_VALIDATE_TARGETS) ## Validates all Hetzner Cloud Packer config
 
 validate-proxmox-ubuntu-2204: ## Validates Ubuntu 22.04 Proxmox Packer config
