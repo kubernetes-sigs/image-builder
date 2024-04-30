@@ -144,9 +144,8 @@ centos:
       amazon-ssm-agent:
       <<: *rh7_rpms
     command:
-      pip3 list --format=columns | grep 'awscli' | awk -F' ' '{print $1}':
+      /usr/local/sbin/aws --version:
         exit-status: 0
-        stdout: ["awscli"]
         stderr: []
         timeout: 0
   azure:
@@ -247,10 +246,9 @@ rockylinux:
       amazon-ssm-agent:
       <<: *rh8_rpms
     command:
-      pip3 list --format=columns | grep 'awscli' | awk -F' ' '{print $1}':
+      /usr/local/sbin/aws --version:
         exit-status: 0
-        stdout: [ "awscli" ]
-        stderr: [ ]
+        stderr: []
         timeout: 0
     service:
       amazon-ssm-agent:
@@ -313,10 +311,9 @@ rhel:
         package:
           <<: *rh8_rpms
     command:
-      pip3 list --format=columns | grep 'awscli' | awk -F' ' '{print $1}':
+      /usr/local/sbin/aws --version:
         exit-status: 0
-        stdout: [ "awscli" ]
-        stderr: [ ]
+        stderr: []
         timeout: 0
     service:
       amazon-ssm-agent:
@@ -430,9 +427,8 @@ ubuntu:
         stdout: ["amazon-ssm-agent"]
         stderr: []
         timeout: 0
-      pip3 list --format=columns | grep 'awscli' | awk -F' ' '{print $1}':
+      /usr/local/sbin/aws --version:
         exit-status: 0
-        stdout: ["awscli"]
         stderr: []
         timeout: 0
   gcp:
@@ -552,8 +548,8 @@ windows:
       - Manual
       - Stopped
     kubelet:
-      expected: 
-      - Automatic 
+      expected:
+      - Automatic
       - "/RequiredServices.+:.+(containerd|docker)/"
     sshd:
       expected:
@@ -563,8 +559,8 @@ windows:
   azure:
     windows-service:
 
-    files: 
-      'c:/program files/Cloudbase Solutions/Cloudbase-init/conf/cloudbase-init.conf': 
+    files:
+      'c:/program files/Cloudbase Solutions/Cloudbase-init/conf/cloudbase-init.conf':
         exists: true
         filetype: file
         contains:
@@ -579,11 +575,11 @@ windows:
   ova:
     windows-service:
       vmtools:
-        expected: 
-        - Automatic 
+        expected:
+        - Automatic
         - Running
     files:
-      'c:/program files/Cloudbase Solutions/Cloudbase-init/conf/cloudbase-init.conf': 
+      'c:/program files/Cloudbase Solutions/Cloudbase-init/conf/cloudbase-init.conf':
         exists: true
         filetype: file
         contains:
@@ -598,7 +594,7 @@ windows:
         - "cloudbaseinit.plugins.common.localscripts.LocalScriptsPlugin"
         - "cloudbaseinit.plugins.windows.createuser.CreateUserPlugin"
         - "cloudbaseinit.plugins.windows.extendvolumes.ExtendVolumesPlugin"
-      'c:/program files/Cloudbase Solutions/Cloudbase-init/conf/cloudbase-init-unattend.conf': 
+      'c:/program files/Cloudbase Solutions/Cloudbase-init/conf/cloudbase-init-unattend.conf':
         exists: true
         filetype: file
         contains:
@@ -607,7 +603,7 @@ windows:
     windows-service:
 
     files:
-      'c:/program files/Cloudbase Solutions/Cloudbase-init/conf/cloudbase-init.conf': 
+      'c:/program files/Cloudbase Solutions/Cloudbase-init/conf/cloudbase-init.conf':
         exists: true
         filetype: file
         contains:
@@ -622,7 +618,7 @@ windows:
     windows-service:
 
     files:
-      'c:/program files/Cloudbase Solutions/Cloudbase-init/conf/cloudbase-init.conf': 
+      'c:/program files/Cloudbase Solutions/Cloudbase-init/conf/cloudbase-init.conf':
         exists: true
         filetype: file
         contains:
@@ -636,7 +632,7 @@ windows:
         - "cloudbaseinit.plugins.common.localscripts.LocalScriptsPlugin"
         - "cloudbaseinit.plugins.windows.createuser.CreateUserPlugin"
         - "cloudbaseinit.plugins.windows.extendvolumes.ExtendVolumesPlugin"
-      'c:/program files/Cloudbase Solutions/Cloudbase-init/conf/cloudbase-init-unattend.conf': 
+      'c:/program files/Cloudbase Solutions/Cloudbase-init/conf/cloudbase-init-unattend.conf':
         exists: true
         filetype: file
         contains:
