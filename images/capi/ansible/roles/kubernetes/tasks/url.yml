@@ -122,7 +122,23 @@
     dest: "{{ systemd_prefix }}/system/kubelet.service.d/10-kubeadm.conf"
     owner: root
     group: root
-    mode: "0644"
+    mode: "0600"
+
+- name: Set more secure permissions on kubelet config.yaml
+  ansible.builtin.file:
+    path: /var/lib/kubelet/config.yaml
+    owner: root
+    group: root
+    mode: "0600"
+
+- name: Set correct ownership of etcd
+  ansible.builtin.file:
+    path: /var/lib/etcd/member
+    owner: etcd
+    group: etcd
+    mode: "0600"
+    recurse: true
+    state: directory
 
 - name: Create kubelet systemd file
   ansible.builtin.template:
