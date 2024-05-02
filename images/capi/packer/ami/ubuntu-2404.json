@@ -1,0 +1,11 @@
+{
+  "ami_filter_name": "ubuntu/images/*ubuntu-noble-24.04-amd64-server-*",
+  "ami_filter_owners": "099720109477",
+  "build_name": "ubuntu-24.04",
+  "distribution": "Ubuntu",
+  "distribution_release": "noble",
+  "distribution_version": "24.04",
+  "root_device_name": "/dev/sda1",
+  "source_ami": "",
+  "ssh_username": "ubuntu"
+}
