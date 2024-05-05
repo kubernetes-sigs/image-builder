@@ -65,10 +65,14 @@
     },
     {
       "arch": "{{user `goss_arch`}}",
+      "download_path": "{{user `goss_download_path`}}",
       "format": "{{user `goss_format`}}",
       "format_options": "{{user `goss_format_options`}}",
       "goss_file": "{{user `goss_entry_file`}}",
       "inspect": "{{user `goss_inspect_mode`}}",
+      "remote_folder": "{{user `goss_remote_folder`}}",
+      "remote_path": "{{user `goss_remote_path`}}",
+      "skip_install": "{{user `goss_skip_install`}}",
       "tests": [
         "{{user `goss_tests_dir`}}"
       ],
