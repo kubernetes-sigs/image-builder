@@ -22,6 +22,14 @@
       - cloud-init
       - cloud-utils-growpart
 
+- name: Get package facts
+  ansible.builtin.package_facts:
+    manager: "auto"
+
+- name: Set cloud-init version
+  ansible.builtin.set_fact:
+    cloud_init_version: "{{ ansible_facts.packages['cloud-init'][0].version }}"
+
 - name: Install python2 pip
   ansible.builtin.yum:
     name: "{{ packages }}"
@@ -41,19 +49,22 @@
 
 # Directly installing Guestinfo datasource is needed so long as
 # cloud-init is < 21.3
-- name: Download cloud-init datasource for VMware Guestinfo
-  ansible.builtin.get_url:
-    url: "{{ guestinfo_datasource_script }}"
-    dest: /tmp/cloud-init-vmware.sh
-    mode: "0700"
+- name: Directly install Guestinfo
+  when: cloud_init_version is version('21.3', '<')
+  block:
+    - name: Download cloud-init datasource for VMware Guestinfo
+      ansible.builtin.get_url:
+        url: "{{ guestinfo_datasource_script }}"
+        dest: /tmp/cloud-init-vmware.sh
+        mode: "0700"
 
-- name: Execute cloud-init-vmware.sh
-  ansible.builtin.shell: bash -o errexit -o pipefail /tmp/cloud-init-vmware.sh
-  environment:
-    REPO_SLUG: "{{ guestinfo_datasource_slug }}"
-    GIT_REF: "{{ guestinfo_datasource_ref }}"
+    - name: Execute cloud-init-vmware.sh
+      ansible.builtin.shell: bash -o errexit -o pipefail /tmp/cloud-init-vmware.sh
+      environment:
+        REPO_SLUG: "{{ guestinfo_datasource_slug }}"
+        GIT_REF: "{{ guestinfo_datasource_ref }}"
 
-- name: Remove cloud-init-vmware.sh
-  ansible.builtin.file:
-    path: /tmp/cloud-init-vmware.sh
-    state: absent
+    - name: Remove cloud-init-vmware.sh
+      ansible.builtin.file:
+        path: /tmp/cloud-init-vmware.sh
+        state: absent
