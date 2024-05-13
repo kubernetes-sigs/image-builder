@@ -1,0 +1,2 @@
+---
+systemd_networkd_update_initramfs: "/usr/sbin/update-initramfs -u"

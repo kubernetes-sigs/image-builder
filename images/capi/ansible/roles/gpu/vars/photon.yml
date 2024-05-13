@@ -1,0 +1,2 @@
+---
+systemd_networkd_update_initramfs: "dracut -f"

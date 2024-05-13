@@ -1,0 +1,4 @@
+---
+- name: Update initramfs
+  command: "{{ systemd_networkd_update_initramfs }}"
+  when: systemd_networkd_update_initramfs is defined
