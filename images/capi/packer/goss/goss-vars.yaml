@@ -55,7 +55,7 @@ chrony_deb: &chrony_deb
     skip: true
     installed: false
 
-common_mariner_rpms: &common_mariner_rpms
+common_azurelinux_rpms: &common_azurelinux_rpms
   audit:
   ca-certificates:
   cloud-init:
@@ -233,7 +233,7 @@ photon:
       package:
         <<: *photon_5_rpms
 mariner:
-  common-package: *common_mariner_rpms
+  common-package: *common_azurelinux_rpms
   azure:
     package:
       open-vm-tools:

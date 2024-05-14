@@ -21,7 +21,7 @@
 - ansible.builtin.import_tasks: redhat.yml
   when: ansible_os_family == "RedHat"
 
-- ansible.builtin.import_tasks: mariner.yml
+- ansible.builtin.import_tasks: azurelinux.yml
   when: ansible_os_family == "Common Base Linux Mariner"
 
 - ansible.builtin.import_tasks: photon.yml

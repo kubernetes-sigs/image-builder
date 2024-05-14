@@ -21,7 +21,7 @@
   # "Flatcar" for comparison, which is the correct value.
   when: ansible_os_family in ["Flatcar", "Flatcar Container Linux by Kinvolk"]
 
-- ansible.builtin.import_tasks: mariner.yml
+- ansible.builtin.import_tasks: azurelinux.yml
   when: ansible_os_family == "Common Base Linux Mariner"
 
 - ansible.builtin.import_tasks: redhat.yml
