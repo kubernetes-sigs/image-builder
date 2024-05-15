@@ -16,7 +16,7 @@
   when: kubernetes_source_type == "pkg" and ansible_os_family == "Debian"
 
 - ansible.builtin.import_tasks: azurelinux.yml
-  when: kubernetes_source_type == "pkg" and ansible_os_family == "Common Base Linux Mariner"
+  when: kubernetes_source_type == "pkg" and ansible_os_family in ["Common Base Linux Mariner", "Microsoft Azure Linux"]
 
 - ansible.builtin.import_tasks: redhat.yml
   when: kubernetes_source_type == "pkg" and ansible_os_family == "RedHat"

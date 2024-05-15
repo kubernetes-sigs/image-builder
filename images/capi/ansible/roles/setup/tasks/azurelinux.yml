@@ -20,7 +20,7 @@
     state: latest
     lock_timeout: 60
 
-- name: Install baseline dependencies on Mariner
+- name: Install baseline dependencies on Azure Linux
   ansible.builtin.yum:
     name: "{{ rpms }}"
     state: present

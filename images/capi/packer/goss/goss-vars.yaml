@@ -232,6 +232,11 @@ photon:
     - distro_version: "5"
       package:
         <<: *photon_5_rpms
+azurelinux:
+  common-package: *common_azurelinux_rpms
+  azure:
+    package:
+      open-vm-tools:
 mariner:
   common-package: *common_azurelinux_rpms
   azure:
