@@ -28,6 +28,8 @@
 
 - name: Ensure nftables config ends with a newline
   ansible.builtin.shell: /bin/echo "" >> /etc/sysconfig/nftables.conf
+  register: echo_output
+  changed_when: echo_output.rc != 0
 
 - name: Disable swap service and ensure it is masked
   ansible.builtin.systemd:

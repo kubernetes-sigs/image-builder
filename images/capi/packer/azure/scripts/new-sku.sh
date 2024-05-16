@@ -40,7 +40,7 @@ sku_id="${os}-${version}-${VM_GENERATION}"
 if [ "$OS" == "Ubuntu" ]; then
     os_type="Ubuntu"
     os_family="Linux"
-elif [ "$OS" == "Mariner" ]; then
+elif [ "$OS" == "AzureLinux" ] || [ "$OS" == "Mariner" ]; then
     os_type="CBL-Mariner"
     os_family="Linux"
 elif [ "$OS" == "Windows" ]; then

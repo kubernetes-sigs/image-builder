@@ -67,6 +67,9 @@ case ${SIG_TARGET} in
   mariner-2)
     create_image_definition ${SIG_TARGET} "mariner-2" "V1" "Linux"
   ;;
+  azurelinux-3)
+    create_image_definition ${SIG_TARGET} "azurelinux-3" "V1" "Linux"
+  ;;
   rhel-8)
     create_image_definition "rhel-8" "rhel-8" "V1" "Linux"
   ;;
@@ -114,6 +117,9 @@ case ${SIG_TARGET} in
   ;;
   mariner-2-gen2)
     create_image_definition ${SIG_TARGET} "mariner-2-gen2" "V2" "Linux"
+  ;;
+  azurelinux-3-gen2)
+    create_image_definition ${SIG_TARGET} "azurelinux-3-gen2" "V2" "Linux"
   ;;
   flatcar-gen2)
     SKU="flatcar-${FLATCAR_CHANNEL}-${FLATCAR_VERSION}-gen2"

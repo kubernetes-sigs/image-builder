@@ -21,8 +21,8 @@
 - ansible.builtin.import_tasks: redhat.yml
   when: ansible_os_family == "RedHat"
 
-- ansible.builtin.import_tasks: mariner.yml
-  when: ansible_os_family == "Common Base Linux Mariner"
+- ansible.builtin.import_tasks: azurelinux.yml
+  when: ansible_os_family in ["Common Base Linux Mariner", "Microsoft Azure Linux"]
 
 - ansible.builtin.import_tasks: photon.yml
   when: ansible_os_family == "VMware Photon OS"
@@ -49,7 +49,7 @@
   loop:
     - { path: /etc/machine-id, state: absent, mode: "{{ machine_id_mode }}" }
     - { path: /etc/machine-id, state: touch, mode: "{{ machine_id_mode }}" }
-  when: ansible_os_family not in ["Common Base Linux Mariner", "Flatcar"]
+  when: ansible_os_family not in ["Common Base Linux Mariner", "Flatcar", "Microsoft Azure Linuz"]
 
 - name: Truncate hostname file
   ansible.builtin.file:
@@ -65,7 +65,7 @@
 - name: Set hostname
   ansible.builtin.hostname:
     name: localhost.local
-  when: ansible_os_family not in ["Common Base Linux Mariner", "Flatcar", "VMware Photon OS"] and packer_build_name != "nutanix"
+  when: ansible_os_family not in ["Common Base Linux Mariner", "Flatcar", "Microsoft Azure Linux", "VMware Photon OS"] and packer_build_name != "nutanix"
 
 - name: Reset hosts file
   ansible.builtin.copy:
