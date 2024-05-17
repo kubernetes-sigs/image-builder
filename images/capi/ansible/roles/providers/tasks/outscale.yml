@@ -1,9 +1,12 @@
 ---
-- name: Change cloud-init metadata outscale config in Ubuntu
-  ansible.builtin.copy:
-    src: files/etc/cloud/cloud.cfg.d/99_metadata.cfg
-    dest: /etc/cloud/cloud.cfg.d/99_metadata.cfg
-    owner: root
-    group: root
-    mode: "0644"
-  when: ansible_distribution == "Ubuntu"
+- name: Install cloud-init packages
+  ansible.builtin.apt:
+    name: "{{ packages }}"
+    state: present
+    force_apt_get: true
+  vars:
+    packages:
+      - cloud-init
+      - cloud-guest-utils
+      - cloud-initramfs-copymods
+      - cloud-initramfs-dyn-netconf
