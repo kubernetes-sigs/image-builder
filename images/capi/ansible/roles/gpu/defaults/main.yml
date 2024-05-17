@@ -13,5 +13,11 @@
 # limitations under the License.
 
 ---
-
 gpu_amd_usecase: dkms
+block_nouveau_loading: false
+systemd_networkd_update_initramfs: >-
+  {%- if ansible_os_family == 'VMware Photon OS' -%}
+  dracut -f
+  {%- elif ansible_os_family == 'Debian' -%}
+  update-initramfs -u
+  {%- endif -%}

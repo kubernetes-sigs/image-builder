@@ -15,3 +15,11 @@ file:
     - {{.}}
   {{end}}
 {{end}}
+{{if and (or (eq .Vars.OS "ubuntu") (eq .Vars.OS "photon")) (or (eq .Vars.gpu_vendor "nvidia")(eq .Vars.gpu_vendor "amd""))}}
+  "/etc/modprobe.d/blacklist-nouveau.conf"
+    exists: true
+    filetype: file
+    contains:
+      - "blacklist nouveau"
+      - "options nouveau modeset=0"
+{{end}}

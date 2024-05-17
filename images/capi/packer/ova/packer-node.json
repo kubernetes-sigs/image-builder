@@ -451,7 +451,8 @@
         "kubernetes_deb_version": "{{ user `kubernetes_deb_version` }}",
         "kubernetes_rpm_version": "{{ split (user `kubernetes_rpm_version`) \"-\" 0  }}",
         "kubernetes_source_type": "{{user `kubernetes_source_type`}}",
-        "kubernetes_version": "{{user `kubernetes_semver` | replace \"v\" \"\" 1}}"
+        "kubernetes_version": "{{user `kubernetes_semver` | replace \"v\" \"\" 1}}",
+        "block_nouveau_loading": "{{user `block_nouveau_loading`}}"
       },
       "version": "{{user `goss_version`}}"
     }
@@ -509,6 +510,7 @@
     "resource_pool": "",
     "username": "",
     "vcenter_server": "",
-    "vsphere_guest_os_type": null
+    "vsphere_guest_os_type": null,
+    "block_nouveau_loading": "true"
   }
 }
