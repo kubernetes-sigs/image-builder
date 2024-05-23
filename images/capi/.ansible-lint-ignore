@@ -45,6 +45,7 @@ ansible/roles/providers/tasks/aws.yml command-instead-of-shell
 ansible/roles/providers/tasks/aws.yml name[missing]
 ansible/roles/providers/tasks/aws.yml no-changed-when
 ansible/roles/providers/tasks/awscliv2.yml no-changed-when
+ansible/roles/providers/tasks/awscliv2.yml package-latest
 ansible/roles/providers/tasks/awscliv2.yml risky-file-permissions
 ansible/roles/providers/tasks/azure.yml name[missing]
 ansible/roles/providers/tasks/azure.yml risky-file-permissions

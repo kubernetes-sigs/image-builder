@@ -1,4 +1,20 @@
 ---
+- name: Upgrade pip to latest
+  ansible.builtin.pip:
+    name: pip
+    executable: pip3
+    state: latest
+  when: ansible_os_family == "Flatcar"
+
+- name: Install aws clients via pip
+  ansible.builtin.pip:
+    name: "{{ packages }}"
+    executable: pip3
+  vars:
+    packages:
+      - awscli
+  when: ansible_os_family == "Flatcar"
+
 - name: Install AWS CLI prequisites
   ansible.builtin.yum:
     name:
@@ -49,30 +65,37 @@
     EOF
     gpg --import aws-public-key
     rm aws-public-key
+  when: ansible_os_family != "Flatcar"
 
 - name: Download AWS CLI v2 archive signature file
   ansible.builtin.get_url:
     url: https://awscli.amazonaws.com/awscli-exe-linux-{{ ansible_architecture }}.zip.sig
     dest: /tmp/awscliv2.zip.sig
+  when: ansible_os_family != "Flatcar"
 
 - name: Download AWS CLI v2 archive
   ansible.builtin.get_url:
     url: https://awscli.amazonaws.com/awscli-exe-linux-{{ ansible_architecture }}.zip
     dest: /tmp/awscliv2.zip
+  when: ansible_os_family != "Flatcar"
 
 - name: Verify AWS CLI v2 archive
   ansible.builtin.command: gpg --verify /tmp/awscliv2.zip.sig /tmp/awscliv2.zip
+  when: ansible_os_family != "Flatcar"
 
 - name: Unzip AWS CLI v2 archive
   ansible.builtin.unarchive:
     src: /tmp/awscliv2.zip
     dest: /tmp
     remote_src: true
+  when: ansible_os_family != "Flatcar"
 
 - name: Install AWS CLI v2
   ansible.builtin.command: /tmp/aws/install -i /usr/local/aws-cli -b /usr/local/sbin
+  when: ansible_os_family != "Flatcar"
 
 - name: Remove temporary files
   ansible.builtin.file:
     path: /tmp/aws*
     state: absent
+  when: ansible_os_family != "Flatcar"
