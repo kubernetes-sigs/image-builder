@@ -12,6 +12,12 @@
       "networks": "{{user `networks`}}",
       "security_groups": "{{user `security_groups`}}",
       "source_image": "{{user `source_image`}}",
+      "source_image_filter": {
+        "filters": {
+          "name": "{{user `source_image_filter_name`}}"
+        },
+        "most_recent": true
+      },
       "ssh_keypair_name": "{{user `ssh_keypair_name`}}",
       "ssh_private_key_file": "{{user `ssh_private_key_file`}}",
       "ssh_timeout": "2h",
