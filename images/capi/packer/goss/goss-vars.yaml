@@ -342,15 +342,19 @@ rhel:
           <<: *rh8_rpms
   ova:
     package:
-      python2-pip:
       open-vm-tools:
     os_version:
     - distro_version: "7"
       package:
+        python2-pip:
         <<: *rh7_rpms
     - distro_version: "8"
       package:
+        python2-pip:
         <<: *rh8_rpms
+    - distro_version: "9"
+      package:
+        <<: *rh9_rpms
   qemu:
     package:
       open-vm-tools:
