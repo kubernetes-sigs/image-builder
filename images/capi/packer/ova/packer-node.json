@@ -452,7 +452,8 @@
         "kubernetes_rpm_version": "{{ split (user `kubernetes_rpm_version`) \"-\" 0  }}",
         "kubernetes_source_type": "{{user `kubernetes_source_type`}}",
         "kubernetes_version": "{{user `kubernetes_semver` | replace \"v\" \"\" 1}}",
-        "block_nouveau_loading": "{{user `block_nouveau_loading`}}"
+        "block_nouveau_loading": "{{user `block_nouveau_loading`}}",
+        "node_custom_roles_pre": "{{user `node_custom_roles_pre`}}"
       },
       "version": "{{user `goss_version`}}"
     }

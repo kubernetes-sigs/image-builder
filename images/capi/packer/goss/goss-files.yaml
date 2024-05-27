@@ -15,11 +15,16 @@ file:
     - {{.}}
   {{end}}
 {{end}}
-{{if and (or (eq .Vars.OS "ubuntu") (eq .Vars.OS "photon")) (or (eq .Vars.gpu_vendor "nvidia")(eq .Vars.gpu_vendor "amd""))}}
-  "/etc/modprobe.d/blacklist-nouveau.conf"
+{{if or (eq .Vars.OS "ubuntu") (eq .Vars.OS "photon")}}
+{{if .Vars.node_custom_roles_pre | regexMatch ".*gpu.*"}}
+  "/etc/modprobe.d/blacklist-nouveau.conf":
     exists: true
     filetype: file
     contains:
       - "blacklist nouveau"
       - "options nouveau modeset=0"
+{{if eq .Vars.block_nouveau_loading "true"}}
+      - "install nouveau /bin/false"
+{{end}}
+{{end}}
 {{end}}
