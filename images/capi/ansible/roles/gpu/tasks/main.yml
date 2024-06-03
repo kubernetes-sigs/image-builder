@@ -14,14 +14,16 @@
 
 ---
 - name: Unload nouveau
-  template:
+  ansible.builtin.template:
     src: "etc/modprobe.d/blacklist-nouveau.conf"
     dest: "/etc/modprobe.d/blacklist-nouveau.conf"
-    mode: 0644
+    mode: "0644"
 
 - name: Update initramfs
-  command: "{{ systemd_networkd_update_initramfs }}"
-  when: (systemd_networkd_update_initramfs is defined) and (systemd_networkd_update_initramfs | length > 0)
+  ansible.builtin.command: "{{ gpu_systemd_networkd_update_initramfs }}"
+  register: update_initramfs_output
+  when: (gpu_systemd_networkd_update_initramfs is defined) and (gpu_systemd_networkd_update_initramfs | length > 0)
+  changed_when: update_initramfs_output.rc == 0
 
 - name: Include AMD
   ansible.builtin.include_tasks: amd.yml
