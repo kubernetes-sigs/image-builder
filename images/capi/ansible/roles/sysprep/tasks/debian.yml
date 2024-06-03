@@ -99,6 +99,16 @@
     state: absent
     path: /etc/udev/rules.d/70-persistent-net.rules
 
+- name: Configure grub for non graphical consoles
+  ansible.builtin.copy:
+    src: etc/default/grub.d/50-cloudimg-settings.cfg
+    dest: /etc/default/grub.d/50-cloudimg-settings.cfg
+    group: root
+    owner: root
+    mode: "0644"
+  notify:
+    - Update debian grub
+
 - name: Remvoing subiquity disable disable cloud-init networking config
   ansible.builtin.file:
     path: /etc/cloud/cloud.cfg.d/subiquity-disable-cloudinit-networking.cfg
