@@ -3,7 +3,7 @@
 ## Prerequisites for Hetzner Hcloud
 
 - A Hetzner account
-- Set environment variables for your `HCLOUD_LOCATION` `HCLOUD_TOKEN` for your respective hcloud project
+- Set the environment variables `HCLOUD_LOCATION` and `HCLOUD_TOKEN` for your hcloud project
 
 ## Building Images
 
