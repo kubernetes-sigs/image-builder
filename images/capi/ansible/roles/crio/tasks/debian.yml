@@ -17,12 +17,13 @@
     repo: http://deb.debian.org/debian buster-backports main
     state: present
     filename: backports
-  when: ansible_distribution_major_version <= 10
+  when: ansible_distribution_major_version <= 10 and ansible_distribution == "Debian"
 
 - name: Install libseccomp2 package
   ansible.builtin.apt:
     name: libseccomp2
     state: present
+  when: ansible_distribution_major_version <= 10 and ansible_distribution == "Debian"
 
 - name: Determine Version
   block:
