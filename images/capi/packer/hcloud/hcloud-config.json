@@ -3,5 +3,5 @@
   "hcloud_location": "{{env `HCLOUD_LOCATION`}}",
   "image_name": "cluster-api-{{user `build_name`}}-{{user `kubernetes_semver`}}-{{user `build_timestamp`}}",
   "server_type": "cx21",
-  "token": "{{env `AZURE_CLIENT_ID`}}"
+  "token": "{{env `HCLOUD_TOKEN`}}"
 }
