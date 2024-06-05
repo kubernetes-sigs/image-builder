@@ -42,7 +42,7 @@
         name: libseccomp2
         state: present
       when: ansible_distribution_major_version | int <= 10 and ansible_distribution == "Debian"
-    - name: Configure repo and import certificate
+    - name: Configure repo and import key
       block:
         - name: Get gpg sign key
           ansible.builtin.get_url:
@@ -64,13 +64,13 @@
             repo: "deb [signed-by=/usr/share/keyrings/libcontainers-crio-archive-keyring.asc] https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable:/cri-o:/{{ crio_repo_version }}/{{ crio_repo_os }}/ /"
             state: present
             filename: "devel:kubic:libcontainers:stable:cri-o:{{ crio_repo_os }}"
-        - name: Install crio
-          ansible.builtin.apt:
-            update_cache: true
-            name: "{{ item }}"
-          with_items:
-            - cri-o
-            - cri-o-runc
+    - name: Install crio
+      ansible.builtin.apt:
+        update_cache: true
+        name: "{{ item }}"
+      with_items:
+        - cri-o
+        - cri-o-runc
 
 - name: Install from Packaging
   when: "crio_version is version_compare('1.29', '>=')"

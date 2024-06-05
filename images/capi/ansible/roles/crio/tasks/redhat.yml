@@ -30,26 +30,24 @@
 - name: Legacy install
   when: "crio_version is version_compare('1.28', '<=')"
   block:
-    - name: Configure repos
-      block:
-        - name: Add repository
-          ansible.builtin.yum_repository:
-            name: devel_kubic_libcontainers_stable
-            baseurl: "https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/{{ crio_repo_os }}/"
-            gpgkey: "https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/{{ crio_repo_os }}/repodata/repomd.xml.key"
-            description: Stable releases of Upstream github.com/containers packages ({{ crio_repo_os }})
-        - name: Add repository
-          ansible.builtin.yum_repository:
-            name: "devel_kubic_libcontainers_stable_cri-o_{{ crio_repo_version }}"
-            baseurl: "https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable:/cri-o:/{{ crio_repo_version }}/{{ crio_repo_os }}/"
-            gpgkey: "https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable:/cri-o:/{{ crio_repo_version }}/{{ crio_repo_os }}/repodata/repomd.xml.key"
-            description: "Stable releases of cri-o packages {{ crio_repo_version }} ({{ crio_repo_os }})"
-        - name: Install crio
-          ansible.builtin.yum:
-            update_cache: true
-            name: "{{ item }}"
-          with_items:
-            - cri-o
+    - name: Add repository
+      ansible.builtin.yum_repository:
+        name: devel_kubic_libcontainers_stable
+        baseurl: "https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/{{ crio_repo_os }}/"
+        gpgkey: "https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/{{ crio_repo_os }}/repodata/repomd.xml.key"
+        description: Stable releases of Upstream github.com/containers packages ({{ crio_repo_os }})
+    - name: Add repository
+      ansible.builtin.yum_repository:
+        name: "devel_kubic_libcontainers_stable_cri-o_{{ crio_repo_version }}"
+        baseurl: "https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable:/cri-o:/{{ crio_repo_version }}/{{ crio_repo_os }}/"
+        gpgkey: "https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable:/cri-o:/{{ crio_repo_version }}/{{ crio_repo_os }}/repodata/repomd.xml.key"
+        description: "Stable releases of cri-o packages {{ crio_repo_version }} ({{ crio_repo_os }})"
+    - name: Install crio
+      ansible.builtin.yum:
+        update_cache: true
+        name: "{{ item }}"
+      with_items:
+        - cri-o
 
 - name: Packaging install
   when: "crio_version is version_compare('1.29', '>=')"
