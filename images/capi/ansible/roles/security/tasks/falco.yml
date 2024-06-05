@@ -1,0 +1,57 @@
+# Copyright 2024 The Kubernetes Authors.
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+
+# http://www.apache.org/licenses/LICENSE-2.0
+
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+---
+
+- name: Add Falco package signing key
+  ansible.builtin.apt_key:
+    url: https://falco.org/repo/falcosecurity-packages.asc
+    state: present
+  when: ansible_os_family == "Debian"
+
+- name: Add Falco apt repo
+  ansible.builtin.apt_repository:
+    repo: deb https://download.falco.org/packages/deb stable main
+    state: present
+    filename: falcosecurity
+  when: ansible_os_family == "Debian"
+
+- name: Install Falco requirements
+  ansible.builtin.apt:
+    pkg:
+      - dkms
+      - make
+      - "linux-headers-{{ ansible_kernel }}"
+      - clang
+      - llvm
+    update_cache: true
+    state: present
+  ignore_errors: true
+  register: pkg_result
+  until: pkg_result is success
+  when: ansible_os_family == "Debian"
+
+- name: Install Falco
+  ansible.builtin.apt:
+    name: falco
+    update_cache: true
+    state: present
+  when: ansible_os_family == "Debian"
+
+- name: Enable Falco Modern eBPF
+  ansible.builtin.service:
+    name: falco-modern-bpf
+    state: started
+    enabled: true
+  when: ansible_os_family == "Debian"

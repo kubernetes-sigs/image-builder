@@ -45,7 +45,6 @@ common_debs: &common_debs
   libnetfilter-acct1:
   libnetfilter-cttimeout1:
   libnetfilter-log1:
-  python3-distutils:
   python3-netifaces:
   python3-pip:
   socat:
@@ -56,7 +55,7 @@ chrony_deb: &chrony_deb
     skip: true
     installed: false
 
-common_mariner_rpms: &common_mariner_rpms
+common_azurelinux_rpms: &common_azurelinux_rpms
   audit:
   ca-certificates:
   cloud-init:
@@ -147,15 +146,13 @@ centos:
       amazon-ssm-agent:
       <<: *rh7_rpms
     command:
-      pip3 list --format=columns | grep 'awscli' | awk -F' ' '{print $1}':
+      /usr/local/sbin/aws --version:
         exit-status: 0
-        stdout: ["awscli"]
         stderr: []
         timeout: 0
   azure:
     package:
       open-vm-tools:
-      azure-cli:
   ova:
     package:
       python2-pip:
@@ -237,12 +234,16 @@ photon:
     - distro_version: "5"
       package:
         <<: *photon_5_rpms
-mariner:
-  common-package: *common_mariner_rpms
+azurelinux:
+  common-package: *common_azurelinux_rpms
   azure:
     package:
       open-vm-tools:
-      azure-cli:
+mariner:
+  common-package: *common_azurelinux_rpms
+  azure:
+    package:
+      open-vm-tools:
 rockylinux:
   common-package: *common_rpms
   amazon:
@@ -250,10 +251,9 @@ rockylinux:
       amazon-ssm-agent:
       <<: *rh8_rpms
     command:
-      pip3 list --format=columns | grep 'awscli' | awk -F' ' '{print $1}':
+      /usr/local/sbin/aws --version:
         exit-status: 0
-        stdout: [ "awscli" ]
-        stderr: [ ]
+        stderr: []
         timeout: 0
     service:
       amazon-ssm-agent:
@@ -316,10 +316,9 @@ rhel:
         package:
           <<: *rh8_rpms
     command:
-      pip3 list --format=columns | grep 'awscli' | awk -F' ' '{print $1}':
+      /usr/local/sbin/aws --version:
         exit-status: 0
-        stdout: [ "awscli" ]
-        stderr: [ ]
+        stderr: []
         timeout: 0
     service:
       amazon-ssm-agent:
@@ -328,7 +327,6 @@ rhel:
   azure:
     package:
       open-vm-tools:
-      azure-cli:
     os_version:
       - distro_version: "8"
         package:
@@ -346,15 +344,19 @@ rhel:
           <<: *rh8_rpms
   ova:
     package:
-      python2-pip:
       open-vm-tools:
     os_version:
     - distro_version: "7"
       package:
+        python2-pip:
         <<: *rh7_rpms
     - distro_version: "8"
       package:
+        python2-pip:
         <<: *rh8_rpms
+    - distro_version: "9"
+      package:
+        <<: *rh9_rpms
   qemu:
     package:
       open-vm-tools:
@@ -396,11 +398,6 @@ ubuntu:
       running: false
   azure:
     command:
-      pip3 list --format=columns | grep 'azure-cli' | awk -F' ' '{print $1}':
-        exit-status: 0
-        stdout: ["azure-cli"]
-        stderr: []
-        timeout: 0
       iptables -C FORWARD -d 168.63.129.16/32 -p tcp -m tcp --dport 80 -m comment --comment "block traffic to 168.63.129.16 for cve-2021-27075" -j DROP:
         exit-status: 0
         timeout: 0
@@ -433,9 +430,8 @@ ubuntu:
         stdout: ["amazon-ssm-agent"]
         stderr: []
         timeout: 0
-      pip3 list --format=columns | grep 'awscli' | awk -F' ' '{print $1}':
+      /usr/local/sbin/aws --version:
         exit-status: 0
-        stdout: ["awscli"]
         stderr: []
         timeout: 0
   gcp:
@@ -555,8 +551,8 @@ windows:
       - Manual
       - Stopped
     kubelet:
-      expected: 
-      - Automatic 
+      expected:
+      - Automatic
       - "/RequiredServices.+:.+(containerd|docker)/"
     sshd:
       expected:
@@ -566,8 +562,8 @@ windows:
   azure:
     windows-service:
 
-    files: 
-      'c:/program files/Cloudbase Solutions/Cloudbase-init/conf/cloudbase-init.conf': 
+    files:
+      'c:/program files/Cloudbase Solutions/Cloudbase-init/conf/cloudbase-init.conf':
         exists: true
         filetype: file
         contains:
@@ -582,11 +578,11 @@ windows:
   ova:
     windows-service:
       vmtools:
-        expected: 
-        - Automatic 
+        expected:
+        - Automatic
         - Running
     files:
-      'c:/program files/Cloudbase Solutions/Cloudbase-init/conf/cloudbase-init.conf': 
+      'c:/program files/Cloudbase Solutions/Cloudbase-init/conf/cloudbase-init.conf':
         exists: true
         filetype: file
         contains:
@@ -601,7 +597,7 @@ windows:
         - "cloudbaseinit.plugins.common.localscripts.LocalScriptsPlugin"
         - "cloudbaseinit.plugins.windows.createuser.CreateUserPlugin"
         - "cloudbaseinit.plugins.windows.extendvolumes.ExtendVolumesPlugin"
-      'c:/program files/Cloudbase Solutions/Cloudbase-init/conf/cloudbase-init-unattend.conf': 
+      'c:/program files/Cloudbase Solutions/Cloudbase-init/conf/cloudbase-init-unattend.conf':
         exists: true
         filetype: file
         contains:
@@ -610,7 +606,7 @@ windows:
     windows-service:
 
     files:
-      'c:/program files/Cloudbase Solutions/Cloudbase-init/conf/cloudbase-init.conf': 
+      'c:/program files/Cloudbase Solutions/Cloudbase-init/conf/cloudbase-init.conf':
         exists: true
         filetype: file
         contains:
@@ -625,7 +621,7 @@ windows:
     windows-service:
 
     files:
-      'c:/program files/Cloudbase Solutions/Cloudbase-init/conf/cloudbase-init.conf': 
+      'c:/program files/Cloudbase Solutions/Cloudbase-init/conf/cloudbase-init.conf':
         exists: true
         filetype: file
         contains:
@@ -639,7 +635,7 @@ windows:
         - "cloudbaseinit.plugins.common.localscripts.LocalScriptsPlugin"
         - "cloudbaseinit.plugins.windows.createuser.CreateUserPlugin"
         - "cloudbaseinit.plugins.windows.extendvolumes.ExtendVolumesPlugin"
-      'c:/program files/Cloudbase Solutions/Cloudbase-init/conf/cloudbase-init-unattend.conf': 
+      'c:/program files/Cloudbase Solutions/Cloudbase-init/conf/cloudbase-init-unattend.conf':
         exists: true
         filetype: file
         contains:

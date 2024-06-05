@@ -12,23 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- name: Upgrade pip to latest
-  ansible.builtin.pip:
-    name: pip
-    executable: pip3
-    state: latest
-
-- name: Install aws clients
-  ansible.builtin.pip:
-    name: "{{ packages }}"
-    executable: pip3
-  vars:
-    packages:
-      - awscli
-  when: ansible_distribution != "Amazon" and ansible_distribution != "RedHat"
-
 - ansible.builtin.include_tasks: awscliv2.yml
-  when: ansible_distribution == "RedHat"
+  when: ansible_distribution != "Amazon"
 
 # Remove after https://github.com/aws/amazon-ssm-agent/issues/235 is fixed.
 - name: Install aws agents RPM on Redhat distributions

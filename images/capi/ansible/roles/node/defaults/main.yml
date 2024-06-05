@@ -30,8 +30,8 @@ al2_rpms:
   - python-netifaces
   - python-requests
 
-# Used for Mariner distributions
-mariner_rpms:
+# Used for Azure Linux distributions
+azurelinux_rpms:
   - lsof
 
 # Used for RedHat based distributions ==  7 (ex. RHEL-7, CentOS-7 etc.)
@@ -58,7 +58,6 @@ common_debs:
   - libnetfilter-acct1
   - libnetfilter-cttimeout1
   - libnetfilter-log1
-  - python3-distutils
   - python3-netifaces
   - python3-pip
   - socat
@@ -116,7 +115,7 @@ common_raw_photon_rpms: []
 # photon and flatcar do not have backward compatibility for legacy distro behavior for sysctl.conf by default
 # as it uses systemd-sysctl. set this var so we can use for sysctl conf file value.
 sysctl_conf_file: >-
-  {{ '/etc/sysctl.d/99-sysctl.conf' if ansible_os_family in ['Common Base Linux Mariner', 'Flatcar', 'VMware Photon OS']
+  {{ '/etc/sysctl.d/99-sysctl.conf' if ansible_os_family in ['Common Base Linux Mariner', 'Flatcar', 'Microsoft Azure Linux', 'VMware Photon OS']
     else '/etc/sysctl.conf' }}
 
 pause_image: registry.k8s.io/pause:3.9

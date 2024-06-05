@@ -1,24 +1,101 @@
 ---
-- name: Install AWS CLI
+- name: Upgrade pip to latest
+  ansible.builtin.pip:
+    name: pip
+    executable: pip3
+    state: latest
+  when: ansible_os_family == "Flatcar"
+
+- name: Install aws clients via pip
+  ansible.builtin.pip:
+    name: "{{ packages }}"
+    executable: pip3
+  vars:
+    packages:
+      - awscli
+  when: ansible_os_family == "Flatcar"
+
+- name: Install AWS CLI prequisites
   ansible.builtin.yum:
-    name: unzip
+    name:
+      - gnupg
+      - unzip
     state: present
+  when: ansible_distribution == "RedHat"
 
-- name: Download AWS CLI v2
+- name: Install AWS CLI prerequisites
+  ansible.builtin.apt:
+    name:
+      - gnupg
+      - unzip
+    state: present
+  when: ansible_os_family == "Debian"
+
+- name: Import AWS public key
+  ansible.builtin.shell: |
+    cat <<EOF > aws-public-key
+    -----BEGIN PGP PUBLIC KEY BLOCK-----
+    mQINBF2Cr7UBEADJZHcgusOJl7ENSyumXh85z0TRV0xJorM2B/JL0kHOyigQluUG
+    ZMLhENaG0bYatdrKP+3H91lvK050pXwnO/R7fB/FSTouki4ciIx5OuLlnJZIxSzx
+    PqGl0mkxImLNbGWoi6Lto0LYxqHN2iQtzlwTVmq9733zd3XfcXrZ3+LblHAgEt5G
+    TfNxEKJ8soPLyWmwDH6HWCnjZ/aIQRBTIQ05uVeEoYxSh6wOai7ss/KveoSNBbYz
+    gbdzoqI2Y8cgH2nbfgp3DSasaLZEdCSsIsK1u05CinE7k2qZ7KgKAUIcT/cR/grk
+    C6VwsnDU0OUCideXcQ8WeHutqvgZH1JgKDbznoIzeQHJD238GEu+eKhRHcz8/jeG
+    94zkcgJOz3KbZGYMiTh277Fvj9zzvZsbMBCedV1BTg3TqgvdX4bdkhf5cH+7NtWO
+    lrFj6UwAsGukBTAOxC0l/dnSmZhJ7Z1KmEWilro/gOrjtOxqRQutlIqG22TaqoPG
+    fYVN+en3Zwbt97kcgZDwqbuykNt64oZWc4XKCa3mprEGC3IbJTBFqglXmZ7l9ywG
+    EEUJYOlb2XrSuPWml39beWdKM8kzr1OjnlOm6+lpTRCBfo0wa9F8YZRhHPAkwKkX
+    XDeOGpWRj4ohOx0d2GWkyV5xyN14p2tQOCdOODmz80yUTgRpPVQUtOEhXQARAQAB
+    tCFBV1MgQ0xJIFRlYW0gPGF3cy1jbGlAYW1hem9uLmNvbT6JAlQEEwEIAD4CGwMF
+    CwkIBwIGFQoJCAsCBBYCAwECHgECF4AWIQT7Xbd/1cEYuAURraimMQrMRnJHXAUC
+    ZMKcEgUJCSEf3QAKCRCmMQrMRnJHXCilD/4vior9J5tB+icri5WbDudS3ak/ve4q
+    XS6ZLm5S8l+CBxy5aLQUlyFhuaaEHDC11fG78OduxatzeHENASYVo3mmKNwrCBza
+    NJaeaWKLGQT0MKwBSP5aa3dva8P/4oUP9GsQn0uWoXwNDWfrMbNI8gn+jC/3MigW
+    vD3fu6zCOWWLITNv2SJoQlwILmb/uGfha68o4iTBOvcftVRuao6DyqF+CrHX/0j0
+    klEDQFMY9M4tsYT7X8NWfI8Vmc89nzpvL9fwda44WwpKIw1FBZP8S0sgDx2xDsxv
+    L8kM2GtOiH0cHqFO+V7xtTKZyloliDbJKhu80Kc+YC/TmozD8oeGU2rEFXfLegwS
+    zT9N+jB38+dqaP9pRDsi45iGqyA8yavVBabpL0IQ9jU6eIV+kmcjIjcun/Uo8SjJ
+    0xQAsm41rxPaKV6vJUn10wVNuhSkKk8mzNOlSZwu7Hua6rdcCaGeB8uJ44AP3QzW
+    BNnrjtoN6AlN0D2wFmfE/YL/rHPxU1XwPntubYB/t3rXFL7ENQOOQH0KVXgRCley
+    sHMglg46c+nQLRzVTshjDjmtzvh9rcV9RKRoPetEggzCoD89veDA9jPR2Kw6RYkS
+    XzYm2fEv16/HRNYt7hJzneFqRIjHW5qAgSs/bcaRWpAU/QQzzJPVKCQNr4y0weyg
+    B8HCtGjfod0p1A==
+    =gdMc
+    -----END PGP PUBLIC KEY BLOCK-----
+    EOF
+    gpg --import aws-public-key
+    rm aws-public-key
+  when: ansible_os_family != "Flatcar"
+
+- name: Download AWS CLI v2 archive signature file
   ansible.builtin.get_url:
-    url: https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip
-    dest: /tmp/awscliv2.zip
+    url: https://awscli.amazonaws.com/awscli-exe-linux-{{ ansible_architecture }}.zip.sig
+    dest: /tmp/awscliv2.zip.sig
+  when: ansible_os_family != "Flatcar"
 
-- name: Unzip AWS CLI v2
+- name: Download AWS CLI v2 archive
+  ansible.builtin.get_url:
+    url: https://awscli.amazonaws.com/awscli-exe-linux-{{ ansible_architecture }}.zip
+    dest: /tmp/awscliv2.zip
+  when: ansible_os_family != "Flatcar"
+
+- name: Verify AWS CLI v2 archive
+  ansible.builtin.command: gpg --verify /tmp/awscliv2.zip.sig /tmp/awscliv2.zip
+  when: ansible_os_family != "Flatcar"
+
+- name: Unzip AWS CLI v2 archive
   ansible.builtin.unarchive:
     src: /tmp/awscliv2.zip
     dest: /tmp
     remote_src: true
+  when: ansible_os_family != "Flatcar"
 
 - name: Install AWS CLI v2
   ansible.builtin.command: /tmp/aws/install -i /usr/local/aws-cli -b /usr/local/sbin
+  when: ansible_os_family != "Flatcar"
 
 - name: Remove temporary files
   ansible.builtin.file:
     path: /tmp/aws*
     state: absent
+  when: ansible_os_family != "Flatcar"

@@ -65,6 +65,7 @@ list, and greater explanation can be found in the
 | Variable | Description | Default |
 |----------|-------------|---------|
 | `community_gallery_image_id` | Use image from a Community gallery as a base image instead of default one from the marketplace. Depending on the target distro, fields like `image_offer` etc. might need to be explicitly emptied. | `""` |
+| `debug_tools` | Set to `true` to install the `az` command-line tool for troubleshooting and debugging purposes. By default, `az` is not installed. | `""` |
 | `direct_shared_gallery_image_id` | Use image from Directly shared gallery as a base image instead of default one from the marketplace. Depending on the target distro, fields like `image_offer` etc. might need to be explicitly emptied. | `""` |
 | `private_virtual_network_with_public_ip` | This value allows you to set a virtual_network_name and obtain a public IP. If this value is not set and virtual_network_name is defined Packer is only allowed to be executed from a host on the same subnet / virtual network. | `""` |
 | `virtual_network_name` | Use a pre-existing virtual network for the VM. This option enables private communication with the VM, no public IP address is used or provisioned (unless you set private_virtual_network_with_public_ip). | `""` |
@@ -86,3 +87,4 @@ az vm create -n testvm --image testvmimage -g cluster-api-images
 
 ### Debugging Packer scripts
 There are several ways to debug Packer scripts: https://developer.hashicorp.com/packer/docs/debugging
+

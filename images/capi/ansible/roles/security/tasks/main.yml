@@ -1,4 +1,4 @@
-# Copyright 2023 The Kubernetes Authors.
+# Copyright 2024 The Kubernetes Authors.
 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,23 +11,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 ---
-- ansible.builtin.import_tasks: rpm_repos.yml
 
-- name: Perform a yum update
-  ansible.builtin.yum:
-    name: "*"
-    state: latest
-    lock_timeout: 60
+- name: Install Falco
+  ansible.builtin.import_tasks: falco.yml
+  when: security_install_falco | bool
 
-- name: Install baseline dependencies on Mariner
-  ansible.builtin.yum:
-    name: "{{ rpms }}"
-    state: present
-    lock_timeout: 60
-
-- name: Install extra rpms
-  ansible.builtin.yum:
-    name: "{{ extra_rpms.split() }}"
-    state: present
-    lock_timeout: 60
+- name: Install Trivy
+  ansible.builtin.import_tasks: trivy.yml
+  when: security_install_trivy | bool

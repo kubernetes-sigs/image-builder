@@ -46,20 +46,24 @@
   vars:
     users: "{{ wire_server_users.split(',') if (wire_server_users is defined) and (wire_server_users | length > 0) else [] }}"
 
-- name: Download Azure CLI MSI installer
-  ansible.windows.win_get_url:
-    url: https://aka.ms/installazurecliwindowsx64
-    dest: C:\azure-cli.msi
-
 - name: Install Azure CLI
-  ansible.windows.win_package:
-    path: C:\azure-cli.msi
-    state: present
+  when: debug_tools | bool
+  block:
 
-- name: Clean up Azure CLI Installer file
-  ansible.windows.win_file:
-    path: C:\azure-cli.msi
-    state: absent
+    - name: Download Azure CLI MSI installer
+      ansible.windows.win_get_url:
+        url: https://aka.ms/installazurecliwindowsx64
+        dest: C:\azure-cli.msi
+
+    - name: Run Azure CLI installer
+      ansible.windows.win_package:
+        path: C:\azure-cli.msi
+        state: present
+
+    - name: Clean up Azure CLI installer file
+      ansible.windows.win_file:
+        path: C:\azure-cli.msi
+        state: absent
 
 - name: Create the credential provider path
   ansible.windows.win_file:

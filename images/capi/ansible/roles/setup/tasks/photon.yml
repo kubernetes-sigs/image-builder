@@ -22,6 +22,11 @@
 
 - ansible.builtin.import_tasks: rpm_repos.yml
 
+- name: Update the repos package to import the recent gpg keys
+  ansible.builtin.command: tdnf update -y photon-repos --enablerepo=photon --refresh
+  register: distro
+  changed_when: '"Nothing to do" not in distro.stderr'
+
 - name: Perform a tdnf distro-sync
   ansible.builtin.command: tdnf distro-sync -y --refresh
   register: distro

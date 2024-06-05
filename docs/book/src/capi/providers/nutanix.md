@@ -46,7 +46,7 @@ Corresponding env variables
 | Variable              | Description                                                    | Default                             |
 |-----------------------|----------------------------------------------------------------|-------------------------------------|
 | `force_deregister`    | Allow output image override if already exists.                 | `false`                             |
-| `image_delete`        | Delete image once enitrebuild process is completed.            | `false`                             |
+| `image_delete`        | Delete image once entire build process is completed.           | `false`                             |
 | `image_export`        | Export raw image in the current folder.                        | `false`                             |
 | `image_name`          | Name of the output image.                                      | `BUILD_NAME-kube-KUBERNETES_SEMVER` |
 | `source_image_delete` | Delete source image once build process is completed            | `false`                             |

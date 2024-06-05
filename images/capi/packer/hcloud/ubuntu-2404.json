@@ -1,0 +1,8 @@
+{
+  "build_name": "ubuntu-2404",
+  "distribution": "ubuntu",
+  "distribution_release": "noble",
+  "distribution_version": "2404",
+  "image": "ubuntu-24.04",
+  "ssh_username": "root"
+}

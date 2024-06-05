@@ -10,7 +10,7 @@ CURRENT_VERSION=${CURRENT_VERSION#v}
 NEXT_VERSION=$(echo ${CURRENT_VERSION} | awk -F. -v OFS=. '{$NF += 1 ; print}')
 NEXT_VERSION=${NEXT_VERSION#v}
 
-OLD_DATE=$(git log -1 --format=%aI v${OLD_VERSION})
+OLD_DATE=$(git for-each-ref --format="%(taggerdate:short)" refs/tags/v${OLD_VERSION})
 OLD_DATE=$(date -d${OLD_DATE} '+%B %-d, %Y')
 TODAY_DATE=$(date '+%B %-d, %Y')
 

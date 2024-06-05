@@ -16,7 +16,7 @@
   when: ansible_os_family == "Debian"
 
 - ansible.builtin.import_tasks: redhat.yml
-  when: ansible_os_family in ["Common Base Linux Mariner", "RedHat"]
+  when: ansible_os_family in ["Common Base Linux Mariner", "Microsoft Azure Linux", "RedHat"]
 
 - ansible.builtin.import_tasks: photon.yml
   when: ansible_os_family == "VMware Photon OS"
@@ -141,7 +141,7 @@
     dest: /etc/systemd/system/containerd.service.d/limit-nofile.conf
     src: etc/systemd/system/containerd.service.d/limit-nofile.conf
     mode: "0644"
-  when: ansible_os_family == "Common Base Linux Mariner"
+  when: ansible_os_family in ["Common Base Linux Mariner", "Microsoft Azure Linux"]
 
 - name: Create containerd http proxy conf file if needed
   ansible.builtin.template:
