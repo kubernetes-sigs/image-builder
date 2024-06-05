@@ -1,5 +1,5 @@
 {
-  "boot_command_prefix": "c<wait>linux /casper/vmlinuz --- autoinstall ds='nocloud-net;s=http://{{ .HTTPIP }}:{{ .HTTPPort }}/22.04/'<enter><wait5s>initrd /casper/initrd <enter><wait5s>boot <enter><wait5s>",
+  "boot_command_prefix": "c<wait>linux /casper/vmlinuz --- autoinstall ds='nocloud-net;s=http://{{ .HTTPIP }}:{{ .HTTPPort }}/22.04/'<enter><wait10s>initrd /casper/initrd <enter><wait10s>boot <enter><wait10s>",
   "build_name": "ubuntu-2204",
   "distribution_version": "2204",
   "distro_name": "ubuntu",
