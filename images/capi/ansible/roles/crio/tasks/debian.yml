@@ -12,34 +12,37 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- name: Add Debian Buster backports if needed
-  ansible.builtin.apt_repository:
-    repo: http://deb.debian.org/debian buster-backports main
-    state: present
-    filename: backports
-  when: ansible_distribution_major_version | int <= 10 and ansible_distribution == "Debian"
-
-- name: Install libseccomp2 package
-  ansible.builtin.apt:
-    name: libseccomp2
-    state: present
-  when: ansible_distribution_major_version | int <= 10 and ansible_distribution == "Debian"
 
 - name: Determine Version
   block:
-    - name: Set CRI-O facts
+    - name: Set Global CRI-O facts
+      ansible.builtin.set_fact:
+        crio_repo_version: "{{ crio_version.split('.')[:2] | join('.') }}"
+        crio_packaging_version: "stable:/v{{ crio_version.split('.')[:2] | join('.') }}"
+    - name: Set CRI-O facts for Ubuntu
       ansible.builtin.set_fact:
         crio_repo_os: "x{{ ansible_distribution }}_{{ ansible_distribution_version }}"
-        crio_repo_version: "{{ crio_version.split('.')[:2] | join('.') }}"
       when: ansible_distribution == "Ubuntu"
-    - name: Set CRI-O facts
+    - name: Set CRI-O facts for Debian
       ansible.builtin.set_fact:
         crio_repo_os: "{{ ansible_distribution }}_{{ ansible_distribution_version }}"
-        crio_repo_version: "{{ crio_version.split('.')[:2] | join('.') }}"
       when: ansible_distribution == "Debian"
 
-- name: Configure repo and import certificate
+- name: Legacy install
   block:
+  - name: Add Debian Buster backports if needed
+    ansible.builtin.apt_repository:
+      repo: http://deb.debian.org/debian buster-backports main
+      state: present
+      filename: backports
+    when: ansible_distribution_major_version | int <= 10 and ansible_distribution == "Debian"
+  - name: Install libseccomp2 package
+    ansible.builtin.apt:
+      name: libseccomp2
+      state: present
+    when: ansible_distribution_major_version | int <= 10 and ansible_distribution == "Debian"
+  - name: Configure repo and import certificate
+    block:
     - name: Get gpg sign key
       ansible.builtin.get_url:
         url: "https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/{{ crio_repo_os }}/Release.key"
@@ -60,11 +63,37 @@
         repo: "deb [signed-by=/usr/share/keyrings/libcontainers-crio-archive-keyring.asc] https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable:/cri-o:/{{ crio_repo_version }}/{{ crio_repo_os }}/ /"
         state: present
         filename: "devel:kubic:libcontainers:stable:cri-o:{{ crio_repo_os }}"
+  - name: Install crio
+    ansible.builtin.apt:
+      update_cache: true
+      name: "{{ item }}"
+    with_items:
+      - cri-o
+      - cri-o-runc
+  when: "crio_version is version_compare('1.28', '<=')"
 
-- name: Install crio
-  ansible.builtin.apt:
-    update_cache: true
-    name: "{{ item }}"
-  with_items:
-    - cri-o
-    - cri-o-runc
+- name: Install from Packaging
+  block:
+  - name: Install needed packages
+    ansible.builtin.apt:
+      update_cache: true
+      name: "{{ item }}"
+    with_items:
+      - software-properties-common
+      - curl
+  - name: Get gpg sign key
+    ansible.builtin.get_url:
+      url: https://pkgs.k8s.io/addons:/cri-o:/{{ crio_packaging_version }}/deb/Release.key
+      dest: /usr/share/keyrings/cri-o-apt-keyring.asc
+      mode: "0644"
+  - name: Add apt repository
+    ansible.builtin.apt_repository:
+      repo: "deb [signed-by=/usr/share/keyrings/cri-o-apt-keyring.asc] https://pkgs.k8s.io/addons:/cri-o:/{{ crio_packaging_version }}/deb/ /"
+      state: present
+  - name: Install crio
+    ansible.builtin.apt:
+      update_cache: true
+      name: "{{ item }}"
+    with_items:
+      - cri-o
+  when: "crio_version is version_compare('1.29', '>=')"
