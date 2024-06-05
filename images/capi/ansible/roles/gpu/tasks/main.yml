@@ -15,8 +15,8 @@
 ---
 - name: Unload nouveau
   ansible.builtin.template:
-    src: "etc/modprobe.d/blacklist-nouveau.conf"
-    dest: "/etc/modprobe.d/blacklist-nouveau.conf"
+    src: "etc/modprobe.d/blocklist-nouveau.conf"
+    dest: "/etc/modprobe.d/blocklist-nouveau.conf"
     mode: "0644"
 
 - name: Update initramfs

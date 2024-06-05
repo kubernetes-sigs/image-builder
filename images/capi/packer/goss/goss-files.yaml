@@ -17,7 +17,7 @@ file:
 {{end}}
 {{if or (eq .Vars.OS "ubuntu") (eq .Vars.OS "photon")}}
 {{if .Vars.node_custom_roles_pre | regexMatch ".*gpu.*"}}
-  "/etc/modprobe.d/blacklist-nouveau.conf":
+  "/etc/modprobe.d/blocklist-nouveau.conf":
     exists: true
     filetype: file
     contains:
