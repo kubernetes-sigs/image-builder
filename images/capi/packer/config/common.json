@@ -1,7 +1,7 @@
 {
   "build_target": "virt",
-  "debug_tools": "false",
   "cri_flavour": "containerd",
+  "debug_tools": "false",
   "disable_public_repos": "false",
   "extra_debs": "",
   "extra_repos": "",
