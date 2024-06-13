@@ -31,9 +31,9 @@ $ make deps-gce
 ### Run the Make target to generate GCE images.
 From `images/capi` directory, run `make build-gce-ubuntu-<version>` command depending on which ubuntu version you want to build the image for.
 
-For instance, to build an image for `ubuntu 18-04`, run
+For instance, to build an image for `ubuntu 24.04`, run
 ```bash
-$ make build-gce-ubuntu-1804
+$ make build-gce-ubuntu-2404
 ```
 
 To build all gce ubuntu images, run
@@ -48,8 +48,10 @@ The `gce` sub-directory inside `images/capi/packer` stores JSON configuration fi
 
 | File | Description
 | -------- | --------
-| `ubuntu-1804.json`     | Settings for Ubuntu 18-04 image     |
-| `ubuntu-2004.json`     | Settings for Ubuntu 20-04 image     |
+| `ubuntu-2004.json`     | Settings for Ubuntu 20.04 image     |
+| `ubuntu-2204.json`     | Settings for Ubuntu 22.04 image     |
+| `ubuntu-2404.json`     | Settings for Ubuntu 24.04 image     |
+| `rhel-8.json`     | Settings for RHEL 8 image     |
 
 ### List Images
 
@@ -59,7 +61,7 @@ List all images by running the following command in the console
 $ gcloud compute images list --project ${GCP_PROJECT_ID} --no-standard-images
 
 NAME                                         PROJECT            FAMILY                      DEPRECATED  STATUS
-cluster-api-ubuntu-1804-v1-17-11-1603233313  myregistry-292303  capi-ubuntu-1804-k8s-v1-17              READY
+cluster-api-ubuntu-2404-v1-17-11-1603233313  myregistry-292303  capi-ubuntu-2404-k8s-v1-17              READY
 cluster-api-ubuntu-2004-v1-17-11-1603233874  myregistry-292303  capi-ubuntu-2004-k8s-v1-17              READY
 ```
 
