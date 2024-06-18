@@ -99,6 +99,11 @@
     state: absent
     path: /etc/udev/rules.d/70-persistent-net.rules
 
+- name: Determine if update-grub is present
+  ansible.builtin.stat:
+    path: /usr/sbin/update-grub
+  register: _stat_update_grub
+
 - name: Configure grub for non graphical consoles
   ansible.builtin.copy:
     src: etc/default/grub.d/50-cloudimg-settings.cfg
@@ -108,6 +113,7 @@
     mode: "0644"
   notify:
     - Update debian grub
+  when: _stat_update_grub.stat.exists
 
 - name: Remvoing subiquity disable disable cloud-init networking config
   ansible.builtin.file:
