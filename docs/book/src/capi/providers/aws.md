@@ -64,7 +64,6 @@ list, and greater explanation can be found in the
 | `ami_regions` | A list of regions to copy the AMI to. | `"ap-south-1,eu-west-3,eu-west-2,eu-west-1,ap-northeast-2,ap-northeast-1,sa-east-1,ca-central-1,ap-southeast-1,ap-southeast-2,eu-central-1,us-east-1,us-east-2,us-west-1,us-west-2"` |
 | `ami_users` | A list of groups that have access to launch the resulting AMI. | `"all"` |
 | `aws_region` | The AWS region to build the AMI within. | `"us-east-1"` |
-| `ami_name` | The name of the ami image. | "capa-ami-{{user \`build_name\`}}-{{user \`kubernetes_deb_version\` | clean_resource_name}}-{{user \`build_timestamp\`}}" |
 | `encrypted` | Indicates whether or not to encrypt the volume. | `"false"` |
 | `kms_key_id` | ID, alias or ARN of the KMS key to use for boot volume encryption. | `""` |
 | `snapshot_groups` | A list of groups that have access to create volumes from the snapshot. | `""` |
