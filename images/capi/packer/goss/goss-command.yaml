@@ -58,7 +58,7 @@ command:
     stdout: ["coredns", "etcd", "kube-apiserver", "kube-controller-manager", "kube-proxy", "kube-scheduler", "pause"]
 {{end}}
 {{if eq .Vars.kubernetes_source_type "http"}}
-  kubectl version --short --client=true -o json | jq .clientVersion.gitVersion | tr -d '"' | awk '{print substr($1,2); }':
+  kubectl version --client=true -o json | jq .clientVersion.gitVersion | tr -d '"' | awk '{print substr($1,2); }':
     exit-status: 0
     stdout: [{{ .Vars.kubernetes_version }}]
     stderr: []
