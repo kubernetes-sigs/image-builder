@@ -70,6 +70,8 @@ common_photon_rpms:
   - dbus-python3
   - distrib-compat
   - ebtables
+  - gawk
+  - grub2
   - net-tools
   - openssl-c_rehash
   - python3-pygobject

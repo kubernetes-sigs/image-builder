@@ -76,6 +76,8 @@ common_photon_rpms: &common_photon_rpms
   chrony:
   distrib-compat:
   ebtables:
+  gawk:
+  grub2:
   net-tools:
   openssl-c_rehash:
   python3-pip:
