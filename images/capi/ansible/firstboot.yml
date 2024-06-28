@@ -12,6 +12,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
+- name: Bootstrap Python
+  hosts: all
+  become: true
+  gather_facts: false
+  tasks:
+    - name: Check if Python is installed
+      changed_when: false
+      failed_when: false
+      ansible.builtin.raw: test -e "{{ ansible_python_interpreter | default('/usr/bin/python3') }}"
+      register: python_installed
+
+    - name: Install Python
+      changed_when: true
+      ansible.builtin.raw: test -e /usr/bin/apt && (apt-get update && apt-get install -y python3) || (yum install -y python3)
+      when: python_installed.rc != 0
+
 - hosts: all
   become: true
   vars:
