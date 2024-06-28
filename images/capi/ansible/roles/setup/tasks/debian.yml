@@ -19,7 +19,18 @@
     mode: "0644"
   # OCI Base images have the required apt sources list embedded inside the image, adding the sources list
   # from this repo leads to build failures(especially in Arm), hence ignoring the step.
-  when: packer_builder_type != "oracle-oci"
+  # Ubuntu 24.04 has changed to deb822 source management
+  # As a result the there is change in format source configurations and location
+  when: (packer_builder_type != "oracle-oci") and ((ansible_distribution == "Ubuntu") and (ansible_distribution_major_version is version('24', '<')))
+
+- name: Put templated ubuntu.sources in place
+  ansible.builtin.template:
+    src: etc/apt/sources.list.d/ubuntu.sources.j2
+    dest: /etc/apt/sources.list.d/ubuntu.sources
+    mode: "0644"
+  # Ubuntu 24.04 has changed to deb822 source management
+  # As a result the there is change in format source configurations and location
+  when: (ansible_distribution == "Ubuntu") and (ansible_distribution_major_version is version('24', '>='))
 
 - name: Put templated apt.conf.d/90proxy in place when defined
   ansible.builtin.template:
