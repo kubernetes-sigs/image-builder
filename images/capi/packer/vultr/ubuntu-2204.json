@@ -1,0 +1,5 @@
+{
+  "build_name": "ubuntu-2204",
+  "snapshot_name_suffix": "on Ubuntu 22.04",
+  "source_image": "ubuntu-22-04-x64"
+}

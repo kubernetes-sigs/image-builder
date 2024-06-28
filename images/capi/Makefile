@@ -179,6 +179,13 @@ deps-lint: deps-common
 	hack/ensure-ansible-lint.sh
 	hack/ensure-shellcheck.sh
 
+.PHONY: deps-vultr
+deps-vultr: ## Installs/checks dependencies for Vultr builds
+deps-vultr: deps-common
+	$(PACKER) init packer/config.pkr.hcl
+	$(PACKER) init packer/vultr/config.pkr.hcl
+
+
 ## --------------------------------------
 ## Container variables
 ## --------------------------------------
@@ -376,6 +383,8 @@ HCLOUD_BUILD_NAMES ?= hcloud-ubuntu-2004 hcloud-ubuntu-2204 hcloud-ubuntu-2404 h
 
 PROXMOX_BUILD_NAMES 		?= proxmox-ubuntu-2204
 
+VULTR_BUILD_NAMES 				?=	vultr-ubuntu-2204
+
 ## --------------------------------------
 ## Dynamic build targets
 ## --------------------------------------
@@ -420,6 +429,8 @@ HCLOUD_BUILD_TARGETS		:= $(addprefix build-,$(HCLOUD_BUILD_NAMES))
 HCLOUD_VALIDATE_TARGETS		:= $(addprefix validate-,$(HCLOUD_BUILD_NAMES))
 PROXMOX_BUILD_TARGETS		:= $(addprefix build-,$(PROXMOX_BUILD_NAMES))
 PROXMOX_VALIDATE_TARGETS	:= $(addprefix validate-,$(PROXMOX_BUILD_NAMES))
+VULTR_BUILD_TARGETS 	:= $(addprefix build-,$(VULTR_BUILD_NAMES))
+VULTR_VALIDATE_TARGETS 	:= $(addprefix validate-,$(VULTR_BUILD_NAMES))
 
 .PHONY: $(NODE_OVA_LOCAL_BUILD_TARGETS)
 $(NODE_OVA_LOCAL_BUILD_TARGETS): deps-ova
@@ -592,6 +603,14 @@ $(PROXMOX_BUILD_TARGETS): deps-proxmox
 .PHONY: $(PROXMOX_VALIDATE_TARGETS)
 $(PROXMOX_VALIDATE_TARGETS): deps-proxmox
 	$(PACKER) validate $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/proxmox/$(subst validate-proxmox-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/proxmox/packer.json
+
+.PHONY: $(VULTR_BUILD_TARGETS)
+$(VULTR_BUILD_TARGETS): deps-vultr
+	$(PACKER) build $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/vultr/$(subst build-vultr-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/vultr/packer.json
+
+.PHONY: $(VULTR_VALIDATE_TARGETS)
+$(VULTR_VALIDATE_TARGETS): deps-vultr
+	$(PACKER) validate $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/vultr/$(subst validate-vultr-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/vultr/packer.json
 
 ## --------------------------------------
 ## Dynamic clean targets
@@ -825,6 +844,8 @@ build-hcloud-all: $(HCLOUD_BUILD_TARGETS) ## Builds all Hetzner Cloud image
 
 build-proxmox-ubuntu-2204: ## Builds the Proxmox ubuntu-2204 image
 
+build-vultr-ubuntu-2204: ## Builds Ubuntu 22.04 Vultr Snapshot
+
 ## --------------------------------------
 ## Document dynamic validate targets
 ## --------------------------------------
@@ -989,6 +1010,8 @@ validate-hcloud-flatcar: ## Validates the Hetzner Cloud Flatcar Packer config
 validate-hcloud-all: $(HCLOUD_VALIDATE_TARGETS) ## Validates all Hetzner Cloud Packer config
 
 validate-proxmox-ubuntu-2204: ## Validates Ubuntu 22.04 Proxmox Packer config
+
+validate-vultr-ubuntu-2204: ## Validates Ubuntu 22.04 Vultr Snapshot Packer config
 
 validate-all: validate-ami-all \
 	validate-azure-all \
