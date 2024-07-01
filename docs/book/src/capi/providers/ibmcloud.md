@@ -13,18 +13,19 @@
 The build [prerequisites](../capi.md#prerequisites) for using `image-builder` for building PowerVS images are managed by running:
 
 ```bash
-cd image-builder/images/capi
-make deps-powervs
+$ git clone https://github.com/kubernetes-sigs/image-builder.git
+$ cd image-builder/images/capi/
+$ make deps-powervs
 ```
 
 From the `images/capi` directory, run `make build-powervs-centos-8`. The image is built and uploaded to your bucket capibm-powervs-{BUILD_NAME}-{KUBERNETES_VERSION}-{BUILD_TIMESTAMP}.
 
+> **Note:** Fill the required fields which are listed [here](#common-powervs-options) in a json file and pass it to the `PACKER_VAR_FILES` environment variable while building the image.
+
 For building a centos-streams8 based CAPI image, run the following commands -
 
 ```bash
-$ git clone https://github.com/kubernetes-sigs/image-builder.git
-$ cd image-builder/images/capi/
-$ ANSIBLE_SSH_ARGS="-o HostKeyAlgorithms=+ssh-rsa -o PubkeyAcceptedAlgorithms=+ssh-rsa" make build-powervs-centos-8
+$ ANSIBLE_SSH_ARGS="-o HostKeyAlgorithms=+ssh-rsa -o PubkeyAcceptedAlgorithms=+ssh-rsa" PACKER_VAR_FILES=variables.json make build-powervs-centos-8
 ```
 
 ### Configuration
@@ -34,6 +35,7 @@ In addition to the configuration found in `images/capi/packer/config`, the `powe
 | File | Description |
 |------|-------------|
 | `centos-8.json` | The settings for the CentOS 8 image |
+| `centos-9.json` | The settings for the CentOS 8 image |
 
 #### Common PowerVS options
 
@@ -57,8 +59,9 @@ This table lists several common options that a user may want to set via `PACKER_
 The parameters can be set via a variable file and passed via `PACKER_VAR_FILES`. See [Customization](../capi.md#customization) for examples.
 
 
-Note: When setting `dhcp_network: true`, make sure to customize the network settings while building OS using [pvsadm tool](https://github.com/ppc64le-cloud/pvsadm/blob/main/docs/Build%20DHCP%20enabled%20Centos%20Images.md).
-Also run the image-builder from system from where the DHCP private IP can be reached and SSH able.
+> **Note:** 
+> 1. When setting `dhcp_network: true`, you need to build an OS image with certain network settings using [pvsadm tool](https://github.com/ppc64le-cloud/pvsadm/blob/main/docs/Build%20DHCP%20enabled%20Centos%20Images.md) and replace [the fields](https://github.com/kubernetes-sigs/image-builder/blob/cb925047f388090a0db3430ca3172da63eff952c/images/capi/packer/powervs/centos-8.json#L6) with the custom image details.
+> 2. Clone the image-builder repo and run `make build` commands from a system where the DHCP private IP can be reached and SSH able.
 
 ## CAPIBM - VPC
 

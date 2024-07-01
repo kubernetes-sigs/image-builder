@@ -375,7 +375,7 @@ QEMU_KUBEVIRT_BUILD_NAMES	:= $(addprefix kubevirt-,$(QEMU_BUILD_NAMES))
 
 RAW_BUILD_NAMES				?=      raw-ubuntu-2004 raw-ubuntu-2004-efi raw-flatcar raw-rhel-8 raw-rhel-9 raw-rhel-9-efi
 
-POWERVS_BUILD_NAMES         ?= powervs-centos-8
+POWERVS_BUILD_NAMES         ?= powervs-centos-8 powervs-centos-9
 
 NUTANIX_BUILD_NAMES ?= nutanix-ubuntu-2004 nutanix-ubuntu-2204 nutanix-ubuntu-2404 nutanix-rhel-8 nutanix-rhel-9 nutanix-rockylinux-8 nutanix-rockylinux-9 nutanix-flatcar nutanix-windows-2022
 
@@ -986,7 +986,8 @@ validate-osc-ubuntu-2004: ## Validates Ubuntu 20.04 Outscale Snapshot Packer con
 validate-osc-ubuntu-2204: ## Validates Ubuntu 20.04 Outscale Snapshot Packer config
 validate-osc-all: $(OSC_VALIDATE_TARGETS) ## Validates all Outscale Snapshot Packer config
 
-validate-powervs-centos-8: ## Validates the PowerVS CentOS image packer config
+validate-powervs-centos-8: ## Validates the PowerVS CentOS 8 image packer config
+validate-powervs-centos-9: ## Validates the PowerVS CentOS 9 image packer config
 validate-powervs-all: $(POWERVS_VALIDATE_TARGETS) ## Validates all PowerVS Packer config
 
 validate-nutanix-ubuntu-2004: ## Validates Ubuntu 20.04 Nutanix Packer config
