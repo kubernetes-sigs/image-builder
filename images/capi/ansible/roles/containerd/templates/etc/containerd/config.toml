@@ -11,6 +11,8 @@ imports = ["/etc/containerd/conf.d/*.toml"]
 [plugins]
   [plugins."io.containerd.grpc.v1.cri"]
     sandbox_image = "{{ pause_image }}"
+  [plugins."io.containerd.grpc.v1.cri".registry]
+    config_path = "/etc/containerd/certs.d"
 {% if kubernetes_semver is version('v1.21.0', '>=') %}
   [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc]
     runtime_type = "io.containerd.runc.v2"
