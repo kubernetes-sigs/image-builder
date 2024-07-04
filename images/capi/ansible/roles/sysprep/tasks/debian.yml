@@ -144,3 +144,13 @@
     path: /etc/cloud/cloud.cfg.d/90-installer-network.cfg
     state: absent
   when: ansible_distribution_version is version('22.04', '>=')
+
+- name: Remove subiquity install logs
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  when: ansible_distribution_version is version('22.04', '>=')
+  loop:
+    - /var/log/installer/subiquity-server-debug.log
+    - /var/log/installer/subiquity-server-info.log
+    - /var/log/installer/

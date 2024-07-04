@@ -39,6 +39,8 @@
         "{{user `boot_command_suffix`}}"
       ],
       "boot_wait": "{{user `boot_wait`}}",
+      "cd_files": "{{user `cd_files`}}",
+      "cd_label": "{{user `cd_label`}}",
       "cdrom_adapter_type": "{{user `cdrom_adapter_type`}}",
       "communicator": "ssh",
       "cores": "{{user `cpu_cores`}}",
@@ -90,6 +92,8 @@
         "{{user `boot_command_suffix`}}"
       ],
       "boot_wait": "{{user `boot_wait`}}",
+      "cd_files": "{{user `cd_files`}}",
+      "cd_label": "{{user `cd_label`}}",
       "cdrom_adapter_type": "{{user `cdrom_adapter_type`}}",
       "communicator": "ssh",
       "cores": "{{user `cpu_cores`}}",
@@ -140,6 +144,8 @@
         "{{user `boot_command_suffix`}}"
       ],
       "boot_wait": "{{user `boot_wait`}}",
+      "cd_files": "{{user `cd_files`}}",
+      "cd_label": "{{user `cd_label`}}",
       "cdrom_type": "{{user `cdrom_type`}}",
       "cluster": "{{user `cluster`}}",
       "communicator": "ssh",
@@ -199,6 +205,8 @@
         "{{user `boot_command_suffix`}}"
       ],
       "boot_wait": "{{user `boot_wait`}}",
+      "cd_files": "{{user `cd_files`}}",
+      "cd_label": "{{user `cd_label`}}",
       "cdrom_type": "{{user `cdrom_type`}}",
       "cluster": "{{user `cluster`}}",
       "communicator": "ssh",
@@ -234,6 +242,7 @@
           "network_card": "{{user `network_card`}}"
         }
       ],
+      "notes": "Builddate: {{isotime \"2006-01-02T15:04\"}},  containerd_version: {{user `containerd_version`}} vsphere_guest_os_type: {{user `vsphere_guest_os_type`}} kubernetes_cni_semver: {{user `kubernetes_cni_semver`}} kubernetes_semver: {{user `kubernetes_semver`}} kubernetes_source_type: {{user `kubernetes_source_type`}}  vm_version: {{user `vmx_version`}}",
       "password": "{{user `password`}}",
       "resource_pool": "{{user `resource_pool`}}",
       "shutdown_command": "echo '{{user `ssh_password`}}' | sudo -S -E sh -c 'userdel -f -r {{user `ssh_username`}} && rm -f /etc/sudoers.d/{{user `ssh_username` }} && {{user `shutdown_command`}}'",
@@ -257,6 +266,8 @@
     {
       "CPUs": "{{user `cpu`}}",
       "RAM": "{{user `memory`}}",
+      "cd_files": "{{user `cd_files`}}",
+      "cd_label": "{{user `cd_label`}}",
       "cluster": "{{user `cluster`}}",
       "communicator": "ssh",
       "convert_to_template": "{{user `convert_to_template`}}",
