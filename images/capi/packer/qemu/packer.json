@@ -8,10 +8,15 @@
         "{{user `boot_command_suffix`}}"
       ],
       "boot_wait": "{{user `boot_wait`}}",
+      "cd_files": [
+        "{{user `cd_files`}}"
+      ],
+      "cd_label": "cidata",
       "cpu_model": "host",
       "cpus": "{{user `cpus`}}",
       "disk_compression": "{{ user `disk_compression`}}",
       "disk_discard": "{{user `disk_discard`}}",
+      "disk_image": "{{ user `disk_image` }}",
       "disk_interface": "virtio-scsi",
       "disk_size": "{{user `disk_size`}}",
       "firmware": "{{user `firmware`}}",
@@ -156,6 +161,7 @@
     "boot_media_path": "http://{{ .HTTPIP }}:{{ .HTTPPort }}",
     "boot_wait": "10s",
     "build_timestamp": "{{timestamp}}",
+    "cd_files": "linux/base/*.nothing",
     "containerd_sha256": null,
     "containerd_url": "https://github.com/containerd/containerd/releases/download/v{{user `containerd_version`}}/cri-containerd-cni-{{user `containerd_version`}}-linux-amd64.tar.gz",
     "containerd_version": null,
@@ -164,6 +170,7 @@
     "crictl_version": null,
     "disk_compression": "false",
     "disk_discard": "unmap",
+    "disk_image": "false",
     "disk_size": "20480",
     "existing_ansible_ssh_args": "{{env `ANSIBLE_SSH_ARGS`}}",
     "firmware": "",
