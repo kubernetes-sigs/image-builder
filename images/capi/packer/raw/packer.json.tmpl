@@ -24,7 +24,14 @@
       "net_device": "virtio-net",
       "output_directory": "{{user `output_directory`}}",
       "qemu_binary": "{{user `qemu_binary`}}",
+      "qemuargs": [
+        [
+          "-vga",
+          "virtio"
+        ]
+      ],
       "shutdown_command": "echo '{{user `ssh_password`}}' | sudo -S -E sh -c 'usermod -L {{user `ssh_username`}} && {{user `shutdown_command`}}'",
+      "ssh_handshake_attempts": "100",
       "ssh_password": "{{user `ssh_password`}}",
       "ssh_timeout": "2h",
       "ssh_username": "{{user `ssh_username`}}",
@@ -72,7 +79,9 @@
         "--scp-extra-args",
         "{{user `ansible_scp_extra_args`}}"
       ],
+      "max_retries": 5,
       "playbook_file": "./ansible/firstboot.yml",
+      "timeout": "30m",
       "type": "ansible",
       "user": "builder"
     },
@@ -86,7 +95,7 @@
     },
     {
       "ansible_env_vars": [
-        "ANSIBLE_SSH_ARGS='{{user `existing_ansible_ssh_args`}} -o IdentitiesOnly=yes'"
+        "ANSIBLE_SSH_ARGS='{{user `existing_ansible_ssh_args`}} {{user `ansible_common_ssh_args`}}'"
       ],
       "extra_arguments": [
         "--extra-vars",
@@ -98,7 +107,9 @@
         "--scp-extra-args",
         "{{user `ansible_scp_extra_args`}}"
       ],
+      "max_retries": 5,
       "playbook_file": "./ansible/node.yml",
+      "timeout": "30m",
       "type": "ansible",
       "user": "builder"
     },
@@ -118,6 +129,7 @@
       "vars_inline": {
         "ARCH": "amd64",
         "OS": "{{user `distro_name` | lower}}",
+        "OS_VERSION": "{{user `distro_version` | lower}}",
         "PROVIDER": "raw",
         "containerd_version": "{{user `containerd_version`}}",
         "kubernetes_cni_deb_version": "{{ user `kubernetes_cni_deb_version` }}",

@@ -3,3 +3,4 @@ ks.cfg
 ks-efi.cfg
 preseed.cfg
 preseed-efi.cfg
+user-data
