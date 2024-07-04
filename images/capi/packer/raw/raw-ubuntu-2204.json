@@ -1,0 +1,16 @@
+{
+  "boot_command_prefix": "c<wait>linux /casper/vmlinuz --- autoinstall ds='nocloud-net;s=http://{{ .HTTPIP }}:{{ .HTTPPort }}/22.04/'<enter><wait>initrd /casper/initrd<enter><wait>boot<enter>",
+  "build_name": "ubuntu-2204",
+  "build_target": "raw",
+  "distro_arch": "amd64",
+  "distro_name": "ubuntu",
+  "distro_version": "22.04",
+  "distro_version_slug": "2204",
+  "guest_os_type": "ubuntu-64",
+  "iso_checksum": "9bc6028870aef3f74f4e16b900008179e78b130e6b0b9a140635434a46aa98b0",
+  "iso_checksum_type": "sha256",
+  "iso_url": "https://releases.ubuntu.com/22.04.5/ubuntu-22.04.5-live-server-amd64.iso",
+  "os_display_name": "Ubuntu 22.04",
+  "shutdown_command": "shutdown -P now",
+  "unmount_iso": "true"
+}
