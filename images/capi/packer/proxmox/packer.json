@@ -27,7 +27,9 @@
       "name": "{{user `build_name`}}",
       "network_adapters": [
         {
-          "bridge": "{{user `bridge`}}"
+          "bridge": "{{user `bridge`}}",
+          "mtu": "{{ user `mtu` }}",
+          "vlan_tag": "{{user `vlan_tag`}}"
         }
       ],
       "node": "{{ user `node` }}",
@@ -180,6 +182,7 @@
     "kubernetes_series": null,
     "kubernetes_source_type": null,
     "memory": "2048",
+    "mtu": "{{env `PROXMOX_MTU`}}",
     "node": "{{env `PROXMOX_NODE`}}",
     "proxmox_url": "{{env `PROXMOX_URL`}}",
     "sockets": "2",
@@ -189,6 +192,7 @@
     "storage_pool_type": "lvm",
     "token": "{{env `PROXMOX_TOKEN`}}",
     "username": "{{env `PROXMOX_USERNAME`}}",
+    "vlan_tag": "{{env `PROXMOX_VLAN`}}",
     "vmid": ""
   }
 }
