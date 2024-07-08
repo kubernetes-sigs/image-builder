@@ -60,7 +60,7 @@ Then the user (not token) must be given the following permissions on the path `/
 * Sys.Audit
 * VM.*
 
-*Suggest creating a new role since no built-in PVE role covers just these.*
+*We suggest creating a new role, since no built-in PVE roles covers just these.*
 
 ### Example
 
