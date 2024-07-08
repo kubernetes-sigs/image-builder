@@ -14,7 +14,7 @@ The image build process expects a few things to be in place before the build pro
   * The packer proxmox integration currently does not support the ability to assign static IPs, thus DHCP is required.
   * Access to internet hosts is optional, but the VM will not be able to apply any current updates and will need to be manually rebooted to get a clean cloud-init status.
 2. The build VM must be accessible via SSH from the host running `make build-proxmox...`
-3. The build VM must have DHCP, DNS, HTTP, HTTPS and NTP services available to successfully update the OS packages.
+3. The build VM must have DHCP, DNS, HTTP, HTTPS and NTP services available on the network to successfully update the OS packages.
 
 ## Building Images
 
