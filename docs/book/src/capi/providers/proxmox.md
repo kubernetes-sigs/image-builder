@@ -6,6 +6,16 @@
 - Set environment variables for `PROXMOX_URL`, `PROXMOX_USERNAME`, `PROXMOX_TOKEN`, `PROXMOX_NODE`
 - Set optional environment variables `PROXMOX_ISO_POOL`, `PROXMOX_BRIDGE`, `PROXMOX_STORAGE_POOL` to override the default values
 
+## Networking Requirements
+
+The image build process expects a few things to be in place before the build process will complete successfully.
+
+1. DHCP must be available to assign the packer VM an IP
+  * The packer proxmox integration currently does not support the ability to assign static IPs, thus DHCP is required.
+  * Access to internet hosts is optional, but the VM will not be able to apply any current updates and will need to be manually rebooted to get a clean cloud-init status.
+2. The build VM must be accessible via SSH from the host running `make build-proxmox...`
+3. The build VM must have DHCP, DNS, HTTP, HTTPS and NTP accessibility to successfully update the OS packages.
+
 ## Building Images
 
 The build [prerequisites](../capi.md#prerequisites) for using `image-builder` for
@@ -61,6 +71,7 @@ Then the user (not token) must be given the following permissions on the path `/
 * VM.*
 
 *We suggest creating a new role, since no built-in PVE roles covers just these.*
+
 
 ### Example
 
