@@ -88,7 +88,11 @@ trap cleanup EXIT
 make deps-azure
 
 # Latest Flatcar version is often available on Azure with a delay, so resolve ourselves
-az login --service-principal -u ${AZURE_CLIENT_ID} -p ${AZURE_CLIENT_SECRET} --tenant ${AZURE_TENANT_ID}
+if [[ -n "${AZURE_FEDERATED_TOKEN_FILE:-}" ]]; then
+  az login --service-principal -u "${AZURE_CLIENT_ID}" -t "${AZURE_TENANT_ID}" --federated-token "$(cat "${AZURE_FEDERATED_TOKEN_FILE}")"
+else
+  az login --service-principal -u "${AZURE_CLIENT_ID}" -t "${AZURE_TENANT_ID}" -p "${AZURE_CLIENT_SECRET}"
+fi
 get_flatcar_version() {
     az vm image show --urn kinvolk:flatcar-container-linux-free:stable:latest --query 'name' -o tsv
 }

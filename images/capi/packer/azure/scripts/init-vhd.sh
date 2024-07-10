@@ -5,7 +5,13 @@
 echo "Sign into Azure"
 tracestate="$(shopt -po xtrace)"
 set +o xtrace
-az login --service-principal -u ${AZURE_CLIENT_ID} -p ${AZURE_CLIENT_SECRET} --tenant ${AZURE_TENANT_ID} >/dev/null 2>&1
+
+if [[ -n "${AZURE_FEDERATED_TOKEN_FILE:-}" ]]; then
+  az login --service-principal -u "${AZURE_CLIENT_ID}" -t "${AZURE_TENANT_ID}" --federated-token "$(cat "${AZURE_FEDERATED_TOKEN_FILE}")" > /dev/null 2>&1
+  export ENABLE_AUTH_MODE_LOGIN="true"   # Use --auth-mode "login" in az storage commands.
+else
+  az login --service-principal -u "${AZURE_CLIENT_ID}" -t "${AZURE_TENANT_ID}" -p ${AZURE_CLIENT_SECRET} >/dev/null 2>&1
+fi
 az account set -s ${AZURE_SUBSCRIPTION_ID} >/dev/null 2>&1
 eval "$tracestate"
 

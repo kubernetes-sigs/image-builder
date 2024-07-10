@@ -8,12 +8,17 @@ steps:
       printf "${OS_DISK_URI}" | tee packer/azure/vhd-base-url.out
       printf "${OS_DISK_URI}?" | tee packer/azure/vhd-url.out
       printf "${RESOURCE_GROUP_NAME}" | tee packer/azure/resource-group-name.out
-      az login --service-principal -u ${AZURE_CLIENT_ID} -p ${AZURE_CLIENT_SECRET} --tenant ${AZURE_TENANT_ID}
+      if [[ -n "${AZURE_FEDERATED_TOKEN_FILE:-}" ]]; then
+        az login --service-principal -u "${AZURE_CLIENT_ID}" -t "${AZURE_TENANT_ID}" --federated-token "$(cat "${AZURE_FEDERATED_TOKEN_FILE}")"
+        export ENABLE_AUTH_MODE_LOGIN="true"   # Use --auth-mode "login" in az storage commands.
+      else
+        az login --service-principal -u "${AZURE_CLIENT_ID}" -t "${AZURE_TENANT_ID}" -p "${AZURE_CLIENT_SECRET}"
+      fi
       az account set -s ${AZURE_SUBSCRIPTION_ID}
       ACCOUNT_KEY=$(az storage account keys list -g ${RESOURCE_GROUP_NAME} --subscription ${AZURE_SUBSCRIPTION_ID} --account-name ${STORAGE_ACCOUNT_NAME} --query '[0].value')
       start_date=$(date +"%Y-%m-%dT00:00Z" -d "-1 day")
       expiry_date=$(date +"%Y-%m-%dT00:00Z" -d "+1 year")
-      az storage container generate-sas --name system --permissions lr --account-name ${STORAGE_ACCOUNT_NAME} --account-key ${ACCOUNT_KEY} --start $start_date --expiry $expiry_date | tr -d '\"' | tee -a packer/azure/vhd-url.out
+      az storage container generate-sas ${ENABLE_AUTH_MODE_LOGIN:+"--auth-mode login"} --name system --permissions lr --account-name ${STORAGE_ACCOUNT_NAME} --account-key ${ACCOUNT_KEY} --start $start_date --expiry $expiry_date | tr -d '\"' | tee -a packer/azure/vhd-url.out
   displayName: Getting OS VHD URL
   workingDirectory: '$(system.defaultWorkingDirectory)/images/capi'
   condition: eq(variables.CLEANUP, 'False')
