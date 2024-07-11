@@ -8,7 +8,7 @@ set +o xtrace
 
 if [[ -n "${AZURE_FEDERATED_TOKEN_FILE:-}" ]]; then
   az login --service-principal -u "${AZURE_CLIENT_ID}" -t "${AZURE_TENANT_ID}" --federated-token "$(cat "${AZURE_FEDERATED_TOKEN_FILE}")" > /dev/null 2>&1
-  export ENABLE_AUTH_MODE_LOGIN="true"   # Use --auth-mode "login" in az storage commands.
+  export AZURE_STORAGE_AUTH_MODE="login"   # Use auth mode "login" in az storage commands.
 else
   az login --service-principal -u "${AZURE_CLIENT_ID}" -t "${AZURE_TENANT_ID}" -p ${AZURE_CLIENT_SECRET} >/dev/null 2>&1
 fi
