@@ -83,7 +83,12 @@ curl -fsSL https://github.com/devigned/pub/releases/download/${PUB_VERSION}/pub_
 export PATH=$PATH:$(pwd)
 which pub &> /dev/null || (echo "Please install pub from https://github.com/devigned/pub/releases" && exit 1)
 
-az login --service-principal -u ${AZURE_CLIENT_ID_VHD} -p ${AZURE_CLIENT_SECRET_VHD} --tenant ${AZURE_TENANT_ID_VHD}
+if [[ -n "${AZURE_FEDERATED_TOKEN_FILE:-}" ]]; then
+  az login --service-principal -u "${AZURE_CLIENT_ID}" -t "${AZURE_TENANT_ID}" --federated-token "$(cat "${AZURE_FEDERATED_TOKEN_FILE}")"
+  export ENABLE_AUTH_MODE_LOGIN="true"   # Use --auth-mode "login" in az storage commands.
+else
+  az login --service-principal -u "${AZURE_CLIENT_ID}" -t "${AZURE_TENANT_ID}" -p "${AZURE_CLIENT_SECRET}"
+fi
 az account set -s ${AZURE_SUBSCRIPTION_ID_VHD}
 
 # Get URLs in use by the marketplace offers
@@ -137,14 +142,14 @@ for account in $(az storage account list -g "${RESOURCE_GROUP}" -o tsv --query "
           if [[ ${url} =~ ${storage_account} ]]; then
             echo "Archiving storage account ${storage_account} (${label}) that is ${age} days old"
             # create a destination container
-            if [[ $(az storage container exists --account-name "${ARCHIVE_STORAGE_ACCOUNT}" -n "${dest_label}" -o tsv 2>/dev/null) != "True" ]]; then
-              ${ECHO} az storage container create --only-show-errors --public-access=container \
+            if [[ $(az storage container exists ${ENABLE_AUTH_MODE_LOGIN:+"--auth-mode login"} --account-name "${ARCHIVE_STORAGE_ACCOUNT}" -n "${dest_label}" -o tsv 2>/dev/null) != "True" ]]; then
+              ${ECHO} az storage container create ${ENABLE_AUTH_MODE_LOGIN:+"--auth-mode login"} --only-show-errors --public-access=container \
                 -n ${dest_label} -g "${RESOURCE_GROUP}" --account-name "${ARCHIVE_STORAGE_ACCOUNT}" 2>/dev/null
             fi
             # for each source container
-            for container in $(az storage container list --only-show-errors --account-name ${storage_account} --query "[].name" -o tsv 2>/dev/null); do
+            for container in $(az storage container list ${ENABLE_AUTH_MODE_LOGIN:+"--auth-mode login"} --only-show-errors --account-name ${storage_account} --query "[].name" -o tsv 2>/dev/null); do
               # copy it to the destination container
-              ${ECHO} az storage blob copy start-batch \
+              ${ECHO} az storage blob copy start-batch ${ENABLE_AUTH_MODE_LOGIN:+"--auth-mode login"} \
                 --account-name ${ARCHIVE_STORAGE_ACCOUNT} \
                 --destination-container ${dest_label} \
                 --destination-path ${container} \
@@ -154,9 +159,9 @@ for account in $(az storage account list -g "${RESOURCE_GROUP}" -o tsv --query "
                 2>/dev/null
             done
             # poll the target container until all blobs have "succeeded" copy status
-            for target in $(az storage blob list --account-name ${ARCHIVE_STORAGE_ACCOUNT} -c ${dest_label} --query '[].name' -o tsv 2>/dev/null); do
+            for target in $(az storage blob list ${ENABLE_AUTH_MODE_LOGIN:+"--auth-mode login"} --account-name ${ARCHIVE_STORAGE_ACCOUNT} -c ${dest_label} --query '[].name' -o tsv 2>/dev/null); do
               while true; do
-                status=$(az storage blob show --account-name ${ARCHIVE_STORAGE_ACCOUNT} --container-name ${dest_label} --name $target -o tsv --query 'properties.copy.status' 2>/dev/null)
+                status=$(az storage blob show ${ENABLE_AUTH_MODE_LOGIN:+"--auth-mode login"} --account-name ${ARCHIVE_STORAGE_ACCOUNT} --container-name ${dest_label} --name $target -o tsv --query 'properties.copy.status' 2>/dev/null)
                 if [[ ${status} == "success" ]]; then
                   echo "Copied ${dest_label}/${target}"
                   break
