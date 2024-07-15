@@ -92,8 +92,10 @@ make deps-azure
 
 # Latest Flatcar version is often available on Azure with a delay, so resolve ourselves
 if [[ -n "${AZURE_FEDERATED_TOKEN_FILE:-}" ]]; then
+  echo "logging in with federated token file"
   az login --service-principal -u "${AZURE_CLIENT_ID}" -t "${AZURE_TENANT_ID}" --federated-token "$(cat "${AZURE_FEDERATED_TOKEN_FILE}")"
 else
+  echo "logging in with client secret"
   az login --service-principal -u "${AZURE_CLIENT_ID}" -t "${AZURE_TENANT_ID}" -p "${AZURE_CLIENT_SECRET}"
 fi
 get_flatcar_version() {
