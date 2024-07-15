@@ -56,7 +56,10 @@ source "packer/azure/scripts/parse-prow-creds.sh"
 : "${AZURE_SUBSCRIPTION_ID:?Environment variable empty or not defined.}"
 : "${AZURE_TENANT_ID:?Environment variable empty or not defined.}"
 : "${AZURE_CLIENT_ID:?Environment variable empty or not defined.}"
-: "${AZURE_CLIENT_SECRET:?Environment variable empty or not defined.}"
+if [ -z "${AZURE_FEDERATED_TOKEN_FILE}" ] && [ -z "${AZURE_CLIENT_SECRET}" ]; then
+  echo "Either AZURE_FEDERATED_TOKEN_FILE or AZURE_CLIENT_SECRET must be set."
+  exit 1
+fi
 
 get_random_region() {
     local REGIONS=("eastus" "eastus2" "southcentralus" "westus2" "westeurope")
