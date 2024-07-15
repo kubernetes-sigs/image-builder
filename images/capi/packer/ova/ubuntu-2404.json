@@ -6,7 +6,7 @@
   "distro_arch": "amd64",
   "distro_name": "ubuntu",
   "distro_version": "24.04",
-  "floppy_dirs": "./packer/ova/linux/{{user `distro_name`}}/http/HTTP/24.04/",
+  "floppy_dirs": "./packer/ova/linux/{{user `distro_name`}}/http/24.04/",
   "floppy_label": "cidata",
   "guest_os_type": "ubuntu-64",
   "iso_checksum": "8762f7e74e4d64d72fceb5f70682e6b069932deedb4949c6975d0f0fe0a91be3",
