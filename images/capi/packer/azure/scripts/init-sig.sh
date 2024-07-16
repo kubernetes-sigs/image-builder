@@ -13,7 +13,14 @@ az account set -s ${AZURE_SUBSCRIPTION_ID} >/dev/null 2>&1
 eval "$tracestate"
 
 export RESOURCE_GROUP_NAME="${RESOURCE_GROUP_NAME:-cluster-api-images}"
-export AZURE_LOCATION="${AZURE_LOCATION:-northcentralus}"
+export AZURE_LOCATION="${AZURE_LOCATION:-southcentralus}"
+
+# Creating Azure VMs from a Marketplace Image requires a Purchase Plan
+# https://portal.azure.com/#view/Microsoft_Azure_Marketplace/GalleryItemDetailsBladeNopdl/id/microsoftwindowsserver.microsoftserveroperatingsystems-previews/selectionMode~/false/resourceGroupId//resourceGroupLocation//dontDiscardJourney~/false
+export PLAN_PUBLISHER="${PLAN_PUBLISHER:-''}"
+export PLAN_OFFER="${PLAN_OFFER:-''}"
+export PLAN_NAME="${PLAN_NAME:-''}"
+
 if ! az group show -n ${RESOURCE_GROUP_NAME} -o none 2>/dev/null; then
   az group create -n ${RESOURCE_GROUP_NAME} -l ${AZURE_LOCATION} --tags ${TAGS:-}
 fi
@@ -50,7 +57,10 @@ create_image_definition() {
     --sku ${SIG_SKU:-$2} \
     --hyper-v-generation ${3} \
     --os-type ${4} \
-    --features ${5:-''}
+    --features ${5:-''} \
+    --plan-name ${PLAN_NAME} \
+    --plan-product ${PLAN_OFFER} \
+    --plan-publisher ${PLAN_PUBLISHER}
 }
 
 SIG_TARGET=$1
@@ -82,6 +92,9 @@ case ${SIG_TARGET} in
   ;;
   windows-2022-containerd)
     create_image_definition ${SIG_TARGET} "win-2022-containerd" "V1" "Windows"
+  ;;
+  windows-2025-containerd)
+    create_image_definition ${SIG_TARGET} "win-2025-containerd" "V2" "Windows"
   ;;
   windows-annual-containerd)
     create_image_definition ${SIG_TARGET} "win-annual-containerd" "V1" "Windows"
