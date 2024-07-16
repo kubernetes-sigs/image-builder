@@ -73,6 +73,11 @@ package:
 {{end}}
 {{end}}
 
+
+#################################################################################
+######## TODO: [SEPTEMBER 2024] Revert timeout to 60000ms after image GA ########
+# The WS2025 preview image build is failing due to timeout issues when running 
+# PowerShell command to Get Windows Features.
 {{ if eq .Vars.OS "windows"}} # Windows
 # Workaround until windows features are added to goss
 command:
@@ -82,7 +87,7 @@ command:
     exit-status: 0
     stdout: {{range $vers.expected}}
     - {{.}}
-    timeout: 60000
+    timeout: 120000 # Give it enough time to retry if it fails
     {{end}}
 {{end}}
 {{end}}
