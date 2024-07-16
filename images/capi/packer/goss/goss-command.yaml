@@ -231,16 +231,12 @@ command:
     stdout:
     - "C:\\Windows\\System32\\CCGAKVPlugin.dll"
     timeout: 30000
-  {{if ne .Vars.distribution_version "2025"}}
-  # TODO: [SEPTEMEBER 2024] Known issue in Windows Server 2025 preview image.
-  # WIP to fix the bug: The property value is null/empty
   Key Vault gMSA CCG interface is registered:
     exec: powershell -command "(Get-Item 'HKLM:SOFTWARE\Classes\Interface\{6ECDA518-2010-4437-8BC3-46E752B7B172}') | Ft -autosize -wrap"
     exit-status: 0
     stdout:
     - "ICcgDomainAuthCredentials"
     timeout: 30000
-  {{end}}
 {{end}}
 
 {{ if ne .Vars.ssh_source_url "" }}
