@@ -23,8 +23,6 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-export DEBUG=true
-
 [[ -n ${DEBUG:-} ]] && set -o xtrace
 
 CAPI_ROOT=$(dirname "${BASH_SOURCE[0]}")/..
@@ -58,10 +56,12 @@ source "packer/azure/scripts/parse-prow-creds.sh"
 : "${AZURE_SUBSCRIPTION_ID:?Environment variable empty or not defined.}"
 : "${AZURE_TENANT_ID:?Environment variable empty or not defined.}"
 : "${AZURE_CLIENT_ID:?Environment variable empty or not defined.}"
+set +o nounset
 if [ -z "${AZURE_FEDERATED_TOKEN_FILE}" ] && [ -z "${AZURE_CLIENT_SECRET}" ]; then
   echo "Either AZURE_FEDERATED_TOKEN_FILE or AZURE_CLIENT_SECRET must be set."
   exit 1
 fi
+set -o nounset
 
 get_random_region() {
     local REGIONS=("eastus" "eastus2" "southcentralus" "westus2" "westeurope")
@@ -92,15 +92,12 @@ trap cleanup EXIT
 
 make deps-azure
 
+# Latest Flatcar version is often available on Azure with a delay, so resolve ourselves
 if [[ -n "${AZURE_FEDERATED_TOKEN_FILE:-}" ]]; then
-  echo "logging in with federated token file"
   az login --service-principal -u "${AZURE_CLIENT_ID}" -t "${AZURE_TENANT_ID}" --federated-token "$(cat "${AZURE_FEDERATED_TOKEN_FILE}")"
 else
-  echo "logging in with client secret"
   az login --service-principal -u "${AZURE_CLIENT_ID}" -t "${AZURE_TENANT_ID}" -p "${AZURE_CLIENT_SECRET}"
 fi
-
-# Latest Flatcar version is often available on Azure with a delay, so resolve ourselves
 get_flatcar_version() {
     az vm image show --urn kinvolk:flatcar-container-linux-free:stable:latest --query 'name' -o tsv
 }
