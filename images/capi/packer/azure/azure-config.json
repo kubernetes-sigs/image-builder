@@ -1,5 +1,5 @@
 {
-  "azure_location": "{{env `AZURE_LOCATION`}}",
+  "azure_location": "{{ env `AZURE_LOCATION` }}",
   "client_id": "{{env `AZURE_CLIENT_ID`}}",
   "client_secret": "{{env `AZURE_CLIENT_SECRET`}}",
   "containerd_wasm_shims_runtimes": "lunatic,slight,spin,wws",
