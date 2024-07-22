@@ -64,11 +64,11 @@ fi
 set -o nounset
 
 get_random_region() {
-    local REGIONS=("eastus" "eastus2" "southcentralus" "westus2" "westeurope")
+    local REGIONS=("australiaeast" "canadacentral" "eastus" "eastus2" "northcentralus" "northeurope" "uksouth" "westeurope" "westus2")
     echo "${REGIONS[${RANDOM} % ${#REGIONS[@]}]}"
 }
 
-export VALID_CVM_LOCATIONS=("eastus" "westus" "northeurope" "westeurope")
+export VALID_CVM_LOCATIONS=("eastus" "northeurope" "westeurope" "westus")
 get_random_cvm_region() {
     echo "${VALID_CVM_LOCATIONS[${RANDOM} % ${#VALID_CVM_LOCATIONS[@]}]}"
 }
@@ -92,17 +92,20 @@ trap cleanup EXIT
 
 make deps-azure
 
-if [[ -n "${AZURE_FEDERATED_TOKEN_FILE:-}" ]]; then
-  az login --service-principal -u "${AZURE_CLIENT_ID}" -t "${AZURE_TENANT_ID}" --federated-token "$(cat "${AZURE_FEDERATED_TOKEN_FILE}")"
-  export USE_AZURE_CLI_AUTH=True  # Packer will use this existing login for its authentication
-else
-  az login --service-principal -u "${AZURE_CLIENT_ID}" -t "${AZURE_TENANT_ID}" -p "${AZURE_CLIENT_SECRET}"
-fi
+login() {
+  if [[ -n "${AZURE_FEDERATED_TOKEN_FILE:-}" ]]; then
+    az login --service-principal -u "${AZURE_CLIENT_ID}" -t "${AZURE_TENANT_ID}" --federated-token "$(cat "${AZURE_FEDERATED_TOKEN_FILE}")"
+    export USE_AZURE_CLI_AUTH=True  # Packer will use this existing login for its authentication
+  else
+    az login --service-principal -u "${AZURE_CLIENT_ID}" -t "${AZURE_TENANT_ID}" -p "${AZURE_CLIENT_SECRET}"
+  fi
+}
 
 # Latest Flatcar version is often available on Azure with a delay, so resolve ourselves
 get_flatcar_version() {
     az vm image show --urn kinvolk:flatcar-container-linux-free:stable:latest --query 'name' -o tsv
 }
+login
 export FLATCAR_VERSION="$(get_flatcar_version)"
 
 # Pre-pulling windows images takes 10-20 mins
@@ -113,6 +116,7 @@ declare -A PIDS
 if [[ "${AZURE_BUILD_FORMAT:-vhd}" == "sig" ]]; then
     for target in ${SIG_CI_TARGETS[@]};
     do
+        login
         make build-azure-sig-${target} > ${ARTIFACTS}/azure-sigs/${target}.log 2>&1 &
         PIDS["sig-${target}"]=$!
     done
@@ -126,6 +130,7 @@ if [[ "${AZURE_BUILD_FORMAT:-vhd}" == "sig" ]]; then
 
     for target in ${SIG_CVM_CI_TARGETS[@]};
     do
+        login
         AZURE_LOCATION="${SELECTED_LOCATION}" make build-azure-sig-${target} > ${ARTIFACTS}/azure-sigs/${target}.log 2>&1 &
         PIDS["sig-${target}"]=$!
     done
