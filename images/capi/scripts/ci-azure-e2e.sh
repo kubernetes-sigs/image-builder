@@ -64,11 +64,11 @@ fi
 set -o nounset
 
 get_random_region() {
-    local REGIONS=("eastus" "eastus2" "southcentralus" "westus2" "westeurope")
+    local REGIONS=("australiaeast" "canadacentral" "eastus" "eastus2" "northcentralus" "northeurope" "uksouth" "westeurope" "westus2")
     echo "${REGIONS[${RANDOM} % ${#REGIONS[@]}]}"
 }
 
-export VALID_CVM_LOCATIONS=("eastus" "westus" "northeurope" "westeurope")
+export VALID_CVM_LOCATIONS=("eastus" "northeurope" "westeurope" "westus")
 get_random_cvm_region() {
     echo "${VALID_CVM_LOCATIONS[${RANDOM} % ${#VALID_CVM_LOCATIONS[@]}]}"
 }
