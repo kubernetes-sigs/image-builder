@@ -64,14 +64,12 @@ deps-common:
 deps-ami: ## Installs/checks dependencies for AMI builds
 deps-ami: deps-common
 	hack/ensure-ansible-windows.sh
-	hack/ensure-goss.sh
 	$(PACKER) init packer/config.pkr.hcl
 
 .PHONY: deps-azure
 deps-azure: ## Installs/checks dependencies for Azure builds
 deps-azure: deps-common
 	hack/ensure-ansible-windows.sh
-	hack/ensure-goss.sh
 	hack/ensure-jq.sh
 	hack/ensure-azure-cli.sh
 	$(PACKER) init packer/config.pkr.hcl
@@ -86,28 +84,24 @@ deps-do: deps-common
 .PHONY: deps-osc
 deps-osc: ## Installs/checks dependencies for Outscale builds
 deps-osc: deps-common
-	hack/ensure-goss.sh
 	$(PACKER) init packer/config.pkr.hcl
 	$(PACKER) plugins install github.com/outscale/outscale
 
 .PHONY: deps-gce
 deps-gce: ## Installs/checks dependencies for GCE builds
 deps-gce: deps-common
-	hack/ensure-goss.sh
 	$(PACKER) init packer/config.pkr.hcl
 
 .PHONY: deps-ova
 deps-ova: ## Installs/checks dependencies for OVA builds
 deps-ova: deps-common
 	hack/ensure-ansible-windows.sh
-	hack/ensure-goss.sh
 	hack/ensure-ovftool.sh
 	$(PACKER) init packer/config.pkr.hcl
 
 .PHONY: deps-openstack
 deps-openstack: ## Installs/checks dependencies for OpenStack builds
 deps-openstack: deps-common
-	hack/ensure-goss.sh
 	hack/ensure-s3.sh
 	$(PACKER) init packer/config.pkr.hcl
 	$(PACKER) init packer/openstack/config.pkr.hcl
@@ -115,14 +109,12 @@ deps-openstack: deps-common
 .PHONY: deps-qemu
 deps-qemu: ## Installs/checks dependencies for QEMU builds
 deps-qemu: deps-common
-	hack/ensure-goss.sh
 	$(PACKER) init packer/config.pkr.hcl
 	$(PACKER) plugins install github.com/hashicorp/qemu
 
 .PHONY: deps-raw
 deps-raw: ## Installs/checks dependencies for RAW builds
 deps-raw: deps-common
-	hack/ensure-goss.sh
 	$(PACKER) init packer/config.pkr.hcl
 
 .PHONY: deps-oci
@@ -135,7 +127,6 @@ deps-oci: deps-common
 .PHONY: deps-powervs
 deps-powervs: ## Installs/checks dependencies for PowerVS builds
 deps-powervs: deps-common
-	hack/ensure-goss.sh
 	hack/ensure-powervs.sh
 	$(PACKER) init packer/config.pkr.hcl
 
@@ -148,7 +139,6 @@ deps-ignition:
 .PHONY: deps-nutanix
 deps-nutanix: ## Installs/checks dependencies for Nutanix builds
 deps-nutanix: deps-common
-	hack/ensure-goss.sh
 	$(PACKER) init packer/config.pkr.hcl
 	$(PACKER) init packer/nutanix/config.pkr.hcl
 
@@ -162,14 +152,12 @@ deps-release: ## Installs/checks dependencies for project releases
 .PHONY: deps-hcloud
 deps-hcloud: ## Installs/checks dependencies for Hetznercloud builds
 deps-hcloud: deps-common
-	hack/ensure-goss.sh
 	$(PACKER) init packer/config.pkr.hcl
 	$(PACKER) init packer/hcloud/config.pkr.hcl
 
 .PHONY: deps-proxmox
 deps-proxmox: ## Installs/checks dependencies for Proxmox builds
 deps-proxmox: deps-common
-	hack/ensure-goss.sh
 	$(PACKER) init packer/config.pkr.hcl
 	$(PACKER) init packer/proxmox/config.pkr.hcl
 
