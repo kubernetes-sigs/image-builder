@@ -88,7 +88,7 @@ deps-osc: ## Installs/checks dependencies for Outscale builds
 deps-osc: deps-common
 	hack/ensure-goss.sh
 	$(PACKER) init packer/config.pkr.hcl
-	$(PACKER) plugins install github.com/outscale/outscale
+	$(PACKER) init packer/outscale/config.pkr.hcl
 
 .PHONY: deps-gce
 deps-gce: ## Installs/checks dependencies for GCE builds
@@ -117,7 +117,7 @@ deps-qemu: ## Installs/checks dependencies for QEMU builds
 deps-qemu: deps-common
 	hack/ensure-goss.sh
 	$(PACKER) init packer/config.pkr.hcl
-	$(PACKER) plugins install github.com/hashicorp/qemu
+	$(PACKER) init packer/qemu/config.pkr.hcl
 
 .PHONY: deps-raw
 deps-raw: ## Installs/checks dependencies for RAW builds
@@ -130,7 +130,7 @@ deps-oci: ## Installs/checks dependencies for OCI builds
 deps-oci: deps-common
 	hack/ensure-ansible-windows.sh
 	$(PACKER) init packer/config.pkr.hcl
-	$(PACKER) plugins install github.com/hashicorp/oracle
+	$(PACKER) init packer/oci/config.pkr.hcl
 
 .PHONY: deps-powervs
 deps-powervs: ## Installs/checks dependencies for PowerVS builds
