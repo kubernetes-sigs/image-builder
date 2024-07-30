@@ -109,6 +109,7 @@
         "--scp-extra-args",
         "{{user `ansible_scp_extra_args`}}"
       ],
+      "pause_before": "10s",
       "playbook_file": "./ansible/node.yml",
       "type": "ansible",
       "user": "builder"

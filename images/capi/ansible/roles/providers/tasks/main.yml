@@ -33,6 +33,9 @@
 - ansible.builtin.include_tasks: oci.yml
   when: packer_builder_type.startswith('oracle-oci')
 
+- ansible.builtin.include_tasks: proxmox.yml
+  when: packer_builder_type.startswith('proxmox')
+
 - ansible.builtin.include_tasks: qemu.yml
   when: packer_builder_type is search('qemu') and build_target is not search('raw')
 
