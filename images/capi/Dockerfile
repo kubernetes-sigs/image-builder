@@ -31,9 +31,11 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
 	wget \
 	qemu-system-x86 \
 	qemu-kvm \
-    && useradd -ms /bin/bash imagebuilder \
-    && apt-get purge --auto-remove -y \
-    && rm -rf /var/lib/apt/lists/*
+	# Adding xorriso to create iso for mounting cd_drives which then can be used for bootstrapping node image
+	xorriso \
+	&& useradd -ms /bin/bash imagebuilder \
+	&& apt-get purge --auto-remove -y \
+	&& rm -rf /var/lib/apt/lists/*
 
 ARG ARCH
 ARG PASSED_IB_VERSION

@@ -22,7 +22,7 @@ CAPI_ROOT=$(dirname "${BASH_SOURCE[0]}")/..
 cd "${CAPI_ROOT}" || exit 1
 
 export ARTIFACTS="${ARTIFACTS:-${PWD}/_artifacts}"
-TARGETS=("ubuntu-2004" "ubuntu-2204" "photon-3" "photon-4" "photon-5" "rockylinux-8" "flatcar")
+TARGETS=("ubuntu-2004" "ubuntu-2204" "ubuntu-2404" "photon-3" "photon-4" "photon-5" "rockylinux-8" "flatcar")
 
 export BOSKOS_RESOURCE_OWNER=image-builder
 if [[ "${JOB_NAME}" != "" ]]; then
@@ -74,6 +74,9 @@ export TIMESTAMP="$(date -u '+%Y%m%dT%H%M%S')"
 export GOVC_DATACENTER="SDDC-Datacenter"
 export GOVC_CLUSTER="Cluster-1"
 export GOVC_INSECURE=true
+
+# Install xorriso which will be then used by packer to generate ISO for generating CD files
+apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y xorriso
 
 # Run the vpn client in container
 docker run --rm -d --name vpn -v "${HOME}/.openvpn/:${HOME}/.openvpn/" \
