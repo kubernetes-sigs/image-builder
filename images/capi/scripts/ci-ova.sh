@@ -75,6 +75,9 @@ export GOVC_DATACENTER="SDDC-Datacenter"
 export GOVC_CLUSTER="Cluster-1"
 export GOVC_INSECURE=true
 
+# Install xorriso which will be then used by packer to generate ISO for generating CD files
+apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y xorriso
+
 # Run the vpn client in container
 docker run --rm -d --name vpn -v "${HOME}/.openvpn/:${HOME}/.openvpn/" \
   -w "${HOME}/.openvpn/" --cap-add=NET_ADMIN --net=host --device=/dev/net/tun \
