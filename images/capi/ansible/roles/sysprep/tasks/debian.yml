@@ -17,13 +17,18 @@
     last_log_mode: "0664"
     machine_id_mode: "0644"
 
-- name: Pin all installed packages with apt-mark
-  ansible.builtin.shell: |
-    set -o pipefail
-    dpkg-query -f '${binary:Package}\n' -W | xargs apt-mark hold
-
-  args:
-    executable: /bin/bash
+# This is required to ensure any apt upgrade will not break kubernetes
+- name: Tell Debian hosts not to change the kuberetes versions with apt upgrade
+  dpkg_selections:
+    name: "{{ item }}"
+    selection: hold
+  when: ansible_pkg_mgr == 'apt'
+  changed_when: false
+  with_items:
+    - kubelet
+    - kubeadm
+    - kubectl
+    - kubernetes-cni
 
 - name: Remove extra repos
   ansible.builtin.file:
@@ -74,25 +79,6 @@
   loop:
     - { path: /var/lib/apt/lists, state: absent, mode: "0755" }
     - { path: /var/lib/apt/lists, state: directory, mode: "0755" }
-
-- name: Disable apt-daily services
-  ansible.builtin.systemd:
-    name: "{{ item }}"
-    state: stopped
-    enabled: false
-  loop:
-    - apt-daily.timer
-    - apt-daily-upgrade.timer
-
-- name: Get installed packages
-  ansible.builtin.package_facts:
-
-- name: Disable unattended upgrades if installed
-  ansible.builtin.systemd:
-    name: unattended-upgrades
-    state: stopped
-    enabled: false
-  when: "'unattended-upgrades' in ansible_facts.packages"
 
 - name: Reset network interface IDs
   ansible.builtin.file:
