@@ -50,7 +50,7 @@ cleanup() {
 
   # stop boskos heartbeat
   if [ -n "${BOSKOS_HOST:-}" ]; then
-    boskosctlwrapper release --name "${RESOURCE_NAME}" --target-state used
+    boskosctlwrapper release --name "${RESOURCE_NAME}" --target-state dirty
   fi
 
   exit "${test_status}"
