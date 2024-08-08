@@ -41,3 +41,22 @@ updates:
       - "ok-to-test"
       - "kind/cleanup"
       - "release-note-none"
+
+  # pip
+  - package-ecosystem: "pip"
+    directories:
+        - "/"
+        - "images/capi"
+    schedule:
+      interval: "weekly"
+      time: "09:00"
+      # Use America/New_York Standard Time (UTC -05:00)
+      timezone: "America/New_York"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "dependabot"
+      include: scope
+    labels:
+      - "ok-to-test"
+      - "kind/cleanup"
+      - "release-note-none"
