@@ -1,7 +1,7 @@
 {
   "ansible_extra_vars": "guestinfo_datasource_slug={{user `guestinfo_datasource_slug`}} guestinfo_datasource_ref={{user `guestinfo_datasource_ref`}} guestinfo_datasource_script={{user `guestinfo_datasource_script`}} ansible_python_interpreter=/opt/bin/python",
-  "boot_command_prefix": "sudo systemctl mask sshd.socket --now<enter>curl -sLo /tmp/ignition.json https://raw.githubusercontent.com/kubernetes-sigs/image-builder/21f6a77a9a46a217949579d52f7b671568521678/images/capi/packer/files/flatcar/ignition/bootstrap-pass-auth.json<enter>sed -i \"s|BUILDERPASSWORDHASH|$(mkpasswd -5 {{user `ssh_password`}})|\" /tmp/ignition.json<enter>sudo flatcar-install -d /dev/sda -o vmware_raw -C {{user `channel_name`}} -V {{user `release_version`}} -i /tmp/ignition.json<enter>sudo reboot<enter>",
-  "boot_wait": "60s",
+  "boot_command_prefix": "sudo systemctl mask sshd.socket --now<enter><wait>curl -sLo /tmp/ignition.json https://raw.githubusercontent.com/kubernetes-sigs/image-builder/21f6a77a9a46a217949579d52f7b671568521678/images/capi/packer/files/flatcar/ignition/bootstrap-pass-auth.json && sed -i \"s|BUILDERPASSWORDHASH|$(mkpasswd -5 {{user `ssh_password`}})|\" /tmp/ignition.json && sudo flatcar-install -d /dev/sda -o vmware_raw -C {{user `channel_name`}} -V {{user `release_version`}} -i /tmp/ignition.json && sudo reboot<enter>",
+  "boot_wait": "180s",
   "build_name": "flatcar-{{env `FLATCAR_CHANNEL`}}-{{env `FLATCAR_VERSION`}}",
   "channel_name": "{{env `FLATCAR_CHANNEL`}}",
   "containerd_cri_socket": "/run/docker/libcontainerd/docker-containerd.sock",

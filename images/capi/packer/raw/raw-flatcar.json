@@ -1,8 +1,8 @@
 {
   "ansible_extra_vars": "ansible_python_interpreter=/opt/bin/python",
-  "boot_command_prefix": "sudo systemctl mask sshd.socket --now<enter>curl -sLo /tmp/ignition.json ",
-  "boot_command_suffix": "/bootstrap-pass-auth.json<enter>sed -i \"s|BUILDERPASSWORDHASH|$(mkpasswd -5 {{user `ssh_password`}})|\" /tmp/ignition.json<enter>sudo flatcar-install -d /dev/sda -C {{user `channel_name`}} -V {{user `release_version`}} -i /tmp/ignition.json<enter>sudo reboot<enter>",
-  "boot_wait": "120s",
+  "boot_command_prefix": "sudo systemctl mask sshd.socket --now<enter><wait>curl -sLo /tmp/ignition.json ",
+  "boot_command_suffix": "/bootstrap-pass-auth.json<enter>sed -i \"s|BUILDERPASSWORDHASH|$(mkpasswd -5 {{user `ssh_password`}})|\" /tmp/ignition.json<enter>sudo flatcar-install -d /dev/sda -C {{user `channel_name`}} -V {{user `release_version`}} -i /tmp/ignition.json && sudo reboot<enter>",
+  "boot_wait": "180s",
   "build_name": "flatcar-{{env `FLATCAR_CHANNEL`}}-{{env `FLATCAR_VERSION`}}",
   "channel_name": "{{env `FLATCAR_CHANNEL`}}",
   "crictl_source_type": "http",
