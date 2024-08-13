@@ -3,7 +3,7 @@
   "boot_disable_ipv6": "0",
   "boot_media_path": "/media/HTTP",
   "build_name": "ubuntu-2204-efi",
-  "cd_content_location": "./packer/ova/linux/{{user `distro_name`}}/http/{{user `distro_version`}}/*",
+  "cd_content_location": "./packer/ova/linux/{{user `distro_name`}}/http/22.04.efi/*",
   "cd_label": "cidata",
   "distro_arch": "amd64",
   "distro_name": "ubuntu",

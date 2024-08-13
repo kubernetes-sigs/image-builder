@@ -2,7 +2,7 @@
   "boot_command_prefix": "c<wait>linux /casper/vmlinuz ipv6.disable={{ user `boot_disable_ipv6` }} --- autoinstall ds='nocloud;'<enter><wait>initrd /casper/initrd<enter><wait>boot<enter>",
   "boot_disable_ipv6": "0",
   "build_name": "ubuntu-2404-efi",
-  "cd_content_location": "./packer/ova/linux/{{user `distro_name`}}/http/{{user `distro_version`}}/*",
+  "cd_content_location": "./packer/ova/linux/{{user `distro_name`}}/http/24.04.efi/*",
   "cd_label": "cidata",
   "distro_arch": "amd64",
   "distro_name": "ubuntu",
