@@ -106,6 +106,7 @@
     mode: "0644"
   when: ansible_os_family != "Flatcar"
 
+# `feature_overrides.py` only works on old cloud-init versions (removed in https://github.com/canonical/cloud-init/pull/4228)...
 - name: Set cloudinit feature flags
   ansible.builtin.copy:
     src: usr/lib/python3/dist-packages/cloudinit/feature_overrides.py
@@ -131,6 +132,21 @@
     owner: root
     group: root
     mode: "0644"
+  when: ansible_os_family == "RedHat" and ansible_distribution == "RedHat" and ansible_distribution_major_version == "9"
+
+# ...and `features.py` must be patched instead
+- name: Patch cloud-init feature flags for Debian-based OS
+  ansible.builtin.blockinfile:
+    path: /usr/lib/python3/dist-packages/cloudinit/features.py
+    marker: "# {mark} ANSIBLE MANAGED BLOCK (by image-builder)"
+    block: "{{ lookup('file', 'cloud-init-features.patch') }}"
+  when: ansible_os_family == "Debian"
+
+- name: Patch cloud-init feature flags for RedHat 9
+  ansible.builtin.blockinfile:
+    path: /usr/lib/python3.9/site-packages/cloudinit/features.py
+    marker: "# {mark} ANSIBLE MANAGED BLOCK (by image-builder)"
+    block: "{{ lookup('file', 'cloud-init-features.patch') }}"
   when: ansible_os_family == "RedHat" and ansible_distribution == "RedHat" and ansible_distribution_major_version == "9"
 
 - name: Ensure chrony is running
