@@ -15,5 +15,6 @@
   "os_iso_url": "file:/path/en-us_windows_server_2022_x64_dvd_620d7eac.iso",
   "vmtools_iso_path": "[datastore] ISO/vmtools/windows-11.1.5.iso",
   "vmtools_iso_url": "file:/path/VMware-tools-windows-11.1.5-16724464.iso",
-  "vsphere_guest_os_type": "windows9Server64Guest"
+  "vmx_version": "18",
+  "vsphere_guest_os_type": "windows2019srvNext_64Guest"
 }
