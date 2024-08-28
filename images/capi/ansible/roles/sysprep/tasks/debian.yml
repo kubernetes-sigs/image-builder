@@ -49,7 +49,7 @@
 
 - name: Remove templated apt.conf.d/90proxy used for http(s)_proxy support
   ansible.builtin.file:
-    path: etc/apt/apt.conf.d/90proxy
+    path: /etc/apt/apt.conf.d/90proxy
     state: absent
   when: http_proxy is defined or https_proxy is defined
 
