@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-ARG BASE_IMAGE=docker.io/library/ubuntu:latest
+ARG BASE_IMAGE=docker.io/library/ubuntu:24.04
 FROM $BASE_IMAGE
 
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
