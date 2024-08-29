@@ -20,12 +20,22 @@
     path: /etc/chrony/chrony.conf
     create: true
     line: refclock PHC /dev/ptp0 poll 3 dpoll -2 offset 0
+  # Flatcar now includes this by default as of 3975.2.0 which causes this task to fail
+  when: ansible_os_family != "Flatcar" or (ansible_os_family == "Flatcar" and  ansible_distribution_version is version('3975.2.0', '<'))
 
 - name: Ensure makestep parameter set as per Azure recommendation
   ansible.builtin.lineinfile:
     path: /etc/chrony/chrony.conf
     regexp: ^makestep
     line: makestep 1.0 -1
+  # Flatcar now includes this by default as of 3975.2.0 which causes this task to fail
+  when: ansible_os_family != "Flatcar" or (ansible_os_family == "Flatcar" and  ansible_distribution_version is version('3975.2.0', '<'))
+
+- name: Start service systemd-timesyncd, if not started
+  ansible.builtin.service:
+    name: systemd-timesyncd
+    state: started
+  when: ansible_os_family == "Flatcar" and  ansible_distribution_version is version('3975.2.0', '>=')
 
 - name: Install iptables persistence
   ansible.builtin.apt:
