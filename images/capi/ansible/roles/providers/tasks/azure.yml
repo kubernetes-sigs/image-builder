@@ -31,12 +31,6 @@
   # Flatcar now includes this by default as of 3975.2.0 which causes this task to fail
   when: ansible_os_family != "Flatcar" or (ansible_os_family == "Flatcar" and  ansible_distribution_version is version('3975.2.0', '<'))
 
-- name: Start service systemd-timesyncd, if not started
-  ansible.builtin.service:
-    name: systemd-timesyncd
-    state: started
-  when: ansible_os_family == "Flatcar" and  ansible_distribution_version is version('3975.2.0', '>=')
-
 - name: Install iptables persistence
   ansible.builtin.apt:
     name: "{{ packages }}"
