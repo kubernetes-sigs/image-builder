@@ -31,3 +31,8 @@
   ansible.builtin.systemd:
     enabled: true
     name: systemd-timesyncd.service
+
+- name: Start service systemd-timesyncd, if not started
+  ansible.builtin.service:
+    name: systemd-timesyncd
+    state: started
