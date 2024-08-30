@@ -4,7 +4,7 @@
   "goss_entry_file": "goss/goss.yaml",
   "goss_format": "json",
   "goss_format_options": "pretty",
-  "goss_inspect_mode": "true",
+  "goss_inspect_mode": "false",
   "goss_remote_folder": "",
   "goss_remote_path": "",
   "goss_skip_install": "false",
