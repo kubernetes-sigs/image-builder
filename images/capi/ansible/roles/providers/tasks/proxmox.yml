@@ -55,3 +55,13 @@
     - { src: files/etc/networkd-dispatcher/off.d/20-chrony.j2, dest: /etc/networkd-dispatcher/off.d/20-chrony }
     - { src: files/etc/networkd-dispatcher/no-carrier.d/20-chrony.j2, dest: /etc/networkd-dispatcher/no-carrier.d/20-chrony }
   when: ansible_os_family == "Debian"
+
+- name: Ensure networkd-dispatcher is started
+  ansible.builtin.systemd:
+    name: networkd-dispatcher
+    state: started
+
+- name: Ensure networkd-dispatcher is enabled
+  ansible.builtin.systemd:
+    name: networkd-dispatcher
+    enabled: true
