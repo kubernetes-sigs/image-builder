@@ -34,7 +34,8 @@
       "ssh_timeout": "2h",
       "ssh_username": "{{user `ssh_username`}}",
       "type": "qemu",
-      "vm_name": "{{user `vm_name`}}"
+      "vm_name": "{{user `vm_name`}}",
+      "vnc_bind_address": "{{user `vnc_bind_address`}}"
     }
   ],
   "post-processors": [
@@ -202,6 +203,7 @@
     "qemu_binary": "qemu-system-x86_64",
     "ssh_password": "builder",
     "ssh_username": "builder",
-    "vm_name": "{{user `build_name`}}-kube-{{user `kubernetes_semver`}}"
+    "vm_name": "{{user `build_name`}}-kube-{{user `kubernetes_semver`}}",
+    "vnc_bind_address": "127.0.0.1"
   }
 }
