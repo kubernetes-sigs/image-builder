@@ -2,6 +2,8 @@
   "builders": [
     {
       "disable_default_service_account": "{{ user `disable_default_service_account` }}",
+      "disk_size": "{{ user `disk_size` }}",
+      "disk_type": "{{ user `disk_type` }}",
       "image_family": "{{user `image_family` | clean_resource_name}}",
       "image_name": "{{user `image_name` | clean_resource_name}}",
       "labels": {
@@ -88,6 +90,8 @@
     "crictl_url": "https://github.com/kubernetes-sigs/cri-tools/releases/download/v{{user `crictl_version`}}/crictl-v{{user `crictl_version`}}-linux-amd64.tar.gz",
     "crictl_version": null,
     "disable_default_service_account": "",
+    "disk_size": "20",
+    "disk_type": "pd-standard",
     "encrypted": "false",
     "existing_ansible_ssh_args": "{{env `ANSIBLE_SSH_ARGS`}}",
     "image_family": "capi-{{user `build_name`}}-k8s-{{user `kubernetes_series`}}",
