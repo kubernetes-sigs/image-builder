@@ -157,7 +157,7 @@
     "scp_extra_vars": "",
     "source_image_delete": "false",
     "source_image_force": "false",
-    "ssh_password": "builder",
+    "ssh_password": "{{ uuid }}",
     "ssh_username": "builder",
     "vm_force_delete": "false"
   }
