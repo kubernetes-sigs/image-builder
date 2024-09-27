@@ -263,7 +263,8 @@ COMMON_NODE_VAR_FILES := packer/config/kubernetes.json \
 					packer/config/ansible-args.json \
 					packer/config/goss-args.json \
 					packer/config/common.json \
-					packer/config/additional_components.json
+					packer/config/additional_components.json \
+					packer/config/ecr_credential_provider.json
 
 COMMON_WINDOWS_VAR_FILES :=	packer/config/kubernetes.json \
 					packer/config/windows/kubernetes.json \
@@ -274,7 +275,8 @@ COMMON_WINDOWS_VAR_FILES :=	packer/config/kubernetes.json \
 					packer/config/windows/common.json \
 					packer/config/windows/cloudbase-init.json \
 					packer/config/goss-args.json \
-					packer/config/additional_components.json
+					packer/config/additional_components.json \
+					packer/config/ecr_credential_provider.json
 
 COMMON_POWERVS_VAR_FILES := packer/config/kubernetes.json \
 					packer/config/ppc64le/kubernetes.json \
@@ -282,12 +284,13 @@ COMMON_POWERVS_VAR_FILES := packer/config/kubernetes.json \
 					packer/config/ppc64le/cni.json \
 					packer/config/containerd.json \
 					packer/config/wasm-shims.json \
-                    packer/config/ppc64le/containerd.json \
-                    packer/config/ansible-args.json \
-                    packer/config/goss-args.json \
-                    packer/config/common.json \
-                    packer/config/ppc64le/common.json \
-                    packer/config/additional_components.json
+					packer/config/ppc64le/containerd.json \
+					packer/config/ansible-args.json \
+					packer/config/goss-args.json \
+					packer/config/common.json \
+					packer/config/ppc64le/common.json \
+					packer/config/additional_components.json \
+					packer/config/ecr_credential_provider.json
 
 # Initialize a list of flags to pass to Packer. This includes any existing flags
 # specified by PACKER_FLAGS, as well as prefixing the list with the variable

@@ -19,6 +19,7 @@
   - [vSphere](./capi/providers/vsphere.md)
   - [Proxmox](./capi/providers/proxmox.md)
   - [Windows](./capi/windows/windows.md)
+  - [Including ECR Credential Provider](./capi/ecr-credential-provider.md)
   - [Testing the Images](./capi/goss/goss.md)
   - [Using Container Images](./capi/container-image.md)
   - [Customizing containerd](./capi/containerd/customizing-containerd.md)
