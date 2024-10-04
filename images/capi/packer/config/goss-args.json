@@ -7,7 +7,7 @@
   "goss_inspect_mode": "false",
   "goss_remote_folder": "",
   "goss_remote_path": "",
-  "goss_retry_timeout": "480s",
+  "goss_retry_timeout": "180s",
   "goss_skip_install": "false",
   "goss_sleep": "2s",
   "goss_tests_dir": "packer/goss",

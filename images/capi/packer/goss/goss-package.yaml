@@ -87,7 +87,7 @@ command:
     exit-status: 0
     stdout: {{range $vers.expected}}
     - {{.}}
-    timeout: 120000 # Give it enough time to retry if it fails
+    timeout: 30000 # Give it enough time to retry if it fails
     {{end}}
 {{end}}
 {{end}}
