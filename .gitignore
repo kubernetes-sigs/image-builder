@@ -1,3 +1,5 @@
 .vscode/
 .idea/
 .venv/
+
+**/local-packer-var.json

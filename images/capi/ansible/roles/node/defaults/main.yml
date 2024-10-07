@@ -120,6 +120,7 @@ sysctl_conf_file: >-
 
 pause_image: registry.k8s.io/pause:3.9
 containerd_additional_settings:
+crio_additional_settings:
 leak_local_mdns_to_dns: false
 build_target: virt
 cloud_cfg_file: /etc/cloud/cloud.cfg

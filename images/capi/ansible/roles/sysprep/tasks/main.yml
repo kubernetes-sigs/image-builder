@@ -33,6 +33,12 @@
     state: absent
   when: http_proxy is defined or https_proxy is defined
 
+- name: Remove crio http proxy conf file if needed
+  ansible.builtin.file:
+    path: /etc/systemd/system/crio.service.d/http-proxy.conf
+    state: absent
+  when: http_proxy is defined or https_proxy is defined
+
 - name: Remove pip conf file if needed
   ansible.builtin.file:
     path: /etc/pip.conf

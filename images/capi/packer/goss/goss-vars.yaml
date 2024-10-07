@@ -96,6 +96,8 @@ photon_5_rpms: &photon_5_rpms
   jq:
 
 arch: "amd64"
+cri_flavour: "containerd"
+crio_version: ""
 containerd_version: ""
 containerd_wasm_shims_runtimes: ""
 kubernetes_cni_source_type: ""

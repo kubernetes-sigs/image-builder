@@ -1,0 +1,15 @@
+{
+  "boot_command_prefix": "c<wait>linux /casper/vmlinuz --- autoinstall ds='nocloud-net;s=http://{{ .HTTPIP }}:{{ .HTTPPort }}/22.04/'<enter><wait><wait><wait>initrd /casper/initrd<enter><wait><wait><wait>boot<enter>",
+  "build_name": "ubuntu-2204-crio",
+  "cri_flavour": "crio",
+  "crictl_source_type": "http",
+  "distribution_version": "2204",
+  "distro_name": "ubuntu",
+  "guest_os_type": "ubuntu-64",
+  "iso_checksum": "45f873de9f8cb637345d6e66a583762730bbea30277ef7b32c9c3bd6700a32b2",
+  "iso_checksum_type": "sha256",
+  "iso_url": "https://releases.ubuntu.com/releases/jammy/ubuntu-22.04.4-live-server-amd64.iso",
+  "os_display_name": "Ubuntu 22.04",
+  "shutdown_command": "shutdown -P now",
+  "unmount_iso": "true"
+}

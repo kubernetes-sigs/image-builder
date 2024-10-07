@@ -22,6 +22,7 @@
   - [Including ECR Credential Provider](./capi/ecr-credential-provider.md)
   - [Testing the Images](./capi/goss/goss.md)
   - [Using Container Images](./capi/container-image.md)
-  - [Customizing containerd](./capi/containerd/customizing-containerd.md)
   - [Releasing](./capi/releasing.md)
+- [Container Runtime](./capi/cri/cri.md)
+  - [Customizing ContainerD](./capi/cri/customizing-containerd.md)
 - [Glossary](./glossary.md)

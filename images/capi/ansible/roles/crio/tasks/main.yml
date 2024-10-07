@@ -1,0 +1,107 @@
+# Copyright 2024 The Kubernetes Authors.
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+
+# http://www.apache.org/licenses/LICENSE-2.0
+
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+---
+- name: Debian based
+  ansible.builtin.import_tasks: debian.yml
+  when: ansible_os_family == "Debian"
+
+- name: RedHat based
+  ansible.builtin.import_tasks: redhat.yml
+  when: ansible_os_family == "RedHat"
+
+- name: Export crisocket
+  ansible.builtin.set_fact:
+    cri_socket: "{{ crio_cri_socket }}"
+
+- name: Create unit file directory
+  ansible.builtin.file:
+    path: /etc/systemd/system/crio.service.d
+    state: directory
+    mode: "0755"
+
+- name: Create crio memory pressure drop-in file
+  ansible.builtin.template:
+    dest: /etc/systemd/system/crio.service.d/memory-pressure.conf
+    src: etc/systemd/system/crio.service.d/memory-pressure.conf
+    mode: "0644"
+
+- name: Create crio max tasks drop-in file
+  ansible.builtin.template:
+    dest: /etc/systemd/system/crio.service.d/max-tasks.conf
+    src: etc/systemd/system/crio.service.d/max-tasks.conf
+    mode: "0644"
+
+- name: Create crio http proxy conf file if needed
+  ansible.builtin.template:
+    dest: /etc/systemd/system/crio.service.d/http-proxy.conf
+    src: etc/systemd/system/crio.service.d/http-proxy.conf
+    mode: "0644"
+  when: http_proxy is defined or https_proxy is defined
+
+- name: Creates crio config directory
+  ansible.builtin.file:
+    path: /etc/crio
+    state: directory
+    mode: "0755"
+
+- name: Copy in crio config file {{ crio_config_file }}
+  ansible.builtin.template:
+    dest: /etc/crio/crio.conf
+    src: "{{ crio_config_file }}"
+    mode: "0644"
+
+- name: Copy in crictl config
+  ansible.builtin.template:
+    dest: /etc/crictl.yaml
+    src: etc/crictl.yaml
+    mode: "0644"
+
+- name: Remove CRIO default CNI config file
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - /etc/cni/net.d/100-crio-bridge.conflist
+    - /etc/cni/net.d/200-loopback.conflist
+  when: crio_disable_builtin_cni | bool
+
+- name: Start crio service
+  ansible.builtin.systemd:
+    name: crio
+    daemon_reload: true
+    enabled: true
+    state: restarted
+
+- name: Download runsc for gvisor
+  ansible.builtin.get_url:
+    dest: "{{ sysusr_prefix }}/bin/{{ item }}"
+    url: https://storage.googleapis.com/gvisor/releases/release/{{ crio_gvisor_version }}/{{ ansible_architecture }}/{{ item }}
+    mode: "0755"
+    owner: root
+    group: root
+    checksum: sha512:https://storage.googleapis.com/gvisor/releases/release/{{ crio_gvisor_version }}/{{ ansible_architecture }}/{{ item }}.sha512
+  loop:
+    - runsc
+    - containerd-shim-runsc-v1
+  when: crio_gvisor_runtime | bool
+
+- name: Install runsc as a runtime
+  ansible.builtin.command:
+    cmd: >
+      {{ sysusr_prefix }}/bin/runsc install
+  register: runsc_install_output
+  when: crio_gvisor_runtime | bool
+  changed_when:
+    - runsc_install_output.rc == 0
+    - runsc_install_output.stderr is search('Successfully added')

@@ -1,4 +1,4 @@
-# Copyright 2021 The Kubernetes Authors.
+# Copyright 2024 The Kubernetes Authors.
 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,8 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- name: Pull additional images from registry
-  ansible.builtin.shell: CONTAINERD_NAMESPACE="k8s.io" {{ sysusr_prefix }}/bin/ctr --address={{ cri_socket }} images pull {{ item }}
-  loop: "{{ additional_registry_images_list.split(',') }}"
-  retries: 5
-  delay: 3
+crio_config_file: etc/crio/crio.conf
+crio_gvisor_runtime: false
+crio_gvisor_version: latest

@@ -1,0 +1,69 @@
+# Copyright 2024 The Kubernetes Authors.
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+
+# http://www.apache.org/licenses/LICENSE-2.0
+
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+---
+- name: Determine Version
+  block:
+    - name: Set Global CRI-O facts
+      ansible.builtin.set_fact:
+        crio_repo_version: "{{ crio_version.split('.')[:2] | join('.') }}"
+        crio_packaging_version: "stable:/v{{ crio_version.split('.')[:2] | join('.') }}"
+    - name: Set CRI-O facts for Core release
+      ansible.builtin.set_fact:
+        crio_repo_os: "CentOS_{{ ansible_distribution_major_version }}"
+      when: ansible_distribution_release == "Core"
+    - name: Set CRI-O facts for Stream release
+      ansible.builtin.set_fact:
+        crio_repo_os: "CentOS_{{ ansible_distribution_major_version }}_Stream"
+      when: ansible_distribution_release != "Core"
+
+- name: Legacy install
+  when: "crio_version is version_compare('1.28', '<=')"
+  block:
+    - name: Add repository
+      ansible.builtin.yum_repository:
+        name: devel_kubic_libcontainers_stable
+        baseurl: "https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/{{ crio_repo_os }}/"
+        gpgkey: "https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/{{ crio_repo_os }}/repodata/repomd.xml.key"
+        description: Stable releases of Upstream github.com/containers packages ({{ crio_repo_os }})
+    - name: Add repository
+      ansible.builtin.yum_repository:
+        name: "devel_kubic_libcontainers_stable_cri-o_{{ crio_repo_version }}"
+        baseurl: "https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable:/cri-o:/{{ crio_repo_version }}/{{ crio_repo_os }}/"
+        gpgkey: "https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable:/cri-o:/{{ crio_repo_version }}/{{ crio_repo_os }}/repodata/repomd.xml.key"
+        description: "Stable releases of cri-o packages {{ crio_repo_version }} ({{ crio_repo_os }})"
+    - name: Install crio
+      ansible.builtin.yum:
+        update_cache: true
+        name: "{{ item }}"
+      with_items:
+        - cri-o
+
+- name: Packaging install
+  when: "crio_version is version_compare('1.29', '>=')"
+  block:
+    - name: Add repository
+      ansible.builtin.yum_repository:
+        name: CRI-O
+        description: "Stable releases of cri-o packages {{ crio_repo_version }} ({{ crio_repo_os }})"
+        baseurl: https://pkgs.k8s.io/addons:/cri-o:/{{ crio_packaging_version }}/rpm/
+        enabled: true
+        gpgcheck: true
+        gpgkey: https://pkgs.k8s.io/addons:/cri-o:/{{ crio_packaging_version }}/rpm/repodata/repomd.xml.key
+    - name: Install crio
+      ansible.builtin.yum:
+        update_cache: true
+        name: "{{ item }}"
+      with_items:
+        - container-selinux
+        - cri-o
