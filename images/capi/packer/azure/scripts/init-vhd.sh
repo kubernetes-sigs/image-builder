@@ -5,13 +5,19 @@
 echo "Sign into Azure"
 tracestate="$(shopt -po xtrace)"
 set +o xtrace
-az login --service-principal -u ${AZURE_CLIENT_ID} -p ${AZURE_CLIENT_SECRET} --tenant ${AZURE_TENANT_ID} >/dev/null 2>&1
+
+if [[ -n "${AZURE_FEDERATED_TOKEN_FILE:-}" ]]; then
+  az login --service-principal -u "${AZURE_CLIENT_ID}" -t "${AZURE_TENANT_ID}" --federated-token "$(cat "${AZURE_FEDERATED_TOKEN_FILE}")" > /dev/null 2>&1
+  export AZURE_STORAGE_AUTH_MODE="login"   # Use auth mode "login" in az storage commands.
+else
+  az login --service-principal -u "${AZURE_CLIENT_ID}" -t "${AZURE_TENANT_ID}" -p ${AZURE_CLIENT_SECRET} >/dev/null 2>&1
+fi
 az account set -s ${AZURE_SUBSCRIPTION_ID} >/dev/null 2>&1
 eval "$tracestate"
 
 echo "Create storage account"
 export RESOURCE_GROUP_NAME="${RESOURCE_GROUP_NAME:-cluster-api-images}"
-export AZURE_LOCATION="${AZURE_LOCATION:-southcentralus}"
+export AZURE_LOCATION="${AZURE_LOCATION:-northcentralus}"
 if ! az group show -n ${RESOURCE_GROUP_NAME} -o none 2>/dev/null; then
   az group create -n ${RESOURCE_GROUP_NAME} -l ${AZURE_LOCATION} --tags ${TAGS:-}
 fi

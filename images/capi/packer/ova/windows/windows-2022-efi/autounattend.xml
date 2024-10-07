@@ -127,8 +127,13 @@ Installation Notes:
             <RunSynchronous>
                 <RunSynchronousCommand wcm:action="add">
                     <WillReboot>Always</WillReboot>
-                    <Path>e:\setup64.exe /s /v "/qb REBOOT=R ADDLOCAL=ALL"</Path>
+                    <Path>%SystemRoot%\System32\reg.exe ADD "HKLM\System\CurrentControlSet\Control\TimeZoneInformation" /v RealTimeIsUniversal /d 1 /t REG_DWORD /f</Path>
                     <Order>1</Order>
+                </RunSynchronousCommand>
+                <RunSynchronousCommand wcm:action="add">
+                    <WillReboot>Always</WillReboot>
+                    <Path>e:\setup64.exe /s /v "/qb REBOOT=R ADDLOCAL=ALL"</Path>
+                    <Order>2</Order>
                 </RunSynchronousCommand>
             </RunSynchronous>
         </component>

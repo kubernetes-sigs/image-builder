@@ -49,7 +49,7 @@
 
 - name: Remove templated apt.conf.d/90proxy used for http(s)_proxy support
   ansible.builtin.file:
-    path: etc/apt/apt.conf.d/90proxy
+    path: /etc/apt/apt.conf.d/90proxy
     state: absent
   when: http_proxy is defined or https_proxy is defined
 
@@ -98,6 +98,22 @@
   ansible.builtin.file:
     state: absent
     path: /etc/udev/rules.d/70-persistent-net.rules
+
+- name: Determine if update-grub is present
+  ansible.builtin.stat:
+    path: /usr/sbin/update-grub
+  register: _stat_update_grub
+
+- name: Configure grub for non graphical consoles
+  ansible.builtin.copy:
+    src: etc/default/grub.d/50-cloudimg-settings.cfg
+    dest: /etc/default/grub.d/50-cloudimg-settings.cfg
+    group: root
+    owner: root
+    mode: "0644"
+  notify:
+    - Update debian grub
+  when: _stat_update_grub.stat.exists
 
 - name: Remvoing subiquity disable disable cloud-init networking config
   ansible.builtin.file:

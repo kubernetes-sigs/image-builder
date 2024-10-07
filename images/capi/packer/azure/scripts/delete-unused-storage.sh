@@ -83,7 +83,12 @@ curl -fsSL https://github.com/devigned/pub/releases/download/${PUB_VERSION}/pub_
 export PATH=$PATH:$(pwd)
 which pub &> /dev/null || (echo "Please install pub from https://github.com/devigned/pub/releases" && exit 1)
 
-az login --service-principal -u ${AZURE_CLIENT_ID_VHD} -p ${AZURE_CLIENT_SECRET_VHD} --tenant ${AZURE_TENANT_ID_VHD}
+if [[ -n "${AZURE_FEDERATED_TOKEN_FILE:-}" ]]; then
+  az login --service-principal -u "${AZURE_CLIENT_ID}" -t "${AZURE_TENANT_ID}" --federated-token "$(cat "${AZURE_FEDERATED_TOKEN_FILE}")"
+  export AZURE_STORAGE_AUTH_MODE="login"   # Use auth mode "login" in az storage commands.
+else
+  az login --service-principal -u "${AZURE_CLIENT_ID}" -t "${AZURE_TENANT_ID}" -p "${AZURE_CLIENT_SECRET}"
+fi
 az account set -s ${AZURE_SUBSCRIPTION_ID_VHD}
 
 # Get URLs in use by the marketplace offers

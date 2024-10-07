@@ -31,6 +31,7 @@ cloudbase_metadata_services: cloudbaseinit.metadata.services.azureservice.AzureS
 cloudbase_plugins: cloudbaseinit.plugins.common.ephemeraldisk.EphemeralDiskPlugin, cloudbaseinit.plugins.common.userdata.UserDataPlugin, cloudbaseinit.plugins.common.localscripts.LocalScriptsPlugin
 cloudbase_metadata_services_unattend: cloudbaseinit.metadata.services.azureservice.AzureService, cloudbaseinit.metadata.services.ovfservice.OvfService
 cloudbase_plugins_unattend: cloudbaseinit.plugins.common.mtu.MTUPlugin
+cloudbase_real_time_clock_utc: true
 
 debug_tools: true
 additional_debug_files: https://raw.githubusercontent.com/kubernetes-sigs/sig-windows-tools/master/hack/DebugWindowsNode.ps1

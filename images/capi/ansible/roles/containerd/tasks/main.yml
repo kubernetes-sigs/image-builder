@@ -155,6 +155,11 @@
     path: /etc/containerd
     state: directory
 
+- name: Creates containerd certificates directory
+  ansible.builtin.file:
+    path: /etc/containerd/certs.d
+    state: directory
+
 - name: Copy in containerd config file {{ containerd_config_file }}
   vars:
     runtime_versions: "{{ containerd_wasm_shims_runtime_versions | from_json }}"

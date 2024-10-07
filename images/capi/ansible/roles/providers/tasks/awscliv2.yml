@@ -91,7 +91,7 @@
   when: ansible_os_family != "Flatcar"
 
 - name: Install AWS CLI v2
-  ansible.builtin.command: /tmp/aws/install -i /usr/local/aws-cli -b /usr/local/sbin
+  ansible.builtin.command: /tmp/aws/install --update -i /usr/local/aws-cli -b /usr/local/sbin
   when: ansible_os_family != "Flatcar"
 
 - name: Remove temporary files

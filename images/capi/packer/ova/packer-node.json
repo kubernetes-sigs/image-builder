@@ -199,6 +199,8 @@
         "{{user `boot_command_suffix`}}"
       ],
       "boot_wait": "{{user `boot_wait`}}",
+      "cd_files": "{{user `cd_content_location`}}",
+      "cd_label": "{{user `cd_label`}}",
       "cdrom_type": "{{user `cdrom_type`}}",
       "cluster": "{{user `cluster`}}",
       "communicator": "ssh",
@@ -444,6 +446,7 @@
         "OS": "{{user `distro_name` | lower}}",
         "OS_VERSION": "{{user `distro_version` | lower}}",
         "PROVIDER": "ova",
+        "block_nouveau_loading": "{{user `block_nouveau_loading`}}",
         "containerd_version": "{{user `containerd_version`}}",
         "kubernetes_cni_deb_version": "{{ user `kubernetes_cni_deb_version` }}",
         "kubernetes_cni_rpm_version": "{{ split (user `kubernetes_cni_rpm_version`) \"-\" 0 }}",
@@ -452,7 +455,8 @@
         "kubernetes_deb_version": "{{ user `kubernetes_deb_version` }}",
         "kubernetes_rpm_version": "{{ split (user `kubernetes_rpm_version`) \"-\" 0  }}",
         "kubernetes_source_type": "{{user `kubernetes_source_type`}}",
-        "kubernetes_version": "{{user `kubernetes_semver` | replace \"v\" \"\" 1}}"
+        "kubernetes_version": "{{user `kubernetes_semver` | replace \"v\" \"\" 1}}",
+        "node_custom_roles_pre": "{{user `node_custom_roles_pre`}}"
       },
       "version": "{{user `goss_version`}}"
     }
@@ -464,8 +468,11 @@
     "ansible_user_vars": "",
     "base_build_version": "base-{{user `build_name`}}",
     "base_output_dir": "./output/{{user `base_build_version`}}",
+    "block_nouveau_loading": "true",
     "build_timestamp": "{{timestamp}}",
     "build_version": "{{user `build_name`}}-kube-{{user `kubernetes_semver`}}",
+    "cd_files": "{{user `cd_content_location`}}",
+    "cd_label": "{{user `cd_label`}}",
     "cdrom_adapter_type": "ide",
     "cdrom_type": "ide",
     "cluster": "",

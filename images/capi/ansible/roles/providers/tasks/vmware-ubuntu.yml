@@ -30,6 +30,17 @@
     name: hv-kvp-daemon
     state: stopped
     enabled: false
+  register: disable_hypervisor
+  ignore_errors: true
+  failed_when:
+    - disable_hypervisor.failed
+    - '"Could not find" not in disable_hypervisor.msg'
+
+- name: Ensure networkd-dispatcher is enabled and running
+  ansible.builtin.systemd:
+    name: networkd-dispatcher
+    state: started
+    enabled: true
 
 - name: Copy networkd-dispatcher scripts to add DHCP provided NTP servers
   ansible.builtin.template:

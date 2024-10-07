@@ -1,0 +1,81 @@
+{
+  "builders": [
+    {
+      "api_key": "{{ user `api_key` }}",
+      "os_id": "{{ user `os` }}",
+      "plan_id": "{{ user `plan` }}",
+      "region_id": "{{ user `region` }}",
+      "snapshot_description": "Cluster API Kubernetes {{ user `kubernetes_semver` }} {{ user `snapshot_name_suffix` }}",
+      "ssh_username": "root",
+      "tag": "cluster-api-{{ user `build_name` }}:{{ user `kubernetes_semver` | replace_all `.` `-` }}",
+      "type": "vultr"
+    }
+  ],
+  "provisioners": [
+    {
+      "environment_vars": [
+        "BUILD_NAME={{user `build_name`}}"
+      ],
+      "inline": [
+        "if [ $BUILD_NAME != \"ubuntu-2004\" ]; then exit 0; fi",
+        "while [ ! -f /var/lib/cloud/instance/boot-finished ]; do echo 'Waiting for cloud-init...'; sleep 1; done",
+        "sudo apt-get -qq update"
+      ],
+      "type": "shell"
+    },
+    {
+      "ansible_env_vars": [
+        "ANSIBLE_SSH_ARGS='{{user `existing_ansible_ssh_args`}} {{user `ansible_common_ssh_args`}}'"
+      ],
+      "extra_arguments": [
+        "--extra-vars",
+        "{{user `ansible_common_vars`}}",
+        "--extra-vars",
+        "{{user `ansible_extra_vars`}}",
+        "--extra-vars",
+        "{{user `ansible_user_vars`}}",
+        "--scp-extra-args",
+        "{{user `ansible_scp_extra_args`}}"
+      ],
+      "playbook_file": "./ansible/node.yml",
+      "type": "ansible",
+      "user": "packer"
+    }
+  ],
+  "variables": {
+    "ansible_common_vars": "",
+    "ansible_extra_vars": "",
+    "ansible_scp_extra_args": "",
+    "api_key": "{{env `VULTR_API_KEY`}}",
+    "build_timestamp": "{{timestamp}}",
+    "containerd_gvisor_runtime": "false",
+    "containerd_gvisor_version": "latest",
+    "containerd_sha256": null,
+    "containerd_url": "https://github.com/containerd/containerd/releases/download/v{{user `containerd_version`}}/cri-containerd-cni-{{user `containerd_version`}}-linux-amd64.tar.gz",
+    "containerd_version": null,
+    "crictl_url": "https://github.com/kubernetes-sigs/cri-tools/releases/download/v{{user `crictl_version`}}/crictl-v{{user `crictl_version`}}-linux-amd64.tar.gz",
+    "crictl_version": null,
+    "existing_ansible_ssh_args": "{{env `ANSIBLE_SSH_ARGS`}}",
+    "kubernetes_cni_deb_version": null,
+    "kubernetes_cni_http_source": null,
+    "kubernetes_cni_rpm_version": null,
+    "kubernetes_cni_semver": null,
+    "kubernetes_cni_source_type": null,
+    "kubernetes_container_registry": null,
+    "kubernetes_deb_gpg_key": null,
+    "kubernetes_deb_repo": null,
+    "kubernetes_deb_version": null,
+    "kubernetes_http_source": null,
+    "kubernetes_load_additional_imgs": null,
+    "kubernetes_rpm_gpg_check": null,
+    "kubernetes_rpm_gpg_key": null,
+    "kubernetes_rpm_repo": null,
+    "kubernetes_rpm_version": null,
+    "kubernetes_semver": null,
+    "kubernetes_series": null,
+    "kubernetes_source_type": null,
+    "os": "1743",
+    "plan": "vc2-1c-1gb",
+    "region": "ewr"
+  }
+}

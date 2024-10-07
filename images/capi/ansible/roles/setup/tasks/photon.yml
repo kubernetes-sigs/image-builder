@@ -26,6 +26,7 @@
   ansible.builtin.command: tdnf update -y photon-repos --enablerepo=photon --refresh
   register: distro
   changed_when: '"Nothing to do" not in distro.stderr'
+  when: not disable_public_repos|default(false)|bool
 
 - name: Perform a tdnf distro-sync
   ansible.builtin.command: tdnf distro-sync -y --refresh

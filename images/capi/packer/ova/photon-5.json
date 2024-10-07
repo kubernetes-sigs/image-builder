@@ -1,8 +1,10 @@
 {
   "boot_command_prefix": "<esc><wait> vmlinuz initrd=initrd.img root/dev/ram0 loglevel=3 photon.media=cdrom ks=",
-  "boot_command_suffix": "/5/ks.json insecure_installation=1<enter><wait>",
-  "boot_media_path": "http://{{ .HTTPIP }}:{{ .HTTPPort }}",
+  "boot_command_suffix": " insecure_installation=1<enter><wait>",
+  "boot_media_path": "/dev/sr1:/5/ks.json",
   "build_name": "photon-5",
+  "cd_content_location": "./packer/ova/linux/{{user `distro_name`}}/http/*",
+  "cd_label": "cidata",
   "cdrom_type": "sata",
   "distro_arch": "amd64",
   "distro_name": "photon",

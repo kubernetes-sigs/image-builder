@@ -27,7 +27,9 @@
       "name": "{{user `build_name`}}",
       "network_adapters": [
         {
-          "bridge": "{{user `bridge`}}"
+          "bridge": "{{user `bridge`}}",
+          "mtu": "{{ user `mtu` }}",
+          "vlan_tag": "{{user `vlan_tag`}}"
         }
       ],
       "node": "{{ user `node` }}",
@@ -56,10 +58,13 @@
   ],
   "provisioners": [
     {
-      "expect_disconnect": true,
+      "environment_vars": [
+        "BUILD_NAME={{user `build_name`}}"
+      ],
       "inline": [
-        "ls /",
+        "if [ $BUILD_NAME != \"ubuntu\" ]; then exit 0; fi",
         "while [ ! -f /var/lib/cloud/instance/boot-finished ]; do echo 'Waiting for cloud-init...'; sleep 1; done",
+        "sudo apt-get -qq update",
         "echo done"
       ],
       "inline_shebang": "/bin/bash -e",
@@ -107,6 +112,7 @@
         "--scp-extra-args",
         "{{user `ansible_scp_extra_args`}}"
       ],
+      "pause_before": "10s",
       "playbook_file": "./ansible/node.yml",
       "type": "ansible",
       "user": "builder"
@@ -180,6 +186,7 @@
     "kubernetes_series": null,
     "kubernetes_source_type": null,
     "memory": "2048",
+    "mtu": "{{env `PROXMOX_MTU`}}",
     "node": "{{env `PROXMOX_NODE`}}",
     "proxmox_url": "{{env `PROXMOX_URL`}}",
     "sockets": "2",
@@ -189,6 +196,7 @@
     "storage_pool_type": "lvm",
     "token": "{{env `PROXMOX_TOKEN`}}",
     "username": "{{env `PROXMOX_USERNAME`}}",
+    "vlan_tag": "{{env `PROXMOX_VLAN`}}",
     "vmid": ""
   }
 }

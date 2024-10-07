@@ -45,7 +45,11 @@ jobs:
       echo "${RESOURCE_GROUP}" is the group
 
       # Azure CLI login
-      az login -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET --service-principal --tenant $AZURE_TENANT_ID
+      if [[ -n "${AZURE_FEDERATED_TOKEN_FILE:-}" ]]; then
+        az login --service-principal -u "${AZURE_CLIENT_ID}" -t "${AZURE_TENANT_ID}" --federated-token "$(cat "${AZURE_FEDERATED_TOKEN_FILE}")"
+      else
+        az login --service-principal -u "${AZURE_CLIENT_ID}" -t "${AZURE_TENANT_ID}" -p "${AZURE_CLIENT_SECRET}"
+      fi
 
       # Find the VHD blob location from its storage account
       AZURE_LOCATION=$(az storage account show --name "${STORAGE_ACCOUNT_NAME}" --query '[location]' -o tsv)

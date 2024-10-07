@@ -1,0 +1,11 @@
+Types: deb
+URIs: http://us.archive.ubuntu.com/ubuntu/
+Suites: {{ ansible_distribution_release }} {{ ansible_distribution_release }}-updates {{ ansible_distribution_release }}-backports
+Components: main restricted universe multiverse
+Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
+
+Types: deb
+URIs: http://security.ubuntu.com/ubuntu/
+Suites: {{ ansible_distribution_release }}-security
+Components: main restricted universe multiverse
+Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
