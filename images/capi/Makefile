@@ -362,7 +362,7 @@ OPENSTACK_BUILD_NAMES		?=	openstack-ubuntu-2004 openstack-ubuntu-2204 openstack-
 
 OSC_BUILD_NAMES 			?=	osc-ubuntu-2004 osc-ubuntu-2204
 
-QEMU_BUILD_NAMES			?=	qemu-ubuntu-2004 qemu-ubuntu-2204 qemu-ubuntu-2204-cloudimg qemu-ubuntu-2304 qemu-ubuntu-2404 qemu-ubuntu-2204-efi qemu-centos-7 qemu-centos-9 qemu-ubuntu-2004-efi qemu-rhel-8 qemu-rhel-9 qemu-rockylinux-8 qemu-rockylinux-8-cloudimg qemu-rockylinux-9 qemu-rockylinux-9-cloudimg qemu-flatcar qemu-ubuntu-2204-crio qemu-centos-9-crio
+QEMU_BUILD_NAMES			?=	qemu-ubuntu-2004 qemu-ubuntu-2204 qemu-ubuntu-2204-cloudimg qemu-ubuntu-2304 qemu-ubuntu-2404 qemu-ubuntu-2204-efi qemu-centos-7 qemu-centos-9 qemu-ubuntu-2004-efi qemu-rhel-8 qemu-rhel-9 qemu-rockylinux-8 qemu-rockylinux-8-cloudimg qemu-rockylinux-9 qemu-rockylinux-9-cloudimg qemu-flatcar qemu-ubuntu-2204-crio qemu-centos-9-crio qemu-ubuntu-2404-crio
 
 QEMU_KUBEVIRT_BUILD_NAMES	:= $(addprefix kubevirt-,$(QEMU_BUILD_NAMES))
 
@@ -798,6 +798,7 @@ build-qemu-ubuntu-2204-efi: ## Builds Ubuntu 22.04 QEMU image that EFI boots
 build-qemu-ubuntu-2204-crio: ## Builds Ubuntu 22.04 QEMU image using CRI-O as CRI
 build-qemu-ubuntu-2304: ## Builds Ubuntu 23.04 QEMU image
 build-qemu-ubuntu-2404: ## Builds Ubuntu 24.04 QEMU image
+build-qemu-ubuntu-2404-crio: ## Builds Ubuntu 24.04 QEMU image using CRI-O as CRI
 build-qemu-centos-7: ## Builds CentOS 7 QEMU image
 build-qemu-centos-9: ## Builds CentOS 9 Stream QEMU image
 build-qemu-centos-9-crio: ## Builds CentOOS 9 Stream image using CRI-O as CRI
@@ -978,6 +979,7 @@ validate-qemu-ubuntu-2204-efi: ## Validates Ubuntu 22.04 QEMU EFI image packer c
 validate-qemu-ubuntu-2204-crio: ## Validates Ubuntu 22.04 QEMU CRIO image packer config 
 validate-qemu-ubuntu-2304: ## Validates Ubuntu 23.04 QEMU image packer config
 validate-qemu-ubuntu-2404: ## Validates Ubuntu 24.04 QEMU image packer config
+validate-qemu-ubuntu-2404-crio: ## Validates Ubuntu 24.04 QEMU CRIO image packer config 
 validate-qemu-centos-7: ## Validates CentOS 7 QEMU image packer config
 validate-qemu-centos-9: ## Validates CentOS 7 QEMU image packer config
 validate-qemu-centos-9-crio: ## Validates CentOS 7 QEMU CRIO image packer config 
