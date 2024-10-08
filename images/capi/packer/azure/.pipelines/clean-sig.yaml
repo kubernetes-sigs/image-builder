@@ -1,0 +1,59 @@
+# Required pipeline variables:
+# - BUILD_POOL - Azure DevOps build pool to use
+# - SERVICE_CONNECTION - Azure DevOps service connection to use for the Azure CLI
+# Optional pipeline variables:
+# - RESOURCE_GROUP - name of the Azure resource group to use for the compute galleries, defaults to "cluster-api-gallery"
+# - STAGING_GALLERY_NAME - name of the Azure compute gallery for initial image publishing, defaults to "staging_gallery"
+
+jobs:
+- job: clean_sig
+  timeoutInMinutes: 120
+  strategy:
+    maxParallel: 0
+  pool:
+    name: $(BUILD_POOL)
+  steps:
+  - task: DownloadPipelineArtifact@2
+    inputs:
+      source: current
+      artifact: publishing-info
+      path: $(system.defaultWorkingDirectory)/images/capi/packer/azure/sig/
+  - script: |
+      set -euo pipefail
+      [[ -n ${DEBUG:-} ]] && set -o xtrace
+
+      MANAGED_IMAGE_ID=$(jq -r .managed_image_id $(system.defaultWorkingDirectory)/images/capi/packer/azure/sig/sig-publishing-info.json)
+      SHARED_IMAGE_GALLERY_IMAGE_NAME=$(jq -r .shared_image_gallery_image_name $(system.defaultWorkingDirectory)/images/capi/packer/azure/sig/sig-publishing-info.json)
+      SHARED_IMAGE_GALLERY_IMAGE_VERSION=$(jq -r .shared_image_gallery_image_version $(system.defaultWorkingDirectory)/images/capi/packer/azure/sig/sig-publishing-info.json)
+
+      echo "##vso[task.setvariable variable=MANAGED_IMAGE_ID]$MANAGED_IMAGE_ID"
+      echo "##vso[task.setvariable variable=SHARED_IMAGE_GALLERY_IMAGE_NAME]$SHARED_IMAGE_GALLERY_IMAGE_NAME"
+      echo "##vso[task.setvariable variable=SHARED_IMAGE_GALLERY_IMAGE_VERSION]$SHARED_IMAGE_GALLERY_IMAGE_VERSION"
+    displayName: Import variables from build SIG job
+  - task: AzureCLI@2
+    displayName: Clean up staging resources
+    inputs:
+      azureSubscription: '$(SERVICE_CONNECTION)'
+      scriptLocation: inlineScript
+      scriptType: bash
+      workingDirectory: '$(system.defaultWorkingDirectory)/images/capi'
+      inlineScript: |
+        set -euo pipefail
+        [[ -n ${DEBUG:-} ]] && set -o xtrace
+
+        GALLERY_NAME="${STAGING_GALLERY_NAME:-staging_gallery}"
+        RESOURCE_GROUP="${RESOURCE_GROUP:-cluster-api-gallery}"
+
+        # Delete the source managed image if it exists
+        if az image show --ids ${MANAGED_IMAGE_ID} -o none 2>/dev/null; then
+          az image delete --ids ${MANAGED_IMAGE_ID}
+        fi
+
+        # Delete the staging image version if it exists
+        if az sig image-version show --resource-group ${RESOURCE_GROUP} --gallery-name ${GALLERY_NAME} --gallery-image-definition ${SHARED_IMAGE_GALLERY_IMAGE_NAME} --gallery-image-version ${SHARED_IMAGE_GALLERY_IMAGE_VERSION} -o none 2>/dev/null; then
+          az sig image-version delete \
+            --resource-group ${RESOURCE_GROUP} \
+            --gallery-name ${GALLERY_NAME} \
+            --gallery-image-definition ${SHARED_IMAGE_GALLERY_IMAGE_NAME} \
+            --gallery-image-version ${SHARED_IMAGE_GALLERY_IMAGE_VERSION}
+        fi
