@@ -12,7 +12,7 @@ fi
 az account set -s ${AZURE_SUBSCRIPTION_ID} >/dev/null 2>&1
 eval "$tracestate"
 
-export RESOURCE_GROUP_NAME="${RESOURCE_GROUP_NAME:-cluster-api-images}"
+export RESOURCE_GROUP_NAME="${RESOURCE_GROUP_NAME:-cluster-api-gallery}"
 export AZURE_LOCATION="${AZURE_LOCATION:-northcentralus}"
 if ! az group show -n ${RESOURCE_GROUP_NAME} -o none 2>/dev/null; then
   az group create -n ${RESOURCE_GROUP_NAME} -l ${AZURE_LOCATION} --tags ${TAGS:-}
@@ -83,17 +83,19 @@ fi
 ##############################################################################
 
 create_image_definition() {
-  az sig image-definition create \
-    --resource-group ${RESOURCE_GROUP_NAME} \
-    --gallery-name ${GALLERY_NAME} \
-    --gallery-image-definition ${SIG_IMAGE_DEFINITION:-capi-${SIG_SKU:-$1}} \
-    --publisher ${SIG_PUBLISHER:-capz} \
-    --offer ${SIG_OFFER:-capz-demo} \
-    --sku ${SIG_SKU:-$2} \
-    --hyper-v-generation ${3} \
-    --os-type ${4} \
-    --features ${5:-''} \
-    "${plan_args[@]}" # TODO: Delete this line after the image is GA
+  if ! az sig image-definition show --gallery-name ${GALLERY_NAME} --gallery-image-definition ${SIG_IMAGE_DEFINITION:-capi-${SIG_SKU:-$1}} --resource-group ${RESOURCE_GROUP_NAME} -o none 2>/dev/null; then
+    az sig image-definition create \
+      --resource-group ${RESOURCE_GROUP_NAME} \
+      --gallery-name ${GALLERY_NAME} \
+      --gallery-image-definition ${SIG_IMAGE_DEFINITION:-capi-${SIG_SKU:-$1}} \
+      --publisher ${SIG_PUBLISHER:-capz} \
+      --offer ${SIG_OFFER:-capz-demo} \
+      --sku ${SIG_SKU:-$2} \
+      --hyper-v-generation ${3} \
+      --os-type ${4} \
+      --features ${5:-''} \
+      "${plan_args[@]}" # TODO: Delete this line after the image is GA
+  fi
 }
 
 case ${SIG_TARGET} in
