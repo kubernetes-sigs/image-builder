@@ -1,56 +1,33 @@
 # Required pipeline variables:
 # - BUILD_POOL - Azure DevOps build pool to use
-# - AZURE_TENANT_ID_VHD - tenant ID to build the vhd
-# - AZURE_CLIENT_ID_VHD - Service principal ID to build the vhd
-# - AZURE_CLIENT_SECRET_VHD - Service principal secret to build the vhd
-# - AZURE_SUBSCRIPTION_ID_VHD - Subscription ID to build the vhd
-# - AZURE_TENANT_ID_SKU - tenant ID to PUT the SKU
-# - AZURE_CLIENT_ID_SKU - Service principal ID to PUT the SKU
-# - AZURE_CLIENT_SECRET_SKU - Service principal secret to PUT the SKU
-# - KUBERNETES_VERSION - version of Kubernetes to create the sku for, e.g. `1.16.2`
-# - PUBLISHER - the name of the publisher to create the sku for
+# - KUBERNETES_VERSION - version of Kubernetes to build the image with, e.g. `1.31.1`
 # - OFFER - the name of the offer to create the sku for
-# - SKU_TEMPLATE_FILE - the base template file to use for the sku
-# - OS - target of build e.g. `Ubuntu/Windows`
-# - OS_VERSION - target of build e.g. `22.04/2004/2019`
+# - OS - target of build, one of `Ubuntu` or `Windows`
+# - OS_VERSION - target of build, one of `24.04`, `22.04`, `2022-containerd`, or `2019-containerd`
+# - PUBLISHER - the name of the publisher to create the sku for
+# - RESOURCE_GROUP - name of the Azure resource group to use for the Compute galleries
+# - SERVICE_CONNECTION - Azure DevOps service connection to use for the Azure CLI
+# - STAGING_GALLERY_NAME - name of the Azure Compute Gallery for initial image publishing
 
 trigger: none
 pr: none
 
 stages:
-  - stage: vhd
+  - stage: build
     jobs:
-    - template: build-vhd.yaml
-    variables:
-      AZURE_TENANT_ID: $(AZURE_TENANT_ID_VHD)
-      AZURE_CLIENT_ID: $(AZURE_CLIENT_ID_VHD)
-      AZURE_CLIENT_SECRET: $(AZURE_CLIENT_SECRET_VHD)
-      AZURE_SUBSCRIPTION_ID: $(AZURE_SUBSCRIPTION_ID_VHD)
+    - template: build-sig.yaml
 
   - stage: test
-    condition: and(succeeded(), eq(variables.CLEANUP, 'False'))
+    condition: not(always()) # skip for now
     jobs:
-    - template: test-vhd.yaml
-    variables:
-      AZURE_TENANT_ID: $(AZURE_TENANT_ID_VHD)
-      AZURE_CLIENT_ID: $(AZURE_CLIENT_ID_VHD)
-      AZURE_CLIENT_SECRET: $(AZURE_CLIENT_SECRET_VHD)
-      AZURE_SUBSCRIPTION_ID: $(AZURE_SUBSCRIPTION_ID_VHD)
+    - template: test-sig.yaml
 
-  - stage: sku
-    condition: and(succeeded(), eq(variables.CLEANUP, 'False'))
+  - stage: promote
+    condition: not(or(failed(), canceled()))
     jobs:
-    - template: create-sku.yaml
-    variables:
-      AZURE_TENANT_ID: $(AZURE_TENANT_ID_SKU)
-      AZURE_CLIENT_ID: $(AZURE_CLIENT_ID_SKU)
-      AZURE_CLIENT_SECRET: $(AZURE_CLIENT_SECRET_SKU)
+    - template: promote-sig.yaml
 
-  - stage: disk_version
-    condition: and(succeeded(), eq(variables.CLEANUP, 'False'))
+  - stage: clean
+    condition: always()
     jobs:
-    - template: create-disk-version.yaml
-    variables:
-      AZURE_TENANT_ID: $(AZURE_TENANT_ID_SKU)
-      AZURE_CLIENT_ID: $(AZURE_CLIENT_ID_SKU)
-      AZURE_CLIENT_SECRET: $(AZURE_CLIENT_SECRET_SKU)
+    - template: clean-sig.yaml
