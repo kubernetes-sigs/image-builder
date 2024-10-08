@@ -117,6 +117,15 @@ jobs:
           | tee -a sig-publishing.json
       fi
 
+      # Delete the image version if it exists (assuming a force-update)
+      if az sig image-version show --gallery-name ${GALLERY_NAME} --gallery-image-definition ${GALLERY_IMAGE_DEFINITION} --gallery-image-version ${SHARED_IMAGE_GALLERY_IMAGE_VERSION} --resource-group ${RESOURCE_GROUP} -o none 2>/dev/null; then
+        az sig image-version delete \
+          --resource-group ${RESOURCE_GROUP} \
+          --gallery-name ${GALLERY_NAME} \
+          --gallery-image-definition ${GALLERY_IMAGE_DEFINITION} \
+          --gallery-image-version ${SHARED_IMAGE_GALLERY_IMAGE_VERSION}
+      fi
+
       # Create the image version
       az sig image-version create \
         --resource-group ${RESOURCE_GROUP} \
