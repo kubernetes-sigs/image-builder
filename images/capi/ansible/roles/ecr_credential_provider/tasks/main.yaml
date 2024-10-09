@@ -46,3 +46,5 @@
       ansible.builtin.shell: |
         set -e -o pipefail
         sed -Ei 's|^(KUBELET_EXTRA_ARGS.*)|\1 --image-credential-provider-config=/var/usr/ecr-credential-provider/ecr-credential-provider-config --image-credential-provider-bin-dir={{ ecr_credential_provider_install_dir }}|' {{ '/etc/default/kubelet' if ansible_os_family == 'Debian' else '/etc/sysconfig/kubelet' }}
+      args:
+        executable: /bin/bash
