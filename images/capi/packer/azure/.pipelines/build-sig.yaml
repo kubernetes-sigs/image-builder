@@ -1,14 +1,14 @@
 # Required pipeline variables:
 # - BUILD_POOL - Azure DevOps build pool to use
 # - AZURE_TENANT_ID - tenant ID
-# - AZURE_CLIENT_ID - Service principal ID
-# - AZURE_CLIENT_SECRET - Service principal secret
-# - AZURE_SUBSCRIPTION_ID - Subscription ID
+# - AZURE_CLIENT_ID - service principal ID
+# - AZURE_CLIENT_SECRET - service principal secret
+# - AZURE_SUBSCRIPTION_ID - subscription ID
 # - KUBERNETES_VERSION - version of Kubernetes to build the image with, e.g. `1.31.1`
-# - OS - target of build, one of `Ubuntu` or `Windows`
-# - OS_VERSION - target of build, one of `24.04`, `22.04`, `2022-containerd`, or `2019-containerd`
-# - RESOURCE_GROUP - name of the Azure resource group to use for the Compute galleries
-# - STAGING_GALLERY_NAME - name of the Azure Compute Gallery for initial image publishing
+# - OS - operating system distro, such as 'Ubuntu', 'AzureLinux', or `Windows`
+# - OS_VERSION - version of distro, such as `24.04` or `2022-containerd`
+# - RESOURCE_GROUP - name of the Azure resource group to use for the compute galleries
+# - STAGING_GALLERY_NAME - name of the Azure compute gallery for initial image publishing
 
 jobs:
 - job: build_sig
@@ -38,7 +38,7 @@ jobs:
       set -euo pipefail
       [[ -n ${DEBUG:-} ]] && set -o xtrace
 
-      # Generate locales properly on Mariner or ansible will complain
+      # Generate locales properly on Azure Linux or ansible will complain
       sudo tdnf -y install glibc-i18n
       sudo locale-gen.sh
       export LC_ALL=en_US.UTF-8
