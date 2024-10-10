@@ -114,7 +114,7 @@
     "kubernetes_semver": null,
     "kubernetes_series": null,
     "kubernetes_source_type": null,
-    "machine_type": "n1-standard-1",
+    "machine_type": "n2-standard-2",
     "project_id": "{{env `GCP_PROJECT_ID`}}",
     "service_account_email": "",
     "source_image_family": "{{user `source_image_family`}}",
