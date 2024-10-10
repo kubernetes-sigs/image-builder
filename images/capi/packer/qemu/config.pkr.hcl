@@ -1,8 +1,8 @@
 packer {
   required_plugins {
-    googlecompute = {
-      source  = "github.com/hashicorp/googlecompute"
-      version = "~> 1"
+    vultr = {
+      source =  "github.com/hashicorp/qemu"
+      version = "~> 1.1.0"
     }
   }
 }
