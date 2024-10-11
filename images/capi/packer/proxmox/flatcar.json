@@ -22,5 +22,6 @@
   "shutdown_command": "shutdown -P now",
   "systemd_prefix": "/etc/systemd",
   "sysusr_prefix": "/opt",
-  "sysusrlocal_prefix": "/opt"
+  "sysusrlocal_prefix": "/opt",
+  "boot_media_path": "http://{{ .HTTPIP }}:{{ .HTTPPort }}"
 }
