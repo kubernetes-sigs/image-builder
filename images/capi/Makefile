@@ -847,7 +847,7 @@ build-hcloud-rockylinux-9: ## Builds the Hetzner Cloud Rocky Linux 9 image
 build-hcloud-flatcar: ## Builds the Hetzner Cloud Flatcar image
 build-hcloud-all: $(HCLOUD_BUILD_TARGETS) ## Builds all Hetzner Cloud image
 
-build-proxmox-flatcar: ## Builds Flatcar QEMU image
+build-proxmox-flatcar: ## Builds Flatcar Proxmox image
 build-proxmox-ubuntu-2204: ## Builds the Proxmox ubuntu-2204 image
 build-proxmox-ubuntu-2404: ## Builds the Proxmox ubuntu-2404 image
 build-proxmox-rockylinux-9: ## Builds the Proxmox rockylinux-9 image
