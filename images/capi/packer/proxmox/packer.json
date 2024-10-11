@@ -15,13 +15,15 @@
           "disk_size": "{{user `disk_size`}}",
           "storage_pool": "{{user `storage_pool`}}",
           "storage_pool_type": "{{user `storage_pool_type`}}",
-          "type": "scsi"
+          "type": "scsi",
+          "format": "qcow2"
         }
       ],
       "http_directory": "{{user `http_directory`}}",
       "insecure_skip_tls_verify": true,
       "iso_checksum": "{{user `iso_checksum_type`}}:{{user `iso_checksum`}}",
       "iso_storage_pool": "{{user `iso_storage_pool`}}",
+      "iso_file": "{{user `iso_file`}}",
       "iso_url": "{{user `iso_url`}}",
       "memory": "{{user `memory`}}",
       "name": "{{user `build_name`}}",
