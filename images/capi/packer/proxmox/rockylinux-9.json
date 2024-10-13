@@ -16,5 +16,5 @@
   "redhat_epel_rpm": "https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm",
   "shutdown_command": "/sbin/halt -h -p",
   "vsphere_guest_os_type": "rockylinux_64Guest",
-  "cpu_type": "x86-64-v2-AES"
+  "cpu_type": "Westmere"
 }
