@@ -148,6 +148,14 @@
         "kubernetes_version": "{{user `kubernetes_semver` | replace \"v\" \"\" 1}}"
       },
       "version": "{{user `goss_version`}}"
+    },
+    {
+      "expect_disconnect": true,
+      "inline": [
+        "echo '{{user `ssh_password`}}' | sudo -S -E sh -c 'usermod -L {{user `ssh_username`}} && shutdown'"
+      ],
+      "inline_shebang": "/bin/bash -e",
+      "type": "shell"
     }
   ],
   "variables": {
