@@ -23,7 +23,7 @@
   "remote_type": "",
   "remote_username": "",
   "skip_compaction": "false",
-  "ssh_password": "builder",
+  "ssh_password": "{{ uuid }}",
   "ssh_proxy_host": "",
   "ssh_proxy_port": "",
   "ssh_timeout": "60m",
