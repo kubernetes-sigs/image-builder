@@ -12,32 +12,50 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- name: Download gcloud SDK
-  ansible.builtin.get_url:
-    url: https://sdk.cloud.google.com/
-    dest: /tmp/install-gcloud.sh
-    mode: "0700"
+- name: Install gcloud SDK
+  when: ansible_os_family != "RedHat"
+  block:
+    - name: Download gcloud SDK
+      ansible.builtin.get_url:
+        url: https://sdk.cloud.google.com/
+        dest: /tmp/install-gcloud.sh
+        mode: "0700"
+    - name: Execute install-gcloud.sh
+      ansible.builtin.shell: bash -o errexit -o pipefail /tmp/install-gcloud.sh --disable-prompts --install-dir=/
+    - name: Remove install-gcloud.sh
+      ansible.builtin.file:
+        path: /tmp/install-gcloud.sh
+        state: absent
+    - name: Find all files in /google-cloud-sdk/bin/
+      ansible.builtin.find:
+        paths: /google-cloud-sdk/bin/
+      register: find
+    - name: Create symlinks to /bin
+      become: true
+      ansible.builtin.file:
+        src: "{{ item.path }}"
+        path: /bin/{{ item.path | basename }}
+        state: link
+      with_items: "{{ find.files }}"
 
-- name: Execute install-gcloud.sh
-  ansible.builtin.shell: bash -o errexit -o pipefail /tmp/install-gcloud.sh --disable-prompts --install-dir=/
-
-- name: Remove install-gcloud.sh
-  ansible.builtin.file:
-    path: /tmp/install-gcloud.sh
-    state: absent
-
-- name: Find all files in /google-cloud-sdk/bin/
-  ansible.builtin.find:
-    paths: /google-cloud-sdk/bin/
-  register: find
-
-- name: Create symlinks to /bin
-  become: true
-  ansible.builtin.file:
-    src: "{{ item.path }}"
-    path: /bin/{{ item.path | basename }}
-    state: link
-  with_items: "{{ find.files }}"
+- name: Install gcloud SDK
+  when: ansible_os_family == "RedHat"
+  block:
+    - name: Add gcloud repository info
+      ansible.builtin.shell: |
+        sudo tee -a /etc/yum.repos.d/google-cloud-sdk.repo << EOM
+        [google-cloud-cli]
+        name=Google Cloud CLI
+        baseurl=https://packages.cloud.google.com/yum/repos/cloud-sdk-el8-x86_64
+        enabled=1
+        gpgcheck=1
+        repo_gpgcheck=0
+        gpgkey=https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+        EOM
+    - name: Install google-cloud-cli package
+      ansible.builtin.yum:
+        name: google-cloud-cli
+        state: present
 
 - name: Install cloud-init packages
   ansible.builtin.yum:
