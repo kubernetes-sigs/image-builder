@@ -1,0 +1,6 @@
+packer-common.json
+ks.cfg
+ks.json
+preseed.cfg
+preseed-efi.cfg
+user-data

@@ -1,9 +1,0 @@
-#cloud-config
-ssh_pwauth: true
-users:
-  - name: builder
-    passwd: $6$xyz$UtXVazU08Q5b8AW.TJ3MPYZglyXa3Ttf2RCel8MCUPlEYO1evWxeWBhZ2QqivU/Ij4tqYAxMCqc2ujEM4dMSe1
-    groups: [adm, cdrom, dip, plugdev, lxd, sudo]
-    lock-passwd: false
-    sudo: ALL=(ALL) NOPASSWD:ALL
-    shell: /bin/bash
