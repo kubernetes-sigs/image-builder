@@ -282,9 +282,9 @@ rockylinux:
         <<: *rh9_rpms
   qemu:
     package:
-      open-vm-tools:
+      qemu-guest-agent:
       cloud-init:
-      cloud-utils:
+      cloud-utils-growpart:
     os_version:
     - distro_version: "8"
       package:

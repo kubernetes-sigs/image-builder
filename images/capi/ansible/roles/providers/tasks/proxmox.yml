@@ -60,8 +60,10 @@
   ansible.builtin.systemd:
     name: networkd-dispatcher
     state: started
+  when: ansible_os_family == "Debian"
 
 - name: Ensure networkd-dispatcher is enabled
   ansible.builtin.systemd:
     name: networkd-dispatcher
     enabled: true
+  when: ansible_os_family == "Debian"
