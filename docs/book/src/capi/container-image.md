@@ -56,7 +56,7 @@ docker pull registry.k8s.io/scl-image-builder/cluster-node-image-builder-amd64:v
     ```
 
 - Proxmox
-    - You'll need a `proxmox.env` file to load environment variables such as `PROXMOX_URL`, `PROXMOX_TOKEN`, `PROXMOX_NODE`, `PROXMOX_STORAGE_POOL` ...
+    - You'll need a `proxmox.env` file to load environment variables such as:
 
       ```commandline
       PROXMOX_BRIDGE=vmbr0
