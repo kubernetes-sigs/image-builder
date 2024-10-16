@@ -1,0 +1,9 @@
+#cloud-config
+ssh_pwauth: true
+users:
+  - name: builder
+    passwd: $ENCRYPTED_SSH_PASSWORD
+    groups: [adm, cdrom, dip, plugdev, lxd, sudo]
+    lock-passwd: false
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    shell: /bin/bash
