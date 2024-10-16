@@ -73,6 +73,14 @@
       "type": "shell"
     },
     {
+      "environment_vars": [
+        "PYPY_HTTP_SOURCE={{user `pypy_http_source`}}"
+      ],
+      "execute_command": "BUILD_NAME={{user `build_name`}}; if [[ \"${BUILD_NAME}\" == *\"flatcar\"* ]]; then sudo {{.Vars}} -S -E bash '{{.Path}}'; fi",
+      "script": "./packer/files/flatcar/scripts/bootstrap-flatcar.sh",
+      "type": "shell"
+    },
+    {
       "ansible_env_vars": [
         "ANSIBLE_SSH_ARGS='{{user `existing_ansible_ssh_args`}} {{user `ansible_common_ssh_args`}}'",
         "KUBEVIRT={{user `kubevirt`}}"
