@@ -70,7 +70,7 @@ docker pull registry.k8s.io/scl-image-builder/cluster-node-image-builder-amd64:v
 
     - Docker's `--net=host` option to ensure http server starts with the host IP and not the Docker container IP.
       This option is Linux specific and thus implies that it can be run only from a Linux machine.
-    - Proxmox provider requires a folder to be mounted within the container to the downloaded_iso_path folder
+    - Proxmox provider requires a tmp folder to be mounted within the container to the downloaded_iso_path folder
 
     ```commandline
     docker run -it --rm --net=host --env-file proxmox.env \
