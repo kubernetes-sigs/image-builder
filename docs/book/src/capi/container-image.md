@@ -72,7 +72,7 @@ docker pull registry.k8s.io/scl-image-builder/cluster-node-image-builder-amd64:v
 
     ```commandline
     docker run -it --rm --net=host --env-file proxmox.env \
-      -v ./images/capi/downloaded_iso_path:/home/imagebuilder/images/capi/downloaded_iso_path \
+      -v /tmp:/home/imagebuilder/images/capi/downloaded_iso_path \
       registry.k8s.io/scl-image-builder/cluster-node-image-builder-amd64:v0.1.38 build-proxmox-ubuntu-2204
     ```
 
