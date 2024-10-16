@@ -58,15 +58,15 @@ docker pull registry.k8s.io/scl-image-builder/cluster-node-image-builder-amd64:v
 - Proxmox
     - You'll need a `proxmox.env` file to load environment variables `PROXMOX_URL`, `PROXMOX_TOKEN`, `PROXMOX_NODE` and `PROXMOX_STORAGE_POOL`
 
-    ```commandline
-    PROXMOX_BRIDGE=vmbr0
-    PROXMOX_ISO_POOL=tower
-    PROXMOX_NODE=pve-c
-    PROXMOX_STORAGE_POOL=cephfs
-    PROXMOX_TOKEN=64997dbb-83ac-4878-bbf2-04c0299d02da
-    PROXMOX_URL=https://10.0.0.21:8006/api2/json
-    PROXMOX_USERNAME=capmox@pve!capi
-    ```
+      ```commandline
+      PROXMOX_BRIDGE=vmbr0
+      PROXMOX_ISO_POOL=tower
+      PROXMOX_NODE=pve-c
+      PROXMOX_STORAGE_POOL=cephfs
+      PROXMOX_TOKEN=64997dbb-83ac-4878-bbf2-04c0299d02da
+      PROXMOX_URL=https://10.0.0.21:8006/api2/json
+      PROXMOX_USERNAME=capmox@pve!capi
+      ```
 
     - Docker's `--net=host` option to ensure http server starts with the host IP and not the Docker container IP. This option is Linux specific and thus implies that it can be run only from a Linux machine.
 
