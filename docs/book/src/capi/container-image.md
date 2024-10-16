@@ -42,7 +42,6 @@ docker pull registry.k8s.io/scl-image-builder/cluster-node-image-builder-amd64:v
     ```
 
 - AZURE
-
     - You'll need an `az-creds.env` file to load environment variables `AZURE_SUBSCRIPTION_ID`, `AZURE_TENANT_ID`, `AZURE_CLIENT_ID` and `AZURE_CLIENT_SECRET`
 
       ```commandline
@@ -54,6 +53,29 @@ docker pull registry.k8s.io/scl-image-builder/cluster-node-image-builder-amd64:v
 
     ```commandline
     docker run -it --rm --env-file az-creds.env registry.k8s.io/scl-image-builder/cluster-node-image-builder-amd64:v0.1.38 build-azure-sig-ubuntu-2004
+    ```
+
+- Proxmox
+    - You'll need a `proxmox.env` file to load environment variables such as:
+
+      ```commandline
+      PROXMOX_BRIDGE=vmbr0
+      PROXMOX_ISO_POOL=tower
+      PROXMOX_NODE=pve-c
+      PROXMOX_STORAGE_POOL=cephfs
+      PROXMOX_TOKEN=64997dbb-83ac-4878-bbf2-04c0299d02da
+      PROXMOX_URL=https://10.0.0.21:8006/api2/json
+      PROXMOX_USERNAME=capmox@pve!capi
+      ```
+
+    - Docker's `--net=host` option to ensure http server starts with the host IP and not the Docker container IP.
+      This option is Linux specific and thus implies that it can be run only from a Linux machine.
+    - Proxmox provider requires a tmp folder to be mounted within the container to the downloaded_iso_path folder
+
+    ```commandline
+    docker run -it --rm --net=host --env-file proxmox.env \
+      -v /tmp:/home/imagebuilder/images/capi/downloaded_iso_path \
+      registry.k8s.io/scl-image-builder/cluster-node-image-builder-amd64:v0.1.38 build-proxmox-ubuntu-2204
     ```
 
 - vSphere OVA
