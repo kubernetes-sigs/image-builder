@@ -50,7 +50,7 @@ Ansible doesn't run on directly on Windows (wsl works) but can used to configure
 ## Set up Windows machine
 Follow the [WinRM Setup](https://docs.ansible.com/ansible/latest/os_guide/windows_setup.html) in the Ansible documentation for configuring WinRM on the Windows machine. Note the [ConfigureRemotingForAnsible.ps1](https://raw.githubusercontent.com/ansible/ansible/devel/examples/scripts/ConfigureRemotingForAnsible.ps1) is for development only. Refer to [Ansible WinRM documentation](https://docs.ansible.com/ansible/latest/user_guide/windows_winrm.html) for details for advance configuration.
 
-After WinRM is installed you can edit or `/etc/ansible/hosts` file with the following:
+After WinRM is installed you can edit the `/etc/ansible/hosts` file with the following:
 
 ```
 [winhost]
