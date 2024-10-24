@@ -1,10 +1,26 @@
 #!/bin/bash
 
+# Copyright 2019 The Kubernetes Authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 [[ -n ${DEBUG:-} ]] && set -o xtrace
 
 tracestate="$(shopt -po xtrace)"
 set +o xtrace
-if [[ -n "${AZURE_FEDERATED_TOKEN_FILE:-}" ]]; then
+if [[ "${USE_AZURE_CLI_AUTH:-}" == "True" ]]; then
+  : # Assume we did "az login" before running this script
+elif [[ -n "${AZURE_FEDERATED_TOKEN_FILE:-}" ]]; then
   az login --service-principal -u "${AZURE_CLIENT_ID}" -t "${AZURE_TENANT_ID}" --federated-token "$(cat "${AZURE_FEDERATED_TOKEN_FILE}")" >/dev/null 2>&1
 else
   az login --service-principal -u "${AZURE_CLIENT_ID}" -t "${AZURE_TENANT_ID}" -p "${AZURE_CLIENT_SECRET}" >/dev/null 2>&1
@@ -12,7 +28,7 @@ fi
 az account set -s ${AZURE_SUBSCRIPTION_ID} >/dev/null 2>&1
 eval "$tracestate"
 
-export RESOURCE_GROUP_NAME="${RESOURCE_GROUP_NAME:-cluster-api-images}"
+export RESOURCE_GROUP_NAME="${RESOURCE_GROUP_NAME:-cluster-api-gallery}"
 export AZURE_LOCATION="${AZURE_LOCATION:-northcentralus}"
 if ! az group show -n ${RESOURCE_GROUP_NAME} -o none 2>/dev/null; then
   az group create -n ${RESOURCE_GROUP_NAME} -l ${AZURE_LOCATION} --tags ${TAGS:-}
@@ -83,17 +99,19 @@ fi
 ##############################################################################
 
 create_image_definition() {
-  az sig image-definition create \
-    --resource-group ${RESOURCE_GROUP_NAME} \
-    --gallery-name ${GALLERY_NAME} \
-    --gallery-image-definition ${SIG_IMAGE_DEFINITION:-capi-${SIG_SKU:-$1}} \
-    --publisher ${SIG_PUBLISHER:-capz} \
-    --offer ${SIG_OFFER:-capz-demo} \
-    --sku ${SIG_SKU:-$2} \
-    --hyper-v-generation ${3} \
-    --os-type ${4} \
-    --features ${5:-''} \
-    "${plan_args[@]}" # TODO: Delete this line after the image is GA
+  if ! az sig image-definition show --gallery-name ${GALLERY_NAME} --gallery-image-definition ${SIG_IMAGE_DEFINITION:-capi-${SIG_SKU:-$1}} --resource-group ${RESOURCE_GROUP_NAME} -o none 2>/dev/null; then
+    az sig image-definition create \
+      --resource-group ${RESOURCE_GROUP_NAME} \
+      --gallery-name ${GALLERY_NAME} \
+      --gallery-image-definition ${SIG_IMAGE_DEFINITION:-capi-${SIG_SKU:-$1}} \
+      --publisher ${SIG_PUBLISHER:-capz} \
+      --offer ${SIG_OFFER:-capz-demo} \
+      --sku ${SIG_SKU:-$2} \
+      --hyper-v-generation ${3} \
+      --os-type ${4} \
+      --features ${5:-''} \
+      "${plan_args[@]}" # TODO: Delete this line after the image is GA
+  fi
 }
 
 case ${SIG_TARGET} in

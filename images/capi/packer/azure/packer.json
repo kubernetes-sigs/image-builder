@@ -68,6 +68,7 @@
         "plan_publisher": "{{user `plan_image_publisher`}}"
       },
       "private_virtual_network_with_public_ip": "{{user `private_virtual_network_with_public_ip`}}",
+      "public_ip_sku": "Standard",
       "shared_gallery_image_version_exclude_from_latest": "{{ user `exclude_from_latest` }}",
       "shared_image_gallery": {
         "community_gallery_image_id": "{{ user `community_gallery_image_id` }}",
