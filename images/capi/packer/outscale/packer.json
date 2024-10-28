@@ -2,7 +2,7 @@
   "builders": [
     {
       "access_key": "{{ user `access_key` }}",
-      "global_permission": true,
+      "global_permission": "{{ user `global_permission` }}",
       "omi_account_ids": [
         "{{ user `account_id` }}"
       ],
@@ -97,6 +97,7 @@
     "distribution_release": null,
     "distribution_version": null,
     "existing_ansible_ssh_args": "{{env `ANSIBLE_SSH_ARGS`}}",
+    "global_permission": "true",
     "kubernetes_cni_deb_version": null,
     "kubernetes_cni_http_source": null,
     "kubernetes_cni_rpm_version": null,
