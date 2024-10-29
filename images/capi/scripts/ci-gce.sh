@@ -48,6 +48,12 @@ cleanup() {
     | awk '{print "gcloud compute images delete --quiet --project '"$GCP_PROJECT"' "$1" " "\n"}' \
     | bash ) || true
 
+  filter="name~cluster-api-rhel-*"
+  (gcloud compute images list --project "$GCP_PROJECT" \
+    --no-standard-images --format="table[no-heading](name)" --filter="${filter}" \
+    | awk '{print "gcloud compute images delete --quiet --project '"$GCP_PROJECT"' "$1" " "\n"}' \
+    | bash ) || true
+
   # stop boskos heartbeat
   if [ -n "${BOSKOS_HOST:-}" ]; then
     boskosctlwrapper release --name "${RESOURCE_NAME}" --target-state dirty
@@ -87,8 +93,12 @@ chown -R packer:packer /home/prow/go/src/sigs.k8s.io/image-builder
 su - packer -c "bash -c 'cd /home/prow/go/src/sigs.k8s.io/image-builder/images/capi && PATH=$PATH:~packer/.local/bin:/home/prow/go/src/sigs.k8s.io/image-builder/images/capi/.local/bin GCP_PROJECT_ID=$GCP_PROJECT GOOGLE_APPLICATION_CREDENTIALS=$GOOGLE_APPLICATION_CREDENTIALS PACKER_VAR_FILES=scripts/ci-disable-goss-inspect.json make deps-gce build-gce-all'"
 test_status="${?}"
 
-echo "Displaying the generated image information"
+echo "Displaying the generated image information for Ubuntu"
 filter="name~cluster-api-ubuntu-*"
+gcloud compute images list --project "$GCP_PROJECT" --no-standard-images --filter="${filter}"
+
+echo "Displaying the generated image information for RHEL"
+filter="name~cluster-api-rhel-*"
 gcloud compute images list --project "$GCP_PROJECT" --no-standard-images --filter="${filter}"
 
 exit "${test_status}"
