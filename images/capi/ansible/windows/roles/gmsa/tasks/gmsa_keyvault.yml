@@ -43,19 +43,22 @@
     dest: "{{ kubernetes_install_path }}"
 
 - name: Register gMSA Key Vault plugin
-  ansible.windows.win_shell: |
-    {{ kubernetes_install_path }}\install-gmsa-keyvault-plugin.ps1
-- name: Install registry CCG logging manifest
-  ansible.windows.win_shell: |
-    wevtutil.exe um {{ kubernetes_install_path }}\CCGEvents.man
-    wevtutil.exe im {{ kubernetes_install_path }}\CCGEvents.man
-- name: Install registry Key Vault plugin logging manifest
-  ansible.windows.win_shell: |
-    wevtutil.exe um {{ kubernetes_install_path }}\CCGAKVPluginEvents.man
-    wevtutil.exe im {{ kubernetes_install_path }}\CCGAKVPluginEvents.man
-- name: Clean up gMSA install files
-  ansible.windows.win_shell: |
-    Remove-Item {{ kubernetes_install_path }}\CCGEvents.man
-    Remove-Item {{ kubernetes_install_path }}\CCGAKVPluginEvents.man
-    Remove-Item {{ kubernetes_install_path }}\registerplugin.reg
-    Remove-Item {{ kubernetes_install_path }}\install-gmsa-keyvault-plugin.ps1
+  block:
+    - name: Import gMSA Key Vault plugin
+      ansible.windows.win_shell: |
+          {{ kubernetes_install_path }}\install-gmsa-keyvault-plugin.ps1
+    - name: Install registry CCG logging manifest
+      ansible.windows.win_shell: |
+        wevtutil.exe um {{ kubernetes_install_path }}\CCGEvents.man
+        wevtutil.exe im {{ kubernetes_install_path }}\CCGEvents.man
+    - name: Install registry Key Vault plugin logging manifest
+      ansible.windows.win_shell: |
+        wevtutil.exe um {{ kubernetes_install_path }}\CCGAKVPluginEvents.man
+        wevtutil.exe im {{ kubernetes_install_path }}\CCGAKVPluginEvents.man
+  always:
+    - name: Cleanup gMSA install files
+      ansible.windows.win_shell: |
+        Remove-Item {{ kubernetes_install_path }}\CCGEvents.man
+        Remove-Item {{ kubernetes_install_path }}\CCGAKVPluginEvents.man
+        Remove-Item {{ kubernetes_install_path }}\registerplugin.reg
+        Remove-Item {{ kubernetes_install_path }}\install-gmsa-keyvault-plugin.ps1
