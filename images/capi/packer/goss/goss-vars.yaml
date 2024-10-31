@@ -418,11 +418,11 @@ ubuntu:
     <<: *common_debs
   common-service:
     apt-daily.timer:
-      enabled: false
-      running: false
+      enabled: true
+      running: true
     apt-daily-upgrade.timer:
-      enabled: false
-      running: false
+      enabled: true
+      running: true
   azure:
     command:
       iptables -C FORWARD -d 168.63.129.16/32 -p tcp -m tcp --dport 80 -m comment --comment "block traffic to 168.63.129.16 for cve-2021-27075" -j DROP:
