@@ -29,7 +29,7 @@
         "kubernetes_version": "{{user `kubernetes_semver`}}"
       },
       "type": "outscale-bsu",
-      "vm_type": "tinav5.c2r4p2"
+      "vm_type": "{{user `vm_type`}}"
     }
   ],
   "provisioners": [
@@ -66,6 +66,7 @@
       "vars_inline": {
         "ARCH": "amd64",
         "OS": "{{user `distribution` | lower}}",
+        "OS_VERSION": "{{user `distribution_version` | lower}}",
         "PROVIDER": "outscale",
         "containerd_version": "{{user `containerd_version`}}",
         "kubernetes_cni_deb_version": "{{ user `kubernetes_cni_deb_version` }}",
@@ -115,6 +116,7 @@
     "kubernetes_series": null,
     "kubernetes_source_type": null,
     "region": "{{env `OSC_REGION`}}",
-    "secret_key": "{{env `OSC_SECRET_KEY`}}"
+    "secret_key": "{{env `OSC_SECRET_KEY`}}",
+    "vm_type": "tinav5.c2r4p2"
   }
 }

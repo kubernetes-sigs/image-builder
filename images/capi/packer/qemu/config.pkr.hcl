@@ -1,6 +1,6 @@
 packer {
   required_plugins {
-    vultr = {
+    qemu = {
       source =  "github.com/hashicorp/qemu"
       version = "~> 1.1.0"
     }

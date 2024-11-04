@@ -144,7 +144,10 @@ centos:
   amazon:
     package:
       amazon-ssm-agent:
-      <<: *rh7_rpms
+    os_version:
+    - distro_version: "7"
+      package:
+        <<: *rh7_rpms
     command:
       /usr/local/sbin/aws --version:
         exit-status: 0
@@ -157,19 +160,23 @@ centos:
     package:
       python2-pip:
       open-vm-tools:
-      <<: *rh7_rpms
+    os_version:
+    - distro_version: "7"
+      package:
+        <<: *rh7_rpms
   qemu:
     package:
       open-vm-tools:
       cloud-init:
       cloud-utils-growpart:
-      python2-pip:
-      <<: *rh7_rpms
-  raw:
-    package:
-      cloud-init:
-      cloud-utils-growpart:
-      python2-pip:
+    os_version:
+    - distro_version: "7"
+      package:
+        python2-pip:
+        <<: *rh7_rpms
+    - distro_version: "9"
+      package:
+        <<: *rh9_rpms
   hcloud:
     package:
       cloud-init:
@@ -249,7 +256,10 @@ rockylinux:
   amazon:
     package:
       amazon-ssm-agent:
-      <<: *rh8_rpms
+    os_version:
+    - distro_version: "8"
+      package:
+        <<: *rh8_rpms
     command:
       /usr/local/sbin/aws --version:
         exit-status: 0
@@ -263,10 +273,6 @@ rockylinux:
     package:
       open-vm-tools:
     os_version:
-    - distro_version: "7"
-      package:
-        python2-pip:
-        <<: *rh7_rpms
     - distro_version: "8"
       package:
         python2-pip:
@@ -279,23 +285,27 @@ rockylinux:
       open-vm-tools:
       cloud-init:
       cloud-utils:
-      python3-netifaces:
-      <<: *rh8_rpms
-  raw:
-    package:
-      cloud-init:
-      cloud-utils:
-      python3-netifaces:
-      <<: *rh8_rpms
+    os_version:
+    - distro_version: "8"
+      package:
+        <<: *rh8_rpms
+    - distro_version: "9"
+      package:
+        <<: *rh9_rpms
   nutanix:
     package:
       cloud-init:
-      python3-netifaces:
       iscsi-initiator-utils:
       nfs-utils:
       lvm2:
       xfsprogs:
-      <<: *rh8_rpms
+    os_version:
+    - distro_version: "8"
+      package:
+        <<: *rh8_rpms
+    - distro_version: "9"
+      package:
+        <<: *rh9_rpms
     service:
       iscsid:
         enabled: true
@@ -304,17 +314,19 @@ rockylinux:
     package:
       cloud-init:
       cloud-utils-growpart:
-      python3-netifaces:
-      <<: *rh8_rpms
+    os_version:
+    - distro_version: "8"
+      package:
+        <<: *rh8_rpms
 rhel:
   common-package: *common_rpms
   amazon:
     package:
       amazon-ssm-agent:
     os_version:
-      - distro_version: "8"
-        package:
-          <<: *rh8_rpms
+    - distro_version: "8"
+      package:
+        <<: *rh8_rpms
     command:
       /usr/local/sbin/aws --version:
         exit-status: 0
@@ -328,9 +340,9 @@ rhel:
     package:
       open-vm-tools:
     os_version:
-      - distro_version: "8"
-        package:
-          <<: *rh8_rpms
+    - distro_version: "8"
+      package:
+        <<: *rh8_rpms
   gcp:
     command:
       find -L /bin -maxdepth 1 -type f -executable -printf "%f\n" | grep -Fx 'gcloud':
@@ -339,9 +351,9 @@ rhel:
         stderr: []
         timeout: 0
     os_version:
-      - distro_version: "8"
-        package:
-          <<: *rh8_rpms
+    - distro_version: "8"
+      package:
+        <<: *rh8_rpms
   ova:
     package:
       open-vm-tools:
@@ -362,23 +374,38 @@ rhel:
       open-vm-tools:
       cloud-init:
       cloud-utils-growpart:
-      python2-pip:
-      <<: *rh7_rpms
+    os_version:
+    - distro_version: "8"
+      package:
+        <<: *rh8_rpms
+    - distro_version: "9"
+      package:
+        <<: *rh9_rpms
   raw:
     package:
       cloud-init:
       cloud-utils-growpart:
-      python2-pip:
-      <<: *rh7_rpms
+    os_version:
+    - distro_version: "8"
+      package:
+        <<: *rh8_rpms
+    - distro_version: "9"
+      package:
+        <<: *rh9_rpms
   nutanix:
     package:
       cloud-init:
-      python3-netifaces:
       iscsi-initiator-utils:
       nfs-utils:
       lvm2:
       xfsprogs:
-      <<: *rh8_rpms
+    os_version:
+    - distro_version: "8"
+      package:
+        <<: *rh8_rpms
+    - distro_version: "9"
+      package:
+        <<: *rh9_rpms
     service:
       iscsid:
         enabled: true
@@ -391,11 +418,11 @@ ubuntu:
     <<: *common_debs
   common-service:
     apt-daily.timer:
-      enabled: false
-      running: false
+      enabled: true
+      running: true
     apt-daily-upgrade.timer:
-      enabled: false
-      running: false
+      enabled: true
+      running: true
   azure:
     command:
       iptables -C FORWARD -d 168.63.129.16/32 -p tcp -m tcp --dport 80 -m comment --comment "block traffic to 168.63.129.16 for cve-2021-27075" -j DROP:

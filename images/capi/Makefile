@@ -44,6 +44,14 @@ help: ## Display this help
 version: ## Display version of image-builder
 	@echo $(IB_VERSION)
 
+GET_UBUNTU_DOTTED_SEMVER=$(strip \
+	$(eval _UBUNTU_SEMVER:=$1) \
+	$(eval _UBUNTU_SEMVER:=$(subst ubuntu-2004,ubuntu-20.04,$(_UBUNTU_SEMVER))) \
+	$(eval _UBUNTU_SEMVER:=$(subst ubuntu-2204,ubuntu-22.04,$(_UBUNTU_SEMVER))) \
+	$(eval _UBUNTU_SEMVER:=$(subst ubuntu-2404,ubuntu-24.04,$(_UBUNTU_SEMVER))) \
+	$(_UBUNTU_SEMVER) \
+)
+
 ## --------------------------------------
 ## Dependencies
 ## --------------------------------------
@@ -91,6 +99,7 @@ deps-osc: deps-common
 deps-gce: ## Installs/checks dependencies for GCE builds
 deps-gce: deps-common
 	$(PACKER) init packer/config.pkr.hcl
+	$(PACKER) init packer/gce/config.pkr.hcl
 
 .PHONY: deps-ova
 deps-ova: ## Installs/checks dependencies for OVA builds
@@ -174,6 +183,13 @@ deps-vultr: deps-common
 	$(PACKER) init packer/config.pkr.hcl
 	$(PACKER) init packer/vultr/config.pkr.hcl
 
+## --------------------------------------
+## Packer Configuration
+## --------------------------------------
+
+.PHONY: set-ssh-password
+set-ssh-password:
+	hack/set-ssh-password.sh
 
 ## --------------------------------------
 ## Container variables
@@ -263,7 +279,8 @@ COMMON_NODE_VAR_FILES := packer/config/kubernetes.json \
 					packer/config/ansible-args.json \
 					packer/config/goss-args.json \
 					packer/config/common.json \
-					packer/config/additional_components.json
+					packer/config/additional_components.json \
+					packer/config/ecr_credential_provider.json
 
 COMMON_WINDOWS_VAR_FILES :=	packer/config/kubernetes.json \
 					packer/config/windows/kubernetes.json \
@@ -274,7 +291,8 @@ COMMON_WINDOWS_VAR_FILES :=	packer/config/kubernetes.json \
 					packer/config/windows/common.json \
 					packer/config/windows/cloudbase-init.json \
 					packer/config/goss-args.json \
-					packer/config/additional_components.json
+					packer/config/additional_components.json \
+					packer/config/ecr_credential_provider.json
 
 COMMON_POWERVS_VAR_FILES := packer/config/kubernetes.json \
 					packer/config/ppc64le/kubernetes.json \
@@ -282,12 +300,13 @@ COMMON_POWERVS_VAR_FILES := packer/config/kubernetes.json \
 					packer/config/ppc64le/cni.json \
 					packer/config/containerd.json \
 					packer/config/wasm-shims.json \
-                    packer/config/ppc64le/containerd.json \
-                    packer/config/ansible-args.json \
-                    packer/config/goss-args.json \
-                    packer/config/common.json \
-                    packer/config/ppc64le/common.json \
-                    packer/config/additional_components.json
+					packer/config/ppc64le/containerd.json \
+					packer/config/ansible-args.json \
+					packer/config/goss-args.json \
+					packer/config/common.json \
+					packer/config/ppc64le/common.json \
+					packer/config/additional_components.json \
+					packer/config/ecr_credential_provider.json
 
 # Initialize a list of flags to pass to Packer. This includes any existing flags
 # specified by PACKER_FLAGS, as well as prefixing the list with the variable
@@ -358,7 +377,7 @@ OPENSTACK_BUILD_NAMES		?=	openstack-ubuntu-2004 openstack-ubuntu-2204 openstack-
 
 OSC_BUILD_NAMES 			?=	osc-ubuntu-2004 osc-ubuntu-2204
 
-QEMU_BUILD_NAMES			?=	qemu-ubuntu-2004 qemu-ubuntu-2204 qemu-ubuntu-2204-cloudimg qemu-ubuntu-2304 qemu-ubuntu-2404 qemu-ubuntu-2204-efi qemu-centos-7 qemu-centos-9 qemu-ubuntu-2004-efi qemu-rhel-8 qemu-rhel-9 qemu-rockylinux-8 qemu-rockylinux-8-cloudimg qemu-rockylinux-9 qemu-rockylinux-9-cloudimg qemu-flatcar
+QEMU_BUILD_NAMES			?=	qemu-ubuntu-2004 qemu-ubuntu-2204 qemu-ubuntu-2204-cloudimg qemu-ubuntu-2304 qemu-ubuntu-2404 qemu-ubuntu-2404-efi qemu-ubuntu-2204-efi qemu-centos-7 qemu-centos-9 qemu-ubuntu-2004-efi qemu-rhel-8 qemu-rhel-9 qemu-rockylinux-8 qemu-rockylinux-8-cloudimg qemu-rockylinux-9 qemu-rockylinux-9-cloudimg qemu-flatcar
 
 QEMU_KUBEVIRT_BUILD_NAMES	:= $(addprefix kubevirt-,$(QEMU_BUILD_NAMES))
 
@@ -370,7 +389,7 @@ NUTANIX_BUILD_NAMES ?= nutanix-ubuntu-2004 nutanix-ubuntu-2204 nutanix-ubuntu-24
 
 HCLOUD_BUILD_NAMES ?= hcloud-ubuntu-2004 hcloud-ubuntu-2204 hcloud-ubuntu-2404 hcloud-centos-7 hcloud-rockylinux-8 hcloud-rockylinux-9 hcloud-flatcar
 
-PROXMOX_BUILD_NAMES 		?= proxmox-ubuntu-2204 proxmox-ubuntu-2404
+PROXMOX_BUILD_NAMES 		?= proxmox-ubuntu-2204 proxmox-ubuntu-2404 proxmox-rockylinux-9
 
 VULTR_BUILD_NAMES 				?=	vultr-ubuntu-2204
 
@@ -422,37 +441,37 @@ VULTR_BUILD_TARGETS 	:= $(addprefix build-,$(VULTR_BUILD_NAMES))
 VULTR_VALIDATE_TARGETS 	:= $(addprefix validate-,$(VULTR_BUILD_NAMES))
 
 .PHONY: $(NODE_OVA_LOCAL_BUILD_TARGETS)
-$(NODE_OVA_LOCAL_BUILD_TARGETS): deps-ova
+$(NODE_OVA_LOCAL_BUILD_TARGETS): deps-ova set-ssh-password
     # This uses a packer file builder to input unattend variables into a JSON file to be consumed by the python script before running the vmware-iso provisioner
 	$(if $(findstring windows,$@),$(PACKER) build $(PACKER_WINDOWS_NODE_FLAGS) -var-file="packer/ova/packer-common.json" -var-file="$(abspath packer/ova/$(subst build-node-ova-local-,,$@).json)" -only=file $(ABSOLUTE_PACKER_VAR_FILES) packer/ova/packer-windows.json,)
 	$(if $(findstring windows,$@),hack/windows-ova-unattend.py --unattend-file='./packer/ova/windows/$(subst build-node-ova-local-,,$@)/autounattend.xml',)
 	$(PACKER) build $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="packer/ova/packer-common.json" -var-file="$(abspath packer/ova/$(subst build-node-ova-local-,,$@).json)" -except=vsphere -only=vmware-iso $(ABSOLUTE_PACKER_VAR_FILES) packer/ova/packer-$(if $(findstring windows,$@),windows,node).json
 
 .PHONY: $(NODE_OVA_LOCAL_VALIDATE_TARGETS)
-$(NODE_OVA_LOCAL_VALIDATE_TARGETS): deps-ova
+$(NODE_OVA_LOCAL_VALIDATE_TARGETS): deps-ova set-ssh-password
 	$(PACKER) validate $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="packer/ova/packer-common.json" -var-file="$(abspath packer/ova/$(subst validate-node-ova-local-,,$@).json)" -except=vsphere -only=vmware-iso $(ABSOLUTE_PACKER_VAR_FILES) packer/ova/packer-$(if $(findstring windows,$@),windows,node).json
 
 .PHONY: $(NODE_OVA_LOCAL_VMX_BUILD_TARGETS)
-$(NODE_OVA_LOCAL_VMX_BUILD_TARGETS): deps-ova
+$(NODE_OVA_LOCAL_VMX_BUILD_TARGETS): deps-ova set-ssh-password
 	$(PACKER) build $(PACKER_NODE_FLAGS) -var-file="packer/ova/packer-common.json" -var-file="$(abspath packer/ova/$(subst build-node-ova-local-vmx-,,$@).json)" -var-file="packer/ova/vmx.json" -except=vsphere -except=vmware-iso -only=vmware-vmx $(ABSOLUTE_PACKER_VAR_FILES) packer/ova/packer-node.json
 
 .PHONY: $(NODE_OVA_LOCAL_BASE_BUILD_TARGETS)
-$(NODE_OVA_LOCAL_BASE_BUILD_TARGETS): deps-ova
+$(NODE_OVA_LOCAL_BASE_BUILD_TARGETS): deps-ova set-ssh-password
 	$(PACKER) build $(PACKER_NODE_FLAGS) -var-file="packer/ova/packer-common.json" -var-file="$(abspath packer/ova/$(subst build-node-ova-local-base-,,$@).json)"  -except=vsphere -except=vmware-iso -except=vmware-vmx -only=vmware-iso-base $(ABSOLUTE_PACKER_VAR_FILES) packer/ova/packer-node.json
 
 .PHONY: $(NODE_OVA_VSPHERE_BUILD_TARGETS)
-$(NODE_OVA_VSPHERE_BUILD_TARGETS): deps-ova
+$(NODE_OVA_VSPHERE_BUILD_TARGETS): deps-ova set-ssh-password
     # This uses a packer file builder to input unattend variables into a JSON file to be consumed by the python script before running the vsphere provisioner
 	$(if $(findstring windows,$@),$(PACKER) build $(PACKER_WINDOWS_NODE_FLAGS) -var-file="packer/ova/packer-common.json" -var-file="$(abspath packer/ova/$(subst build-node-ova-vsphere-,,$@).json)" -only=file $(ABSOLUTE_PACKER_VAR_FILES) packer/ova/packer-windows.json,)
 	$(if $(findstring windows,$@),hack/windows-ova-unattend.py --unattend-file='./packer/ova/windows/$(subst build-node-ova-vsphere-,,$@)/autounattend.xml',)
 	$(PACKER) build $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS))  -var-file="packer/ova/packer-common.json" -var-file="$(abspath packer/ova/$(subst build-node-ova-vsphere-,,$@).json)" -var-file="packer/ova/vsphere.json"  -except=local -only=vsphere-iso $(ABSOLUTE_PACKER_VAR_FILES) -only=vsphere packer/ova/packer-$(if $(findstring windows,$@),windows,node).json
 
 .PHONY: $(NODE_OVA_VSPHERE_BASE_BUILD_TARGETS)
-$(NODE_OVA_VSPHERE_BASE_BUILD_TARGETS): deps-ova
+$(NODE_OVA_VSPHERE_BASE_BUILD_TARGETS): deps-ova set-ssh-password
 	$(PACKER) build $(PACKER_NODE_FLAGS) -var-file="packer/ova/packer-common.json" -var-file="$(abspath packer/ova/$(subst build-node-ova-vsphere-base-,,$@).json)" -var-file="packer/ova/vsphere.json" -except=local -except=manifest -except=vsphere -only=vsphere-iso-base $(ABSOLUTE_PACKER_VAR_FILES) packer/ova/packer-node.json
 
 .PHONY: $(NODE_OVA_VSPHERE_CLONE_BUILD_TARGETS)
-$(NODE_OVA_VSPHERE_CLONE_BUILD_TARGETS): deps-ova
+$(NODE_OVA_VSPHERE_CLONE_BUILD_TARGETS): deps-ova set-ssh-password
 	$(PACKER) build $(PACKER_NODE_FLAGS) -var-file="packer/ova/packer-common.json" -var-file="$(abspath packer/ova/$(subst build-node-ova-vsphere-clone-,,$@).json)" -var-file="packer/ova/vsphere.json" -except=local -only=vsphere-clone $(ABSOLUTE_PACKER_VAR_FILES) packer/ova/packer-node.json
 
 .PHONY: $(AMI_BUILD_TARGETS)
@@ -520,27 +539,27 @@ $(OPENSTACK_VALIDATE_TARGETS): deps-openstack
 	packer validate $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/openstack/$(subst validate-openstack-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/openstack/packer.json
 
 .PHONY: $(QEMU_BUILD_TARGETS)
-$(QEMU_BUILD_TARGETS): deps-qemu
+$(QEMU_BUILD_TARGETS): deps-qemu set-ssh-password
 	$(PACKER) build $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/qemu/$(subst build-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/qemu/packer.json
 
 .PHONY: $(QEMU_VALIDATE_TARGETS)
-$(QEMU_VALIDATE_TARGETS): deps-qemu
+$(QEMU_VALIDATE_TARGETS): deps-qemu set-ssh-password
 	$(PACKER) validate $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/qemu/$(subst validate-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/qemu/packer.json
 
 .PHONY: $(QEMU_KUBEVIRT_BUILD_TARGETS)
-$(QEMU_KUBEVIRT_BUILD_TARGETS): deps-qemu
+$(QEMU_KUBEVIRT_BUILD_TARGETS): deps-qemu set-ssh-password
 	$(PACKER) build $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/qemu/$(subst build-kubevirt-,,$@).json)" --var 'kubevirt=true' $(ABSOLUTE_PACKER_VAR_FILES) packer/qemu/packer.json
 
 .PHONY: $(QEMU_KUBEVIRT_VALIDATE_TARGETS)
-$(QEMU_KUBEVIRT_VALIDATE_TARGETS): deps-qemu
+$(QEMU_KUBEVIRT_VALIDATE_TARGETS): deps-qemu set-ssh-password
 	$(PACKER) validate $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/qemu/$(subst validate-kubevirt-,,$@).json)" --var 'kubevirt=true' $(ABSOLUTE_PACKER_VAR_FILES) packer/qemu/packer.json
 
 .PHONY: $(RAW_BUILD_TARGETS)
-$(RAW_BUILD_TARGETS): deps-raw
+$(RAW_BUILD_TARGETS): deps-raw set-ssh-password
 	$(PACKER) build $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/raw/$(subst build-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/raw/packer.json
 
 .PHONY: $(RAW_VALIDATE_TARGETS)
-$(RAW_VALIDATE_TARGETS): deps-raw
+$(RAW_VALIDATE_TARGETS): deps-raw set-ssh-password
 	$(PACKER) validate $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/raw/$(subst validate-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/raw/packer.json
 
 .PHONY: $(OCI_BUILD_TARGETS)
@@ -570,11 +589,14 @@ $(POWERVS_VALIDATE_TARGETS): deps-powervs
 	$(PACKER) validate $(PACKER_POWERVS_NODE_FLAGS) -var-file="$(abspath packer/powervs/$(subst validate-powervs-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) -except=flatcar packer/powervs/packer.json
 
 .PHONY: $(NUTANIX_BUILD_TARGETS)
-$(NUTANIX_BUILD_TARGETS): deps-nutanix
+$(NUTANIX_BUILD_TARGETS): deps-nutanix set-ssh-password
+	$(eval NUTANIX_USERDATA:=$(shell cat $(abspath packer/nutanix/linux/cloud-init/$(subst -,/,$(if $(findstring ubuntu,$@),$(call GET_UBUNTU_DOTTED_SEMVER,$(subst build-nutanix-,,$@)),$(subst build-nutanix-,,$@)))/user-data) | base64 -w0))
+	$(eval NUTANIX_VAR_FILE:=$(abspath packer/nutanix/$(subst build-nutanix-,,$@).json))
+	jq '.user_data = "$(NUTANIX_USERDATA)"' $(NUTANIX_VAR_FILE) > $(NUTANIX_VAR_FILE).templated && mv $(NUTANIX_VAR_FILE).templated $(NUTANIX_VAR_FILE) 
 	$(PACKER) build $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="packer/nutanix/nutanix.json" -var-file="$(abspath packer/nutanix/$(subst build-nutanix-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/nutanix/packer$(if $(findstring windows,$@),-windows,).json
 
 .PHONY: $(NUTANIX_VALIDATE_TARGETS)
-$(NUTANIX_VALIDATE_TARGETS): deps-nutanix
+$(NUTANIX_VALIDATE_TARGETS): deps-nutanix set-ssh-password
 	$(PACKER) validate $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="packer/nutanix/nutanix.json" -var-file="$(abspath packer/nutanix/$(subst validate-nutanix-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/nutanix/packer$(if $(findstring windows,$@),-windows,).json
 
 .PHONY: $(HCLOUD_BUILD_TARGETS)
@@ -586,11 +608,11 @@ $(HCLOUD_VALIDATE_TARGETS): deps-hcloud
 	$(PACKER) validate $(PACKER_NODE_FLAGS) -var-file="packer/hcloud/hcloud-config.json" -var-file="$(abspath packer/hcloud/$(subst validate-hcloud-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/hcloud/packer$(if $(findstring flatcar,$@),-flatcar,).json
 
 .PHONY: $(PROXMOX_BUILD_TARGETS)
-$(PROXMOX_BUILD_TARGETS): deps-proxmox
+$(PROXMOX_BUILD_TARGETS): deps-proxmox set-ssh-password
 	$(PACKER) build $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/proxmox/$(subst build-proxmox-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/proxmox/packer.json
 
 .PHONY: $(PROXMOX_VALIDATE_TARGETS)
-$(PROXMOX_VALIDATE_TARGETS): deps-proxmox
+$(PROXMOX_VALIDATE_TARGETS): deps-proxmox set-ssh-password
 	$(PACKER) validate $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/proxmox/$(subst validate-proxmox-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/proxmox/packer.json
 
 .PHONY: $(VULTR_BUILD_TARGETS)
@@ -643,6 +665,7 @@ build-azure-sig-azurelinux-3: ## Builds Azure Linux 3 Azure managed image in Sha
 build-azure-sig-rhel-8: ## Builds RHEL 8 Azure managed image in Shared Image Gallery
 build-azure-sig-windows-2019-containerd: ## Builds Windows Server 2019 with containerd Azure managed image in Shared Image Gallery
 build-azure-sig-windows-2022-containerd: ## Builds Windows Server 2022 with containerd Azure managed image in Shared Image Gallery
+build-azure-sig-windows-2025-containerd: ## Builds Windows Server 2025 with containerd Azure managed image in Shared Image Gallery
 build-azure-sig-windows-2019-containerd-cvm: ## Builds Windows Server 2019 with containerd CVM Azure managed image in Shared Image Gallery
 build-azure-sig-windows-2022-containerd-cvm: ## Builds Windows Server 2022 with containerd CVM Azure managed image in Shared Image Gallery
 build-azure-vhd-ubuntu-2004: ## Builds Ubuntu 20.04 VHD image for Azure
@@ -792,6 +815,7 @@ build-qemu-ubuntu-2204-cloudimg: ## Builds Ubuntu 22.04 QEMU image using cloud i
 build-qemu-ubuntu-2204-efi: ## Builds Ubuntu 22.04 QEMU image that EFI boots
 build-qemu-ubuntu-2304: ## Builds Ubuntu 23.04 QEMU image
 build-qemu-ubuntu-2404: ## Builds Ubuntu 24.04 QEMU image
+build-qemu-ubuntu-2404-efi: ## Builds Ubuntu 24.04 QEMU image that EFI boots
 build-qemu-centos-7: ## Builds CentOS 7 QEMU image
 build-qemu-centos-9: ## Builds CentOS 9 Stream QEMU image
 build-qemu-rhel-8: ## Builds RHEL 8 QEMU image
@@ -844,6 +868,7 @@ build-hcloud-all: $(HCLOUD_BUILD_TARGETS) ## Builds all Hetzner Cloud image
 
 build-proxmox-ubuntu-2204: ## Builds the Proxmox ubuntu-2204 image
 build-proxmox-ubuntu-2404: ## Builds the Proxmox ubuntu-2404 image
+build-proxmox-rockylinux-9: ## Builds the Proxmox rockylinux-9 image
 
 build-vultr-ubuntu-2204: ## Builds Ubuntu 22.04 Vultr Snapshot
 
@@ -871,6 +896,7 @@ validate-azure-sig-ubuntu-2204: ## Validates Ubuntu 22.04 Azure managed image in
 validate-azure-sig-ubuntu-2404: ## Validates Ubuntu 24.04 Azure managed image in Shared Image Gallery Packer config
 validate-azure-sig-windows-2019-containerd: ## Validate Windows Server 2019 with containerd Azure managed image in Shared Image Gallery Packer config
 validate-azure-sig-windows-2022-containerd: ## Validate Windows Server 2022 with containerd Azure managed image in Shared Image Gallery Packer config
+validate-azure-sig-windows-2025-containerd: ## Validate Windows Server 2025 with containerd Azure managed image in Shared Image Gallery Packer config
 validate-azure-sig-windows-annual-containerd: ## Validate Windows Server Annual Channel with containerd Azure managed image in Shared Image Gallery Packer config
 validate-azure-vhd-centos-7: ## Validates CentOS 7 VHD image Azure Packer config
 validate-azure-vhd-mariner-2: ## Validates Azure Linux 2 VHD image Azure Packer config
@@ -968,6 +994,7 @@ validate-qemu-ubuntu-2204-cloudimg: ## Validates Ubuntu 22.04 QEMU image packer 
 validate-qemu-ubuntu-2204-efi: ## Validates Ubuntu 22.04 QEMU EFI image packer config
 validate-qemu-ubuntu-2304: ## Validates Ubuntu 23.04 QEMU image packer config
 validate-qemu-ubuntu-2404: ## Validates Ubuntu 24.04 QEMU image packer config
+validate-qemu-ubuntu-2404-efi: ## Validates Ubuntu 24.04 QEMU EFI image packer config
 validate-qemu-centos-7: ## Validates CentOS 7 QEMU image packer config
 validate-qemu-rhel-8: ## Validates RHEL 8 QEMU image
 validate-qemu-rhel-9: ## Validates RHEL 9 QEMU image
