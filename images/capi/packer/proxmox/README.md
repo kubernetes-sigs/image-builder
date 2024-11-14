@@ -17,17 +17,11 @@ export ISO_FILE="local:iso/ubuntu-24.04.1-live-server-amd64.iso"
 
 ## Flatcar for Proxmox
 
-Currently, Proxmox doesn't support ignition and it's currently in-development.
+Currently, Proxmox support is only available in the `alpha` channel of Flatcar.
+* https://www.flatcar.org/releases#alpha-release
 * https://github.com/coreos/fedora-coreos-tracker/issues/1652
-* https://github.com/flatcar/scripts/pull/1783
 
-But we do a trick to make it working on Proxmox, until the support is already released.
-
-We use OEM_ID `nutanix` which is an openstack provider that loads ignition from device with label `config-2`:
-https://github.com/coreos/ignition/blob/main/internal/providers/nutanix/nutanix.go#L51
-
-Therefore, we build an image with `OEM_ID=nutanix` so that we can provide an ISO that contain the ignition file in `/openstack/latest/user_data`
-https://github.com/coreos/ignition/blob/main/internal/providers/nutanix/nutanix.go#L40C29-L40C56
+Therefore, we need to choose the right channel and version for flatcar along with `OEM_ID=proxmoxve`.
 
 **To build a Proxmox template for flatcar**
 
@@ -41,8 +35,8 @@ export PROXMOX_BRIDGE="vmbr1"
 export PROXMOX_STORAGE_POOL="ceph_pool"
 
 ## flatcar version
-export FLATCAR_VERSION=4081.1.0
-export FLATCAR_CHANNEL=beta
+export FLATCAR_VERSION=4152.0.0
+export FLATCAR_CHANNEL=alpha
 
-export OEM_ID=nutanix # make sure to choose OEM_ID=nutanix
+export OEM_ID=proxmoxve # make sure to choose OEM_ID=proxmoxve
 ```
