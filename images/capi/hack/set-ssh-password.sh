@@ -37,7 +37,7 @@ if ! [ "$(printf '%s\n' "$minimum_openssl_version" "$current_openssl_version" | 
   exit 1
 fi
 
-export SSH_PASSWORD=$(tr -dc A-Za-z0-9 </dev/urandom | head -c 16; echo)
+export SSH_PASSWORD=${SSH_PASSWORD:-"$(tr -dc A-Za-z0-9 </dev/urandom | head -c 16; echo)"}
 SALT=$(tr -dc A-Za-z0-9 </dev/urandom | head -c 16; echo)
 export ENCRYPTED_SSH_PASSWORD=$($openssl_binary passwd -6 -salt $SALT -stdin <<< $SSH_PASSWORD)
 
