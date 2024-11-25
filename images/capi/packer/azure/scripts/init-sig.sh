@@ -144,7 +144,7 @@ case ${SIG_TARGET} in
     create_image_definition ${SIG_TARGET} "win-2022-containerd" "V1" "Windows"
   ;;
   windows-2025-containerd)
-    create_image_definition ${SIG_TARGET} "win-2025-containerd" "V2" "Windows"
+    create_image_definition ${SIG_TARGET} "win-2025-containerd" "V1" "Windows"
   ;;
   windows-annual-containerd)
     create_image_definition ${SIG_TARGET} "win-annual-containerd" "V1" "Windows"
