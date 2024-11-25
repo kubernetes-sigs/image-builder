@@ -26,18 +26,30 @@
 - name: Perform dnf clean
   ansible.builtin.command: /usr/bin/yum -y clean all
 
+- name: Enable the EPEL repository
+  ansible.builtin.command: amazon-linux-extras enable epel
+  args:
+    creates: /etc/yum.repos.d/epel.repo
+  when: packer_builder_type.startswith('amazon')
+
+- name: Install EPEL package
+  ansible.builtin.yum:
+    name: epel-release
+    state: present
+  when: packer_builder_type.startswith('amazon')
+
 - name: Import epel gpg key
   ansible.builtin.rpm_key:
     state: present
     key: "{{ epel_rpm_gpg_key }}"
-  when: epel_rpm_gpg_key != ""
+  when: epel_rpm_gpg_key != "" and not packer_builder_type.startswith('amazon')
 
 - name: Add epel repo
   ansible.builtin.yum:
     name: "{{ redhat_epel_rpm }}"
     state: present
     lock_timeout: 60
-  when: redhat_epel_rpm != ""
+  when: redhat_epel_rpm != "" and not packer_builder_type.startswith('amazon')
 
 - ansible.builtin.import_tasks: rpm_repos.yml
 
