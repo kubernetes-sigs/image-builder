@@ -58,6 +58,7 @@ SECURITY_TYPE_CVM_SUPPORTED_FEATURE="SecurityType=ConfidentialVmSupported"
 
 SIG_TARGET=$1
 
+set -x
 
 #################################################################################
 ##### TODO: [SEPTEMBER 2024] Remove purchase plan info when the image is GA #####
@@ -89,7 +90,7 @@ if [[ "$DISTRIBUTION" == "windows" && "$DISTRIBUTION_VERSION" == "2025" ]]; then
     echo "Plan info: ${PLAN_URN}"
 
     # Retrieve the terms and check acceptance status
-    if [[ "$(az vm image terms show --urn "$PLAN_URN" | jq -r '.accepted')" != "true" ]]; then
+    if [[ "$(az vm image terms show --urn "$PLAN_URN" -o json | jq -r '.accepted')" != "true" ]]; then
       echo "Accepting terms for image URN: ${PLAN_URN}"
       az vm image terms accept --urn "$PLAN_URN"
     fi
