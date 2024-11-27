@@ -21,7 +21,7 @@
       - gnupg
       - unzip
     state: present
-  when: ansible_distribution == "RedHat"
+  when: ansible_distribution == "RedHat" or packer_build_name is search('rockylinux')
 
 - name: Install AWS CLI prerequisites
   ansible.builtin.apt:
