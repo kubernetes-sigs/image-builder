@@ -17,31 +17,45 @@ common_rpms:
   - ca-certificates
   - conntrack-tools
   - chrony
-  - curl
   - jq
   - python3-pip
   - socat
   - sysstat
-  - yum-utils
 
 # Used for AmazonLinux-2 distributions
 al2_rpms:
+  - curl
+  - yum-utils
   - ebtables
   - python-netifaces
   - python-requests
+  - amazon-ssm-agent
+  - awscli
+
+# Used for AmazonLinux-2023 distributions
+al2023_rpms:
+  - unzip
+  - amazon-ssm-agent
+  - awscli-2
 
 # Used for Azure Linux distributions
 azurelinux_rpms:
+  - curl
+  - yum-utils
   - lsof
 
 # Used for RedHat based distributions ==  7 (ex. RHEL-7, CentOS-7 etc.)
 rh7_rpms:
+  - curl
+  - yum-utils
   - ebtables
   - python-netifaces
   - python-requests
 
 # Used for RedHat based distributions =!  7 (ex. RHEL-8, RockyLinux-8, RockyLinux-9 etc.)
 rh8_rpms:
+  - curl
+  - yum-utils
   - nftables
   - python3-netifaces
   - python3-requests

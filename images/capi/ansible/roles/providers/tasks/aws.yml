@@ -27,15 +27,6 @@
     - ansible_os_family == "RedHat"
     - ansible_distribution != "Amazon"
 
-- name: Install aws agents RPM
-  ansible.builtin.package:
-    name: "{{ item }}"
-    state: present
-  with_items:
-    - amazon-ssm-agent
-    - awscli
-  when: ansible_distribution == "Amazon"
-
 - name: Ensure ssm agent is running RPM
   ansible.builtin.service:
     name: amazon-ssm-agent

@@ -1,0 +1,14 @@
+{
+  "ami_filter_name": "al2023-ami-minimal-2023.*-kernel-6.1*",
+  "ami_filter_owners": "amazon",
+  "build_name": "amazon-2023",
+  "distribution": "Amazon Linux",
+  "distribution_release": "Amazon Linux 2023",
+  "distribution_version": "2023",
+  "distro_version": "2023",
+  "epel_rpm_gpg_key": "",
+  "redhat_epel_rpm": "",
+  "root_device_name": "/dev/xvda",
+  "source_ami": "",
+  "ssh_username": "ec2-user"
+}
