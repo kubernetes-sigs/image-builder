@@ -6,7 +6,6 @@ common_rpms: &common_rpms
   cloud-utils-growpart:
   conntrack-tools:
   chrony:
-  curl:
   jq:
   python3-pip:
   socat:
@@ -14,16 +13,25 @@ common_rpms: &common_rpms
   yum-utils:
 
 al2_rpms: &al2_rpms
+  curl:
+  ebtables:
+  python-netifaces:
+  python-requests:
+
+al2023_rpms: &al2023_rpms
+  unzip:
   ebtables:
   python-netifaces:
   python-requests:
 
 rh7_rpms: &rh7_rpms
+  curl:
   ebtables:
   python-netifaces:
   python-requests:
 
 rh8_rpms: &rh8_rpms
+  curl:
   nftables:
   python3-netifaces:
   python3-requests:

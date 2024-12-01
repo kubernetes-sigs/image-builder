@@ -29,6 +29,14 @@
     path: /etc/yum.conf
     regexp: ^exclude=
     line: exclude={{ package_list }}
+  when: ansible_distribution != "Amazon" or ansible_distribution_version != "2023"
+
+- name: Exclude packages from upgrade
+  ansible.builtin.lineinfile:
+    path: /etc/dnf/dnf.conf
+    regexp: ^excludepkgs=
+    line: excludepkgs={{ package_list }}
+  when: ansible_distribution == "Amazon" and ansible_distribution_version == "2023"
 
 - ansible.builtin.import_tasks: rpm_repos.yml
 

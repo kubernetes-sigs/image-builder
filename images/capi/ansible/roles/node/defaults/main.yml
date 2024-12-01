@@ -17,7 +17,6 @@ common_rpms:
   - ca-certificates
   - conntrack-tools
   - chrony
-  - curl
   - jq
   - python3-pip
   - socat
@@ -26,22 +25,33 @@ common_rpms:
 
 # Used for AmazonLinux-2 distributions
 al2_rpms:
+  - curl
+  - ebtables
+  - python-netifaces
+  - python-requests
+
+# Used for AmazonLinux-2023 distributions
+al2023_rpms:
+  - unzip
   - ebtables
   - python-netifaces
   - python-requests
 
 # Used for Azure Linux distributions
 azurelinux_rpms:
+  - curl
   - lsof
 
 # Used for RedHat based distributions ==  7 (ex. RHEL-7, CentOS-7 etc.)
 rh7_rpms:
+  - curl
   - ebtables
   - python-netifaces
   - python-requests
 
 # Used for RedHat based distributions =!  7 (ex. RHEL-8, RockyLinux-8, RockyLinux-9 etc.)
 rh8_rpms:
+  - curl
   - nftables
   - python3-netifaces
   - python3-requests

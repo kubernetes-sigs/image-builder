@@ -5,6 +5,8 @@
   "distribution": "Amazon Linux",
   "distribution_release": "Amazon Linux 2023",
   "distribution_version": "2023",
+  "epel_rpm_gpg_key": "",
+  "redhat_epel_rpm": "",
   "root_device_name": "/dev/xvda",
   "source_ami": "",
   "ssh_username": "ec2-user"
