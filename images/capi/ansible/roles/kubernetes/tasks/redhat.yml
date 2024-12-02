@@ -26,6 +26,8 @@
     allow_downgrade: true
     state: present
     lock_timeout: 60
+    disable_excludes: "kubernetes"
+    disable_plugin: "priorities"
   vars:
     packages:
       - kubelet-{{ kubernetes_rpm_version }}
