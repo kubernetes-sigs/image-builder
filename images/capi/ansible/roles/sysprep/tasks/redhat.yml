@@ -58,7 +58,7 @@
     - name: Remove subscriptions
       community.general.rhsm_repository:
         name: "*"
-        state: absent
+        state: disabled
     - name: Unregister system
       community.general.redhat_subscription:
         state: absent
