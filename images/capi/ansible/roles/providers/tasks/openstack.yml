@@ -37,6 +37,7 @@
     name: networkd-dispatcher
     state: started
     enabled: true
+  when: ansible_os_family == "Debian"
 
 - name: Copy networkd-dispatcher scripts to add DHCP provided NTP servers
   ansible.builtin.template:
