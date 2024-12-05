@@ -16,3 +16,4 @@ extra_repos: ""
 pip_conf_file: ""
 remove_extra_repos: false
 flatcar_disable_autologin: false
+journal_log_max_size: 1G

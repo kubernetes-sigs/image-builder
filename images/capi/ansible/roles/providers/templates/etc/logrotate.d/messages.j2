@@ -1,0 +1,10 @@
+/var/log/messages {
+    compress
+    nodateext
+    rotate 5
+    daily
+    maxsize {{ var_log_messages_maxsize }}
+    missingok
+    notifempty
+    copytruncate
+}
