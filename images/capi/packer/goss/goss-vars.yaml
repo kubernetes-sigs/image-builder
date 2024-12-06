@@ -88,12 +88,15 @@ photon_3_rpms: &photon_3_rpms
   python-netifaces:
   python-requests:
   jq:
+  logrotate:
 
 photon_4_rpms: &photon_4_rpms
   jq:
+  logrotate:
 
 photon_5_rpms: &photon_5_rpms
   jq:
+  logrotate:
 
 arch: "amd64"
 containerd_version: ""
@@ -216,6 +219,12 @@ photon:
     <<: *common_photon_rpms
     audit:
   ova:
+    files:
+      '/etc/logrotate.d/messages':
+        exists: true
+        filetype: file
+        contains:
+        - "maxsize"
     command:
       grep apparmor=0 /boot/photon.cfg:
         exit-status: 0

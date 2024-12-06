@@ -48,8 +48,14 @@
   ansible.builtin.command: mv "{{ item.src }}" "{{ item.dest }}"
   loop:
     - { src: /tmp/networkd-dispatcher-2.1/networkd-dispatcher, dest: /usr/bin }
-    - { src: /tmp/networkd-dispatcher-2.1/networkd-dispatcher.service, dest: /etc/systemd/system }
-    - { src: /tmp/networkd-dispatcher-2.1/networkd-dispatcher.conf, dest: /etc/conf.d }
+    - {
+        src: /tmp/networkd-dispatcher-2.1/networkd-dispatcher.service,
+        dest: /etc/systemd/system,
+      }
+    - {
+        src: /tmp/networkd-dispatcher-2.1/networkd-dispatcher.conf,
+        dest: /etc/conf.d,
+      }
 
 - name: Install networkd-dispatcher service (Run networkd-dispatcher)
   ansible.builtin.systemd:
@@ -66,9 +72,18 @@
     server_dir: /var/lib/dhclient
     chrony_helper_dir: /usr/libexec
   loop:
-    - { src: files/etc/networkd-dispatcher/routable.d/20-chrony.j2, dest: /etc/networkd-dispatcher/routable.d/20-chrony }
-    - { src: files/etc/networkd-dispatcher/off.d/20-chrony.j2, dest: /etc/networkd-dispatcher/off.d/20-chrony }
-    - { src: files/etc/networkd-dispatcher/no-carrier.d/20-chrony.j2, dest: /etc/networkd-dispatcher/no-carrier.d/20-chrony }
+    - {
+        src: files/etc/networkd-dispatcher/routable.d/20-chrony.j2,
+        dest: /etc/networkd-dispatcher/routable.d/20-chrony,
+      }
+    - {
+        src: files/etc/networkd-dispatcher/off.d/20-chrony.j2,
+        dest: /etc/networkd-dispatcher/off.d/20-chrony,
+      }
+    - {
+        src: files/etc/networkd-dispatcher/no-carrier.d/20-chrony.j2,
+        dest: /etc/networkd-dispatcher/no-carrier.d/20-chrony,
+      }
 
 - name: Copy chrony-helper script
   ansible.builtin.copy:
@@ -77,3 +92,9 @@
     owner: root
     group: root
     mode: a+x
+
+- name: Create configuration for rotate /var/log/messages
+  ansible.builtin.template:
+    src: etc/logrotate.d/messages.j2
+    dest: /etc/logrotate.d/messages
+    mode: 0644
