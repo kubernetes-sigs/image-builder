@@ -17,9 +17,11 @@ al2_rpms: &al2_rpms
   ebtables:
   python-netifaces:
   python-requests:
+  awscli:
 
 al2023_rpms: &al2023_rpms
   unzip:
+  awscli-2:
 
 rh7_rpms: &rh7_rpms
   curl:
