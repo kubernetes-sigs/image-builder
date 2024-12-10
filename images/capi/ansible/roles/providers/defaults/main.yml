@@ -15,3 +15,4 @@
 networkd_dispatcher_download_url: https://gitlab.com/craftyguy/networkd-dispatcher/-/archive/2.1/networkd-dispatcher-2.1.tar.gz
 packer_builder_type: ""
 build_target: virt
+var_log_messages_maxsize: 100M
