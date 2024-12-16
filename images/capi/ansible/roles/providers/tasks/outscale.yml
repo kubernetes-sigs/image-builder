@@ -10,3 +10,15 @@
       - cloud-guest-utils
       - cloud-initramfs-copymods
       - cloud-initramfs-dyn-netconf
+  when: ansible_os_family == "Debian"
+
+- name: Install cloud-init packages
+  ansible.builtin.yum:
+    name: "{{ packages }}"
+    state: present
+  vars:
+    packages:
+      - cloud-init
+      - cloud-utils-growpart
+  when: ansible_os_family == "RedHat"
+
