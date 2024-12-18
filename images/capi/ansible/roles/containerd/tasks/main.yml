@@ -74,6 +74,7 @@
 
 - name: Copy containerd.service to /etc/systemd/system
   ansible.builtin.copy:
+    remote_src: true
     src: /tmp/containerd.service
     dest: /etc/systemd/system/containerd.service
     mode: "0600"
@@ -81,8 +82,8 @@
 
 - name: Copy runc to /usr/local/sbin
   ansible.builtin.copy:
-    src: /tmp/runc
     remote_src: true
+    src: /tmp/runc
     dest: /usr/local/sbin/runc
     mode: "0755"
   when: ansible_os_family != "Flatcar"
