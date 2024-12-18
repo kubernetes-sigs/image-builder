@@ -78,7 +78,6 @@
     src: /tmp/containerd.service
     dest: /etc/systemd/system/containerd.service
     mode: "0600"
-  when: ansible_os_family != "Flatcar"
 
 - name: Copy runc to /usr/local/sbin
   ansible.builtin.copy:
@@ -103,15 +102,15 @@
   ansible.builtin.unarchive:
     remote_src: true
     src: /tmp/containerd.tar.gz
-    dest: "{{ containerd_prefix | default('/') }}"
-    extra_opts:
-      - --absolute-names
-      - --transform
-      - s@usr@opt@
-      - --transform
-      - s@sbin@bin@
-      - --transform
-      - s@opt/local@opt@
+    dest: "{{ containerd_prefix | default('/opt') }}"
+  when: ansible_os_family == "Flatcar"
+
+- name: Copy runc to /opt/bin
+  ansible.builtin.copy:
+    remote_src: true
+    src: /tmp/runc
+    dest: /opt/bin/runc
+    mode: "0755"
   when: ansible_os_family == "Flatcar"
 
 # Install containerd Wasm shims specified in a comma-separated string. Known runtimes are 'lunatic', 'slight', 'spin', and 'wws'.
