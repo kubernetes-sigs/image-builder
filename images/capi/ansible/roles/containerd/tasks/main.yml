@@ -203,7 +203,7 @@
     path: /tmp/runc
     state: absent
 
-- name: Delete runc bin
+- name: Delete containerd.service
   ansible.builtin.file:
     path: /tmp/containerd.service
     state: absent
