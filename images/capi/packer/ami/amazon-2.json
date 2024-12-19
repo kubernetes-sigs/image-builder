@@ -5,6 +5,7 @@
   "distribution": "Amazon Linux",
   "distribution_release": "Amazon Linux 2",
   "distribution_version": "2",
+  "distro_version": "2",
   "root_device_name": "/dev/xvda",
   "source_ami": "",
   "ssh_username": "ec2-user"

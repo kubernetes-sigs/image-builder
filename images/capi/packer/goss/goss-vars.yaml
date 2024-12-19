@@ -6,24 +6,33 @@ common_rpms: &common_rpms
   cloud-utils-growpart:
   conntrack-tools:
   chrony:
-  curl:
   jq:
   python3-pip:
   socat:
   sysstat:
-  yum-utils:
 
 al2_rpms: &al2_rpms
+  curl:
+  yum-utils:
   ebtables:
   python-netifaces:
   python-requests:
+  awscli:
+
+al2023_rpms: &al2023_rpms
+  unzip:
+  awscli-2:
 
 rh7_rpms: &rh7_rpms
+  curl:
+  yum-utils:
   ebtables:
   python-netifaces:
   python-requests:
 
 rh8_rpms: &rh8_rpms
+  curl:
+  yum-utils:
   nftables:
   python3-netifaces:
   python3-requests:
@@ -139,9 +148,14 @@ amazon linux:
         enabled: true
         running: true
     package:
-      awscli:
       amazon-ssm-agent:
-      <<: *al2_rpms
+    os_version:
+    - distro_version: "2"
+      package:
+        <<: *al2_rpms
+    - distro_version: "2023"
+      package:
+        <<: *al2023_rpms
 centos:
   common-package: *common_rpms
   amazon:
