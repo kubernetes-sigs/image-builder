@@ -389,7 +389,7 @@ NUTANIX_BUILD_NAMES ?= nutanix-ubuntu-2004 nutanix-ubuntu-2204 nutanix-ubuntu-24
 
 HCLOUD_BUILD_NAMES ?= hcloud-ubuntu-2004 hcloud-ubuntu-2204 hcloud-ubuntu-2404 hcloud-centos-7 hcloud-rockylinux-8 hcloud-rockylinux-9 hcloud-flatcar
 
-PROXMOX_BUILD_NAMES 		?= proxmox-ubuntu-2204 proxmox-ubuntu-2404 proxmox-rockylinux-9
+PROXMOX_BUILD_NAMES 		?= proxmox-ubuntu-2204 proxmox-ubuntu-2404 proxmox-rockylinux-9 proxmox-flatcar
 
 VULTR_BUILD_NAMES 				?=	vultr-ubuntu-2204
 
@@ -867,6 +867,7 @@ build-hcloud-rockylinux-9: ## Builds the Hetzner Cloud Rocky Linux 9 image
 build-hcloud-flatcar: ## Builds the Hetzner Cloud Flatcar image
 build-hcloud-all: $(HCLOUD_BUILD_TARGETS) ## Builds all Hetzner Cloud image
 
+build-proxmox-flatcar: ## Builds Flatcar Proxmox image
 build-proxmox-ubuntu-2204: ## Builds the Proxmox ubuntu-2204 image
 build-proxmox-ubuntu-2404: ## Builds the Proxmox ubuntu-2404 image
 build-proxmox-rockylinux-9: ## Builds the Proxmox rockylinux-9 image
@@ -1049,6 +1050,7 @@ validate-hcloud-flatcar: ## Validates the Hetzner Cloud Flatcar Packer config
 validate-hcloud-all: $(HCLOUD_VALIDATE_TARGETS) ## Validates all Hetzner Cloud Packer config
 
 validate-proxmox-ubuntu-2204: ## Validates Ubuntu 22.04 Proxmox Packer config
+validate-proxmox-flatcar: ## Validates Flatcar Proxmox Packer config
 
 validate-vultr-ubuntu-2204: ## Validates Ubuntu 22.04 Vultr Snapshot Packer config
 

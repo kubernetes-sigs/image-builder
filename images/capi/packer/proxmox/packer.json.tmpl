@@ -19,6 +19,7 @@
           "type": "scsi"
         }
       ],
+      "scsi_controller": "{{user `scsi_controller`}}",
       "http_directory": "{{user `http_directory`}}",
       "insecure_skip_tls_verify": true,
       "iso_checksum": "{{user `iso_checksum_type`}}:{{user `iso_checksum`}}",
@@ -70,6 +71,14 @@
         "echo done"
       ],
       "inline_shebang": "/bin/bash -e",
+      "type": "shell"
+    },
+    {
+      "environment_vars": [
+        "PYPY_HTTP_SOURCE={{user `pypy_http_source`}}"
+      ],
+      "execute_command": "BUILD_NAME={{user `build_name`}}; if [[ \"${BUILD_NAME}\" == *\"flatcar\"* ]]; then sudo {{.Vars}} -S -E bash '{{.Path}}'; fi",
+      "script": "./packer/files/flatcar/scripts/bootstrap-flatcar.sh",
       "type": "shell"
     },
     {
@@ -207,6 +216,7 @@
     "token": "{{env `PROXMOX_TOKEN`}}",
     "username": "{{env `PROXMOX_USERNAME`}}",
     "vlan_tag": "{{env `PROXMOX_VLAN`}}",
-    "vmid": ""
+    "vmid": "",
+    "scsi_controller": "virtio-scsi-pci"
   }
 }
