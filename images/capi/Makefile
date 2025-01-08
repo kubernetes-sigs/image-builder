@@ -164,6 +164,12 @@ deps-hcloud: deps-common
 	$(PACKER) init packer/config.pkr.hcl
 	$(PACKER) init packer/hcloud/config.pkr.hcl
 
+.PHONY: deps-huaweicloud
+deps-huaweicloud: ## Installs/checks dependencies for HuaweiCloud builds
+deps-huaweicloud: deps-common
+	$(PACKER) init packer/config.pkr.hcl
+	$(PACKER) init packer/huaweicloud/config.pkr.hcl
+
 .PHONY: deps-proxmox
 deps-proxmox: ## Installs/checks dependencies for Proxmox builds
 deps-proxmox: deps-common
@@ -357,6 +363,7 @@ NODE_OVA_VSPHERE_BASE_BUILD_NAMES		:=	$(addprefix node-ova-vsphere-base-,$(PLATF
 NODE_OVA_VSPHERE_CLONE_BUILD_NAMES		:=	$(addprefix node-ova-vsphere-clone-,$(PLATFORMS_AND_VERSIONS))
 
 AMI_BUILD_NAMES			   ?= ami-centos-7 ami-ubuntu-2004 ami-ubuntu-2204 ami-ubuntu-2404 ami-amazon-2 ami-amazon-2023 ami-flatcar ami-windows-2019 ami-rockylinux-8 ami-rhel-8
+HUAWEICLOUD_BUILD_NAMES ?= huaweicloud-ubuntu-2204
 GCE_BUILD_NAMES			   ?= gce-ubuntu-2004 gce-ubuntu-2204 gce-ubuntu-2404 gce-rhel-8
 
 # Make needs these lists to be space delimited, no quotes
@@ -418,6 +425,8 @@ AZURE_VALIDATE_SIG_CVM_TARGETS	:= $(addprefix validate-,$(AZURE_BUILD_SIG_CVM_NA
 DO_BUILD_TARGETS 	:= $(addprefix build-,$(DO_BUILD_NAMES))
 DO_VALIDATE_TARGETS 	:= $(addprefix validate-,$(DO_BUILD_NAMES))
 OPENSTACK_BUILD_TARGETS	:= $(addprefix build-,$(OPENSTACK_BUILD_NAMES))
+HUAWEICLOUD_BUILD_TARGETS 	:= $(addprefix build-,$(HUAWEICLOUD_BUILD_NAMES))
+HUAWEICLOUD_VALIDATE_TARGETS	:= $(addprefix validate-,$(HUAWEICLOUD_BUILD_NAMES))
 OPENSTACK_VALIDATE_TARGETS := $(addprefix validate-,$(OPENSTACK_BUILD_NAMES))
 QEMU_BUILD_TARGETS	:= $(addprefix build-,$(QEMU_BUILD_NAMES))
 QEMU_VALIDATE_TARGETS	:= $(addprefix validate-,$(QEMU_BUILD_NAMES))
@@ -530,6 +539,14 @@ $(DO_BUILD_TARGETS): deps-do
 $(DO_VALIDATE_TARGETS): deps-do
 	$(PACKER) validate $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/digitalocean/$(subst validate-do-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/digitalocean/packer.json
 
+.PHONY: $(HUAWEICLOUD_BUILD_TARGETS)
+$(HUAWEICLOUD_BUILD_TARGETS): deps-huaweicloud
+	$(PACKER) build $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/huaweicloud/$(subst build-huaweicloud-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/huaweicloud/packer.json
+
+.PHONY: $(HUAWEICLOUD_VALIDATE_TARGETS)
+$(HUAWEICLOUD_VALIDATE_TARGETS): deps-huaweicloud
+	$(PACKER) validate $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/huaweicloud/$(subst validate-huaweicloud-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/huaweicloud/packer.json
+
 .PHONY: $(OPENSTACK_BUILD_TARGETS)
 $(OPENSTACK_BUILD_TARGETS): deps-openstack
 	packer build $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/openstack/$(subst build-openstack-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/openstack/packer.json
@@ -592,7 +609,7 @@ $(POWERVS_VALIDATE_TARGETS): deps-powervs
 $(NUTANIX_BUILD_TARGETS): deps-nutanix set-ssh-password
 	$(eval NUTANIX_USERDATA:=$(shell cat $(abspath packer/nutanix/linux/cloud-init/$(subst -,/,$(if $(findstring ubuntu,$@),$(call GET_UBUNTU_DOTTED_SEMVER,$(subst build-nutanix-,,$@)),$(subst build-nutanix-,,$@)))/user-data) | base64 -w0))
 	$(eval NUTANIX_VAR_FILE:=$(abspath packer/nutanix/$(subst build-nutanix-,,$@).json))
-	jq '.user_data = "$(NUTANIX_USERDATA)"' $(NUTANIX_VAR_FILE) > $(NUTANIX_VAR_FILE).templated && mv $(NUTANIX_VAR_FILE).templated $(NUTANIX_VAR_FILE) 
+	jq '.user_data = "$(NUTANIX_USERDATA)"' $(NUTANIX_VAR_FILE) > $(NUTANIX_VAR_FILE).templated && mv $(NUTANIX_VAR_FILE).templated $(NUTANIX_VAR_FILE)
 	$(PACKER) build $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="packer/nutanix/nutanix.json" -var-file="$(abspath packer/nutanix/$(subst build-nutanix-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/nutanix/packer$(if $(findstring windows,$@),-windows,).json
 
 .PHONY: $(NUTANIX_VALIDATE_TARGETS)
@@ -711,6 +728,9 @@ build-gce-ubuntu-2204: ## Builds the GCE ubuntu-2204 image
 build-gce-ubuntu-2404: ## Builds the GCE ubuntu-2404 image
 build-gce-rhel-8: ## Builds the GCE rhel-8 image
 build-gce-all: $(GCE_BUILD_TARGETS) ## Builds all GCE image
+
+build-huaweicloud-ubuntu-2204: ## Builds Ubuntu 22.04 HuaweiCloud image
+build-huaweicloud-all: $(HUAWEICLOUD_BUILD_TARGETS) ## Builds all HuaweiCloud images
 
 build-node-ova-local-centos-7: ## Builds CentOS 7 Node OVA w local hypervisor
 build-node-ova-local-flatcar: ## Builds Flatcar stable Node OVA w local hypervisor
@@ -891,6 +911,8 @@ validate-ami-ubuntu-2204: ## Validates Ubuntu 22.04 AMI Packer config
 validate-ami-ubuntu-2404: ## Validates Ubuntu 22.04 AMI Packer config
 validate-ami-windows-2019: ## Validates Windows Server 2019 AMI Packer config
 validate-ami-all: $(AMI_VALIDATE_TARGETS) ## Validates all AMIs Packer config
+
+validate-huaweicloud-ubuntu-2004: ## Validates Ubuntu 20.04 HuaweiCloud Snapshot Packer config
 
 validate-azure-sig-centos-7: ## Validates CentOS 7 Azure managed image in Shared Image Gallery Packer config
 validate-azure-sig-mariner-2: ## Validates Azure Linux 2 Azure managed image in Shared Image Gallery Packer config
