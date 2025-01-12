@@ -36,6 +36,7 @@
         }
       ],
       "node": "{{ user `node` }}",
+      "numa": "{{ user `numa` }}",
       "sockets": "{{user `sockets`}}",
       "ssh_password": "{{user `ssh_password`}}",
       "ssh_timeout": "2h",
@@ -208,6 +209,7 @@
     "memory": "2048",
     "mtu": "{{env `PROXMOX_MTU`}}",
     "node": "{{env `PROXMOX_NODE`}}",
+    "numa": "false",
     "proxmox_url": "{{env `PROXMOX_URL`}}",
     "sockets": "2",
     "ssh_password": "$SSH_PASSWORD",
