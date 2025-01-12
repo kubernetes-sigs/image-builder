@@ -13,7 +13,7 @@
       "disks": [
         {
           "disk_size": "{{user `disk_size`}}",
-          "format": "qcow2",
+          "format": "{{user `disk_format`}}",
           "storage_pool": "{{user `storage_pool`}}",
           "storage_pool_type": "{{user `storage_pool_type`}}",
           "type": "scsi"
@@ -182,6 +182,7 @@
     "cores": "2",
     "crictl_url": "https://github.com/kubernetes-sigs/cri-tools/releases/download/v{{user `crictl_version`}}/crictl-v{{user `crictl_version`}}-linux-amd64.tar.gz",
     "crictl_version": null,
+    "disk_format": "qcow2",
     "disk_size": "20G",
     "existing_ansible_ssh_args": "{{env `ANSIBLE_SSH_ARGS`}}",
     "http_directory": "./packer/proxmox/linux/{{user `distro_name`}}/http/",
