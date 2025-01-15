@@ -690,3 +690,9 @@ windows:
         filetype: file
         contains:
         - "metadata_services=cloudbaseinit.metadata.services.base.EmptyMetadataService"
+almalinux:
+  common-package: *common_rpms
+  outscale:
+    package:
+      cloud-init:
+      cloud-utils-growpart:
