@@ -73,7 +73,6 @@ Then the user (not token) must be given the following permissions on the path `/
 
 *We suggest creating a new role, since no built-in PVE roles covers just these.*
 
-
 ### Example
 
 Prior to building images you need to ensure you have set the required environment variables:
@@ -92,4 +91,20 @@ Build ubuntu 2204 template:
 
 ```bash
 make build-proxmox-ubuntu-2204
+```
+
+### Notes on storage types
+
+Depending on what storage type you are using, you will need to change the default disk
+format from `qcow2` to something else.
+Go to [Proxmox Storage Documentation](https://pve.proxmox.com/wiki/Storage#_see_also) and
+look into the documentation of the storage type backing your selected storage pool to see which
+disk formats are supported. If the storage type does not list `qcow2` in in the supported
+image formats, you will need to change the packer variable `disk_format` to a supported format.
+
+For example when using the ZFS storage type, which does not support `qcow2`, you can use the
+`raw` disk format.
+
+```sh
+export PROXMOX_STORAGE_POOL="local-zfs" PACKER_FLAGS="-var disk_format=raw"
 ```
