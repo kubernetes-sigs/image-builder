@@ -1,7 +1,7 @@
 {
   "builders": [
     {
-      "content": "{\n \"unattend_timezone\" : \"{{user `unattend_timezone`}}\"\n, \"admin_password\" : \"{{user `windows_admin_password`}}\"\n}",
+      "content": "{\n \"unattend_timezone\" : \"{{user `unattend_timezone`}}\"\n, \"admin_password\" : \"{{user `windows_admin_password`}}\"\n, \"ipv4_address_cidr\" : \"{{user `ipv4_address_cidr`}}\"\n, \"gateway4\" : \"{{user `gateway4`}}\"\n, \"dns_servers\" : \"{{user `dns_servers`}}\"\n}",
       "target": "./packer_cache/unattend.json",
       "type": "file"
     },
@@ -248,10 +248,13 @@
     "containerd_version": null,
     "disable_hypervisor": null,
     "disk_size": "81920",
+    "dns_servers": null,
     "firmware": "bios",
+    "gateway4": null,
     "http_port_max": "",
     "http_port_min": "",
     "ib_version": "{{env `IB_VERSION`}}",
+    "ipv4_address_cidr": null,
     "kubernetes_base_url": "https://kubernetesreleases.blob.core.windows.net/kubernetes/{{user `kubernetes_semver`}}/binaries/node/windows/{{user `kubernetes_goarch`}}",
     "kubernetes_http_package_url": "",
     "kubernetes_typed_version": "kube-{{user `kubernetes_semver`}}",
