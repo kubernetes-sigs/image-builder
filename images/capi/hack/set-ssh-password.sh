@@ -30,15 +30,19 @@ if ! command -v $openssl_binary >/dev/null 2>&1; then
 fi
 
 # Check if openssl version is atleast 1.1.1 to support SHA-512 algorithm
-current_openssl_version=$($openssl_binary version | grep -Po "\d.\d.\d" | head -n1)
+grep_flags="-Po"
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  grep_flags="-Eo"
+fi
+current_openssl_version=$($openssl_binary version | grep $grep_flags "\d.\d.\d" | head -n1)
 minimum_openssl_version="1.1.1"
 if ! [ "$(printf '%s\n' "$minimum_openssl_version" "$current_openssl_version" | sort -V | head -n1)" = "$minimum_openssl_version" ]; then
   echo "OpenSSL version must be atleast $minimum_openssl_version, current OpenSSL version is $current_openssl_version" 1>&2
   exit 1
 fi
 
-export SSH_PASSWORD=${SSH_PASSWORD:-"$(tr -dc A-Za-z0-9 </dev/urandom | head -c 16; echo)"}
-SALT=$(tr -dc A-Za-z0-9 </dev/urandom | head -c 16; echo)
+export SSH_PASSWORD=${SSH_PASSWORD:-"$(LC_ALL=C tr -dc A-Za-z0-9 </dev/urandom | head -c 16; echo)"}
+SALT=$(LC_ALL=C tr -dc A-Za-z0-9 </dev/urandom | head -c 16; echo)
 export ENCRYPTED_SSH_PASSWORD=$($openssl_binary passwd -6 -salt $SALT -stdin <<< $SSH_PASSWORD)
 
 for file in $(find $PACKER_DIR -type f -name "*.tmpl"); do
