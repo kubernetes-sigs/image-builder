@@ -12,8 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-windows_updates_kbs_numbers: "{{ windows_updates_kbs.split() if (windows_updates_kbs is defined) and (windows_updates_kbs | length > 0) else [] }}"
-windows_updates_category_names: >
-  {{ windows_updates_categories.split() if (windows_updates_categories is defined)
-    and (windows_updates_categories | length > 0) else [] }}"
+windows_updates_kbs_numbers: "{{ (windows_updates_kbs | default('')) | split | select('string') | list }}"
+windows_updates_category_names: "{{ (windows_updates_categories | default('')) | split | select('string') | list }}"
 ssh_source_url: "{{ ssh_source_url if ssh_source_url is defined else '' }}"
