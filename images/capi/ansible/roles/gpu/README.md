@@ -8,7 +8,7 @@ is installed after the kernel has been installed. To get around this, we install
 # NVIDIA vGPU
 
 To install the NVIDIA vGPU driver as part of the image build process, you must have a `.run` file and `.tok` file from
-NVIDIA ready and available from an S3 endpoint.
+NVIDIA ready and available from an S3 endpoint. 
 Once done you need to reference those files in your packer file.
 
 _This is because NVIDIA place the vGPU drivers behind a licensing wall which means you can't just use the standard
@@ -19,6 +19,7 @@ _This role currently doesn't support installing the publicly available drivers._
 An example of the fields you need are defined below. Make sure to review and change any fields where required.
 If the gridd configuration or licensing .tok file are not required then you can omit the `gridd_feature_type`
 and `nvidia_tok_location` respectively.
+If you're using CEPH S3 add `nvidia_ceph=true` in the `ansible_user_vars` field.
 
 ```json
 {
