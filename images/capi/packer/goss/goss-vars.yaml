@@ -57,12 +57,6 @@ common_debs: &common_debs
   python3-pip:
   socat:
 
-chrony_deb: &chrony_deb
-  chrony:
-  ntp:
-    skip: true
-    installed: false
-
 common_azurelinux_rpms: &common_azurelinux_rpms
   audit:
   ca-certificates:
@@ -247,7 +241,6 @@ photon:
         running: true
     package:
       open-vm-tools:
-      cloud-init:
       cloud-utils:
       python3-netifaces:
     os_version:
@@ -457,7 +450,6 @@ ubuntu:
       open-vm-tools:
       linux-cloud-tools-virtual:
       linux-tools-virtual:
-      <<: *chrony_deb
     service:
       chrony:
         enabled: true
