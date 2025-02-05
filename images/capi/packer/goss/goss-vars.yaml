@@ -2,7 +2,6 @@
 common_rpms: &common_rpms
   audit:
   ca-certificates:
-  cloud-init:
   cloud-utils-growpart:
   conntrack-tools:
   chrony:
@@ -201,9 +200,6 @@ centos:
       python2-pip:
 flatcar:
   common-service:
-    containerd:
-      enabled: true
-      running: true
     systemd-timesyncd:
       enabled: true
       running: true
