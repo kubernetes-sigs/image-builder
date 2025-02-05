@@ -23,8 +23,10 @@ package:
   cloud-init:
     installed: true
 {{end}}
+{{if and ne (.Vars.OS "ubuntu") (ne .Vars.PROVIDER "azure")}}
   ntp:
     installed: false
+{{end}}
 {{if eq .Vars.kubernetes_source_type "pkg"}}
   kubeadm:
     installed: true
