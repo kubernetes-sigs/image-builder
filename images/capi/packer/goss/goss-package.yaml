@@ -19,10 +19,6 @@ kubernetes_cni_version: &kubernetes_cni_version
 
 package:
 # Flatcar uses Ignition instead of cloud-init
-{{if ne .Vars.OS "flatcar"}}
-  cloud-init:
-    installed: true
-{{end}}
   ntp:
     installed: false
     {{if and (eq .Vars.OS "ubuntu") (eq .Vars.PROVIDER "azure")}}

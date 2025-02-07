@@ -2,6 +2,7 @@
 common_rpms: &common_rpms
   audit:
   ca-certificates:
+  cloud-init:
   cloud-utils-growpart:
   conntrack-tools:
   chrony:
