@@ -570,19 +570,15 @@ windows:
     c:/etc/kubernetes/pki:
       exists: true
       filetype: directory
-      contents:
     c:/etc/kubernetes:
       exists: true
       filetype: directory
-      contents:
     c:/etc/kubernetes/manifests:
       exists: true
       filetype: directory
-      contents:
     c:/var/log/kubelet:
       exists: true
       filetype: directory
-      contents:
 
   common-windows-service:
     cloudbase-init:
