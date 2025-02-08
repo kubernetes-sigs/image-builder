@@ -3,18 +3,18 @@ kubernetes_version: &kubernetes_version
   versions:
     or:
      - contain-element:
-         match-regexp: "^\\Q{{ .Vars.kubernetes_deb_version }}\\E$"
+         match-regexp: "^\\Q{{ .Vars.kubernetes_deb_version }}\\E(-\d+(\.\d+)*)*$"
      - contain-element:
-         match-regexp: "^\\Q{{ .Vars.kubernetes_rpm_version }}\\E$"
+         match-regexp: "^\\Q{{ .Vars.kubernetes_rpm_version }}\\E(-\d+(\.\d+)*)*$"
 
 kubernetes_cni_version: &kubernetes_cni_version
   versions:
 {{ if or .Vars.kubernetes_cni_deb_version .Vars.kubernetes_cni_rpm_version }}
     or:
       - contain-element:
-          match-regexp: "^\\Q{{ .Vars.kubernetes_cni_deb_version }}\\E$"
+          match-regexp: "^\\Q{{ .Vars.kubernetes_cni_deb_version }}\\E(-\d+(\.\d+)*)*$"
       - contain-element:
-          match-regexp: "^\\Q{{ .Vars.kubernetes_cni_rpm_version }}\\E$"
+          match-regexp: "^\\Q{{ .Vars.kubernetes_cni_rpm_version }}\\E(-\d+(\.\d+)*)*$"
 {{ end }}
 
 package:

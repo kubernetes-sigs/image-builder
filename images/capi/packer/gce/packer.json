@@ -70,7 +70,7 @@
         "kubernetes_cni_source_type": "{{user `kubernetes_cni_source_type`}}",
         "kubernetes_cni_version": "{{user `kubernetes_cni_semver` | replace \"v\" \"\" 1}}",
         "kubernetes_deb_version": "{{ user `kubernetes_deb_version` }}",
-        "kubernetes_rpm_version": "{{ split (user `kubernetes_rpm_version`) \"-\" 0  }}",
+        "kubernetes_rpm_version": "{{ split (user `kubernetes_rpm_version`) \"-\" 0 }}",
         "kubernetes_source_type": "{{user `kubernetes_source_type`}}",
         "kubernetes_version": "{{user `kubernetes_semver` | replace \"v\" \"\" 1}}"
       },
