@@ -1,5 +1,8 @@
 service:
 {{ if ne .Vars.OS "windows"}} # Linux
+  containerd:
+    enabled: true
+    running: true
   dockerd:
     enabled: false
     running: false
