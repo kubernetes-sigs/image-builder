@@ -182,8 +182,7 @@
         "kubernetes_version": "{{user `kubernetes_semver`}}",
         "pause_image": "{{user `pause_image`}}",
         "runtime": "{{user `runtime`}}",
-        "ssh_source_url": "{{user `ssh_source_url`}}",
-        "url": "https://github.com/goss-org/goss/releases/download/v{{ user `goss_version` }}/goss-windows-amd64.exe"
+        "ssh_source_url": "{{user `ssh_source_url`}}"
       },
       "version": "{{user `goss_version`}}"
     },
