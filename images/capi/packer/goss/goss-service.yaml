@@ -1,8 +1,10 @@
 service:
 {{ if ne .Vars.OS "windows"}} # Linux
+  {{ if eq .Vars.OS "flatcar"}}
   containerd:
     enabled: true
     running: true
+  {{end}}
   dockerd:
     enabled: false
     running: false

@@ -195,6 +195,9 @@ centos:
       python2-pip:
 flatcar:
   common-service:
+    containerd:
+      enabled: true
+      running: true
     systemd-timesyncd:
       enabled: true
       running: true

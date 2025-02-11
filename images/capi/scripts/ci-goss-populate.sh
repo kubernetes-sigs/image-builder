@@ -41,5 +41,4 @@ if ! command -v goss >/dev/null 2>&1; then
   fi
 fi
 
-export GOSS_USE_ALPHA=1
 hack/generate-goss-specs.py
