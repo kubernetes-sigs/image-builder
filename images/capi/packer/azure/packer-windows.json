@@ -170,8 +170,8 @@
       "url": "{{user `goss_url`}}",
       "use_sudo": false,
       "vars_env": {
-        "GOSS_USE_ALPHA": "1",
-        "GOSS_MAX_CONCURRENT": "1"
+        "GOSS_MAX_CONCURRENT": "1",
+        "GOSS_USE_ALPHA": "1"
       },
       "vars_file": "{{user `goss_vars_file`}}",
       "vars_inline": {
@@ -182,7 +182,8 @@
         "kubernetes_version": "{{user `kubernetes_semver`}}",
         "pause_image": "{{user `pause_image`}}",
         "runtime": "{{user `runtime`}}",
-        "ssh_source_url": "{{user `ssh_source_url`}}"
+        "ssh_source_url": "{{user `ssh_source_url`}}",
+        "url": "https://github.com/goss-org/goss/releases/download/v{{ user `goss_version` }}/goss-windows-amd64.exe"
       },
       "version": "{{user `goss_version`}}"
     },
