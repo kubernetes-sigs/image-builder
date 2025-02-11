@@ -58,12 +58,6 @@ common_debs: &common_debs
   python3-pip:
   socat:
 
-chrony_deb: &chrony_deb
-  chrony:
-  ntp:
-    skip: true
-    installed: false
-
 common_azurelinux_rpms: &common_azurelinux_rpms
   audit:
   ca-certificates:
@@ -201,9 +195,6 @@ centos:
       python2-pip:
 flatcar:
   common-service:
-    containerd:
-      enabled: true
-      running: true
     systemd-timesyncd:
       enabled: true
       running: true
@@ -237,7 +228,7 @@ photon:
       '/etc/logrotate.d/messages':
         exists: true
         filetype: file
-        contains:
+        contents:
         - "maxsize"
     command:
       grep apparmor=0 /boot/photon.cfg:
@@ -251,7 +242,6 @@ photon:
         running: true
     package:
       open-vm-tools:
-      cloud-init:
       cloud-utils:
       python3-netifaces:
     os_version:
@@ -461,7 +451,6 @@ ubuntu:
       open-vm-tools:
       linux-cloud-tools-virtual:
       linux-tools-virtual:
-      <<: *chrony_deb
     service:
       chrony:
         enabled: true
@@ -581,19 +570,15 @@ windows:
     c:/etc/kubernetes/pki:
       exists: true
       filetype: directory
-      contains:
     c:/etc/kubernetes:
       exists: true
       filetype: directory
-      contains:
     c:/etc/kubernetes/manifests:
       exists: true
       filetype: directory
-      contains:
     c:/var/log/kubelet:
       exists: true
       filetype: directory
-      contains:
 
   common-windows-service:
     cloudbase-init:
@@ -616,7 +601,7 @@ windows:
       'c:/program files/Cloudbase Solutions/Cloudbase-init/conf/cloudbase-init.conf':
         exists: true
         filetype: file
-        contains:
+        contents:
         - "COM2,115200,N,8"
         - "metadata_services=cloudbaseinit.metadata.services.azureservice.AzureService"
         - "cloudbaseinit.plugins.common.userdata.UserDataPlugin"
@@ -635,7 +620,7 @@ windows:
       'c:/program files/Cloudbase Solutions/Cloudbase-init/conf/cloudbase-init.conf':
         exists: true
         filetype: file
-        contains:
+        contents:
         - "!/logging_serial_port=COM1,115200,N,8/"
         - "cloudbaseinit.metadata.services.vmwareguestinfoservice.VMwareGuestInfoService"
         - "cloudbaseinit.plugins.common.ephemeraldisk.EphemeralDiskPlugin"
@@ -650,7 +635,7 @@ windows:
       'c:/program files/Cloudbase Solutions/Cloudbase-init/conf/cloudbase-init-unattend.conf':
         exists: true
         filetype: file
-        contains:
+        contents:
         - "metadata_services=cloudbaseinit.metadata.services.vmwareguestinfoservice.VMwareGuestInfoService"
   amazon:
     windows-service:
@@ -659,7 +644,7 @@ windows:
       'c:/program files/Cloudbase Solutions/Cloudbase-init/conf/cloudbase-init.conf':
         exists: true
         filetype: file
-        contains:
+        contents:
         - "!/logging_serial_port=COM1,115200,N,8/"
         - "metadata_services=cloudbaseinit.metadata.services.ec2service.EC2Service"
         - "cloudbaseinit.plugins.common.ephemeraldisk.EphemeralDiskPlugin"
@@ -674,7 +659,7 @@ windows:
       'c:/program files/Cloudbase Solutions/Cloudbase-init/conf/cloudbase-init.conf':
         exists: true
         filetype: file
-        contains:
+        contents:
         - "!/logging_serial_port=COM1,115200,N,8/"
         - "cloudbaseinit.metadata.services.configdrive.ConfigDriveService"
         - "cloudbaseinit.plugins.common.ephemeraldisk.EphemeralDiskPlugin"
@@ -688,5 +673,5 @@ windows:
       'c:/program files/Cloudbase Solutions/Cloudbase-init/conf/cloudbase-init-unattend.conf':
         exists: true
         filetype: file
-        contains:
+        contents:
         - "metadata_services=cloudbaseinit.metadata.services.base.EmptyMetadataService"
