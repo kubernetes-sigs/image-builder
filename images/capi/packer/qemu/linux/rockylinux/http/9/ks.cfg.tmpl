@@ -1,5 +1,6 @@
 # Use CDROM installation media
 repo --name="AppStream" --baseurl="http://download.rockylinux.org/pub/rocky/9/AppStream/x86_64/os/"
+repo --name="kickstart" --baseurl="http://download.rockylinux.org/pub/rocky/9/devel/x86_64/kickstart/"
 cdrom
 
 # Use text install
@@ -46,6 +47,7 @@ open-vm-tools
 sudo
 sed
 python3
+cloud-utils
 
 # unnecessary firmware
 -aic94xx-firmware
