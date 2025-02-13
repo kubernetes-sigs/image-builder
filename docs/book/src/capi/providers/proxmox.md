@@ -73,6 +73,16 @@ Then the user (not token) must be given the following permissions on the path `/
 
 *We suggest creating a new role, since no built-in PVE roles covers just these.*
 
+Note that you might have to change disk format from `qcow2` to `raw` in `images/capi/packer/proxmox/packer.json.tmpl` if the storage for the VM disk is block only.
+
+### Building images for Flatcar
+
+The default metadata source for Flatcar is set to `proxmoxve` (userdata via config drive). If you need to set a [different OEM](https://coreos.github.io/ignition/supported-platforms/) you need to overwrite packer flag `oem_id`, e.g. 
+
+```bash
+export PACKER_FLAGS="--var 'oem_id=qemu'"
+make build-proxmox-flatcar
+```
 
 ### Example
 
@@ -88,7 +98,7 @@ export PROXMOX_BRIDGE="vmbr0"
 export PROXMOX_STORAGE_POOL="local-lvm"
 ```
 
-Build ubuntu 2204 template:
+- Build ubuntu 2204 template:
 
 ```bash
 make build-proxmox-ubuntu-2204
