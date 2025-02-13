@@ -73,6 +73,7 @@ Then the user (not token) must be given the following permissions on the path `/
 
 *We suggest creating a new role, since no built-in PVE roles covers just these.*
 
+Note that you might have to change disk format from `qcow2` to `raw` in `images/capi/packer/proxmox/packer.json.tmpl` if the storage for the VM disk is block only.
 
 ### Example
 
@@ -88,8 +89,14 @@ export PROXMOX_BRIDGE="vmbr0"
 export PROXMOX_STORAGE_POOL="local-lvm"
 ```
 
-Build ubuntu 2204 template:
+- Build ubuntu 2204 template:
 
 ```bash
 make build-proxmox-ubuntu-2204
+```
+
+- Build Flatcar latest template
+
+```bash
+make build-proxmox-flatcar
 ```
