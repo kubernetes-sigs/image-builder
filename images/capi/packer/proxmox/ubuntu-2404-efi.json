@@ -1,7 +1,7 @@
 {
+  "bios": "ovmf",
   "boot_command_prefix": "c<wait>linux /casper/vmlinuz --- autoinstall ds='nocloud-net;s=http://{{ .HTTPIP }}:{{ .HTTPPort }}/24.04/'<enter><wait10s>initrd /casper/initrd<enter><wait10s>boot<enter><wait10s>",
   "build_name": "ubuntu-2404-efi",
-  "bios": "ovmf",
   "distribution_version": "2404",
   "distro_name": "ubuntu",
   "iso_checksum": "e240e4b801f7bb68c20d1356b60968ad0c33a41d00d828e74ceb3364a0317be9",
