@@ -3,15 +3,12 @@ file:
   {{ $name }}:
     exists: {{ $vers.exists }}
     filetype: {{ $vers.filetype }}
-    contains: {{ range $vers.contains}}
-    - {{.}}
-  {{end}}
 {{end}}
 {{range $name, $vers := index .Vars .Vars.OS .Vars.PROVIDER "files"}}
   {{ $name }}:
     exists: {{ $vers.exists }}
     filetype: {{ $vers.filetype }}
-    contains: {{ range $vers.contains}}
+    contents: {{ range $vers.contents}}
     - {{.}}
   {{end}}
 {{end}}
@@ -20,7 +17,7 @@ file:
   "/etc/modprobe.d/blocklist-nouveau.conf":
     exists: true
     filetype: file
-    contains:
+    contents:
       - "blacklist nouveau"
       - "options nouveau modeset=0"
 {{if eq .Vars.block_nouveau_loading "true"}}
