@@ -228,7 +228,7 @@ photon:
       '/etc/logrotate.d/messages':
         exists: true
         filetype: file
-        contents:
+        contains:
         - "maxsize"
     command:
       grep apparmor=0 /boot/photon.cfg:
@@ -446,7 +446,7 @@ ubuntu:
         stdout: []
         stderr: []
         timeout: 0
-        title: "Check exact for the contents in /etc/cloud/cloud.cfg.d/15_azure-vnet.cfg"
+        title: "Check exact for the contains in /etc/cloud/cloud.cfg.d/15_azure-vnet.cfg"
     package:
       open-vm-tools:
       linux-cloud-tools-virtual:
@@ -601,7 +601,7 @@ windows:
       'c:/program files/Cloudbase Solutions/Cloudbase-init/conf/cloudbase-init.conf':
         exists: true
         filetype: file
-        contents:
+        contains:
         - "COM2,115200,N,8"
         - "metadata_services=cloudbaseinit.metadata.services.azureservice.AzureService"
         - "cloudbaseinit.plugins.common.userdata.UserDataPlugin"
@@ -620,7 +620,7 @@ windows:
       'c:/program files/Cloudbase Solutions/Cloudbase-init/conf/cloudbase-init.conf':
         exists: true
         filetype: file
-        contents:
+        contains:
         - "!/logging_serial_port=COM1,115200,N,8/"
         - "cloudbaseinit.metadata.services.vmwareguestinfoservice.VMwareGuestInfoService"
         - "cloudbaseinit.plugins.common.ephemeraldisk.EphemeralDiskPlugin"
@@ -635,7 +635,7 @@ windows:
       'c:/program files/Cloudbase Solutions/Cloudbase-init/conf/cloudbase-init-unattend.conf':
         exists: true
         filetype: file
-        contents:
+        contains:
         - "metadata_services=cloudbaseinit.metadata.services.vmwareguestinfoservice.VMwareGuestInfoService"
   amazon:
     windows-service:
@@ -644,7 +644,7 @@ windows:
       'c:/program files/Cloudbase Solutions/Cloudbase-init/conf/cloudbase-init.conf':
         exists: true
         filetype: file
-        contents:
+        contains:
         - "!/logging_serial_port=COM1,115200,N,8/"
         - "metadata_services=cloudbaseinit.metadata.services.ec2service.EC2Service"
         - "cloudbaseinit.plugins.common.ephemeraldisk.EphemeralDiskPlugin"
@@ -659,7 +659,7 @@ windows:
       'c:/program files/Cloudbase Solutions/Cloudbase-init/conf/cloudbase-init.conf':
         exists: true
         filetype: file
-        contents:
+        contains:
         - "!/logging_serial_port=COM1,115200,N,8/"
         - "cloudbaseinit.metadata.services.configdrive.ConfigDriveService"
         - "cloudbaseinit.plugins.common.ephemeraldisk.EphemeralDiskPlugin"
@@ -673,5 +673,5 @@ windows:
       'c:/program files/Cloudbase Solutions/Cloudbase-init/conf/cloudbase-init-unattend.conf':
         exists: true
         filetype: file
-        contents:
+        contains:
         - "metadata_services=cloudbaseinit.metadata.services.base.EmptyMetadataService"
