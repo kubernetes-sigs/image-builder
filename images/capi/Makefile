@@ -396,7 +396,7 @@ NUTANIX_BUILD_NAMES ?= nutanix-ubuntu-2004 nutanix-ubuntu-2204 nutanix-ubuntu-24
 
 HCLOUD_BUILD_NAMES ?= hcloud-ubuntu-2004 hcloud-ubuntu-2204 hcloud-ubuntu-2404 hcloud-centos-7 hcloud-rockylinux-8 hcloud-rockylinux-9 hcloud-flatcar
 
-PROXMOX_BUILD_NAMES 		?= proxmox-ubuntu-2204 proxmox-ubuntu-2404 proxmox-rockylinux-9 proxmox-flatcar
+PROXMOX_BUILD_NAMES 		?= proxmox-ubuntu-2204 proxmox-ubuntu-2404 proxmox-ubuntu-2404-efi proxmox-rockylinux-9 proxmox-flatcar
 
 VULTR_BUILD_NAMES 				?=	vultr-ubuntu-2204
 
@@ -892,6 +892,7 @@ build-hcloud-all: $(HCLOUD_BUILD_TARGETS) ## Builds all Hetzner Cloud image
 build-proxmox-flatcar: ## Builds Flatcar Proxmox image
 build-proxmox-ubuntu-2204: ## Builds the Proxmox ubuntu-2204 image
 build-proxmox-ubuntu-2404: ## Builds the Proxmox ubuntu-2404 image
+build-proxmox-ubuntu-2404-efi: ## Builds the Proxmox ubuntu-2404-efi image that EFI boots
 build-proxmox-rockylinux-9: ## Builds the Proxmox rockylinux-9 image
 
 build-vultr-ubuntu-2204: ## Builds Ubuntu 22.04 Vultr Snapshot

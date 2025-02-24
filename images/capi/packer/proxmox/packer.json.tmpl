@@ -7,6 +7,7 @@
         "{{user `boot_command_suffix`}}"
       ],
       "boot_wait": "{{user `boot_wait`}}",
+      "bios": "{{user `bios`}}",
       "communicator": "ssh",
       "cores": "{{user `cores`}}",
       "cpu_type": "{{user `cpu_type`}}",
@@ -19,6 +20,11 @@
           "type": "scsi"
         }
       ],
+      "efi_config": {
+        "efi_storage_pool": "{{user `storage_pool`}}",
+        "pre_enrolled_keys": true,
+        "efi_type": "4m"
+      },
       "scsi_controller": "{{user `scsi_controller`}}",
       "http_directory": "{{user `http_directory`}}",
       "insecure_skip_tls_verify": true,
@@ -175,6 +181,7 @@
     "ansible_user_vars": "",
     "artifact_name": "{{user `build_name`}}-kube-{{user `kubernetes_semver`}}",
     "boot_wait": "10s",
+    "bios": "seabios",
     "bridge": "{{env `PROXMOX_BRIDGE`}}",
     "build_timestamp": "{{timestamp}}",
     "containerd_sha256": null,
