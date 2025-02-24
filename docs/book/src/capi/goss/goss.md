@@ -38,7 +38,7 @@ Supported arguments are passed through file: `packer/config/goss-args.json`
   "goss_url": "",
   "goss_format_options": "pretty",
   "goss_vars_file": "packer/goss/goss-vars.yaml",
-  "goss_version": "0.3.16"
+  "goss_version": "0.3.23"
 }
 ```
 ##### Supported values for some of the arguments can be found [here](https://github.com/goss-org/goss).

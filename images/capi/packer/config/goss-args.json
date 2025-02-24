@@ -13,5 +13,5 @@
   "goss_tests_dir": "packer/goss",
   "goss_url": "",
   "goss_vars_file": "packer/goss/goss-vars.yaml",
-  "goss_version": "0.3.16"
+  "goss_version": "0.3.23"
 }

@@ -3,15 +3,12 @@ file:
   {{ $name }}:
     exists: {{ $vers.exists }}
     filetype: {{ $vers.filetype }}
-    contains: {{ range $vers.contains}}
-    - {{.}}
-  {{end}}
 {{end}}
 {{range $name, $vers := index .Vars .Vars.OS .Vars.PROVIDER "files"}}
   {{ $name }}:
     exists: {{ $vers.exists }}
     filetype: {{ $vers.filetype }}
-    contains: {{ range $vers.contains}}
+    contains: {{ range $vers.contains }}
     - {{.}}
   {{end}}
 {{end}}

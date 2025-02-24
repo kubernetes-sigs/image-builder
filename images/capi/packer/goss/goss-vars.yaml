@@ -58,12 +58,6 @@ common_debs: &common_debs
   python3-pip:
   socat:
 
-chrony_deb: &chrony_deb
-  chrony:
-  ntp:
-    skip: true
-    installed: false
-
 common_azurelinux_rpms: &common_azurelinux_rpms
   audit:
   ca-certificates:
@@ -201,9 +195,6 @@ centos:
       python2-pip:
 flatcar:
   common-service:
-    containerd:
-      enabled: true
-      running: true
     systemd-timesyncd:
       enabled: true
       running: true
@@ -251,7 +242,6 @@ photon:
         running: true
     package:
       open-vm-tools:
-      cloud-init:
       cloud-utils:
       python3-netifaces:
     os_version:
@@ -456,12 +446,11 @@ ubuntu:
         stdout: []
         stderr: []
         timeout: 0
-        title: "Check exact for the contents in /etc/cloud/cloud.cfg.d/15_azure-vnet.cfg"
+        title: "Check exact for the contains in /etc/cloud/cloud.cfg.d/15_azure-vnet.cfg"
     package:
       open-vm-tools:
       linux-cloud-tools-virtual:
       linux-tools-virtual:
-      <<: *chrony_deb
     service:
       chrony:
         enabled: true
@@ -581,19 +570,15 @@ windows:
     c:/etc/kubernetes/pki:
       exists: true
       filetype: directory
-      contains:
     c:/etc/kubernetes:
       exists: true
       filetype: directory
-      contains:
     c:/etc/kubernetes/manifests:
       exists: true
       filetype: directory
-      contains:
     c:/var/log/kubelet:
       exists: true
       filetype: directory
-      contains:
 
   common-windows-service:
     cloudbase-init:
