@@ -544,6 +544,8 @@ ubuntu:
       cloud-initramfs-dyn-netconf:
       linux-cloud-tools-generic:
       linux-tools-generic:
+  huaweicloud:
+    package: {}
 
 oracle linux:
   common-kernel-param:

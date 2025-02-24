@@ -9,6 +9,7 @@
   "firstboot_custom_roles_pre": "",
   "http_proxy": "",
   "https_proxy": "",
+  "netplan_removal_excludes": "",
   "no_proxy": "",
   "node_custom_roles_post": "",
   "node_custom_roles_pre": "",
