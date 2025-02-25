@@ -54,6 +54,9 @@
 - ansible.builtin.include_tasks: huaweicloud.yml
   when: packer_builder_type.startswith('huaweicloud')
 
+- ansible.builtin.include_tasks: maas.yml
+  when: packer_builder_type is search('qemu') and provider is defined and provider is search('maas')
+
 # Create a boot order configuration
 # b/w containerd and cloud final, cloud config services
 
