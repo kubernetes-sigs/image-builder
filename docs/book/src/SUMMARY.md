@@ -10,6 +10,7 @@
   - [DigitalOcean](./capi/providers/digitalocean.md)
   - [GCP](./capi/providers/gcp.md)
   - [Hetzner Hcloud](./capi/providers/hcloud.md)
+  - [Huawei Cloud](./capi/providers/huaweicloud.md)
   - [IBM Cloud](./capi/providers/ibmcloud.md)
   - [Nutanix](./capi/providers/nutanix.md)
   - [OpenStack](./capi/providers/openstack.md)
