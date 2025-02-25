@@ -1,0 +1,4 @@
+- ansible.builtin.include_tasks: qemu.yml
+
+- ansible.builtin.include_tasks: maas-ubuntu.yml
+  when: ansible_os_family == "Debian"
