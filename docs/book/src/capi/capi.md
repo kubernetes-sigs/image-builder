@@ -30,6 +30,7 @@ If any needed binaries are not present, they can be installed to `images/capi/.b
 * [VirtualBox](./providers/virtualbox.md)
 * [vSphere](./providers/vsphere.md)
 * [Proxmox](./providers/proxmox.md)
+* [MaaS](./providers/maas.md)
 
 ## Make targets
 
