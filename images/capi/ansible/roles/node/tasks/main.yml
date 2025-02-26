@@ -15,7 +15,7 @@
 - ansible.builtin.import_tasks: photon.yml
   when: ansible_os_family == "VMware Photon OS"
 
-- ansible.builtin.import_tasks: amazonLinux2.yml
+- ansible.builtin.import_tasks: amazonLinux.yml
   when: ansible_distribution == "Amazon"
 
 # This is required until https://github.com/ansible/ansible/issues/77537 is fixed and used.

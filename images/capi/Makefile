@@ -164,6 +164,12 @@ deps-hcloud: deps-common
 	$(PACKER) init packer/config.pkr.hcl
 	$(PACKER) init packer/hcloud/config.pkr.hcl
 
+.PHONY: deps-huaweicloud
+deps-huaweicloud: ## Installs/checks dependencies for HuaweiCloud builds
+deps-huaweicloud: deps-common
+	$(PACKER) init packer/config.pkr.hcl
+	$(PACKER) init packer/huaweicloud/config.pkr.hcl
+
 .PHONY: deps-proxmox
 deps-proxmox: ## Installs/checks dependencies for Proxmox builds
 deps-proxmox: deps-common
@@ -356,7 +362,8 @@ NODE_OVA_VSPHERE_BUILD_NAMES		:=	$(addprefix node-ova-vsphere-,$(PLATFORMS_AND_V
 NODE_OVA_VSPHERE_BASE_BUILD_NAMES		:=	$(addprefix node-ova-vsphere-base-,$(PLATFORMS_AND_VERSIONS))
 NODE_OVA_VSPHERE_CLONE_BUILD_NAMES		:=	$(addprefix node-ova-vsphere-clone-,$(PLATFORMS_AND_VERSIONS))
 
-AMI_BUILD_NAMES			   ?= ami-centos-7 ami-ubuntu-2004 ami-ubuntu-2204 ami-ubuntu-2404 ami-amazon-2 ami-flatcar ami-windows-2019 ami-rockylinux-8 ami-rhel-8
+AMI_BUILD_NAMES			   ?= ami-centos-7 ami-ubuntu-2004 ami-ubuntu-2204 ami-ubuntu-2404 ami-amazon-2 ami-amazon-2023 ami-flatcar ami-windows-2019 ami-rockylinux-8 ami-rhel-8
+HUAWEICLOUD_BUILD_NAMES ?= huaweicloud-ubuntu-2204
 GCE_BUILD_NAMES			   ?= gce-ubuntu-2004 gce-ubuntu-2204 gce-ubuntu-2404 gce-rhel-8
 
 # Make needs these lists to be space delimited, no quotes
@@ -381,7 +388,7 @@ QEMU_BUILD_NAMES			?=	qemu-ubuntu-2004 qemu-ubuntu-2204 qemu-ubuntu-2204-cloudim
 
 QEMU_KUBEVIRT_BUILD_NAMES	:= $(addprefix kubevirt-,$(QEMU_BUILD_NAMES))
 
-RAW_BUILD_NAMES				?=      raw-ubuntu-2004 raw-ubuntu-2004-efi raw-flatcar raw-rhel-8 raw-rhel-9 raw-rhel-9-efi
+RAW_BUILD_NAMES				?=	raw-ubuntu-2004 raw-ubuntu-2004-efi raw-ubuntu-2204 raw-ubuntu-2204-efi raw-flatcar raw-rhel-8 raw-rhel-9 raw-rhel-9-efi
 
 POWERVS_BUILD_NAMES         ?= powervs-centos-8 powervs-centos-9
 
@@ -389,7 +396,7 @@ NUTANIX_BUILD_NAMES ?= nutanix-ubuntu-2004 nutanix-ubuntu-2204 nutanix-ubuntu-24
 
 HCLOUD_BUILD_NAMES ?= hcloud-ubuntu-2004 hcloud-ubuntu-2204 hcloud-ubuntu-2404 hcloud-centos-7 hcloud-rockylinux-8 hcloud-rockylinux-9 hcloud-flatcar
 
-PROXMOX_BUILD_NAMES 		?= proxmox-ubuntu-2204 proxmox-ubuntu-2404 proxmox-rockylinux-9
+PROXMOX_BUILD_NAMES 		?= proxmox-ubuntu-2204 proxmox-ubuntu-2404 proxmox-ubuntu-2404-efi proxmox-rockylinux-9 proxmox-flatcar
 
 VULTR_BUILD_NAMES 				?=	vultr-ubuntu-2204
 
@@ -418,6 +425,8 @@ AZURE_VALIDATE_SIG_CVM_TARGETS	:= $(addprefix validate-,$(AZURE_BUILD_SIG_CVM_NA
 DO_BUILD_TARGETS 	:= $(addprefix build-,$(DO_BUILD_NAMES))
 DO_VALIDATE_TARGETS 	:= $(addprefix validate-,$(DO_BUILD_NAMES))
 OPENSTACK_BUILD_TARGETS	:= $(addprefix build-,$(OPENSTACK_BUILD_NAMES))
+HUAWEICLOUD_BUILD_TARGETS 	:= $(addprefix build-,$(HUAWEICLOUD_BUILD_NAMES))
+HUAWEICLOUD_VALIDATE_TARGETS	:= $(addprefix validate-,$(HUAWEICLOUD_BUILD_NAMES))
 OPENSTACK_VALIDATE_TARGETS := $(addprefix validate-,$(OPENSTACK_BUILD_NAMES))
 QEMU_BUILD_TARGETS	:= $(addprefix build-,$(QEMU_BUILD_NAMES))
 QEMU_VALIDATE_TARGETS	:= $(addprefix validate-,$(QEMU_BUILD_NAMES))
@@ -530,6 +539,14 @@ $(DO_BUILD_TARGETS): deps-do
 $(DO_VALIDATE_TARGETS): deps-do
 	$(PACKER) validate $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/digitalocean/$(subst validate-do-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/digitalocean/packer.json
 
+.PHONY: $(HUAWEICLOUD_BUILD_TARGETS)
+$(HUAWEICLOUD_BUILD_TARGETS): deps-huaweicloud
+	$(PACKER) build $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/huaweicloud/$(subst build-huaweicloud-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/huaweicloud/packer.json
+
+.PHONY: $(HUAWEICLOUD_VALIDATE_TARGETS)
+$(HUAWEICLOUD_VALIDATE_TARGETS): deps-huaweicloud
+	$(PACKER) validate $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/huaweicloud/$(subst validate-huaweicloud-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/huaweicloud/packer.json
+
 .PHONY: $(OPENSTACK_BUILD_TARGETS)
 $(OPENSTACK_BUILD_TARGETS): deps-openstack
 	packer build $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/openstack/$(subst build-openstack-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/openstack/packer.json
@@ -592,7 +609,7 @@ $(POWERVS_VALIDATE_TARGETS): deps-powervs
 $(NUTANIX_BUILD_TARGETS): deps-nutanix set-ssh-password
 	$(eval NUTANIX_USERDATA:=$(shell cat $(abspath packer/nutanix/linux/cloud-init/$(subst -,/,$(if $(findstring ubuntu,$@),$(call GET_UBUNTU_DOTTED_SEMVER,$(subst build-nutanix-,,$@)),$(subst build-nutanix-,,$@)))/user-data) | base64 -w0))
 	$(eval NUTANIX_VAR_FILE:=$(abspath packer/nutanix/$(subst build-nutanix-,,$@).json))
-	jq '.user_data = "$(NUTANIX_USERDATA)"' $(NUTANIX_VAR_FILE) > $(NUTANIX_VAR_FILE).templated && mv $(NUTANIX_VAR_FILE).templated $(NUTANIX_VAR_FILE) 
+	jq '.user_data = "$(NUTANIX_USERDATA)"' $(NUTANIX_VAR_FILE) > $(NUTANIX_VAR_FILE).templated && mv $(NUTANIX_VAR_FILE).templated $(NUTANIX_VAR_FILE)
 	$(PACKER) build $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="packer/nutanix/nutanix.json" -var-file="$(abspath packer/nutanix/$(subst build-nutanix-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/nutanix/packer$(if $(findstring windows,$@),-windows,).json
 
 .PHONY: $(NUTANIX_VALIDATE_TARGETS)
@@ -646,6 +663,7 @@ $(RAW_CLEAN_TARGETS):
 ## --------------------------------------
 ##@ Builds
 build-ami-amazon-2: ## Builds Amazon-2 Linux AMI
+build-ami-amazon-2023: ## Builds Amazon-2023 Linux AMI
 build-ami-centos-7: ## Builds CentOS 7 AMI
 build-ami-ubuntu-2004: ## Builds Ubuntu 20.04 AMI
 build-ami-ubuntu-2204: ## Builds Ubuntu 22.04 AMI
@@ -710,6 +728,9 @@ build-gce-ubuntu-2204: ## Builds the GCE ubuntu-2204 image
 build-gce-ubuntu-2404: ## Builds the GCE ubuntu-2404 image
 build-gce-rhel-8: ## Builds the GCE rhel-8 image
 build-gce-all: $(GCE_BUILD_TARGETS) ## Builds all GCE image
+
+build-huaweicloud-ubuntu-2204: ## Builds Ubuntu 22.04 HuaweiCloud image
+build-huaweicloud-all: $(HUAWEICLOUD_BUILD_TARGETS) ## Builds all HuaweiCloud images
 
 build-node-ova-local-centos-7: ## Builds CentOS 7 Node OVA w local hypervisor
 build-node-ova-local-flatcar: ## Builds Flatcar stable Node OVA w local hypervisor
@@ -829,6 +850,8 @@ build-qemu-all: $(QEMU_BUILD_TARGETS) ## Builds all Qemu images
 build-raw-flatcar: ## Builds Flatcar RAW image
 build-raw-ubuntu-2004: ## Builds Ubuntu 20.04 RAW image
 build-raw-ubuntu-2004-efi: ## Builds Ubuntu 20.04 RAW image that EFI boots
+build-raw-ubuntu-2204: ## Builds Ubuntu 22.04 RAW image
+build-raw-ubuntu-2204-efi: ## Builds Ubuntu 22.04 RAW image that EFI boots
 build-raw-rhel-8: ## Builds RHEL 8 RAW image
 build-raw-rhel-9: ## Builds RHEL 9 RAW image
 build-raw-rhel-9-efi: ## Builds RHEL 9 RAW image that EFI boots
@@ -866,8 +889,10 @@ build-hcloud-rockylinux-9: ## Builds the Hetzner Cloud Rocky Linux 9 image
 build-hcloud-flatcar: ## Builds the Hetzner Cloud Flatcar image
 build-hcloud-all: $(HCLOUD_BUILD_TARGETS) ## Builds all Hetzner Cloud image
 
+build-proxmox-flatcar: ## Builds Flatcar Proxmox image
 build-proxmox-ubuntu-2204: ## Builds the Proxmox ubuntu-2204 image
 build-proxmox-ubuntu-2404: ## Builds the Proxmox ubuntu-2404 image
+build-proxmox-ubuntu-2404-efi: ## Builds the Proxmox ubuntu-2404-efi image that EFI boots
 build-proxmox-rockylinux-9: ## Builds the Proxmox rockylinux-9 image
 
 build-vultr-ubuntu-2204: ## Builds Ubuntu 22.04 Vultr Snapshot
@@ -877,7 +902,8 @@ build-vultr-ubuntu-2204: ## Builds Ubuntu 22.04 Vultr Snapshot
 ## --------------------------------------
 ##@ Validate packer config
 validate-ami-amazon-2: ## Validates Amazon-2 Linux AMI Packer config
-validate-ami-centos-7: ## Validates CentOS 7 AMI Packer config
+validate-ami-amazon-2023: ## Validates Amazon-2023 Linux AMI Packer config
+validate-ami-centos-7: ## Validates CentOS 7 AMI Packer c`onfig
 validate-ami-rockylinux-8: ## Validates RockyLinux 8 AMI Packer config
 validate-ami-rhel-8: ## Validates RHEL-8 AMI Packer config
 validate-ami-flatcar: ## Validates Flatcar AMI Packer config
@@ -886,6 +912,8 @@ validate-ami-ubuntu-2204: ## Validates Ubuntu 22.04 AMI Packer config
 validate-ami-ubuntu-2404: ## Validates Ubuntu 22.04 AMI Packer config
 validate-ami-windows-2019: ## Validates Windows Server 2019 AMI Packer config
 validate-ami-all: $(AMI_VALIDATE_TARGETS) ## Validates all AMIs Packer config
+
+validate-huaweicloud-ubuntu-2004: ## Validates Ubuntu 20.04 HuaweiCloud Snapshot Packer config
 
 validate-azure-sig-centos-7: ## Validates CentOS 7 Azure managed image in Shared Image Gallery Packer config
 validate-azure-sig-mariner-2: ## Validates Azure Linux 2 Azure managed image in Shared Image Gallery Packer config
@@ -1007,6 +1035,8 @@ validate-qemu-all: $(QEMU_VALIDATE_TARGETS) ## Validates all Qemu Packer config
 validate-raw-flatcar: ## Validates Flatcar RAW image packer config
 validate-raw-ubuntu-2004: ## Validates Ubuntu 20.04 RAW image packer config
 validate-raw-ubuntu-2004-efi: ## Validates Ubuntu 20.04 RAW EFI image packer config
+validate-raw-ubuntu-2204: ## Validates Ubuntu 22.04 RAW image packer config
+validate-raw-ubuntu-2204-efi: ## Validates Ubuntu 22.04 RAW EFI image packer config
 validate-raw-rhel-8: ## Validates RHEL 8 RAW image packer config
 validate-raw-all: $(RAW_VALIDATE_TARGETS) ## Validates all RAW Packer config
 
@@ -1047,6 +1077,7 @@ validate-hcloud-flatcar: ## Validates the Hetzner Cloud Flatcar Packer config
 validate-hcloud-all: $(HCLOUD_VALIDATE_TARGETS) ## Validates all Hetzner Cloud Packer config
 
 validate-proxmox-ubuntu-2204: ## Validates Ubuntu 22.04 Proxmox Packer config
+validate-proxmox-flatcar: ## Validates Flatcar Proxmox Packer config
 
 validate-vultr-ubuntu-2204: ## Validates Ubuntu 22.04 Vultr Snapshot Packer config
 
@@ -1121,7 +1152,7 @@ docker-pull-prerequisites:
 
 .PHONY: docker-build
 docker-build: docker-pull-prerequisites ## Build the Docker image for controller-manager
-	DOCKER_BUILDKIT=1 docker build --build-arg PASSED_IB_VERSION=$(IB_VERSION) --build-arg ARCH=$(ARCH) --build-arg BASE_IMAGE=$(BASE_IMAGE) . -t $(CONTROLLER_IMG)-$(ARCH):$(TAG)
+	DOCKER_BUILDKIT=1 docker build --build-arg PASSED_IB_VERSION=$(IB_VERSION) --build-arg ARCH=$(ARCH) --build-arg BASE_IMAGE=$(BASE_IMAGE) --build-arg TAG=$(TAG) . -t $(CONTROLLER_IMG)-$(ARCH):$(TAG)
 
 .PHONY: docker-push
 docker-push: ## Push the Docker image

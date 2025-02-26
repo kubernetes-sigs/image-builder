@@ -6,24 +6,33 @@ common_rpms: &common_rpms
   cloud-utils-growpart:
   conntrack-tools:
   chrony:
-  curl:
   jq:
   python3-pip:
   socat:
   sysstat:
-  yum-utils:
 
 al2_rpms: &al2_rpms
+  curl:
+  yum-utils:
   ebtables:
   python-netifaces:
   python-requests:
+  awscli:
+
+al2023_rpms: &al2023_rpms
+  unzip:
+  awscli-2:
 
 rh7_rpms: &rh7_rpms
+  curl:
+  yum-utils:
   ebtables:
   python-netifaces:
   python-requests:
 
 rh8_rpms: &rh8_rpms
+  curl:
+  yum-utils:
   nftables:
   python3-netifaces:
   python3-requests:
@@ -48,12 +57,6 @@ common_debs: &common_debs
   python3-netifaces:
   python3-pip:
   socat:
-
-chrony_deb: &chrony_deb
-  chrony:
-  ntp:
-    skip: true
-    installed: false
 
 common_azurelinux_rpms: &common_azurelinux_rpms
   audit:
@@ -88,12 +91,15 @@ photon_3_rpms: &photon_3_rpms
   python-netifaces:
   python-requests:
   jq:
+  logrotate:
 
 photon_4_rpms: &photon_4_rpms
   jq:
+  logrotate:
 
 photon_5_rpms: &photon_5_rpms
   jq:
+  logrotate:
 
 arch: "amd64"
 containerd_version: ""
@@ -136,9 +142,14 @@ amazon linux:
         enabled: true
         running: true
     package:
-      awscli:
       amazon-ssm-agent:
-      <<: *al2_rpms
+    os_version:
+    - distro_version: "2"
+      package:
+        <<: *al2_rpms
+    - distro_version: "2023"
+      package:
+        <<: *al2023_rpms
 centos:
   common-package: *common_rpms
   amazon:
@@ -184,9 +195,6 @@ centos:
       python2-pip:
 flatcar:
   common-service:
-    containerd:
-      enabled: true
-      running: true
     systemd-timesyncd:
       enabled: true
       running: true
@@ -216,6 +224,12 @@ photon:
     <<: *common_photon_rpms
     audit:
   ova:
+    files:
+      '/etc/logrotate.d/messages':
+        exists: true
+        filetype: file
+        contains:
+        - "maxsize"
     command:
       grep apparmor=0 /boot/photon.cfg:
         exit-status: 0
@@ -228,7 +242,6 @@ photon:
         running: true
     package:
       open-vm-tools:
-      cloud-init:
       cloud-utils:
       python3-netifaces:
     os_version:
@@ -433,12 +446,11 @@ ubuntu:
         stdout: []
         stderr: []
         timeout: 0
-        title: "Check exact for the contents in /etc/cloud/cloud.cfg.d/15_azure-vnet.cfg"
+        title: "Check exact for the contains in /etc/cloud/cloud.cfg.d/15_azure-vnet.cfg"
     package:
       open-vm-tools:
       linux-cloud-tools-virtual:
       linux-tools-virtual:
-      <<: *chrony_deb
     service:
       chrony:
         enabled: true
@@ -532,6 +544,8 @@ ubuntu:
       cloud-initramfs-dyn-netconf:
       linux-cloud-tools-generic:
       linux-tools-generic:
+  huaweicloud:
+    package: {}
 
 oracle linux:
   common-kernel-param:
@@ -558,19 +572,15 @@ windows:
     c:/etc/kubernetes/pki:
       exists: true
       filetype: directory
-      contains:
     c:/etc/kubernetes:
       exists: true
       filetype: directory
-      contains:
     c:/etc/kubernetes/manifests:
       exists: true
       filetype: directory
-      contains:
     c:/var/log/kubelet:
       exists: true
       filetype: directory
-      contains:
 
   common-windows-service:
     cloudbase-init:

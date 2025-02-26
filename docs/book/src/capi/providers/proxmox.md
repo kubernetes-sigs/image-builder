@@ -73,6 +73,16 @@ Then the user (not token) must be given the following permissions on the path `/
 
 *We suggest creating a new role, since no built-in PVE roles covers just these.*
 
+Note that you might have to change disk format from `qcow2` to `raw` using the `disk_format` packer flag if the storage for the VM disk is block only (see the note below).
+
+### Building images for Flatcar
+
+The default metadata source for Flatcar is set to `proxmoxve` (userdata via config drive). If you need to set a [different OEM](https://coreos.github.io/ignition/supported-platforms/) you need to overwrite packer flag `oem_id`, e.g. 
+
+```bash
+export PACKER_FLAGS="--var 'oem_id=qemu'"
+make build-proxmox-flatcar
+```
 
 ### Example
 
@@ -88,8 +98,24 @@ export PROXMOX_BRIDGE="vmbr0"
 export PROXMOX_STORAGE_POOL="local-lvm"
 ```
 
-Build ubuntu 2204 template:
+- Build ubuntu 2204 template:
 
 ```bash
 make build-proxmox-ubuntu-2204
+```
+
+### Note on disk formats
+
+Depending on what storage type you are using, you will need to change the default disk
+format from `qcow2` to something else.
+Go to [Proxmox Storage Documentation](https://pve.proxmox.com/wiki/Storage#_see_also) and
+look into the documentation of the storage type backing your selected storage pool to see which
+disk formats are supported. If the storage type does not list `qcow2` in in the supported
+image formats, you will need to change the packer variable `disk_format` to a supported format.
+
+For example when using the ZFS storage type, which does not support `qcow2`, you can use the
+`raw` disk format.
+
+```sh
+export PROXMOX_STORAGE_POOL="local-zfs" PACKER_FLAGS="-var disk_format=raw"
 ```

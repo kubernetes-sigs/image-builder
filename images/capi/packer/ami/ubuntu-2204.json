@@ -1,7 +1,7 @@
 {
   "ami_filter_name": "ubuntu/images/*ubuntu-jammy-22.04-amd64-server-*",
   "ami_filter_owners": "099720109477",
-  "ansible_extra_vars": "pinned_debs=\"cloud-init=23.1.2-0ubuntu0~22.04.1\"",
+  "ansible_extra_vars": "",
   "build_name": "ubuntu-22.04",
   "distribution": "Ubuntu",
   "distribution_release": "jammy",

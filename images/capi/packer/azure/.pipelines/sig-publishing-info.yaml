@@ -1,0 +1,42 @@
+steps:
+- script: |
+    set -euo pipefail
+    [[ -n ${DEBUG:-} ]] && set -o xtrace
+
+    PACKER_OUTPUT=packer/azure/packer.out
+    OS_TYPE=$(sed -n 's/^OSType: \(.*\)/\1/p' $PACKER_OUTPUT | tail -1)
+    MANAGED_IMAGE_RESOURCE_GROUP_NAME=$(sed -n "s/^ManagedImageResourceGroupName: \(.*\)/\1/p" $PACKER_OUTPUT | tail -1)
+    MANAGED_IMAGE_NAME=$(sed -n "s/^ManagedImageName: \(.*\)/\1/p" $PACKER_OUTPUT | tail -1)
+    MANAGED_IMAGE_ID=$(sed -n "s/^ManagedImageId: \(.*\)/\1/p" $PACKER_OUTPUT | tail -1)
+    MANAGED_IMAGE_LOCATION=$(sed -n "s/^ManagedImageLocation: \(.*\)/\1/p" $PACKER_OUTPUT | tail -1)
+    MANAGED_IMAGE_SHARED_IMAGE_GALLERY_ID=$(sed -n "s/^ManagedImageSharedImageGalleryId: \(.*\)/\1/p" $PACKER_OUTPUT | tail -1)
+    SHARED_IMAGE_GALLERY_RESOURCE_GROUP=$(sed -n "s/^SharedImageGalleryResourceGroup: \(.*\)/\1/p" $PACKER_OUTPUT | tail -1)
+    SHARED_IMAGE_GALLERY_NAME=$(sed -n "s/^SharedImageGalleryName: \(.*\)/\1/p" $PACKER_OUTPUT | tail -1)
+    SHARED_IMAGE_GALLERY_IMAGE_NAME=$(sed -n "s/^SharedImageGalleryImageName: \(.*\)/\1/p" $PACKER_OUTPUT | tail -1)
+    SHARED_IMAGE_GALLERY_IMAGE_VERSION=$(sed -n "s/^SharedImageGalleryImageVersion: \(.*\)/\1/p" $PACKER_OUTPUT | tail -1)
+    TAGS=$(cat packer/azure/tags.out)
+    if [[ SHARED_IMAGE_GALLERY_IMAGE_NAME == *gen2 ]]; then
+      HYPERV_GEN="V2"
+    else
+      HYPERV_GEN="V1"
+    fi
+
+    cat <<EOF > packer/azure/sig-publishing-info.json
+    {
+      "distro": "${DISTRO}",
+      "hyperv_gen": "${HYPERV_GEN}",
+      "os_type": "${OS_TYPE}",
+      "managed_image_resource_group_name": "${MANAGED_IMAGE_RESOURCE_GROUP_NAME}",
+      "managed_image_name": "${MANAGED_IMAGE_NAME}",
+      "managed_image_id": "${MANAGED_IMAGE_ID}",
+      "managed_image_location": "${MANAGED_IMAGE_LOCATION}",
+      "managed_image_shared_image_gallery_id": "${MANAGED_IMAGE_SHARED_IMAGE_GALLERY_ID}",
+      "shared_image_gallery_resource_group": "${SHARED_IMAGE_GALLERY_RESOURCE_GROUP}",
+      "shared_image_gallery_name": "${SHARED_IMAGE_GALLERY_NAME}",
+      "shared_image_gallery_image_name": "${SHARED_IMAGE_GALLERY_IMAGE_NAME}",
+      "shared_image_gallery_image_version": "${SHARED_IMAGE_GALLERY_IMAGE_VERSION}",
+      "tags": "${TAGS}"
+    }
+    EOF
+  displayName: Generate SIG publishing info
+  workingDirectory: '$(system.defaultWorkingDirectory)/images/capi'

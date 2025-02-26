@@ -1,7 +1,7 @@
 {
   "ami_filter_name": "ubuntu/images/*ubuntu-noble-24.04-amd64-server-*",
   "ami_filter_owners": "099720109477",
-  "ansible_extra_vars": "pinned_debs=\"cloud-init=24.1.3-0ubuntu3\"",
+  "ansible_extra_vars": "",
   "build_name": "ubuntu-24.04",
   "distribution": "Ubuntu",
   "distribution_release": "noble",

@@ -51,6 +51,9 @@
 - ansible.builtin.include_tasks: hcloud.yml
   when: packer_builder_type is search('hcloud')
 
+- ansible.builtin.include_tasks: huaweicloud.yml
+  when: packer_builder_type.startswith('huaweicloud')
+
 # Create a boot order configuration
 # b/w containerd and cloud final, cloud config services
 

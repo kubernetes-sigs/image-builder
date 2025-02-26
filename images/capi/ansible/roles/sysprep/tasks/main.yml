@@ -145,6 +145,7 @@
       - /etc/netplan
       - /run/netplan
     pattern: "*.yaml"
+    excludes: "{{ netplan_removal_excludes | default([]) }}"
   register: netplan_files
 
 - name: Delete netplan files
