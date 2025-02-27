@@ -1,5 +1,5 @@
 {
   "containerd_sha256": "b2d4e44946e55a10835a327cbd98c0c2063011bbdebb95ef8c5e5677312f1d29",
-  "containerd_url": "https://github.com/containerd/containerd/releases/download/v{{user `containerd_version`}}/cri-containerd-cni-{{user `containerd_version`}}-linux-ppc64le.tar.gz",
-  "containerd_version": "1.7.20"
+  "containerd_url": "https://github.com/containerd/containerd/releases/download/v{{user `containerd_version`}}/containerd-{{user `containerd_version`}}-linux-ppc64le.tar.gz",
+  "containerd_version": "1.7.25"
 }
