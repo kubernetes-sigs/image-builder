@@ -27,3 +27,4 @@ grub-install \
 update-initramfs -uk all
 
 efibootmgr -v
+
