@@ -13,7 +13,7 @@ dpkg --configure -a
 # Update the package lists before attempting to install the kernel
 apt-get update
 # Ensure the existence of linux-image-generic for non-cloudimg images.
-apt-get -y install linux-image-generic
+#apt-get -y install linux-image-generic
 
 dpkg-reconfigure grub-efi-amd64
 update-grub
