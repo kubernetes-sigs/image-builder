@@ -74,7 +74,7 @@ jobs:
         GALLERY_DESCRIPTION=${GALLERY_DESCRIPTION:-"Shared image gallery for Cluster API Provider Azure"}
         GALLERY_NAME=${GALLERY_NAME:-community_gallery}
         PUBLIC_NAME_PREFIX=${PUBLIC_NAME_PREFIX:-ClusterAPI}
-        REPLICATED_REGIONS="${REPLICATED_REGIONS:-${MANAGED_IMAGE_LOCATION} australiaeast canadacentral francecentral germanywestcentral northeurope switzerlandnorth uksouth westeurope}"
+        REPLICATED_REGIONS="${REPLICATED_REGIONS:-${MANAGED_IMAGE_LOCATION} australiaeast canadacentral eastus eastus2 eastus2euap francecentral germanywestcentral northeurope switzerlandnorth uksouth westeurope}"
         RESOURCE_GROUP="${RESOURCE_GROUP:-cluster-api-gallery}"
         SIG_OFFER="${SIG_OFFER:-reference-images}"
 
