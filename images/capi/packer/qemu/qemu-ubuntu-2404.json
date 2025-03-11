@@ -4,9 +4,9 @@
   "distribution_version": "2404",
   "distro_name": "ubuntu",
   "guest_os_type": "ubuntu-64",
-  "iso_checksum": "e240e4b801f7bb68c20d1356b60968ad0c33a41d00d828e74ceb3364a0317be9",
+  "iso_checksum": "d6dab0c3a657988501b4bd76f1297c053df710e06e0c3aece60dead24f270b4d",
   "iso_checksum_type": "sha256",
-  "iso_url": "https://releases.ubuntu.com/releases/24.04/ubuntu-24.04.1-live-server-amd64.iso",
+  "iso_url": "https://releases.ubuntu.com/releases/24.04/ubuntu-24.04.2-live-server-amd64.iso",
   "os_display_name": "Ubuntu 24.04",
   "shutdown_command": "shutdown -P now",
   "unmount_iso": "true"
