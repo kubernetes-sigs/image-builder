@@ -11,6 +11,15 @@
       "communicator": "ssh",
       "cores": "{{user `cores`}}",
       "cpu_type": "{{user `cpu_type`}}",
+      "boot_iso": {
+        "type": "scsi",
+        "iso_file": "{{user `iso_file`}}",
+        "iso_checksum": "{{user `iso_checksum_type`}}:{{user `iso_checksum`}}",
+        "iso_storage_pool": "{{user `iso_storage_pool`}}",
+        "iso_url": "{{user `iso_url`}}",
+        "iso_download_pve": false,
+        "unmount": "{{user `unmount_iso`}}"
+      },
       "disks": [
         {
           "disk_size": "{{user `disk_size`}}",
@@ -28,10 +37,6 @@
       "scsi_controller": "{{user `scsi_controller`}}",
       "http_directory": "{{user `http_directory`}}",
       "insecure_skip_tls_verify": true,
-      "iso_checksum": "{{user `iso_checksum_type`}}:{{user `iso_checksum`}}",
-      "iso_file": "{{user `iso_file`}}",
-      "iso_storage_pool": "{{user `iso_storage_pool`}}",
-      "iso_url": "{{user `iso_url`}}",
       "memory": "{{user `memory`}}",
       "name": "{{user `build_name`}}",
       "network_adapters": [
@@ -49,7 +54,6 @@
       "ssh_username": "{{user `ssh_username`}}",
       "template_name": "{{ user `artifact_name` }}",
       "type": "proxmox-iso",
-      "unmount_iso": "{{user `unmount_iso`}}",
       "vm_id": "{{user `vmid`}}"
     }
   ],
