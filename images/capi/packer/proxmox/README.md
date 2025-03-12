@@ -12,7 +12,7 @@ To use existing ISO files, set the `ISO_FILE` environment variable to the path o
 For example, to use a local ISO file, set the `ISO_FILE` environment variable like this:
 
 ```
-export ISO_FILE="local:iso/ubuntu-24.04.1-live-server-amd64.iso"
+export ISO_FILE="local:iso/ubuntu-24.04.2-live-server-amd64.iso"
 ```
 
 ## Flatcar for Proxmox
