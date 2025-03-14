@@ -1,11 +1,8 @@
 # See the OWNERS docs at https://go.k8s.io/owners
 
 approvers:
-  - cluster-api-openstack-maintainers
-  - cluster-api-cloudstack-maintainers
+  - cluster-api-maas-maintainers
+  - image-builder-maintainers
 
 reviewers:
-  - cluster-api-openstack-maintainers
-  - image-builder-openstack-reviewers
-  - cluster-api-cloudstack-maintainers
-  - image-builder-cloudstack-reviewers
+  - cluster-api-maas-reviewers
