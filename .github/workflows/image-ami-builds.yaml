@@ -1,0 +1,50 @@
+name: Build and Publish AMI
+
+on:
+   push:
+      branches:
+         - main
+   workflow_dispatch:
+
+jobs:
+   build-ami:
+      name: Build and Publish AMI
+      runs-on: ubuntu-latest
+
+      env:
+         AWS_PROFILE: ditto-scratchpad-ore
+
+      steps:
+         - name: Checkout repository
+           uses: actions/checkout@v3
+
+         - name: Install dependencies
+           run: |
+              sudo apt-get update
+              sudo apt-get install -y make jq awscli
+
+         - name: Validate Packer template
+           run: |
+              make validate-packer
+
+         - name: Configure AWS SSO
+           run: |
+              aws configure sso --profile $AWS_PROFILE
+              export AWS_PROFILE=$AWS_PROFILE
+
+         - name: Build AMI
+           env:
+              AWS_PROFILE: $AWS_PROFILE
+           run: |
+              make build-ami-amazon-2 \
+              AWS_REGION=${{ secrets.AWS_REGION }}
+
+         - name: Make AMI Public
+           env:
+              AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+              AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+              AWS_REGION: ${{ secrets.AWS_REGION }}
+           run: |
+              AMI_ID=$(jq -r '.builds[-1].artifact_id' < output/packer-manifest.json | cut -d':' -f2)
+              aws ec2 modify-image-attribute --image-id $AMI_ID --launch-permission "{\"Add\": [{\"Group\":\"all\"}]}"
+              echo "AMI $AMI_ID is now public."
