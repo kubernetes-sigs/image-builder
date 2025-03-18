@@ -1,0 +1,8 @@
+{
+  "build_name": "rockylinux-8",
+  "distro_name": "rockylinux",
+  "epel_rpm_gpg_key": "https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-8",
+  "os_version": "8",
+  "redhat_epel_rpm": "https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm",
+  "ssh_username": "cloud-user"
+}
