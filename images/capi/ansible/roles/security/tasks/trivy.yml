@@ -14,27 +14,42 @@
 
 ---
 
-- name: Add Trivy package signing key
-  ansible.builtin.apt_key:
-    url: https://aquasecurity.github.io/trivy-repo/deb/public.key
-    state: present
+- name: Install Trivy on Debian based systems
   when: ansible_os_family == "Debian"
+  block:
+    - name: Add Trivy package signing key
+      ansible.builtin.apt_key:
+        url: https://aquasecurity.github.io/trivy-repo/deb/public.key
+        state: present
 
-- name: Add Trivy apt repo
-  ansible.builtin.apt_repository:
-    repo: "deb https://aquasecurity.github.io/trivy-repo/deb {{ansible_distribution_release}} main"
-    state: present
-    filename: trivy
-  when: ansible_os_family == "Debian"
+    - name: Add Trivy apt repo
+      ansible.builtin.apt_repository:
+        repo: "deb https://aquasecurity.github.io/trivy-repo/deb {{ansible_distribution_release}} main"
+        state: present
+        filename: trivy
+
+- name: Install Trivy on RedHat based systems
+  when: ansible_os_family == "RedHat"
+  block:
+    - name: Add Trivy rpm repo
+      ansible.builtin.yum_repository:
+        name: Trivy repository
+        description: Trivy YUM repo
+        file: trivy
+        baseurl: https://aquasecurity.github.io/trivy-repo/rpm/releases/{{ ansible_distribution_release }}/{{ ansible_architecture }}/
+        gpgcheck: true
+        enabled: true
+        gpgkey: https://aquasecurity.github.io/trivy-repo/rpm/public.keyy
 
 - name: Install Trivy
-  ansible.builtin.apt:
+  ansible.builtin.package:
     name: trivy
     update_cache: true
     state: present
-  when: ansible_os_family == "Debian"
+  when: ansible_os_family == "Debian" or ansible_os_family == "RedHat"
 
 - name: Update Trivy DB to ensure latest records are available as of now
   ansible.builtin.command: trivy rootfs --download-db-only
   args:
     creates: ~/.cache/trivy/db/trivy.db
+  when: ansible_os_family == "Debian" or ansible_os_family == "RedHat"

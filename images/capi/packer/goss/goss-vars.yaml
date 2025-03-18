@@ -331,6 +331,14 @@ rockylinux:
     - distro_version: "8"
       package:
         <<: *rh8_rpms
+  openstack:
+    package:
+      cloud-init:
+      cloud-utils-growpart:
+    os_version:
+    - distro_version: "9"
+      package:
+        <<: *rh9_rpms
 rhel:
   common-package: *common_rpms
   amazon:
@@ -546,6 +554,18 @@ ubuntu:
       linux-tools-generic:
   huaweicloud:
     package: {}
+  openstack:
+    service:
+      networkd-dispatcher:
+        enabled: true
+        running: true
+    package:
+      linux-cloud-tools-virtual:
+      linux-tools-virtual:
+      open-vm-tools:
+      cloud-guest-utils:
+      cloud-initramfs-copymods:
+      cloud-initramfs-dyn-netconf:
 
 oracle linux:
   common-kernel-param:

@@ -380,7 +380,7 @@ OCI_BUILD_NAMES				?= oci-ubuntu-2004 oci-ubuntu-2204 oci-oracle-linux-8 oci-ora
 
 DO_BUILD_NAMES 				?=	do-centos-7 do-ubuntu-2004 do-ubuntu-2204 do-ubuntu-2404
 
-OPENSTACK_BUILD_NAMES		?=	openstack-ubuntu-2004 openstack-ubuntu-2204 openstack-ubuntu-2404 openstack-flatcar
+OPENSTACK_BUILD_NAMES		?=	openstack-ubuntu-2004 openstack-ubuntu-2204 openstack-ubuntu-2404 openstack-flatcar openstack-rockylinux-9
 
 OSC_BUILD_NAMES 			?=	osc-ubuntu-2004 osc-ubuntu-2204
 
@@ -825,6 +825,7 @@ build-node-ova-local-base-ubuntu-2004: ## Builds Ubuntu 20.04 Base Node OVA w lo
 build-openstack-ubuntu-2004: ## Builds Ubuntu 20.04 OpenStack image
 build-openstack-ubuntu-2204: ## Builds Ubuntu 22.04 OpenStack image
 build-openstack-ubuntu-2404: ## Builds Ubuntu 24.04 OpenStack image
+build-openstack-rockylinux-9: ## Builds RockyLinux 9 OpenStack image
 build-openstack-flatcar: ## Builds Flatcar OpenStack image
 build-openstack-all: $(OPENSTACK_BUILD_TARGETS)
 
@@ -962,6 +963,7 @@ validate-do-all: $(DO_VALIDATE_TARGETS) ## Validates all DigitalOcean Snapshot P
 validate-openstack-ubuntu-2004: ## Validates Ubuntu 20.04 Openstack Image Packer config
 validate-openstack-ubuntu-2204: ## Validates Ubuntu 22.04 Openstack Image Packer config
 validate-openstack-ubuntu-2404: ## Validates Ubuntu 22.04 Openstack Image Packer config
+validate-openstack-rocky-9: ## Validates Rocky 9 Openstack Image Packer config
 validate-openstack-flatcar: ## Validates Flatcar Openstack Image Packer config
 validate-openstack-all: $(OPENSTACK_VALIDATE_TARGETS) ## Validates all Openstack Glance Image Packer config
 

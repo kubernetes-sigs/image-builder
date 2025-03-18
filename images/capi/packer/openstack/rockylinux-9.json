@@ -1,0 +1,8 @@
+{
+  "build_name": "rockylinux-9",
+  "distro_name": "rockylinux",
+  "epel_rpm_gpg_key": "https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-9",
+  "os_version": "9",
+  "redhat_epel_rpm": "https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm",
+  "ssh_username": "rocky"
+}
