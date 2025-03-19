@@ -72,6 +72,7 @@ memory_reservation_mebibytes() {
   fi
 
   # Reserve 2% of any remaining memory
+  memory_reserved_mebibytes=$((memory_reserved_mebibytes + 7004))
   memory_remaining_mebibytes=$((memory_remaining_mebibytes - 116736))
   segment_memory_reservation_mebibytes=$(echo $memory_remaining_mebibytes | awk '{result = $1 * 0.02; if (result != int(result)) result++; printf "%d\n", result}')
   memory_reserved_mebibytes=$((memory_reserved_mebibytes + segment_memory_reservation_mebibytes))
