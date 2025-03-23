@@ -13,6 +13,12 @@ jobs:
 
       env:
          AWS_PROFILE: ditto-scratchpad-ore
+         SSO_START_URL: "https://d-9067b1daed.awsapps.com/start"
+         SSO_REGION: "us-east-1"
+         SSO_ACCOUNT_ID: "980589262500"
+         SSO_ROLE_NAME: "FullAdminSuper"
+         AWS_REGION: "us-east-1"
+         AWS_OUTPUT: "json"
 
       steps:
          - name: Checkout repository
@@ -29,14 +35,21 @@ jobs:
 
          - name: Configure AWS SSO
            run: |
-              aws configure sso --profile $AWS_PROFILE
-              export AWS_PROFILE=$AWS_PROFILE
+              aws configure set sso_start_url "${{ env.SSO_START_URL }}" --profile "${{ env.AWS_PROFILE }}"
+              aws configure set sso_region "${{ env.SSO_REGION }}" --profile "${{ env.AWS_PROFILE }}"
+              aws configure set sso_account_id "${{ env.SSO_ACCOUNT_ID }}" --profile "${{ env.AWS_PROFILE }}"
+              aws configure set sso_role_name "${{ env.SSO_ROLE_NAME }}" --profile "${{ env.AWS_PROFILE }}"
+              aws configure set region "${{ env.AWS_REGION }}" --profile "${{ env.AWS_PROFILE }}"
+              aws configure set output "${{ env.AWS_OUTPUT }}" --profile "${{ env.AWS_PROFILE }}"
+              export AWS_PROFILE="${{ env.AWS_PROFILE }}"
 
          - name: Build AMI
            env:
               AWS_PROFILE: $AWS_PROFILE
            run: |
-              make build-ami-amazon-2 \
+              make build-ami-centos-7 \
+              make build-ubuntu-2204 \
+              make build-ami-amazon-2023 \
               AWS_REGION=${{ secrets.AWS_REGION }}
 
          - name: Make AMI Public

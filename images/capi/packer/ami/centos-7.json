@@ -1,0 +1,15 @@
+{
+  "ami_filter_name": "CentOS Linux 7 x86_64 HVM EBS ENA*",
+  "ami_filter_owners": "461800378586",
+  "build_name": "centos-7",
+  "distribution": "CentOS",
+  "distribution_release": "Core",
+  "distribution_version": "7",
+  "root_device_name": "/dev/sda1",
+  "source_ami": "",
+  "ssh_username": "centos",
+  "aws_profile": "ditto-scratchpad-ore",
+  "ami_users": "962243356687",
+  "ami_groups": "",
+  "aws_region": "us-east-1"
+}
