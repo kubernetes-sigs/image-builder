@@ -10,9 +10,5 @@
   "redhat_epel_rpm": "",
   "root_device_name": "/dev/xvda",
   "source_ami": "",
-  "ssh_username": "ec2-user",
-  "aws_profile": "ditto-scratchpad-ore",
-  "ami_users": "962243356687",
-  "aws_region": "us-east-1",
-  "ami-regions": "us-east-1,us-east-2,us-west-1,us-west-2"
+  "ssh_username": "ec2-user"
 }
