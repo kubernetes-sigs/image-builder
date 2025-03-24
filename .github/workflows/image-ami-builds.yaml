@@ -5,19 +5,26 @@ on:
       branches:
          - main
    workflow_dispatch:
+      inputs:
+         k8s_version:
+            description: "Specify the Kubernetes version"
+            required: false
+            default: "latest"
+            options:
+               - "1.27.15"
+               - "1.28.15"
+               - "1.30.10"
+               - "latest"
 
 jobs:
    build-ami:
       name: Build and Publish AMI
       runs-on: ubuntu-latest
-
       env:
-         AWS_PROFILE: ditto-scratchpad-ore
-         SSO_START_URL: "https://d-9067b1daed.awsapps.com/start"
-         SSO_REGION: "us-east-1"
-         SSO_ACCOUNT_ID: "980589262500"
-         SSO_ROLE_NAME: "FullAdminSuper"
-         AWS_REGION: "us-east-1"
+         AWS_PROFILE: ditto-prod-primary
+         ACCOUNT_ID: "261908217831"
+         ROLE: "image-bakery-runner"
+         AWS_REGION: "us-east-2"
          AWS_OUTPUT: "json"
 
       steps:
@@ -33,23 +40,19 @@ jobs:
            run: |
               make validate-packer
 
-         - name: Configure AWS SSO
-           run: |
-              aws configure set sso_start_url "${{ env.SSO_START_URL }}" --profile "${{ env.AWS_PROFILE }}"
-              aws configure set sso_region "${{ env.SSO_REGION }}" --profile "${{ env.AWS_PROFILE }}"
-              aws configure set sso_account_id "${{ env.SSO_ACCOUNT_ID }}" --profile "${{ env.AWS_PROFILE }}"
-              aws configure set sso_role_name "${{ env.SSO_ROLE_NAME }}" --profile "${{ env.AWS_PROFILE }}"
-              aws configure set region "${{ env.AWS_REGION }}" --profile "${{ env.AWS_PROFILE }}"
-              aws configure set output "${{ env.AWS_OUTPUT }}" --profile "${{ env.AWS_PROFILE }}"
-              export AWS_PROFILE="${{ env.AWS_PROFILE }}"
+         - name: Set up AWS
+           uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502 # v4
+           with:
+              aws-region: ${{ env.AWS_REGION }}
+              role-to-assume: "arn:aws:iam::${{ env.ACCOUNT_ID }}:role/${{ env.ROLE }}"
+              role-session-name: image-builder@build-cluster-api-images=${{ github.run_id }}
+              role-duration-seconds: 3600
 
          - name: Build AMI
            env:
               AWS_PROFILE: $AWS_PROFILE
            run: |
-              make build-ami-centos-7 \
-              make build-ubuntu-2204 \
-              make build-ami-amazon-2023 \
+              make build-ami-ubuntu-2404 \
               AWS_REGION=${{ secrets.AWS_REGION }}
 
          - name: Make AMI Public
