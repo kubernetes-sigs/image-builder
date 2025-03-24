@@ -9,12 +9,12 @@ on:
          k8s_version:
             description: "Specify the Kubernetes version"
             required: false
-            default: "latest"
+            default: "1.27.15"
             options:
                - "1.27.15"
                - "1.28.15"
                - "1.30.10"
-               - "latest"
+               - "1.31.4"
 
 jobs:
    build-ami:
