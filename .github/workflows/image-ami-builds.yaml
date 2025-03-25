@@ -39,8 +39,7 @@ jobs:
 
          - name: Install Packer Amazon Plugin
            run: |
-            ls -la
-            packer init -upgrade ./packer/config.pkr.hcl 
+            packer init -upgrade ./images/capi/packer/config.pkr.hcl 
 
          - name: Validate Packer template
            run: |
