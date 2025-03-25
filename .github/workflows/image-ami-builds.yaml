@@ -34,7 +34,7 @@ jobs:
 
          - name: Validate Packer template
            run: |
-              make validate-packer
+              make validate-ami-ubuntu-2404 
 
          - name: Set up AWS
            uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502 # v4
