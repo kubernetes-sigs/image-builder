@@ -37,9 +37,12 @@ jobs:
            with:
              version: "latest"
 
+         - name: Install Packer Amazon Plugin
+           run: |
+            packer init -upgrade config.pkr.hcl 
+
          - name: Validate Packer template
            run: |
-              packer init . -upgrade
               make validate-ami-ubuntu-2404 
 
          - name: Set up AWS
