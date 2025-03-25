@@ -4,6 +4,7 @@ on:
    push:
       branches:
          - main
+         - ore/ditto-image-builder
    workflow_dispatch:
       inputs:
          k8s_version:
@@ -30,11 +31,6 @@ jobs:
       steps:
          - name: Checkout repository
            uses: actions/checkout@v3
-
-         - name: Install dependencies
-           run: |
-              sudo apt-get update
-              sudo apt-get install -y make jq awscli
 
          - name: Validate Packer template
            run: |
