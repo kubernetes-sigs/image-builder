@@ -37,6 +37,10 @@ jobs:
            with:
              version: "latest"
 
+         - name: Install Packer Amazon Plugin
+           run: |
+            packer plugins install github.com/hashicorp/amazon
+
          - name: Validate Packer template
            run: |
               packer init -upgrade ./images/capi/packer/config.pkr.hcl 
