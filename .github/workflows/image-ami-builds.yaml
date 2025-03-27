@@ -28,7 +28,7 @@ jobs:
       env:
          AWS_PROFILE: ditto-prod-primary
          ACCOUNT_ID: "261908217831"
-         ROLE: "image-bakery-runner"
+         ROLE: "image-builder-runner"
          AWS_REGION: "us-east-2"
          AWS_OUTPUT: "json"
 
