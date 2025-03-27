@@ -26,6 +26,7 @@ jobs:
       name: Build and Publish AMI
       runs-on: ubuntu-latest
       env:
+         AWS_REGION: "us-east-2"
          ACCOUNT_ID: "261908217831"
          ROLE: "image-builder-runner"
          AWS_OUTPUT: "json"
@@ -38,7 +39,7 @@ jobs:
          - name: Set up AWS
            uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502 # v4
            with:
-              aws-region: us-east-2
+              aws-region: ${{ env.AWS_REGION }}
               role-to-assume: "arn:aws:iam::${{ env.ACCOUNT_ID }}:role/${{ env.ROLE }}"
               role-session-name: image-builder@build-cluster-api-images=${{ github.run_id }}
               role-duration-seconds: 3600
@@ -59,15 +60,30 @@ jobs:
 
          - name: Build AMI
            env:
-              AWS_PROFILE: $AWS_PROFILE
+              AWS_PROFILE: ditto-prod-primary
            run: |
               make build-ami-ubuntu-2404 \
-              AWS_REGION=${{ secrets.AWS_REGION }}
+              AWS_REGION=${{ env.AWS_REGION }}
 
          - name: Make AMI Public
            env:
              AWS_REGION: ${{ env.AWS_REGION }}
            run: |
-             AMI_ID=$(jq -r '.builds[-1].artifact_id' < output/packer-manifest.json | cut -d':' -f2)
-             aws ec2 modify-image-attribute --image-id $AMI_ID --launch-permission "{\"Add\": [{\"Group\":\"all\"}]}"
-             echo "AMI $AMI_ID is now public."
+             if [ -f "./output/packer-manifest.json" ]; then
+               AMI_ID=$(jq -r '.builds[-1].artifact_id' < ./output/packer-manifest.json | cut -d':' -f2)
+               aws ec2 modify-image-attribute --image-id $AMI_ID --launch-permission "{\"Add\": [{\"Group\":\"all\"}]}"
+               echo "AMI $AMI_ID is now public."
+             else
+               echo "Error: packer-manifest.json file not found in the expected location."
+               echo "Searching for packer-manifest.json in the current directory..."
+               PACKER_MANIFEST_PATH=$(find . -name "packer-manifest.json" | head -n 1)
+               if [ -n "$PACKER_MANIFEST_PATH" ]; then
+                echo "Found packer-manifest.json at $PACKER_MANIFEST_PATH"
+                AMI_ID=$(jq -r '.builds[-1].artifact_id' < "$PACKER_MANIFEST_PATH" | cut -d':' -f2)
+                aws ec2 modify-image-attribute --image-id $AMI_ID --launch-permission "{\"Add\": [{\"Group\":\"all\"}]}"
+                echo "AMI $AMI_ID is now public."
+               else
+                echo "Error: packer-manifest.json file could not be found."
+                exit 1
+               fi
+             fi
