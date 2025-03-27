@@ -37,7 +37,7 @@ jobs:
            uses: actions/checkout@v3
 
          - name: Set up AWS
-           uses: aws-actions/configure-aws-credentials@@e3dd6a429d7300a6a4c196c26e071d42e0343502 # v4
+           uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502 # v4
            with:
               aws-region: ${{ env.AWS_REGION }}
               role-to-assume: "arn:aws:iam::${{ env.ACCOUNT_ID }}:role/${{ env.ROLE }}"
