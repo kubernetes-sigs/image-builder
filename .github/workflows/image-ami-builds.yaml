@@ -25,6 +25,9 @@ jobs:
    build-ami:
       name: Build and Publish AMI
       runs-on: ubuntu-latest
+      permissions:
+         id-token: write   # This is crucial for OIDC authentication
+         contents: read    # Allows reading repository contents
       env:
          AWS_PROFILE: ditto-prod-primary
          ACCOUNT_ID: "261908217831"
