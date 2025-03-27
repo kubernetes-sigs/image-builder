@@ -25,24 +25,20 @@ jobs:
    build-ami:
       name: Build and Publish AMI
       runs-on: ubuntu-latest
-      permissions:
-         id-token: write   # This is crucial for OIDC authentication
-         contents: read    # Allows reading repository contents
       env:
-         AWS_PROFILE: ditto-prod-primary
          ACCOUNT_ID: "261908217831"
          ROLE: "image-builder-runner"
-         AWS_REGION: "us-east-2"
          AWS_OUTPUT: "json"
 
       steps:
          - name: Checkout repository
            uses: actions/checkout@v3
 
+
          - name: Set up AWS
            uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502 # v4
            with:
-              aws-region: ${{ env.AWS_REGION }}
+              aws-region: us-east-2
               role-to-assume: "arn:aws:iam::${{ env.ACCOUNT_ID }}:role/${{ env.ROLE }}"
               role-session-name: image-builder@build-cluster-api-images=${{ github.run_id }}
               role-duration-seconds: 3600
