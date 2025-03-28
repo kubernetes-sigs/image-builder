@@ -27,15 +27,6 @@
     - ansible_os_family == "RedHat"
     - ansible_distribution != "Amazon"
 
-- name: Install aws agents RPM
-  ansible.builtin.package:
-    name: "{{ item }}"
-    state: present
-  with_items:
-    - amazon-ssm-agent
-    - awscli
-  when: ansible_distribution == "Amazon"
-
 - name: Ensure ssm agent is running RPM
   ansible.builtin.service:
     name: amazon-ssm-agent
@@ -60,3 +51,21 @@
     state: stopped
     enabled: false
   when: ansible_os_family == "Debian"
+
+- name: Create cloud-init custom data source list
+  ansible.builtin.copy:
+    src: files/etc/cloud/cloud.cfg.d/90_dpkg.cfg
+    dest: /etc/cloud/cloud.cfg.d/90_dpkg.cfg
+    owner: root
+    group: root
+    mode: "0644"
+  when: ansible_distribution == "Ubuntu" and ansible_distribution_version is version('22.04', '>=')
+
+- name: Create custom cloud-init data source
+  ansible.builtin.copy:
+    src: usr/lib/python3/dist-packages/cloudinit/sources/DataSourceEc2Kubernetes.py
+    dest: /usr/lib/python3/dist-packages/cloudinit/sources/DataSourceEc2Kubernetes.py
+    owner: root
+    group: root
+    mode: "0644"
+  when: ansible_distribution == "Ubuntu" and ansible_distribution_version is version('22.04', '>=')

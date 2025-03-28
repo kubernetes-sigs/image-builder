@@ -1,0 +1,174 @@
+{
+  "builders": [
+    {
+      "access_key": "{{user `access_key`}}",
+      "associate_public_ip_address": "{{user `associate_public_ip_address`}}",
+      "availability_zone": "{{user `availability_zone`}}",
+      "eip_bandwidth_size": "{{user `eip_bandwidth_size`}}",
+      "eip_type": "{{user `eip_type`}}",
+      "flavor": "{{user `flavor`}}",
+      "image_description": "{{user `image_description`}}",
+      "image_name": "{{user `image_name`}}",
+      "image_tags": {
+        "build_date": "{{isotime `2006-01-02`}}",
+        "build_timestamp": "{{user `build_timestamp`}}",
+        "containerd_version": "{{user `containerd_version`}}",
+        "distribution": "{{user `distribution`}}",
+        "distribution_release": "{{user `distribution_release`}}",
+        "distribution_version": "{{user `distribution_version`}}",
+        "image_builder_version": "{{user `ib_version`}}",
+        "kubernetes_cni_version": "{{user `kubernetes_cni_semver`}}",
+        "kubernetes_version": "{{user `kubernetes_semver`}}"
+      },
+      "image_type": "system",
+      "kms_key_id": "{{user `kms_key_id`}}",
+      "pause_before_connecting": "{{user `pause_before_connecting`}}",
+      "region": "{{user `region`}}",
+      "secret_key": "{{user `secret_key`}}",
+      "security_groups": "{{user `security_groups`}}",
+      "source_image": "{{user `source_image`}}",
+      "source_image_filter": {
+        "filters": {
+          "name": "{{user `image_filter_name`}}",
+          "visibility": "public"
+        },
+        "most_recent": true
+      },
+      "ssh_ip_version": 4,
+      "ssh_username": "{{user `ssh_username`}}",
+      "subnets": "{{user `subnets`}}",
+      "type": "huaweicloud-ecs",
+      "user_data": "{{user `user_data`}}",
+      "user_data_file": "{{user `user_data_file`}}",
+      "volume_size": "{{user `volume_size`}}",
+      "volume_type": "{{user `volume_type`}}",
+      "vpc_id": "{{user `vpc_id`}}",
+      "wait_image_ready_timeout": "{{user `wait_image_ready_timeout`}}"
+    }
+  ],
+  "post-processors": [
+    {
+      "custom_data": {
+        "containerd_gvisor_runtime": "{{user `containerd_gvisor_runtime`}}",
+        "containerd_gvisor_version": "{{user `containerd_gvisor_version`}}",
+        "containerd_version": "{{user `containerd_version`}}",
+        "kubernetes_cni_version": "{{user `kubernetes_cni_semver`}}",
+        "kubernetes_version": "{{user `kubernetes_semver`}}"
+      },
+      "output": "{{user `manifest_output`}}",
+      "type": "manifest"
+    }
+  ],
+  "provisioners": [
+    {
+      "ansible_env_vars": [
+        "ANSIBLE_SSH_ARGS='{{user `existing_ansible_ssh_args`}} {{user `ansible_common_ssh_args`}}'"
+      ],
+      "extra_arguments": [
+        "--extra-vars",
+        "{{user `ansible_common_vars`}}",
+        "--extra-vars",
+        "{{user `ansible_extra_vars`}}",
+        "--extra-vars",
+        "{{user `ansible_user_vars`}}",
+        "--scp-extra-args",
+        "{{user `ansible_scp_extra_args`}}"
+      ],
+      "playbook_file": "./ansible/node.yml",
+      "type": "ansible"
+    },
+    {
+      "arch": "{{user `goss_arch`}}",
+      "download_path": "{{user `goss_download_path`}}",
+      "format": "{{user `goss_format`}}",
+      "format_options": "{{user `goss_format_options`}}",
+      "goss_file": "{{user `goss_entry_file`}}",
+      "inspect": "{{user `goss_inspect_mode`}}",
+      "remote_folder": "{{user `goss_remote_folder`}}",
+      "remote_path": "{{user `goss_remote_path`}}",
+      "skip_install": "{{user `goss_skip_install`}}",
+      "tests": [
+        "{{user `goss_tests_dir`}}"
+      ],
+      "type": "goss",
+      "url": "{{user `goss_url`}}",
+      "use_sudo": true,
+      "vars_file": "{{user `goss_vars_file`}}",
+      "vars_inline": {
+        "ARCH": "amd64",
+        "OS": "{{user `distribution` | lower}}",
+        "OS_VERSION": "{{user `distribution_version` | lower}}",
+        "PROVIDER": "huaweicloud",
+        "containerd_version": "{{user `containerd_version`}}",
+        "kubernetes_cni_deb_version": "{{ user `kubernetes_cni_deb_version` }}",
+        "kubernetes_cni_rpm_version": "{{ split (user `kubernetes_cni_rpm_version`) \"-\" 0 }}",
+        "kubernetes_cni_source_type": "{{user `kubernetes_cni_source_type`}}",
+        "kubernetes_cni_version": "{{user `kubernetes_cni_semver` | replace \"v\" \"\" 1}}",
+        "kubernetes_deb_version": "{{ user `kubernetes_deb_version` }}",
+        "kubernetes_rpm_version": "{{ split (user `kubernetes_rpm_version`) \"-\" 0 }}",
+        "kubernetes_source_type": "{{user `kubernetes_source_type`}}",
+        "kubernetes_version": "{{user `kubernetes_semver` | replace \"v\" \"\" 1}}"
+      },
+      "version": "{{user `goss_version`}}"
+    }
+  ],
+  "variables": {
+    "access_key": "",
+    "ansible_common_vars": "",
+    "ansible_extra_vars": "",
+    "ansible_scp_extra_args": "",
+    "ansible_user_vars": "",
+    "associate_public_ip_address": "true",
+    "availability_zone": "ap-southeast-1g",
+    "build_timestamp": "{{timestamp}}",
+    "containerd_gvisor_runtime": "false",
+    "containerd_gvisor_version": "latest",
+    "containerd_sha256": null,
+    "containerd_url": "https://github.com/containerd/containerd/releases/download/v{{user `containerd_version`}}/cri-containerd-cni-{{user `containerd_version`}}-linux-amd64.tar.gz",
+    "containerd_version": null,
+    "crictl_url": "https://github.com/kubernetes-sigs/cri-tools/releases/download/v{{user `crictl_version`}}/crictl-v{{user `crictl_version`}}-linux-amd64.tar.gz",
+    "crictl_version": null,
+    "eip_bandwidth_size": "5",
+    "eip_type": "5_bgp",
+    "existing_ansible_ssh_args": "{{env `ANSIBLE_SSH_ARGS`}}",
+    "flavor": "x1.2u.4g",
+    "ib_version": "{{env `IB_VERSION`}}",
+    "image_description": "Cluster API base image designed for {{user `kubernetes_semver`}}",
+    "image_name": "caphw-hwi-{{user `build_name`}}-{{user `kubernetes_semver`}}-{{user `build_timestamp`}}",
+    "kms_key_id": "",
+    "kubernetes_cni_deb_version": null,
+    "kubernetes_cni_http_source": null,
+    "kubernetes_cni_rpm_version": null,
+    "kubernetes_cni_semver": null,
+    "kubernetes_cni_source_type": null,
+    "kubernetes_container_registry": null,
+    "kubernetes_deb_gpg_key": null,
+    "kubernetes_deb_repo": null,
+    "kubernetes_deb_version": null,
+    "kubernetes_enable_automatic_resource_sizing": "false",
+    "kubernetes_http_source": null,
+    "kubernetes_load_additional_imgs": null,
+    "kubernetes_rpm_gpg_check": null,
+    "kubernetes_rpm_gpg_key": null,
+    "kubernetes_rpm_repo": null,
+    "kubernetes_rpm_version": null,
+    "kubernetes_semver": null,
+    "kubernetes_source_type": null,
+    "manifest_output": "manifest.json",
+    "pause_before_connecting": "1m",
+    "python_path": "",
+    "region": "ap-southeast-1",
+    "secret_key": "",
+    "security_groups": "",
+    "ssh_keypair_name": "",
+    "ssh_private_key_file": "",
+    "ssh_username": "root",
+    "subnet_id": "",
+    "user_data": "#cloud-config\nrepo_upgrade: none",
+    "user_data_file": "",
+    "volume_size": "10",
+    "volume_type": "GPSSD",
+    "vpc_id": "",
+    "wait_image_ready_timeout": "1h"
+  }
+}

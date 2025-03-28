@@ -2,11 +2,11 @@
   "builders": [
     {
       "access_key": "{{ user `access_key` }}",
-      "global_permission": true,
+      "global_permission": "{{ user `global_permission` }}",
       "omi_account_ids": [
         "{{ user `account_id` }}"
       ],
-      "omi_name": "{{user `build_name`}}-{{user `distribution_version`}}-kubernetes-{{user `kubernetes_semver`}}-{{isotime `2006-01-02`}}",
+      "omi_name": "{{user `build_name`}}-{{user `distribution_version`}}-kubernetes-{{user `kubernetes_semver`}}-{{timestamp}}",
       "region": "{{ user `region` }}",
       "secret_key": "{{ user `secret_key` }}",
       "source_omi": "{{ user `source_image` }}",
@@ -15,7 +15,7 @@
           "image-name": "{{ user `image_name` }}"
         },
         "owners": [
-          "Outscale"
+          "{{ user `owner` }}"
         ]
       },
       "ssh_username": "outscale",
@@ -29,7 +29,7 @@
         "kubernetes_version": "{{user `kubernetes_semver`}}"
       },
       "type": "outscale-bsu",
-      "vm_type": "tinav5.c2r4p2"
+      "vm_type": "{{user `vm_type`}}"
     }
   ],
   "provisioners": [
@@ -66,6 +66,7 @@
       "vars_inline": {
         "ARCH": "amd64",
         "OS": "{{user `distribution` | lower}}",
+        "OS_VERSION": "{{user `distribution_version` | lower}}",
         "PROVIDER": "outscale",
         "containerd_version": "{{user `containerd_version`}}",
         "kubernetes_cni_deb_version": "{{ user `kubernetes_cni_deb_version` }}",
@@ -96,6 +97,7 @@
     "distribution_release": null,
     "distribution_version": null,
     "existing_ansible_ssh_args": "{{env `ANSIBLE_SSH_ARGS`}}",
+    "global_permission": "true",
     "kubernetes_cni_deb_version": null,
     "kubernetes_cni_http_source": null,
     "kubernetes_cni_rpm_version": null,
@@ -114,7 +116,9 @@
     "kubernetes_semver": null,
     "kubernetes_series": null,
     "kubernetes_source_type": null,
+    "owner": "Outscale",
     "region": "{{env `OSC_REGION`}}",
-    "secret_key": "{{env `OSC_SECRET_KEY`}}"
+    "secret_key": "{{env `OSC_SECRET_KEY`}}",
+    "vm_type": "tinav5.c2r4p2"
   }
 }

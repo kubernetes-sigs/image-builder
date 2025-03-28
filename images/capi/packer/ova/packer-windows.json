@@ -1,7 +1,7 @@
 {
   "builders": [
     {
-      "content": "{\n \"unattend_timezone\" : \"{{user `unattend_timezone`}}\"\n}",
+      "content": "{\n \"unattend_timezone\" : \"{{user `unattend_timezone`}}\"\n, \"admin_password\" : \"{{user `windows_admin_password`}}\"\n}",
       "target": "./packer_cache/unattend.json",
       "type": "file"
     },
@@ -42,7 +42,7 @@
         "numvcpus": "4",
         "scsi0.virtualDev": "pvscsi"
       },
-      "winrm_password": "S3cr3t0!",
+      "winrm_password": "{{user `windows_admin_password`}}",
       "winrm_timeout": "4h",
       "winrm_username": "Administrator"
     },
@@ -105,7 +105,7 @@
       "vm_name": "{{user `build_version`}}",
       "vm_version": "{{user `vmx_version`}}",
       "winrm_insecure": true,
-      "winrm_password": "S3cr3t0!",
+      "winrm_password": "{{user `windows_admin_password`}}",
       "winrm_timeout": "4h",
       "winrm_username": "Administrator"
     }
@@ -206,8 +206,7 @@
       "url": "{{user `goss_url`}}",
       "use_sudo": false,
       "vars_env": {
-        "GOSS_MAX_CONCURRENT": "1",
-        "GOSS_USE_ALPHA": "1"
+        "GOSS_MAX_CONCURRENT": "1"
       },
       "vars_file": "{{user `goss_vars_file`}}",
       "vars_inline": {
@@ -262,6 +261,7 @@
     "output_dir": "./output/{{user `build_version`}}",
     "prepull": null,
     "unattend_timezone": "Pacific Standard Time",
+    "windows_admin_password": "S3cr3t0!",
     "windows_service_manager": null,
     "windows_updates_categories": null,
     "windows_updates_kbs": null

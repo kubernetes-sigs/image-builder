@@ -39,7 +39,7 @@ command:
 {{end}}
 {{if eq .Vars.kubernetes_source_type "pkg"}}
 {{if eq .Vars.kubernetes_cni_source_type "pkg"}}
-  crictl images | grep -v 'IMAGE ID' | awk -F'[ /]' '{print $2}' | sed 's/-{{ .Vars.arch }}//g' | sort:
+  crictl images | grep -v 'IMAGE ID' | awk '{print $1}' | awk -F'/' '{print $NF}' | sed 's/-{{ .Vars.arch }}//g' | sort:
     exit-status: 0
     stderr: []
     timeout: 0
@@ -48,7 +48,7 @@ command:
 {{end}}
 {{if and (eq .Vars.kubernetes_source_type "http") (eq .Vars.kubernetes_cni_source_type "http") (not .Vars.kubernetes_load_additional_imgs)}}
 # The second last pipe of awk is to take out arch from kube-apiserver-amd64 (i.e. amd64 or any other arch)
-  crictl images | grep -v 'IMAGE ID' | awk -F'[ /]' '{print $2}' | sed 's/-{{ .Vars.arch }}//g' | sort:
+  crictl images | grep -v 'IMAGE ID' | awk '{print $1}' | awk -F'/' '{print $NF}' | sed 's/-{{ .Vars.arch }}//g' | sort:
     exit-status: 0
     stderr: []
     timeout: 0
@@ -56,7 +56,7 @@ command:
 {{end}}
 {{if and (eq .Vars.kubernetes_source_type "http") (eq .Vars.kubernetes_cni_source_type "http") (.Vars.kubernetes_load_additional_imgs)}}
 # The second last pipe of awk is to take out arch from kube-apiserver-amd64 (i.e. amd64 or any other arch)
-  crictl images | grep -v 'IMAGE ID' | awk -F'[ /]' '{print $2}' | sed 's/-{{ .Vars.arch }}//g' | sort:
+  crictl images | grep -v 'IMAGE ID' | awk '{print $1}' | awk -F'/' '{print $NF}' | sed 's/-{{ .Vars.arch }}//g' | sort:
     exit-status: 0
     stderr: []
     timeout: 0

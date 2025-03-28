@@ -3,7 +3,7 @@
   "distribution": "azurelinux",
   "distribution_release": "azure-linux-gen2",
   "distribution_version": "3",
-  "image_offer": "azure-linux",
+  "image_offer": "azure-linux-3",
   "image_publisher": "MicrosoftCBLMariner",
-  "image_sku": "azure-linux-gen2"
+  "image_sku": "azure-linux-3-gen2"
 }

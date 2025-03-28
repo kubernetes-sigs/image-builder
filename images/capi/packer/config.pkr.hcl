@@ -5,7 +5,7 @@ packer {
       source  = "github.com/hashicorp/ansible"
     }
     goss = {
-      version = "~> 3"
+      version = ">= 3.2.14"
       source  = "github.com/YaleUniversity/goss"
     }
   }

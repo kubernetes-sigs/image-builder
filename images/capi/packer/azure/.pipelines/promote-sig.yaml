@@ -1,0 +1,144 @@
+# Required pipeline variables:
+# - BUILD_POOL - Azure DevOps build pool to use
+# - SERVICE_CONNECTION - Azure DevOps service connection to use for the Azure CLI
+# - EULA_LINK - the URL to the EULA for the image
+# - PUBLISHER_EMAIL - the email for the image publisher
+# - PUBLISHER_URI - the URI for the image publisher
+# - SIG_PUBLISHER - the publisher for the image definition
+# Optional pipeline variables:
+# - GALLERY_DESCRIPTION - the description for the image gallery, defaults to `Shared image gallery for Cluster API Provider Azure`
+# - GALLERY_NAME - name of the Azure community gallery for final image publishing, defaults to `community_gallery`
+# - PUBLIC_NAME_PREFIX - the prefix for the community gallery name, defaults to `ClusterAPI`
+# - REPLICATED_REGIONS - the regions to replicate the image to, defaults to the location of the managed image
+# - RESOURCE_GROUP - name of the Azure resource group to use for the compute galleries, defaults to `cluster-api-gallery`
+# - SIG_OFFER - the name of the offer to attach to image definitions, defaults to `reference-images`
+
+jobs:
+- job: publish_to_sig
+  timeoutInMinutes: 120
+  strategy:
+    maxParallel: 0
+  pool:
+    name: $(BUILD_POOL)
+  steps:
+  - task: DownloadPipelineArtifact@2
+    inputs:
+      source: current
+      artifact: publishing-info
+      path: $(system.defaultWorkingDirectory)/images/capi/packer/azure/sig/
+  - script: |
+      set -euo pipefail
+      [[ -n ${DEBUG:-} ]] && set -o xtrace
+
+      DISTRO=$(jq -r .distro $(system.defaultWorkingDirectory)/images/capi/packer/azure/sig/sig-publishing-info.json)
+      HYPERV_GEN=$(jq -r .hyperv_gen $(system.defaultWorkingDirectory)/images/capi/packer/azure/sig/sig-publishing-info.json)
+      OS_TYPE=$(jq -r .os_type $(system.defaultWorkingDirectory)/images/capi/packer/azure/sig/sig-publishing-info.json)
+      MANAGED_IMAGE_RESOURCE_GROUP_NAME=$(jq -r .managed_image_resource_group_name $(system.defaultWorkingDirectory)/images/capi/packer/azure/sig/sig-publishing-info.json)
+      MANAGED_IMAGE_NAME=$(jq -r .managed_image_name $(system.defaultWorkingDirectory)/images/capi/packer/azure/sig/sig-publishing-info.json)
+      MANAGED_IMAGE_ID=$(jq -r .managed_image_id $(system.defaultWorkingDirectory)/images/capi/packer/azure/sig/sig-publishing-info.json)
+      MANAGED_IMAGE_LOCATION=$(jq -r .managed_image_location $(system.defaultWorkingDirectory)/images/capi/packer/azure/sig/sig-publishing-info.json)
+      MANAGED_IMAGE_SHARED_IMAGE_GALLERY_ID=$(jq -r .managed_image_shared_image_gallery_id $(system.defaultWorkingDirectory)/images/capi/packer/azure/sig/sig-publishing-info.json)
+      SHARED_IMAGE_GALLERY_RESOURCE_GROUP=$(jq -r .shared_image_gallery_resource_group $(system.defaultWorkingDirectory)/images/capi/packer/azure/sig/sig-publishing-info.json)
+      SHARED_IMAGE_GALLERY_NAME=$(jq -r .shared_image_gallery_name $(system.defaultWorkingDirectory)/images/capi/packer/azure/sig/sig-publishing-info.json)
+      SHARED_IMAGE_GALLERY_IMAGE_NAME=$(jq -r .shared_image_gallery_image_name $(system.defaultWorkingDirectory)/images/capi/packer/azure/sig/sig-publishing-info.json)
+      SHARED_IMAGE_GALLERY_IMAGE_VERSION=$(jq -r .shared_image_gallery_image_version $(system.defaultWorkingDirectory)/images/capi/packer/azure/sig/sig-publishing-info.json)
+      TAGS=$(jq -r .tags $(system.defaultWorkingDirectory)/images/capi/packer/azure/sig/sig-publishing-info.json)
+
+      set +o xtrace
+      echo "##vso[task.setvariable variable=DISTRO]$DISTRO"
+      echo "##vso[task.setvariable variable=HYPERV_GEN]$HYPERV_GEN"
+      echo "##vso[task.setvariable variable=OS_TYPE]$OS_TYPE"
+      echo "##vso[task.setvariable variable=MANAGED_IMAGE_RESOURCE_GROUP_NAME]$MANAGED_IMAGE_RESOURCE_GROUP_NAME"
+      echo "##vso[task.setvariable variable=MANAGED_IMAGE_NAME]$MANAGED_IMAGE_NAME"
+      echo "##vso[task.setvariable variable=MANAGED_IMAGE_ID]$MANAGED_IMAGE_ID"
+      echo "##vso[task.setvariable variable=MANAGED_IMAGE_LOCATION]$MANAGED_IMAGE_LOCATION"
+      echo "##vso[task.setvariable variable=MANAGED_IMAGE_SHARED_IMAGE_GALLERY_ID]$MANAGED_IMAGE_SHARED_IMAGE_GALLERY_ID"
+      echo "##vso[task.setvariable variable=SHARED_IMAGE_GALLERY_RESOURCE_GROUP]$SHARED_IMAGE_GALLERY_RESOURCE_GROUP"
+      echo "##vso[task.setvariable variable=SHARED_IMAGE_GALLERY_NAME]$SHARED_IMAGE_GALLERY_NAME"
+      echo "##vso[task.setvariable variable=SHARED_IMAGE_GALLERY_IMAGE_NAME]$SHARED_IMAGE_GALLERY_IMAGE_NAME"
+      echo "##vso[task.setvariable variable=SHARED_IMAGE_GALLERY_IMAGE_VERSION]$SHARED_IMAGE_GALLERY_IMAGE_VERSION"
+      echo "##vso[task.setvariable variable=TAGS]$TAGS"
+    displayName: Import variables from build SIG job
+  - task: AzureCLI@2
+    displayName: Publish to community gallery
+    inputs:
+      azureSubscription: '$(SERVICE_CONNECTION)'
+      scriptLocation: inlineScript
+      scriptType: bash
+      workingDirectory: '$(system.defaultWorkingDirectory)/images/capi'
+      inlineScript: |
+        set -euo pipefail
+        [[ -n ${DEBUG:-} ]] && set -o xtrace
+
+        EOL_DATE=$(date --date='+6 months' +"%Y-%m-%dT00:00:00+00:00")
+        GALLERY_DESCRIPTION=${GALLERY_DESCRIPTION:-"Shared image gallery for Cluster API Provider Azure"}
+        GALLERY_NAME=${GALLERY_NAME:-community_gallery}
+        PUBLIC_NAME_PREFIX=${PUBLIC_NAME_PREFIX:-ClusterAPI}
+        REPLICATED_REGIONS="${REPLICATED_REGIONS:-${MANAGED_IMAGE_LOCATION} australiaeast canadacentral eastus eastus2 eastus2euap francecentral germanywestcentral northeurope switzerlandnorth uksouth westeurope}"
+        RESOURCE_GROUP="${RESOURCE_GROUP:-cluster-api-gallery}"
+        SIG_OFFER="${SIG_OFFER:-reference-images}"
+
+        # Create the resource group if needed
+        if ! az group show -n ${RESOURCE_GROUP} -o none 2>/dev/null; then
+          az group create -n ${RESOURCE_GROUP} -l ${MANAGED_IMAGE_LOCATION} --tags ${TAGS:-}
+        fi
+
+        # Create the public community shared image gallery if it doesn't exist
+        if ! az sig show --gallery-name ${GALLERY_NAME} --resource-group ${RESOURCE_GROUP} -o none 2>/dev/null; then
+          az sig create \
+            --gallery-name ${GALLERY_NAME} \
+            --resource-group ${RESOURCE_GROUP} \
+            --description ${GALLERY_DESCRIPTION} \
+            --eula ${EULA_LINK} \
+            --location ${MANAGED_IMAGE_LOCATION} \
+            --public-name-prefix ${PUBLIC_NAME_PREFIX} \
+            --publisher-email ${PUBLISHER_EMAIL} \
+            --publisher-uri ${PUBLISHER_URI} \
+            --tags ${TAGS} \
+            --permissions Community
+        fi
+
+        # translate prohibited words to alternatives in the image definition name
+        GALLERY_IMAGE_DEFINITION=${SHARED_IMAGE_GALLERY_IMAGE_NAME//ubuntu/ubun2}
+        GALLERY_IMAGE_DEFINITION=${GALLERY_IMAGE_DEFINITION//windows/win}
+        # Create image definition if it doesn't exist
+        if ! az sig image-definition show --gallery-name ${GALLERY_NAME} --gallery-image-definition ${GALLERY_IMAGE_DEFINITION} --resource-group ${RESOURCE_GROUP} -o none 2>/dev/null; then
+          az sig image-definition create \
+            --resource-group ${RESOURCE_GROUP} \
+            --gallery-name ${GALLERY_NAME} \
+            --gallery-image-definition ${GALLERY_IMAGE_DEFINITION} \
+            --publisher ${SIG_PUBLISHER} \
+            --offer ${SIG_OFFER} \
+            --sku ${DISTRO} \
+            --hyper-v-generation ${HYPERV_GEN} \
+            --os-type ${OS_TYPE} \
+            | tee -a sig-publishing.json
+        fi
+
+        # Delete the image version if it exists (always create a new image, overwriting if necessary)
+        if az sig image-version show --gallery-name ${GALLERY_NAME} --gallery-image-definition ${GALLERY_IMAGE_DEFINITION} --gallery-image-version ${SHARED_IMAGE_GALLERY_IMAGE_VERSION} --resource-group ${RESOURCE_GROUP} -o none 2>/dev/null; then
+          az sig image-version delete \
+            --resource-group ${RESOURCE_GROUP} \
+            --gallery-name ${GALLERY_NAME} \
+            --gallery-image-definition ${GALLERY_IMAGE_DEFINITION} \
+            --gallery-image-version ${SHARED_IMAGE_GALLERY_IMAGE_VERSION}
+        fi
+
+        # Copy the tags from the managed image to the image version
+        IMAGE_TAGS=$(az tag list --resource-id ${MANAGED_IMAGE_ID} | jq -r '.properties.tags | to_entries | map("\(.key)=\(.value)") | join(" ")')
+
+        # Create the image version
+        az sig image-version create \
+          --resource-group ${RESOURCE_GROUP} \
+          --gallery-name ${GALLERY_NAME} \
+          --gallery-image-definition ${GALLERY_IMAGE_DEFINITION} \
+          --gallery-image-version ${SHARED_IMAGE_GALLERY_IMAGE_VERSION} \
+          --target-regions ${REPLICATED_REGIONS} \
+          --managed-image "${MANAGED_IMAGE_ID}" \
+          --end-of-life-date ${EOL_DATE} \
+          --tags ${IMAGE_TAGS} \
+          | tee -a sig-publishing.json
+  - task: PublishPipelineArtifact@1
+    inputs:
+      artifact: 'sig-publishing'
+      path: '$(system.defaultWorkingDirectory)/images/capi/sig-publishing.json'

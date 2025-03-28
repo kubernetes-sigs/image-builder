@@ -1,0 +1,50 @@
+---
+- name: Ensure ecr_credential_provider is not already installed
+  ansible.builtin.stat:
+    path: "{{ ecr_credential_provider_install_dir }}/{{ ecr_credential_provider_binary_filename }}"
+  register: ecr_credential_provider_binary
+
+- name: Install ECR Credential Provider binary
+  when: not ecr_credential_provider_binary.stat.exists
+  block:
+    - name: Ensure bin directory exists
+      ansible.builtin.file:
+        path: "{{ ecr_credential_provider_install_dir }}"
+        state: directory
+        mode: "0755"
+
+    - name: Download ecr_credential_provider binary
+      ansible.builtin.get_url:
+        url: "{{ ecr_credential_provider_base_url }}/{{ ecr_credential_provider_version }}/{{ ecr_credential_provider_os }}/{{ ecr_credential_provider_arch }}/ecr-credential-provider-{{ ecr_credential_provider_os }}-{{ ecr_credential_provider_arch }}"
+        dest: "{{ ecr_credential_provider_install_dir }}/{{ ecr_credential_provider_binary_filename }}"
+        mode: "0755"
+
+- name: Create the CredentialProviderConfig for the ECR Credential Provider
+  block:
+    - name: Ensure config directory exists
+      ansible.builtin.file:
+        path: /var/usr/ecr-credential-provider
+        state: directory
+        mode: "0755"
+
+    - name: Create CredentialProviderConfig
+      ansible.builtin.template:
+        src: var/usr/ecr-credential-provider/ecr-credential-provider-config
+        dest: /var/usr/ecr-credential-provider/ecr-credential-provider-config
+        mode: "0644"
+
+- name: Update kubelet args to include credential provider flags
+  block:
+    - name: Ensure kubelet config exists
+      ansible.builtin.stat:
+        path: "{{ '/etc/default/kubelet' if ansible_os_family == 'Debian' else '/etc/sysconfig/kubelet' }}"
+      register: kubelet_config
+      failed_when: not kubelet_config.stat.exists
+
+    - name: Add credential provider flags
+      when: kubelet_config.stat.exists
+      ansible.builtin.shell: |
+        set -e -o pipefail
+        sed -Ei 's|^(KUBELET_EXTRA_ARGS.*)|\1 --image-credential-provider-config=/var/usr/ecr-credential-provider/ecr-credential-provider-config --image-credential-provider-bin-dir={{ ecr_credential_provider_install_dir }}|' {{ '/etc/default/kubelet' if ansible_os_family == 'Debian' else '/etc/sysconfig/kubelet' }}
+      args:
+        executable: /bin/bash

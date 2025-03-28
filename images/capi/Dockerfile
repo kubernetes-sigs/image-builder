@@ -17,6 +17,11 @@
 ARG BASE_IMAGE=docker.io/library/ubuntu:24.04
 FROM $BASE_IMAGE
 
+ARG TAG=dev
+LABEL org.opencontainers.image.source=https://github.com/kubernetes-sigs/image-builder
+LABEL org.opencontainers.image.url=https://image-builder.sigs.k8s.io
+LABEL org.opencontainers.image.version=$TAG
+
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
 	apt-transport-https \
 	build-essential \

@@ -60,6 +60,11 @@
       "name": "sig-{{user `build_name`}}",
       "os_disk_size_gb": "{{user `os_disk_size_gb`}}",
       "os_type": "Windows",
+      "plan_info": {
+        "plan_name": "{{user `plan_image_sku`}}",
+        "plan_product": "{{user `plan_image_offer`}}",
+        "plan_publisher": "{{user `plan_image_publisher`}}"
+      },
       "private_virtual_network_with_public_ip": "{{user `private_virtual_network_with_public_ip`}}",
       "shared_gallery_image_version_exclude_from_latest": "{{ user `exclude_from_latest` }}",
       "shared_image_gallery": {
@@ -154,7 +159,9 @@
       "inspect": "{{user `goss_inspect_mode`}}",
       "remote_folder": "{{user `goss_remote_folder`}}",
       "remote_path": "{{user `goss_remote_path`}}",
+      "retry_timeout": "{{user `goss_retry_timeout`}}",
       "skip_install": "{{user `goss_skip_install`}}",
+      "sleep": "{{user `goss_sleep`}}",
       "target_os": "Windows",
       "tests": [
         "{{user `goss_tests_dir`}}"

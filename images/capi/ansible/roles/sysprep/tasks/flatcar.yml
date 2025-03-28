@@ -46,6 +46,12 @@
     - docker.socket
     - docker.service
 
+- name: Remove autologin from grub
+  ansible.builtin.replace:
+    regexp: ' ?flatcar.autologin(=[a-zA-Z0-9]*)? ?'
+    path: /usr/share/oem/grub.cfg
+  when: flatcar_disable_autologin | bool
+
 - name: Set cgroup v1 to match the cgroupfs driver in containerd and kubelet
   ansible.builtin.shell: |
     echo 'set linux_append="$linux_append systemd.unified_cgroup_hierarchy=0 systemd.legacy_systemd_cgroup_controller"' >> /usr/share/oem/grub.cfg

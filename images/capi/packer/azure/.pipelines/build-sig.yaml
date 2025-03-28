@@ -1,0 +1,80 @@
+# Required pipeline variables:
+# - BUILD_POOL - Azure DevOps build pool to use
+# - KUBERNETES_VERSION - version of Kubernetes to build the image with, e.g. `1.31.1`
+# - OS - operating system distro, such as 'Ubuntu', 'AzureLinux', or `Windows`
+# - OS_VERSION - version of distro, such as `24.04` or `2022-containerd`
+# - SERVICE_CONNECTION - Azure DevOps service connection to use for the Azure CLI
+# Optional pipeline variables:
+# - JOB_NAME - name of the job, defaults to `image-builder-sig-${OS}-${OS_VERSION}`
+# - PACKER_FLAGS - additional flags to pass to packer
+# - RESOURCE_GROUP - name of the Azure resource group to use for the compute galleries
+# - STAGING_GALLERY_NAME - name of the Azure compute gallery for initial image publishing
+# - TAGS - tags to apply to the image
+
+jobs:
+- job: build_sig
+  timeoutInMinutes: 120
+  strategy:
+    maxParallel: 0
+  pool:
+    name: $(BUILD_POOL)
+  steps:
+  - template: k8s-config.yaml
+  - script: |
+      set -euo pipefail
+      [[ -n ${DEBUG:-} ]] && set -o xtrace
+
+      kube_proxy_url="sigwindowstools/kube-proxy:v${KUBERNETES_VERSION/+/_}-calico-hostprocess"
+      echo "Checking for Windows kube-proxy image $kube_proxy_url"
+      if ! stderr="$(docker pull $kube_proxy_url 2>&1 > /dev/null)"; then
+        # It's a Windows image, so expect an error after pulling it on Linux
+        if [[ $stderr != *"cannot be used on this platform"* ]]; then
+          echo "Failed to pull kube-proxy image: $stderr"
+          exit 1
+        fi
+      fi
+    displayName: Check for Windows kube-proxy image
+    condition: and(eq(variables['PREFLIGHT_CHECKS'], 'true'), eq(variables['OS'], 'Windows'))
+  - task: AzureCLI@2
+    displayName: Build SIG Image
+    inputs:
+      azureSubscription: '$(SERVICE_CONNECTION)'
+      scriptLocation: inlineScript
+      scriptType: bash
+      workingDirectory: '$(system.defaultWorkingDirectory)/images/capi'
+      inlineScript: |
+        set -euo pipefail
+        [[ -n ${DEBUG:-} ]] && set -o xtrace
+
+        # Generate locales properly on Azure Linux or ansible will complain
+        sudo tdnf -y install glibc-i18n
+        sudo locale-gen.sh
+        export LC_ALL=en_US.UTF-8
+
+        os=$(echo "${OS}" | tr '[:upper:]' '[:lower:]')
+        version=$(echo "${OS_VERSION}" | tr '[:upper:]' '[:lower:]' | tr -d .)
+        export RESOURCE_GROUP="${RESOURCE_GROUP:-cluster-api-gallery}"
+        export RESOURCE_GROUP_NAME="${RESOURCE_GROUP}"
+
+        # timestamp is in RFC-3339 format to match kubetest
+        export TIMESTAMP="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+        export JOB_NAME="${JOB_NAME:-"image-builder-sig-${os}-${version}"}"
+        export TAGS="${TAGS:-creationTimestamp=${TIMESTAMP} jobName=${JOB_NAME} DO-NOT-DELETE=UpstreamInfra}"
+        printf "${TAGS}" | tee packer/azure/tags.out
+        export GALLERY_NAME="${STAGING_GALLERY_NAME:-staging_gallery}"
+        DISTRO="${os}-${version}"
+        echo "##vso[task.setvariable variable=DISTRO]$DISTRO"
+
+        # Add build tags in ADO
+        echo "##vso[build.addbuildtag]$KUBERNETES_VERSION"
+        echo "##vso[build.addbuildtag]$DISTRO"
+
+        export PACKER_FLAGS="${PACKER_FLAGS} --var sig_image_version=${KUBERNETES_VERSION}"
+        export PATH=$PATH:$HOME/.local/bin
+        export USE_AZURE_CLI_AUTH="True"
+        make build-azure-sig-$os-$version | tee packer/azure/packer.out
+  - template: sig-publishing-info.yaml
+  - task: PublishPipelineArtifact@1
+    inputs:
+      artifact: 'publishing-info'
+      path: '$(system.defaultWorkingDirectory)/images/capi/packer/azure/sig-publishing-info.json'

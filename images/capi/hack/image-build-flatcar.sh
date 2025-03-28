@@ -1,6 +1,6 @@
 #!/bin/sh -e
 
-[[ -n ${DEBUG:-} ]] && set -o xtrace
+[ -n "${DEBUG:-}" ] && set -o xtrace
 
 export VAGRANT_VAGRANTFILE=${VAGRANT_VAGRANTFILE:-/tmp/Vagrantfile.builder-flatcar}
 export VAGRANT_SSH_PRIVATE_KEY=${VAGRANT_SSH_PRIVATE_KEY:-/tmp/vagrant-insecure-key}
@@ -125,15 +125,15 @@ export FLATCAR_CHANNEL FLATCAR_VERSION
 
 rm -rf ./output/flatcar-"${channel}-${release}"-kube-*
 
-if [[ ${CAPI_PROVIDER} = "qemu" ]]; then
-    FLATCAR_MAKE_OPTS+="FLATCAR_CHANNEL=$channel FLATCAR_VERSION=$release "
-    FLATCAR_MAKE_OPTS+="SSH_PRIVATE_KEY_FILE=${VAGRANT_SSH_PRIVATE_KEY} "
-    FLATCAR_MAKE_OPTS+="SSH_PUBLIC_KEY_FILE=${VAGRANT_SSH_PUBLIC_KEY} "
+if [ "${CAPI_PROVIDER}" = "qemu" ]; then
+    FLATCAR_MAKE_OPTS="${FLATCAR_MAKE_OPTS}FLATCAR_CHANNEL=$channel FLATCAR_VERSION=$release "
+    FLATCAR_MAKE_OPTS="${FLATCAR_MAKE_OPTS}SSH_PRIVATE_KEY_FILE=${VAGRANT_SSH_PRIVATE_KEY} "
+    FLATCAR_MAKE_OPTS="${FLATCAR_MAKE_OPTS}SSH_PUBLIC_KEY_FILE=${VAGRANT_SSH_PUBLIC_KEY} "
 
     fetch_vagrant_ssh_keys
     make ${FLATCAR_MAKE_OPTS} build-qemu-flatcar
     run_vagrant
-elif [[ ${CAPI_PROVIDER} = "aws" ]] || [[ ${CAPI_PROVIDER} = "ami" ]]; then
+elif [ "${CAPI_PROVIDER}" = "aws" ] || [ "${CAPI_PROVIDER}" = "ami" ]; then
     make ${FLATCAR_MAKE_OPTS} build-ami-flatcar
 else
     echo "Unknown CAPI_PROVIDER=${CAPI_PROVIDER}. exit."

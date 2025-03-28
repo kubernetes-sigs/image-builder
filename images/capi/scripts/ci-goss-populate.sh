@@ -28,8 +28,8 @@ cd "${CAPI_ROOT}" || exit 1
 source hack/utils.sh
 ensure_py3
 
-_version="v0.3.16"
-_bin_url="https://github.com/aelsabbahy/goss/releases/download/${_version}/goss-linux-amd64"
+_version="v0.3.23"
+_bin_url="https://github.com/goss-org/goss/releases/download/${_version}/goss-linux-amd64"
 
 if ! command -v goss >/dev/null 2>&1; then
   if [[ ${HOSTOS} == "linux" ]]; then

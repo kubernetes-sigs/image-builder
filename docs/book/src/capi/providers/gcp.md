@@ -53,6 +53,23 @@ The `gce` sub-directory inside `images/capi/packer` stores JSON configuration fi
 | `ubuntu-2404.json`     | Settings for Ubuntu 24.04 image     |
 | `rhel-8.json`     | Settings for RHEL 8 image     |
 
+#### Common GCP options
+
+This table lists several common options that a user may want to set via
+`PACKER_VAR_FILES` to customize their build behavior.  This is not an exhaustive
+list, and greater explanation can be found in the
+[Packer documentation for the Google Cloud Platform builder](https://developer.hashicorp.com/packer/integrations/hashicorp/googlecompute/latest/components/builder/googlecompute).
+
+| Variable       | Description                                                                             | Default             |
+|----------------|-----------------------------------------------------------------------------------------|---------------------|
+| `zone`         | The GCP zone in which to launch the VM instance.                                        | `null`              |
+| `project_id`   | The GCP project ID for the deployment.                                                  | `${GCP_PROJECT_ID}` |
+| `machine_type` | The machine type to use for the VM instance (e.g., n1-standard-1, n2-standard-2, etc.). | `"n1-standard-1"`   |
+
+The parameters can be set via variable file and the use
+of `PACKER_VAR_FILES`. See [Customization](../capi.md#customization) for
+examples.
+
 ### List Images
 
 List all images by running the following command in the console

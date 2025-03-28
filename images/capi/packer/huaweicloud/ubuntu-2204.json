@@ -1,0 +1,10 @@
+{
+  "build_name": "ubuntu-22.04",
+  "distribution": "Ubuntu",
+  "distribution_release": "jammy",
+  "distribution_version": "22.04",
+  "extra_debs": "cloud-init",
+  "image_filter_name": "Ubuntu 22.04 server 64bit",
+  "netplan_removal_excludes": "01-netcfg.yaml",
+  "root_device_name": "/dev/vda1"
+}

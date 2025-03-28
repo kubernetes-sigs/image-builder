@@ -71,7 +71,7 @@
 # will skip this task.
 - name: Install Windows updates based on KB numbers
   ansible.windows.win_updates:
-    whitelist: "{{ windows_updates_kbs_numbers }}"
+    accept_list: "{{ windows_updates_kbs_numbers }}"
     reboot: true
     category_names:
       - Application

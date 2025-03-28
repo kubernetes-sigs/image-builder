@@ -17,7 +17,13 @@ dependencies:
     vars:
       rpms: "{{ common_rpms + al2_rpms + lookup('vars', 'common_' + build_target + '_rpms') }}"
       debs: "{{ common_debs }}"
-    when: ansible_distribution == "Amazon"
+    when: ansible_distribution == "Amazon" and ansible_distribution_version == "2"
+
+  - role: setup
+    vars:
+      rpms: "{{ common_rpms + al2023_rpms + lookup('vars', 'common_' + build_target + '_rpms') }}"
+      debs: "{{ common_debs }}"
+    when: ansible_distribution == "Amazon" and ansible_distribution_version == "2023"
 
   - role: setup
     vars:

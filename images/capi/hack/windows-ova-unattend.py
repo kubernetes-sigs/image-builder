@@ -64,16 +64,22 @@ def main():
     
     root = unattend.getroot()
 
-    if data["unattend_timezone"] != "":
+    if data.get("unattend_timezone"):
       modified=1
       setting = set_xmlstring(root, ".//*[@pass='oobeSystem']/*[@name='Microsoft-Windows-Shell-Setup']",'{urn:schemas-microsoft-com:unattend}TimeZone', data["unattend_timezone"])
       print("windows-ova-unattend: Setting Timezone to %s" % data["unattend_timezone"])
     
+    admin_password = data.get("admin_password")
+    if admin_password:
+      modified=1
+      set_xmlstring(root, ".//*[@pass='oobeSystem']/*[@name='Microsoft-Windows-Shell-Setup']/{*}UserAccounts/{*}AdministratorPassword",'{urn:schemas-microsoft-com:unattend}Value', admin_password)
+      set_xmlstring(root, ".//*[@pass='oobeSystem']/*[@name='Microsoft-Windows-Shell-Setup']/{*}AutoLogon/{*}Password",'{urn:schemas-microsoft-com:unattend}Value', admin_password)
+      print("windows-ova-unattend: Setting Administrator Password")
+
     if modified == 1:
       print("windows-ova-unattend: Updating %s ..." % args.unattend_file)
       unattend.write(args.unattend_file)
-    
-    if modified == 0:
+    else:
       print("windows-ova-unattend: skipping...")
 
 if __name__ == "__main__":
