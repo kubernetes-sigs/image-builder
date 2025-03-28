@@ -127,7 +127,7 @@
     "build_timestamp": "{{timestamp}}",
     "containerd_gvisor_runtime": "false",
     "containerd_gvisor_version": "latest",
-    "containerd_service_url": "https://raw.githubusercontent.com/containerd/containerd/main/containerd.service",
+    "containerd_service_url": "https://raw.githubusercontent.com/containerd/containerd/refs/tags/v{{user `containerd_version`}}/containerd.service",
     "containerd_sha256": null,
     "containerd_url": "https://github.com/containerd/containerd/releases/download/v{{user `containerd_version`}}/containerd-{{user `containerd_version`}}-linux-amd64.tar.gz",
     "containerd_version": null,
