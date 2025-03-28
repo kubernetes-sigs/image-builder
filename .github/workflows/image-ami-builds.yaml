@@ -70,7 +70,7 @@ jobs:
              AWS_REGION: ${{ env.AWS_REGION }}
            run: |
              if [ -f "./output/packer-manifest.json" ]; then
-               AMI_ID=$(jq -r '.builds[-1].artifact_id' < ./output/packer-manifest.json | cut -d':' -f2)
+               AMI_ID=$(jq -r '.builds[-1].artifact_id' < ./output/packer-manifest.json | cut -d':' -f2 | cut -d',' -f1)
                aws ec2 modify-image-attribute --image-id $AMI_ID --launch-permission "{\"Add\": [{\"Group\":\"all\"}]}"
                echo "AMI $AMI_ID is now public."
              else
@@ -79,7 +79,7 @@ jobs:
                PACKER_MANIFEST_PATH=$(find . -name "packer-manifest.json" | head -n 1)
                if [ -n "$PACKER_MANIFEST_PATH" ]; then
                 echo "Found packer-manifest.json at $PACKER_MANIFEST_PATH"
-                AMI_ID=$(jq -r '.builds[-1].artifact_id' < "$PACKER_MANIFEST_PATH" | cut -d':' -f2)
+                AMI_ID=$(jq -r '.builds[-1].artifact_id' < "$PACKER_MANIFEST_PATH" | cut -d':' -f2 | cut -d',' -f1)
                 aws ec2 modify-image-attribute --image-id $AMI_ID --launch-permission "{\"Add\": [{\"Group\":\"all\"}]}"
                 echo "AMI $AMI_ID is now public."
                else
