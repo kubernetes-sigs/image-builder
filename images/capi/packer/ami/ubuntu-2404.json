@@ -12,5 +12,6 @@
   "aws_profile": "ditto-prod-primary",
   "ami_users": "261908217831",
   "ami_groups": "",
-  "aws_region": "us-east-1"
+  "aws_region": "us-east-1",
+  "manifest_output": "packer-manifest.json"
 }
