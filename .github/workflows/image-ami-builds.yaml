@@ -30,24 +30,6 @@ jobs:
          ACCOUNT_ID: "261908217831"
          ROLE: "image-builder-runner"
          AWS_OUTPUT: "json"
-      strategy:
-         matrix:
-            region:
-               - us-east-1
-               - us-east-2
-               - us-west-1
-               - us-west-2
-               - ap-south-1
-               - ap-northeast-1
-               - ap-northeast-2
-               - ap-southeast-1
-               - ap-southeast-2
-               - ca-central-1
-               - eu-central-1
-               - eu-west-1
-               - eu-west-2
-               - eu-west-3
-               - sa-east-1
 
       steps:
          - name: Checkout repository
@@ -89,7 +71,7 @@ jobs:
            run: |
              if [ -f "./output/packer-manifest.json" ]; then
                echo "Found packer-manifest.json in the expected location."
-               for REGION in ${{ matrix.region }}; do
+               for REGION in us-east-1 us-east-2 us-west-1 us-west-2 ap-south-1 ap-northeast-1 ap-northeast-2 ap-southeast-1 ap-southeast-2 ca-central-1 eu-central-1 eu-west-1 eu-west-2 eu-west-3 sa-east-1; do
                 AMI_ID=$(jq -r --arg REGION "$REGION" '.builds[] | select(.region == $REGION) | .artifact_id' < ./output/packer-manifest.json | cut -d':' -f2 | xargs)
                 if [ -n "$AMI_ID" ]; then
                   echo "Making AMI $AMI_ID in region $REGION public."
@@ -105,7 +87,7 @@ jobs:
                PACKER_MANIFEST_PATH=$(find . -name "packer-manifest.json" | head -n 1)
                if [ -n "$PACKER_MANIFEST_PATH" ]; then
                 echo "Found packer-manifest.json at $PACKER_MANIFEST_PATH"
-                for REGION in ${{ matrix.region }}; do
+                for REGION in us-east-1 us-east-2 us-west-1 us-west-2 ap-south-1 ap-northeast-1 ap-northeast-2 ap-southeast-1 ap-southeast-2 ca-central-1 eu-central-1 eu-west-1 eu-west-2 eu-west-3 sa-east-1; do
                   AMI_ID=$(jq -r --arg REGION "$REGION" '.builds[] | select(.region == $REGION) | .artifact_id' < "$PACKER_MANIFEST_PATH" | cut -d':' -f2 | xargs)
                   if [ -n "$AMI_ID" ]; then
                    echo "Making AMI $AMI_ID in region $REGION public."
