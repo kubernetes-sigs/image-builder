@@ -69,36 +69,28 @@ jobs:
            env:
              AWS_REGION: ${{ env.AWS_REGION }}
            run: |
-             if [ -f "./output/packer-manifest.json" ]; then
-               echo "Found packer-manifest.json in the expected location."
-               for REGION in us-east-1 us-east-2 us-west-1 us-west-2 ap-south-1 ap-northeast-1 ap-northeast-2 ap-southeast-1 ap-southeast-2 ca-central-1 eu-central-1 eu-west-1 eu-west-2 eu-west-3 sa-east-1; do
-                AMI_ID=$(jq -r --arg REGION "$REGION" '.builds[] | select(.region == $REGION) | .artifact_id' < ./output/packer-manifest.json | cut -d':' -f2 | xargs)
-                if [ -n "$AMI_ID" ]; then
-                  echo "Making AMI $AMI_ID in region $REGION public."
-                  aws ec2 modify-image-attribute --region $REGION --image-id $AMI_ID --launch-permission "{\"Add\": [{\"Group\":\"all\"}]}"
-                  echo "AMI $AMI_ID in region $REGION is now public."
-                else
-                  echo "No AMI found for region $REGION in packer-manifest.json."
-                fi
-               done
-             else
-               echo "Error: packer-manifest.json file not found in the expected location."
-               echo "Searching for packer-manifest.json in the current directory..."
-               PACKER_MANIFEST_PATH=$(find . -name "packer-manifest.json" | head -n 1)
-               if [ -n "$PACKER_MANIFEST_PATH" ]; then
-                echo "Found packer-manifest.json at $PACKER_MANIFEST_PATH"
-                for REGION in us-east-1 us-east-2 us-west-1 us-west-2 ap-south-1 ap-northeast-1 ap-northeast-2 ap-southeast-1 ap-southeast-2 ca-central-1 eu-central-1 eu-west-1 eu-west-2 eu-west-3 sa-east-1; do
-                  AMI_ID=$(jq -r --arg REGION "$REGION" '.builds[] | select(.region == $REGION) | .artifact_id' < "$PACKER_MANIFEST_PATH" | cut -d':' -f2 | xargs)
-                  if [ -n "$AMI_ID" ]; then
-                   echo "Making AMI $AMI_ID in region $REGION public."
-                   aws ec2 modify-image-attribute --region $REGION --image-id $AMI_ID --launch-permission "{\"Add\": [{\"Group\":\"all\"}]}"
-                   echo "AMI $AMI_ID in region $REGION is now public."
-                  else
-                   echo "No AMI found for region $REGION in packer-manifest.json."
-                  fi
-                done
-               else
-                echo "Error: packer-manifest.json file could not be found."
-                exit 1
-               fi
-             fi
+            if [ -f "./output/packer-manifest.json" ]; then
+              PACKER_MANIFEST_PATH="./output/packer-manifest.json"
+            else
+              echo "Searching for packer-manifest.json in the current directory..."
+              PACKER_MANIFEST_PATH=$(find . -name "packer-manifest.json" | head -n 1)
+              if [ -z "$PACKER_MANIFEST_PATH" ]; then
+               echo "Error: packer-manifest.json file could not be found."
+               exit 1
+              fi
+            fi
+
+            echo "Using packer-manifest.json at $PACKER_MANIFEST_PATH"
+
+            jq -c '.builds[]' < "$PACKER_MANIFEST_PATH" | while read -r BUILD; do
+              REGION=$(echo "$BUILD" | jq -r '.region')
+              AMI_ID=$(echo "$BUILD" | jq -r '.artifact_id' | cut -d':' -f2 | xargs)
+
+              if [ -n "$AMI_ID" ]; then
+               echo "Making AMI $AMI_ID in region $REGION public."
+               aws ec2 modify-image-attribute --region "$REGION" --image-id "$AMI_ID" --launch-permission "{\"Add\": [{\"Group\":\"all\"}]}"
+               echo "AMI $AMI_ID in region $REGION is now public."
+              else
+               echo "No AMI found for region $REGION in packer-manifest.json."
+              fi
+            done
