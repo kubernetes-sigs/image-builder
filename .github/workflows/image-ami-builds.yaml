@@ -105,6 +105,9 @@ jobs:
               fi
 
               if [ -n "$AMI_ID" ]; then
+               echo "Disabling block public access for AMIs in region $REGION."
+               aws ec2 disable-image-block-public-access --region "$REGION"
+               
                echo "Making AMI $AMI_ID in region $REGION public."
                aws ec2 modify-image-attribute --region "$REGION" --image-id "$AMI_ID" --launch-permission "{\"Add\": [{\"Group\":\"all\"}]}"
                echo "AMI $AMI_ID in region $REGION is now public."
