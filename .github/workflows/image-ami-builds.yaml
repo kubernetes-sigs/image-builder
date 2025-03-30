@@ -89,3 +89,4 @@ jobs:
                     echo "Artifact: $ARTIFACT"
                     echo "Region: $REGION"
                     echo "AMI IDs: $AMI_IDS"
+                    done
