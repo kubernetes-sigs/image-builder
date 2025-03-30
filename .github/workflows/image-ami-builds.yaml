@@ -83,8 +83,9 @@ jobs:
             echo "Using packer-manifest.json at $PACKER_MANIFEST_PATH"
 
             jq -c '.builds[]' < "$PACKER_MANIFEST_PATH" | while read -r BUILD; do
-              REGION=$(echo "$BUILD" | jq -r '.region')
-              AMI_ID=$(echo "$BUILD" | jq -r '.artifact_id' | awk -F':' '{print $2}' | xargs)
+              ARTIFACT=$(echo "$BUILD" | jq -r '.artifact_id')
+              REGION=$(echo "$ARTIFACT" | awk -F',' '{print $2}' | xargs)
+              AMI_ID=$(echo "$ARTIFACT" | awk -F':' '{print $2}' | awk -F',' '{print $1}' | xargs)
 
               if [ -n "$AMI_ID" ]; then
                echo "Making AMI $AMI_ID in region $REGION public."
