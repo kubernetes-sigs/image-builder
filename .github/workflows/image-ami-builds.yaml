@@ -69,60 +69,60 @@ jobs:
            env:
              AWS_REGION: ${{ env.AWS_REGION }}
            run: |
-            if [ -f "./output/packer-manifest.json" ]; then
-                       PACKER_MANIFEST_PATH="./output/packer-manifest.json"
-                     else
-                       echo "Searching for packer-manifest.json in the current directory..."
-                       PACKER_MANIFEST_PATH=$(find . -name "packer-manifest.json" | head -n 1)
-                       if [ -z "$PACKER_MANIFEST_PATH" ]; then
-                        echo "Error: packer-manifest.json file could not be found."
-                        exit 1
-                       fi
-                     fi
+               if [ -f "./output/packer-manifest.json" ]; then
+               PACKER_MANIFEST_PATH="./output/packer-manifest.json"
+               else
+               echo "Searching for packer-manifest.json in the current directory..."
+               PACKER_MANIFEST_PATH=$(find . -name "packer-manifest.json" | head -n 1)
+               if [ -z "$PACKER_MANIFEST_PATH" ]; then
+                  echo "Error: packer-manifest.json file could not be found."
+                  exit 1
+               fi
+               fi
 
-                     echo "Using packer-manifest.json at $PACKER_MANIFEST_PATH"
-                     jq -c '.builds[]' < "$PACKER_MANIFEST_PATH" | while read -r BUILD; do
-                       ARTIFACT=$(echo "$BUILD" | jq -r '.artifact_id')
-                       REGION=$(echo "$ARTIFACT" | awk -F':' '{print $1}' | xargs)
-                        AMI_IDS=$(echo "$ARTIFACT" | awk -F':' '{print $2}' | tr ',' '\n' | grep '^ami-' | xargs)
+               echo "Using packer-manifest.json at $PACKER_MANIFEST_PATH"
+               jq -c '.builds[]' < "$PACKER_MANIFEST_PATH" | while read -r BUILD; do
+               ARTIFACT=$(echo "$BUILD" | jq -r '.artifact_id')
+               REGION=$(echo "$ARTIFACT" | awk -F':' '{print $1}' | xargs)
+               AMI_IDS=$(echo "$ARTIFACT" | awk -F':' '{print $2}' | tr ',' '\n' | grep '^ami-' | xargs)
 
-                        # Check if AMI_IDS is empty
-                        if [ -z "$AMI_IDS" ]; then
-                        echo "Error: No AMI IDs found for region $REGION."
-                        exit 1
-                        fi
+               # Check if REGION is valid
+               if [[ ! "$REGION" =~ ^[a-z]{2}-[a-z]+-[0-9]$ ]]; then
+                  echo "Error: REGION '$REGION' is not in the correct format (e.g., us-east-1)."
+                  exit 1
+               fi
 
-                        echo "Found AMI IDs for region $REGION: $AMI_IDS"
+               # Check if AMI_IDS is empty
+               if [ -z "$AMI_IDS" ]; then
+                  echo "Error: No AMI IDs found for region $REGION."
+                  exit 1
+               fi
 
-                        # Loop through each AMI_ID in the region
-                        for AMI_ID in $AMI_IDS; do
-                        # Validate REGION format
-                        if [[ ! "$REGION" =~ ^[a-z]{2}-[a-z]+-[0-9]$ ]]; then
-                        echo "Error: REGION '$REGION' is not in the correct format (e.g., us-east-1)."
-                        exit 1
-                        fi
+               echo "Found AMI IDs for region $REGION: $AMI_IDS"
 
-                        # Validate AMI_ID format
-                        if [[ ! "$AMI_ID" =~ ^ami-[0-9a-f]{8,17}$ ]]; then
-                        echo "Error: AMI_ID '$AMI_ID' is not in the correct format (e.g., ami-1234567890abcdef0)."
-                        exit 1
-                        fi
+               # Loop through each AMI_ID in the region
+               for AMI_ID in $AMI_IDS; do
+                  # Validate AMI_ID format
+                  if [[ ! "$AMI_ID" =~ ^ami-[0-9a-f]{8,17}$ ]]; then
+                  echo "Error: AMI_ID '$AMI_ID' is not in the correct format (e.g., ami-1234567890abcdef0)."
+                  exit 1
+                  fi
 
-                        echo "Disabling block public access for AMIs in region $REGION."
-                        aws ec2 disable-image-block-public-access --region "$REGION"
+                  echo "Disabling block public access for AMI $AMI_ID in region $REGION."
+                  aws ec2 disable-image-block-public-access --region "$REGION"
 
-                        echo "Making AMI $AMI_ID in region $REGION public."
-                        aws ec2 modify-image-attribute --region "$REGION" --image-id "$AMI_ID" --launch-permission "{\"Add\": [{\"Group\":\"all\"}]}"
-                        echo "AMI $AMI_ID in region $REGION is now public."
-                        done
+                  echo "Making AMI $AMI_ID in region $REGION public."
+                  aws ec2 modify-image-attribute --region "$REGION" --image-id "$AMI_ID" --launch-permission "{\"Add\": [{\"Group\":\"all\"}]}"
+                  echo "AMI $AMI_ID in region $REGION is now public."
+               done
 
-                        # Verify all AMI IDs in the region are public
-                        for AMI_ID in $AMI_IDS; do
-                        PUBLIC_STATE=$(aws ec2 describe-images --region "$REGION" --image-ids "$AMI_ID" --query "Images[0].Public" --output text)
-                        if [ "$PUBLIC_STATE" != "True" ]; then
-                         echo "Error: AMI $AMI_ID in region $REGION is not public."
-                         exit 1
-                        fi
-                        echo "Verified: AMI $AMI_ID in region $REGION is public."
-                        done
-                      done
+               # Verify all AMI IDs in the region are public
+               for AMI_ID in $AMI_IDS; do
+                  PUBLIC_STATE=$(aws ec2 describe-images --region "$REGION" --image-ids "$AMI_ID" --query "Images[0].Public" --output text)
+                  if [ "$PUBLIC_STATE" != "True" ]; then
+                  echo "Error: AMI $AMI_ID in region $REGION is not public."
+                  exit 1
+                  fi
+                  echo "Verified: AMI $AMI_ID in region $REGION is public."
+               done
+               done
