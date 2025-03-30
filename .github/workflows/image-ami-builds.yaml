@@ -84,10 +84,18 @@ jobs:
                      jq -c '.builds[]' < "$PACKER_MANIFEST_PATH" | while read -r BUILD; do
                        ARTIFACT=$(echo "$BUILD" | jq -r '.artifact_id')
                        REGION=$(echo "$ARTIFACT" | awk -F':' '{print $1}' | xargs)
-                       AMI_IDS=$(echo "$ARTIFACT" | awk -F':' '{print $2}' | tr ',' '\n' | grep '^ami-' | xargs)
+                        AMI_IDS=$(echo "$ARTIFACT" | awk -F':' '{print $2}' | tr ',' '\n' | grep '^ami-' | xargs)
 
-                       # Loop through each AMI_ID in the region
-                       for AMI_ID in $AMI_IDS; do
+                        # Check if AMI_IDS is empty
+                        if [ -z "$AMI_IDS" ]; then
+                        echo "Error: No AMI IDs found for region $REGION."
+                        exit 1
+                        fi
+
+                        echo "Found AMI IDs for region $REGION: $AMI_IDS"
+
+                        # Loop through each AMI_ID in the region
+                        for AMI_ID in $AMI_IDS; do
                         # Validate REGION format
                         if [[ ! "$REGION" =~ ^[a-z]{2}-[a-z]+-[0-9]$ ]]; then
                         echo "Error: REGION '$REGION' is not in the correct format (e.g., us-east-1)."
@@ -106,5 +114,15 @@ jobs:
                         echo "Making AMI $AMI_ID in region $REGION public."
                         aws ec2 modify-image-attribute --region "$REGION" --image-id "$AMI_ID" --launch-permission "{\"Add\": [{\"Group\":\"all\"}]}"
                         echo "AMI $AMI_ID in region $REGION is now public."
-                       done
-                     done
+                        done
+
+                        # Verify all AMI IDs in the region are public
+                        for AMI_ID in $AMI_IDS; do
+                        PUBLIC_STATE=$(aws ec2 describe-images --region "$REGION" --image-ids "$AMI_ID" --query "Images[0].Public" --output text)
+                        if [ "$PUBLIC_STATE" != "True" ]; then
+                         echo "Error: AMI $AMI_ID in region $REGION is not public."
+                         exit 1
+                        fi
+                        echo "Verified: AMI $AMI_ID in region $REGION is public."
+                        done
+                      done
