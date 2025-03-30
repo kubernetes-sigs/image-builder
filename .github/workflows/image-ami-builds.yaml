@@ -84,8 +84,25 @@ jobs:
 
             jq -c '.builds[]' < "$PACKER_MANIFEST_PATH" | while read -r BUILD; do
               ARTIFACT=$(echo "$BUILD" | jq -r '.artifact_id')
-              REGION=$(echo "$ARTIFACT" | awk -F',' '{print $2}' | xargs)
+              REGION=$(echo "$ARTIFACT" | awk -F':' '{print $1}' | xargs)
               AMI_ID=$(echo "$ARTIFACT" | awk -F':' '{print $2}' | awk -F',' '{print $1}' | xargs)
+
+              # Validate REGION and AMI_ID format
+              if [[ ! "$REGION" =~ ^[a-z]{2}-[a-z]+-[0-9]$ ]]; then
+               echo "Error: REGION '$REGION' is not in the correct format (e.g., us-east-1)."
+               exit 1
+              fi
+
+              if [[ ! "$AMI_ID" =~ ^ami-[0-9a-f]{8,17}$ ]]; then
+               echo "Error: AMI_ID '$AMI_ID' is not in the correct format (e.g., ami-1234567890abcdef0)."
+               exit 1
+              fi
+
+              # Ensure REGION and AMI_ID are not merged or malformed
+              if [[ "$REGION" == *":"* || "$AMI_ID" == *":"* || "$REGION" == *","* || "$AMI_ID" == *","* ]]; then
+               echo "Error: REGION or AMI_ID contains invalid characters or is malformed."
+               exit 1
+              fi
 
               if [ -n "$AMI_ID" ]; then
                echo "Making AMI $AMI_ID in region $REGION public."
