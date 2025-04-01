@@ -82,13 +82,8 @@ jobs:
 
                echo "Using packer-manifest.json at $PACKER_MANIFEST_PATH"
                   jq -c '.builds[]' < "$PACKER_MANIFEST_PATH" | while read -r BUILD; do
-                     ARTIFACT=$(echo "$BUILD" | jq -r '.artifact_id')
-                     REGION=$(echo "$ARTIFACT" | awk -F':' '{print $1}' | xargs)
-                     AMI_IDS=$(echo "$ARTIFACT" | awk -F':' '{print $2}' | tr ',' '\n' | grep '^ami-' | xargs)
-
-                     for AMI_ID in $AMI_IDS; do
-                        echo "\$REGION = $REGION"
-                        echo "\$AMI_ID = $AMI_ID"
-                        echo "\$AMI_IDS = $AMI_IDS"
+                     for AMI_ID in $(echo "$BUILD" | jq -r '.artifact_id' | awk -F':' '{print $2}' | tr ',' '\n' | grep '^ami-'); do
+                        REGION=$(echo "$BUILD" | jq -r '.artifact_id' | awk -F':' '{print $1}' | xargs)
+                        echo "Region: $REGION, AMI ID: $AMI_ID"
                      done
                   done
