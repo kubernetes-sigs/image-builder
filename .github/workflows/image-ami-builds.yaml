@@ -99,4 +99,3 @@ jobs:
                # Print arrays
                echo "Regions: ${REGIONS[@]}"
                echo "AMI IDs: ${AMI_IDS[@]}"
-               done
