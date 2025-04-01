@@ -89,5 +89,6 @@ jobs:
                      for AMI_ID in $AMI_IDS; do
                         echo "\$REGION = $REGION"
                         echo "\$AMI_ID = $AMI_ID"
+                        echo "\$AMI_IDS = $AMI_IDS"
                      done
                   done
