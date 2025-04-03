@@ -92,7 +92,7 @@
         "ARCH": "amd64",
         "OS": "{{user `distro_name` | lower}}",
         "OS_VERSION": "{{user `os_version`}}",
-        "PROVIDER": "qemu",
+        "PROVIDER": "openstack",
         "containerd_version": "{{user `containerd_version`}}",
         "kubernetes_cni_deb_version": "{{ user `kubernetes_cni_deb_version` }}",
         "kubernetes_cni_rpm_version": "{{ split (user `kubernetes_cni_rpm_version`) \"-\" 0 }}",
