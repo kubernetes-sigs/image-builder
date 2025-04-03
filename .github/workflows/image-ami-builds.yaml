@@ -69,35 +69,6 @@ jobs:
            env:
              AWS_REGION: ${{ env.AWS_REGION }}
            run: |
-               if [ -f "./output/packer-manifest.json" ]; then
-               PACKER_MANIFEST_PATH="./output/packer-manifest.json"
-               else
-               echo "Searching for packer-manifest.json in the current directory..."
-               PACKER_MANIFEST_PATH=$(find . -name "packer-manifest.json" | head -n 1)
-               if [ -z "$PACKER_MANIFEST_PATH" ]; then
-                  echo "Error: packer-manifest.json file could not be found."
-                  exit 1
-               fi
-               fi
-
-               echo "Using packer-manifest.json at $PACKER_MANIFEST_PATH"
-                    jq -c '.builds[]' < "$PACKER_MANIFEST_PATH" | while read -r BUILD; do
-                    ARTIFACT=$(echo "$BUILD" | jq -r '.artifact_id')
-                    REGION=$(echo "$ARTIFACT" | awk -F':' '{print $1}' | xargs)
-                    AMI_IDS=$(echo "$ARTIFACT" | awk -F':' '{print $2}' | tr ',' '\n' | grep '^ami-' | xargs)
-
-                  # Initialize arrays
-                  REGIONS=()
-                  AMI_IDS=()
-
-                  # Append to arrays
-                  REGIONS+=("$REGION")
-                  AMI_IDS+=("$AMI_IDS")
-
-
-               # Print arrays
-               echo "Regions: ${REGIONS[@]}"
-               echo "AMI IDs: ${AMI_IDS[@]}"
-
-               done
+              ./images/capi/make_ami_public.sh
+            
 
