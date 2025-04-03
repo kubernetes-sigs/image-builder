@@ -64,14 +64,16 @@ echo "Using packer-manifest.json at $PACKER_MANIFEST_PATH"
                      aws ec2 modify-image-attribute --image-id "$AMI_ID" --launch-permission "Add=[{Group=all}]" --region "$REGION"
                    done
 
-              # Verify all AMI IDs in the region are public
-              for AMI_ID in $AMI_IDS; do
-               PUBLIC_STATE=$(aws ec2 describe-images --region "$REGION" --image-ids "$AMI_ID" --query "Images[0].Public" --output text)
-               if [ "$PUBLIC_STATE" != "True" ]; then
-                 echo "Error: AMI $AMI_ID in region $REGION is not public."
-                 exit 1
-               fi
-               echo "Verified: AMI $AMI_ID in region $REGION is public."
+              # Verify all AMI IDs in their respective regions are public
+              for i in "${!AMI_IDS[@]}"; do
+                AMI_ID="${AMI_IDS[$i]}"
+                REGION="${REGIONS[$i]}"
+                PUBLIC_STATE=$(aws ec2 describe-images --region "$REGION" --image-ids "$AMI_ID" --query "Images[0].Public" --output text)
+                if [ "$PUBLIC_STATE" != "True" ]; then
+                  echo "Error: AMI $AMI_ID in region $REGION is not public."
+                  exit 1
+                fi
+                echo "Verified: AMI $AMI_ID in region $REGION is public."
               done
 
    done             
