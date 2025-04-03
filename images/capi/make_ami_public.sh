@@ -48,14 +48,16 @@ echo "Using packer-manifest.json at $PACKER_MANIFEST_PATH"
                    # Loop through the regions and AMI IDs
                    for i in "${!REGIONS[@]}"; do
 
+                     # Get the region and AMI ID for the current index
+                     REGION="${REGIONS[$i]}"
+                     AMI_ID="${AMI_IDS[$i]}"
+
                      # Disable block public access for the AMI
                      echo "Disabling block public access for AMI $AMI_ID in region $REGION."
                      aws ec2 disable-image-block-public-access --region "$REGION"
 
 
-                     # Get the region and AMI ID for the current index
-                     REGION="${REGIONS[$i]}"
-                     AMI_ID="${AMI_IDS[$i]}"
+                     # Make the AMI public in the specified region
                      echo "Making AMI $AMI_ID public in region $REGION"
                      
                      # Make the AMI public
