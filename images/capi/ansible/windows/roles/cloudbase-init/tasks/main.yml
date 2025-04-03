@@ -44,10 +44,31 @@
     dest: "{{ programfiles.stdout | trim }}\\Cloudbase Solutions\\Cloudbase-Init\\conf\\cloudbase-init.conf"
 
 - name: Configure set up complete
+  when: not packer_builder_type.startswith('azure')
   ansible.windows.win_shell: |
     # If this file already exists then the following command fails
     Remove-Item -Force {{ systemdrive.stdout | trim }}\Windows\Setup\Scripts\SetupComplete.cmd
     & "{{ programfiles.stdout | trim }}\Cloudbase Solutions\Cloudbase-Init\bin\SetSetupComplete.cmd"
+  become: true
+  become_method: runas
+  become_user: System
+
+- name: Configure set up complete
+  when: not packer_builder_type.startswith('azure')
+  ansible.windows.win_shell: |
+    # If this file already exists then the following command fails
+    Remove-Item -Force {{ systemdrive.stdout | trim }}\Windows\Setup\Scripts\SetupComplete.cmd
+    & "{{ programfiles.stdout | trim }}\Cloudbase Solutions\Cloudbase-Init\bin\SetSetupComplete.cmd"
+  become: true
+  become_method: runas
+  become_user: System
+
+- name: Configure set up complete for Azure
+  when: packer_builder_type.startswith('azure')
+  ansible.windows.win_shell: |
+    Remove-Item -Force {{ systemdrive.stdout | trim }}\OEM\SetupComplete2.cmd
+    cmd /c sc config cloudbase-init start= demand
+    echo "sc config cloudbase-init start= auto && net start cloudbase-init" > "{{ systemdrive.stdout | trim }}\OEM\SetupComplete2.cmd"
   become: true
   become_method: runas
   become_user: System
