@@ -94,8 +94,10 @@ jobs:
                   REGIONS+=("$REGION")
                   AMI_IDS+=("$AMI_IDS")
 
-               done
 
                # Print arrays
                echo "Regions: ${REGIONS[@]}"
                echo "AMI IDs: ${AMI_IDS[@]}"
+
+               done
+
