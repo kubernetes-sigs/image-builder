@@ -16,7 +16,7 @@ echo "Using packer-manifest.json at $PACKER_MANIFEST_PATH"
 
    jq -c '.builds[]' < "$PACKER_MANIFEST_PATH" | while read -r BUILD; do
       ARTIFACT=$(echo "$BUILD" | jq -r '.artifact_id')
-      echo "Processing artifact: $ARTIFACT"
+      # echo "Processing artifact: $ARTIFACT"
       # Split ARTIFACT into separate strings using "," as the separator
       IFS=',' read -ra ARTIFACT_PARTS <<< "$ARTIFACT"
 
@@ -48,10 +48,16 @@ echo "Using packer-manifest.json at $PACKER_MANIFEST_PATH"
                    # Loop through the regions and AMI IDs
                    for i in "${!REGIONS[@]}"; do
 
+                     # Disable block public access for the AMI
+                     echo "Disabling block public access for AMI $AMI_ID in region $REGION."
+                     aws ec2 disable-image-block-public-access --region "$REGION"
+
+
                      # Get the region and AMI ID for the current index
                      REGION="${REGIONS[$i]}"
                      AMI_ID="${AMI_IDS[$i]}"
                      echo "Making AMI $AMI_ID public in region $REGION"
+                     
                      # Make the AMI public
                      aws ec2 modify-image-attribute --image-id "$AMI_ID" --launch-permission "Add=[{Group=all}]" --region "$REGION"
                    done
