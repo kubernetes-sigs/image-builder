@@ -16,5 +16,6 @@
   "os_display_name": "RHEL 9",
   "redhat_epel_rpm": "https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm",
   "shutdown_command": "shutdown -P now",
+  "vmx_version": "18",
   "vsphere_guest_os_type": "rhel9_64Guest"
 }
