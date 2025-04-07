@@ -61,6 +61,7 @@ jobs:
            env:
               AWS_PROFILE: ditto-prod-primary
            run: |
+            ./images/capi/make_ami_public.sh \
             make build-ami-ubuntu-2404 \
               AWS_REGION=${{ env.AWS_REGION }}
 
