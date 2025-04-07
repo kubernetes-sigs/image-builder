@@ -60,12 +60,12 @@ jobs:
 
          - name: Build AMI
            env:
-              AWS_PROFILE: ditto-prod-primary
-              K8S_VERSION: ${{ github.event.inputs.k8s_version }}
+             AWS_PROFILE: ditto-prod-primary
+             K8S_VERSION: ${{ github.event.inputs.k8s_version || '1.30.10' }}
            run: |
-              AWS_REGION=${{ env.AWS_REGION }} \
-              ./images/capi/update_k8s_version.sh \
-              make build-ami-ubuntu-2404 
+             AWS_REGION=${{ env.AWS_REGION }} \
+             ./images/capi/update_k8s_version.sh && \
+             make build-ami-ubuntu-2404
 
          - name: Make AMI Public
            env:
