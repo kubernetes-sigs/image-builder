@@ -10,7 +10,7 @@ on:
          k8s_version:
             description: "Specify the Kubernetes version"
             required: false
-            default: "1.27.15"
+            default: "1.30.10"
             options:
                - "1.27.15"
                - "1.28.15"
@@ -62,7 +62,7 @@ jobs:
            env:
               AWS_PROFILE: ditto-prod-primary
            run: |
-            ./images/capi/make_ami_public.sh \
+            ./images/capi/update_k8s_version.sh \
             make build-ami-ubuntu-2404 \
               AWS_REGION=${{ env.AWS_REGION }}
 
