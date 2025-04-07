@@ -15,7 +15,7 @@ echo "Adding kubernetes_semver: $K8S_VERSION to $UBUNTU_FILE"
 
 jq --arg k8s_version "$K8S_VERSION" '.kubernetes_semver = $k8s_version' "$UBUNTU_FILE" > "$UBUNTU_FILE.tmp" && mv "$UBUNTU_FILE.tmp" "$UBUNTU_FILE"
 
-AWS_PROFILE_ENV="${{ env.AWS_PROFILE }}"
+AWS_PROFILE_ENV="${AWS_PROFILE}"
 AWS_PROFILE_FILE=$(jq -r '.aws_profile' "$UBUNTU_FILE")
 
 if [ "$AWS_PROFILE_ENV" != "$AWS_PROFILE_FILE" ]; then
