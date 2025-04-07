@@ -9,7 +9,7 @@ fi
 
 echo "Using ubuntu-2404.json at $UBUNTU_FILE"
 
-K8S_VERSION="${{ github.event.inputs.k8s_version:-1.30.10 }}" # Default to 1.30.10 if not provided
+K8S_VERSION="${K8S_VERSION:-1.30.10}" # Default to 1.30.10 if not provided
 
 echo "Adding kubernetes_semver: $K8S_VERSION to $UBUNTU_FILE"
 
