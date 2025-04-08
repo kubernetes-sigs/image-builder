@@ -24,7 +24,8 @@ if ($UninitializedDisk) {
     "hostname: $Hostname" | Out-File -Encoding ASCII -FilePath $metadataPath
 
     # move the custom data that was provisioned via Azure to the drive so cloud base can process it
-    cp c:\AzureData\CustomData.bin $userdataPath
+    cp $env:SystemDrive\AzureData\CustomData.bin $userdataPath
+    icacls $userdataPath /inheritance:r /grant:r  --% *S-1-5-18:(OI)(CI)F *S-1-5-32-544:(OI)(CI)F
 
     $LogMessage = "Formated and configured disk $DiskNumber as $DriveLetter with $Label"
     $LogMessage | Out-File -FilePath $logfile  -Append -Encoding UTF8 
