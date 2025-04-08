@@ -53,22 +53,29 @@
   become_method: runas
   become_user: System
 
+### Azure has a hook in setupcomplete2 that we will use along with the no-cloud option
 - name: Configure set up complete
-  when: not packer_builder_type.startswith('azure')
+  when: packer_builder_type.startswith('azure')
   ansible.windows.win_shell: |
-    # If this file already exists then the following command fails
-    Remove-Item -Force {{ systemdrive.stdout | trim }}\Windows\Setup\Scripts\SetupComplete.cmd
-    & "{{ programfiles.stdout | trim }}\Cloudbase Solutions\Cloudbase-Init\bin\SetSetupComplete.cmd"
+    cmd /c sc config cloudbase-init start= demand
   become: true
   become_method: runas
   become_user: System
 
-- name: Configure set up complete for Azure
+- name: Set up cloudbase-init configuration for Azure
   when: packer_builder_type.startswith('azure')
-  ansible.windows.win_shell: |
-    Remove-Item -Force {{ systemdrive.stdout | trim }}\OEM\SetupComplete2.cmd
-    cmd /c sc config cloudbase-init start= demand
-    echo "sc config cloudbase-init start= auto && net start cloudbase-init" > "{{ systemdrive.stdout | trim }}\OEM\SetupComplete2.cmd"
+  ansible.windows.win_template:
+    src: templates/SetupComplete2.cmd
+    dest: "{{ systemdrive.stdout | trim }}\\Windows\\OEM\\SetupComplete2.cmd"
+  become: true
+  become_method: runas
+  become_user: System
+
+- name: Add drive configuration
+  when: packer_builder_type.startswith('azure')
+  ansible.windows.win_template:
+    src: templates/format-drive.ps1
+    dest: "{{ systemdrive.stdout | trim }}\\Windows\\OEM\\format-drive.ps1"
   become: true
   become_method: runas
   become_user: System
