@@ -10,12 +10,6 @@
   tags:
     - facts
 
-- name: Set the ansible_python_interpreter fact
-  ansible.builtin.set_fact:
-    ansible_python_interpreter: "{{ external_binary_path }}/python"
-  tags:
-    - facts
-
 # Some tasks are not compatible with Flatcar, so to centralize and deduplicate the logic of checking
 # if we run on Flatcar, we define it here.
 #
