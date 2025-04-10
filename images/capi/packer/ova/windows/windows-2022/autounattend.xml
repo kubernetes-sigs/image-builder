@@ -124,7 +124,7 @@ Installation Notes:
                 </RunSynchronousCommand>
                 <RunSynchronousCommand wcm:action="add">
                     <WillReboot>Always</WillReboot>
-                    <Path>e:\setup64.exe /s /v "/qb REBOOT=R ADDLOCAL=ALL"</Path>
+                    <Path>e:\setup.exe /s /v "/qb REBOOT=R ADDLOCAL=ALL"</Path>
                     <Order>2</Order>
                 </RunSynchronousCommand>
             </RunSynchronous>
