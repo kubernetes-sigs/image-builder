@@ -4,10 +4,24 @@ $metadata = "meta-data"
 $userdata = "user-data"
 $metadataPath = "${DriveLetter}:\${metadata}"
 $userdataPath = "${DriveLetter}:\${userdata}"
-$logfile = "$env:SystemRoot\OEM\SetupComplete2_test.log"
+$logfile = "$env:SystemDrive\logs\configure-k8s.log"
 
 # Find the first uninitialized disk
-$UninitializedDisk = Get-Disk | Where-Object PartitionStyle -EQ "Raw" | Select-Object -First 1
+$UninitializedDisk = $null
+$RetryCount = 0
+$MaxRetries = 5
+$BackoffSeconds = 10
+
+while (-not $UninitializedDisk -and $RetryCount -lt $MaxRetries) {
+    $UninitializedDisk = Get-Disk | Where-Object PartitionStyle -EQ "Raw" | Select-Object -First 1
+    if (-not $UninitializedDisk) {
+        $RetryCount++
+        $backoff = ($BackoffSeconds * $RetryCount)
+        $LogMessage = "Disk not found;  attempts: $RetryCount; trying again after $backoff seconds"
+        $LogMessage | Out-File -FilePath $logfile  -Append -Encoding UTF8 
+        Start-Sleep -Seconds $backoff
+    }
+}
 
 if ($UninitializedDisk) {
     $DiskNumber = $UninitializedDisk.Number
@@ -29,10 +43,14 @@ if ($UninitializedDisk) {
     # move the custom data that was provisioned via Azure to the drive so cloud base can process it
     cp $env:SystemDrive\AzureData\CustomData.bin $userdataPath
     icacls $userdataPath /inheritance:r /grant:r  --% *S-1-5-18:(OI)(CI)F *S-1-5-32-544:(OI)(CI)F
+    icacls $metadataPath /inheritance:r /grant:r  --% *S-1-5-18:(OI)(CI)F *S-1-5-32-544:(OI)(CI)F
 
-    $LogMessage = "Formated and configured disk $DiskNumber as $DriveLetter with $Label"
-    $LogMessage | Out-File -FilePath $logfile  -Append -Encoding UTF8 
+    "Formatted and configured disk $DiskNumber as $DriveLetter with $Label. Starting Cloudbase init" | Out-File -FilePath $logfile  -Append -Encoding UTF8 
+    cmd /c "sc config cloudbase-init start= auto && net start cloudbase-init"
+    "Cloudbase-init running" | Out-File -FilePath $logfile  -Append -Encoding UTF8 
+    Disable-ScheduledTask -TaskName "configure-k8s"
+    "Disabled scheduled Task" | Out-File -FilePath $logfile  -Append -Encoding UTF8 
 } else {
-    $LogMessage = "No uninitialized disks found. Cloudbase-init may not run"
-    $LogMessage | Out-File -FilePath $logfile -Append -Encoding UTF8
+    "No uninitialized disks found. Cloudbase-init may not run" | Out-File -FilePath $logfile -Append -Encoding UTF8
+    throw "No uninitialized disks were found after $MaxRetries attempts. Exiting script."
 }

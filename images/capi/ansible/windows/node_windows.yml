@@ -74,16 +74,16 @@
     - ansible.builtin.include_role:
         name: systemprep
     - ansible.builtin.include_role:
-        name: cloudbase-init
-      when: install_cloudbase_init
-    - ansible.builtin.include_role:
-        name: providers
-    - ansible.builtin.include_role:
         name: runtimes
     - ansible.builtin.include_role:
         name: kubernetes
     - ansible.builtin.include_role:
         name: gmsa
+    - ansible.builtin.include_role:
+        name: cloudbase-init
+      when: install_cloudbase_init
+    - ansible.builtin.include_role:
+        name: providers
     - ansible.builtin.include_role:
         name: load_additional_components
       when: load_additional_components | bool

@@ -53,29 +53,23 @@
   become_method: runas
   become_user: System
 
-### Azure has a hook in setupcomplete2 that we will use along with the no-cloud option
-- name: Configure set up complete
+### Azure with the no-cloud option
+- name: Configure k8s setup
   when: packer_builder_type.startswith('azure')
   ansible.windows.win_shell: |
     cmd /c sc config cloudbase-init start= demand
+    $TaskName = "configure-k8s"
+    $ScriptPath = "{{ kubernetes_install_path }}\\configure-k8s.ps1" 
+    $Trigger = New-ScheduledTaskTrigger -AtStartup
+    $Action = New-ScheduledTaskAction -Execute "PowerShell.exe" -Argument "-NoProfile -ExecutionPolicy Bypass -File `"$ScriptPath`""
+    $Settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable -RestartInterval (New-TimeSpan -Minutes 1) -RestartCount 3
+    Register-ScheduledTask -TaskName $TaskName -Trigger $Trigger -RunLevel Highest -Action $Action -Settings $Settings -user "system" -Description "Runs the specified PowerShell script at startup with custom settings"
   become: true
   become_method: runas
   become_user: System
 
-- name: Set up cloudbase-init configuration for Azure
+- name: Add k8s setup
   when: packer_builder_type.startswith('azure')
   ansible.windows.win_template:
-    src: templates/SetupComplete2.cmd
-    dest: "{{ systemdrive.stdout | trim }}\\Windows\\OEM\\SetupComplete2.cmd"
-  become: true
-  become_method: runas
-  become_user: System
-
-- name: Add drive configuration
-  when: packer_builder_type.startswith('azure')
-  ansible.windows.win_template:
-    src: templates/format-drive.ps1
-    dest: "{{ systemdrive.stdout | trim }}\\Windows\\OEM\\format-drive.ps1"
-  become: true
-  become_method: runas
-  become_user: System
+    src: templates/configure-k8s.ps1
+    dest: "{{ kubernetes_install_path }}\\configure-k8s.ps1"
