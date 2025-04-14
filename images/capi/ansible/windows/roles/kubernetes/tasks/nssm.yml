@@ -26,6 +26,11 @@
     src: templates/StartKubelet.ps1
     dest: "{{ kubernetes_install_path }}\\StartKubelet.ps1"
 
+- name: Create kubelet start file for service manager
+  ansible.windows.win_template:
+    src: templates/RestartKubelet.ps1
+    dest: "{{ kubernetes_install_path }}\\RestartKubelet.ps1"
+    
 - name: Install kubelet via nssm
   community.windows.win_nssm:
     name: kubelet
