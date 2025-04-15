@@ -20,6 +20,19 @@ SHELL := /usr/bin/env bash
 
 .DEFAULT_GOAL := help
 
+# This section is for setting up ComplianceAsCode SCAP Security Guide
+oscap_version=0.1.76
+oscap=https://github.com/ComplianceAsCode/content/releases/download/v$(oscap_version)/scap-security-guide-$(oscap_version).zip
+export oscap_file=scap-security-guide-$(oscap_version)
+OUT_DIR?=.
+
+/tmp/$(oscap_file).zip:
+	curl -Lo $@ $(oscap)
+
+/tmp/$(oscap_file): /tmp/$(oscap_file).zip
+	unzip -n -d /tmp /tmp/$(oscap_file)
+
+
 # This option is for running docker manifest command
 export DOCKER_CLI_EXPERIMENTAL := enabled
 export PATH := $(PATH):$(CURDIR)/.local/bin
@@ -498,11 +511,11 @@ $(NODE_OVA_VSPHERE_CLONE_BUILD_TARGETS): deps-ova set-ssh-password
 	$(PACKER) build $(PACKER_NODE_FLAGS) -var-file="packer/ova/packer-common.json" -var-file="$(abspath packer/ova/$(subst build-node-ova-vsphere-clone-,,$@).json)" -var-file="packer/ova/vsphere.json" -except=local -only=vsphere-clone $(ABSOLUTE_PACKER_VAR_FILES) packer/ova/packer-node.json
 
 .PHONY: $(AMI_BUILD_TARGETS)
-$(AMI_BUILD_TARGETS): deps-ami
+$(AMI_BUILD_TARGETS): /tmp/$(oscap_file) deps-ami
 	$(PACKER) build $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="$(abspath packer/ami/$(subst build-ami-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/ami/packer$(if $(findstring windows,$@),-windows,).json
 
 .PHONY: $(AMI_VALIDATE_TARGETS)
-$(AMI_VALIDATE_TARGETS): deps-ami
+$(AMI_VALIDATE_TARGETS): /tmp/$(oscap_file) deps-ami
 	$(PACKER) validate $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="$(abspath packer/ami/$(subst validate-ami-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/ami/packer$(if $(findstring windows,$@),-windows,).json
 
 .PHONY: $(GCE_BUILD_TARGETS)
