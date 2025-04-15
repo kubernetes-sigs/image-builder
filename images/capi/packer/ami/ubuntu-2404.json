@@ -13,5 +13,6 @@
   "ami_users": "261908217831",
   "ami_groups": "",
   "aws_region": "us-east-1",
-  "manifest_output": "packer-manifest.json"
+  "manifest_output": "packer-manifest.json",
+  "oscap_file": "scap-security-guide-0.1.76"
 }
