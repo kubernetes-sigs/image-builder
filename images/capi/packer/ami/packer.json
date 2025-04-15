@@ -90,6 +90,20 @@
     },
     {
       "ansible_env_vars": [
+        "ANSIBLE_SSH_ARGS='{{user `existing_ansible_ssh_args`}} {{user `ansible_common_ssh_args`}}'",
+        "ANSIBLE_LOCAL_TEMP=/tmp/ansible-local",
+        "ANSIBLE_REMOTE_TEMP=/tmp/ansible-remote"
+      ],
+      "extra_arguments": [
+        "--extra-vars",
+        "ansible_shell_executable=/bin/bash",
+        "-b"
+      ],
+      "playbook_file": "/tmp/{{user `oscap_file`}}/ansible/ubuntu2204-playbook-standard.yml",
+      "type": "ansible"
+    },
+    {
+      "ansible_env_vars": [
         "ANSIBLE_SSH_ARGS='{{user `existing_ansible_ssh_args`}} {{user `ansible_common_ssh_args`}}'"
       ],
       "extra_arguments": [
@@ -205,6 +219,7 @@
     "user_data_file": "",
     "volume_size": "8",
     "volume_type": "gp3",
-    "vpc_id": ""
+    "vpc_id": "",
+    "oscap_file": "{{env `oscap_file`}}"
   }
 }
