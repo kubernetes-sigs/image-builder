@@ -111,4 +111,11 @@ cpu_milicores_to_reserve() {
 }
 
 mkdir -p /run/kubelet
-echo "KUBELET_EXTRA_ARGS=${KUBELET_EXTRA_ARGS} --system-reserved=cpu=$(cpu_milicores_to_reserve)m,memory=$(memory_reservation_mebibytes)Mi" >/run/kubelet/extra-args.env
+# Check if system-reserved already exists
+if grep '.*--system-reserved' <<< "${KUBELET_EXTRA_ARGS}"; then
+  # If system-reserved is already set by a previous run, replace old value with new one and write to /run/kubelet/extra-args.env
+  sed -E "s|--system-reserved=cpu=[0-9]+m,memory=[0-9]+Mi|--system-reserved=cpu=$(cpu_milicores_to_reserve)m,memory=$(memory_reservation_mebibytes)Mi|" <<< "${KUBELET_EXTRA_ARGS}" >/run/kubelet/extra-args.env
+else
+  # If not append system-reserved to KUBELET_EXTRA_ARGS and write to /run/kubelet/extra-args.env
+  echo "KUBELET_EXTRA_ARGS=${KUBELET_EXTRA_ARGS} --system-reserved=cpu=$(cpu_milicores_to_reserve)m,memory=$(memory_reservation_mebibytes)Mi" >/run/kubelet/extra-args.env
+fi
