@@ -58,7 +58,7 @@
     object: "{{ nvidia_tok_location }}"
     dest: /etc/nvidia/ClientConfigToken/client_configuration_token.tok
     mode: get
-    ceph: "{{ nvidia_ceph }}"
+    ceph: "{{ gpu_nvidia_ceph }}"
   retries: 5
   delay: 3
   when: nvidia_tok_location is defined
@@ -89,7 +89,7 @@
     object: "{{ nvidia_installer_location }}"
     dest: /tmp/NVIDIA-Linux.run
     mode: get
-    ceph: "{{ nvidia_ceph }}"
+    ceph: "{{ gpu_nvidia_ceph }}"
   retries: 5
   delay: 3
 
