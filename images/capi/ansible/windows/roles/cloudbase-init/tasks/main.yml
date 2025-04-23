@@ -43,11 +43,9 @@
     src: templates/cloudbase-init.conf
     dest: "{{ programfiles.stdout | trim }}\\Cloudbase Solutions\\Cloudbase-Init\\conf\\cloudbase-init.conf"
 
-- name: Configure set up complete
+- name: Configure Cloudbase-Init to run on startup
   ansible.windows.win_shell: |
-    # If this file already exists then the following command fails
-    Remove-Item -Force {{ systemdrive.stdout | trim }}\Windows\Setup\Scripts\SetupComplete.cmd
-    & "{{ programfiles.stdout | trim }}\Cloudbase Solutions\Cloudbase-Init\bin\SetSetupComplete.cmd"
+     cmd /c sc config cloudbase-init depend= WindowsAzureGuestAgent start= auto
   become: true
   become_method: runas
   become_user: System

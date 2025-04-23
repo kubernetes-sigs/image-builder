@@ -585,8 +585,7 @@ windows:
   common-windows-service:
     cloudbase-init:
       expected:
-      - Manual
-      - Stopped
+      - Automatic
     kubelet:
       expected:
       - Automatic
