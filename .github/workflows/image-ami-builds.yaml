@@ -13,6 +13,8 @@ on:
             default: "1.31.4"
             options:
                - "1.31.4"
+               - "1.31.8"
+               - "1.32.4"
 
 permissions:
   id-token: write   # This is crucial for OIDC authentication
@@ -72,7 +74,7 @@ jobs:
 
       - name: Validate Packer template
         run: |
-          packer init -upgrade ./images/capi/packer/config.pkr.hcl 
+          packer init -upgrade ./images/capi/packer/config.pkr.hcl
           make validate-ami-ubuntu-2404
 
       - name: Build AMI
