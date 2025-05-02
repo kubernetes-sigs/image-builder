@@ -9,12 +9,12 @@ on:
          k8s_version:
             description: "Specify the Kubernetes version"
             required: false
-            default: "1.30.10"
+            default: "1.31.4"
             options:
-               - "1.27.15"
-               - "1.28.15"
                - "1.30.10"
                - "1.31.4"
+               - "1.31.8"
+               - "1.32.4"
 
 permissions:
   id-token: write   # This is crucial for OIDC authentication
@@ -60,7 +60,7 @@ jobs:
          - name: Build AMI
            env:
              AWS_PROFILE: ditto-prod-primary
-             K8S_VERSION: ${{ github.event.inputs.k8s_version || '1.30.10' }}
+             K8S_VERSION: ${{ github.event.inputs.k8s_version || '1.31.4' }}
            run: |
              AWS_REGION=${{ env.AWS_REGION }} \
              ./images/capi/update_k8s_version.sh && \
