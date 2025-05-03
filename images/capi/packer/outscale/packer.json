@@ -6,7 +6,7 @@
       "omi_account_ids": [
         "{{ user `account_id` }}"
       ],
-      "omi_name": "{{user `build_name`}}-{{user `distribution_version`}}-kubernetes-{{user `kubernetes_semver`}}-{{timestamp}}",
+      "omi_name": "{{user `omi_name`}}",
       "region": "{{ user `region` }}",
       "secret_key": "{{ user `secret_key` }}",
       "source_omi": "{{ user `source_image` }}",
@@ -116,6 +116,7 @@
     "kubernetes_semver": null,
     "kubernetes_series": null,
     "kubernetes_source_type": null,
+    "omi_name": "{{user `build_name`}}-{{user `distribution_version`}}-kubernetes-{{user `kubernetes_semver`}}-{{timestamp}}",
     "owner": "Outscale",
     "region": "{{env `OSC_REGION`}}",
     "secret_key": "{{env `OSC_SECRET_KEY`}}",
