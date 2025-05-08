@@ -3,18 +3,21 @@
 # This script is used to calculate the resource sizing for the kubelet based on values used by GKE and repeated
 # in https://github.com/awslabs/amazon-eks-ami/pull/367/files
 
-KUBELET_SYSCONFIG="/etc/sysconfig/kubelet"
+#RPM and DEB systems kubelet sysconfig PATH
+KUBELET_SYSCONFIG_FILES=( "/etc/sysconfig/kubelet" "/etc/default/kubelet" )
 
-# shellcheck source=/dev/null
-. "${KUBELET_SYSCONFIG}"
-
-# Check if the file exists
-if [ -f "${KUBELET_SYSCONFIG}" ]; then
-  # If system-reserved is already set by user, ignore
-  if grep -q 'KUBELET_EXTRA_ARGS=.*--system-reserved' "${KUBELET_SYSCONFIG}"; then
-    exit 0
+for KUBELET_SYSCONFIG in "${KUBELET_SYSCONFIG_FILES[@]}"
+do
+  # Check if the file exists
+  if [ -f "${KUBELET_SYSCONFIG}" ]; then
+    # shellcheck source=/dev/null
+    . "${KUBELET_SYSCONFIG}"
+    # If system-reserved is already set by user, ignore
+    if grep -q 'KUBELET_EXTRA_ARGS=.*--system-reserved' "${KUBELET_SYSCONFIG}"; then
+      exit 0
+    fi
   fi
-fi
+done
 
 total_memory_mebibytes=$(free -m | grep Mem | awk '{print $2}')
 schedulable_cores_no=$(nproc)
@@ -114,7 +117,8 @@ mkdir -p /run/kubelet
 # Check if system-reserved already exists
 if grep '.*--system-reserved' <<< "${KUBELET_EXTRA_ARGS}"; then
   # If system-reserved is already set by a previous run, replace old value with new one and write to /run/kubelet/extra-args.env
-  sed -E "s|--system-reserved=cpu=[0-9]+m,memory=[0-9]+Mi|--system-reserved=cpu=$(cpu_milicores_to_reserve)m,memory=$(memory_reservation_mebibytes)Mi|" <<< "${KUBELET_EXTRA_ARGS}" >/run/kubelet/extra-args.env
+  system_reserved=$(sed -E "s|--system-reserved=cpu=[0-9]+m,memory=[0-9]+Mi|--system-reserved=cpu=$(cpu_milicores_to_reserve)m,memory=$(memory_reservation_mebibytes)Mi|" <<< "${KUBELET_EXTRA_ARGS}")
+  echo "KUBELET_EXTRA_ARGS=${system_reserved} >/run/kubelet/extra-args.env"
 else
   # If not append system-reserved to KUBELET_EXTRA_ARGS and write to /run/kubelet/extra-args.env
   echo "KUBELET_EXTRA_ARGS=${KUBELET_EXTRA_ARGS} --system-reserved=cpu=$(cpu_milicores_to_reserve)m,memory=$(memory_reservation_mebibytes)Mi" >/run/kubelet/extra-args.env
