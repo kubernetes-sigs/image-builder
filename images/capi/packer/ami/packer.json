@@ -123,7 +123,9 @@
       "extra_arguments": [
         "--extra-vars",
         "ansible_shell_executable=/bin/bash",
-        "-b"
+        "-b",
+        "-e", 
+        "cloud_init_primary_datasource=Ec2"
       ],
       "playbook_file": "{{user `patched_playbook`}}", 
 
@@ -251,6 +253,7 @@
     "vpc_id": "",
     "oscap_file": "{{env `oscap_file`}}",
     "patched_playbook": "/opt/ssg/scap-security-guide-0.1.76/ansible/ubuntu2404-playbook-cis_level1_server.yml"
+
 
   }
 }

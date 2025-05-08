@@ -1,0 +1,4 @@
+# to update this file, run dpkg-reconfigure cloud-init
+# Valid Options: [ NoCloud, Azure, AltCloud, Ec2, CloudStack, Hetzner, IBMCloud, Oracle, VMware, WSL, None ]
+
+datasource_list: [ {{ cloud_init_primary_datasource }} ]
