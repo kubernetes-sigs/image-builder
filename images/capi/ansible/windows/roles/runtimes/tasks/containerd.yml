@@ -16,8 +16,9 @@
   ansible.windows.win_get_url:
     url: "{{ containerd_url }}"
     dest: "{{ tempdir.stdout | trim }}\\containerd.tar.gz"
-    checksum: "{{ containerd_sha256 }}"
+    checksum: "{{ containerd_sha256 if (containerd_sha256 is defined and not containerd_sha256.startswith('https://')) else omit }}"
     checksum_algorithm: sha256
+    checksum_url: "{{ containerd_sha256 if (containerd_sha256 is defined and containerd_sha256.startswith('https://')) else omit }}"
     url_timeout: 300
   register: containerd
   retries: 5
