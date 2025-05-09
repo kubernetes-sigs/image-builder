@@ -17,5 +17,5 @@ cat <<EOF > ignition.json
   }
 }
 EOF
-./flatcar-install -v -d /dev/sda -i ignition.json -V $FLATCAR_VERSION -C $FLATCAR_CHANNEL # optional: you may provide a Ignition Config as file, it should contain your SSH key
+./flatcar-install -v -d /dev/sda -i ignition.json -o hetzner -V $FLATCAR_VERSION -C $FLATCAR_CHANNEL # optional: you may provide a Ignition Config as file, it should contain your SSH key
 reboot
