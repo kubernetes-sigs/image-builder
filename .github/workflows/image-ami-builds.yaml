@@ -12,9 +12,7 @@ on:
             required: false
             default: "1.31.4"
             options:
-               - "1.31.4"
-               - "1.31.8"
-               - "1.32.4"
+            - "1.31.4"
 
 permissions:
   id-token: write   # This is crucial for OIDC authentication
