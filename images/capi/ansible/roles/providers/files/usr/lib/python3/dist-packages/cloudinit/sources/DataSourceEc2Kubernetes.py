@@ -84,6 +84,16 @@ class DataSourceEc2Kubernetes(DataSourceEc2.DataSourceEc2):
         )
         LOG.info("User-data before update:[\n%s]", self.userdata_raw)
         secret_userdata = "/etc/secret-userdata.txt"
+
+        if not os.path.exists(secret_userdata):
+            LOG.warning(
+                "Secret user data file %s not found, using original EC2 user data",
+                secret_userdata
+            )
+            # If file doesn't exist, we've already processed the original user data
+            # No need to update userdata_raw, just return success
+            return True
+
         # Get the boothook output, save it as user-data
         # TODO: work with upstream to put this somewhere more sensible like:
         # /var/lib/cloud/instances/{{v1.instance_id}}/ec2-kubernetes-userdata.txt
