@@ -9,12 +9,13 @@ on:
          k8s_version:
             description: "Specify the Kubernetes version"
             required: false
-            default: "1.30.10"
+            default: "1.31.4"
             options:
-               - "1.27.15"
-               - "1.28.15"
                - "1.30.10"
                - "1.31.4"
+               - "1.31.5"
+               - "1.31.6"
+               - "1.32.1"
 
 permissions:
   id-token: write   # This is crucial for OIDC authentication
