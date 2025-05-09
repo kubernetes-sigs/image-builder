@@ -58,17 +58,17 @@ This table lists several common options that a user may want to set via
 list, and greater explanation can be found in the
 [Packer documentation for the Amazon AMI builder](https://www.packer.io/docs/builders/amazon.html).
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `ami_groups` | A list of groups that have access to launch the resulting AMI. | `"all"` |
-| `ami_regions` | A list of regions to copy the AMI to. | `"ap-south-1,eu-west-3,eu-west-2,eu-west-1,ap-northeast-2,ap-northeast-1,sa-east-1,ca-central-1,ap-southeast-1,ap-southeast-2,eu-central-1,us-east-1,us-east-2,us-west-1,us-west-2"` |
-| `ami_users` | A list of groups that have access to launch the resulting AMI. | `"all"` |
-| `aws_region` | The AWS region to build the AMI within. | `"us-east-1"` |
-| `encrypted` | Indicates whether or not to encrypt the volume. | `"false"` |
-| `kms_key_id` | ID, alias or ARN of the KMS key to use for boot volume encryption. | `""` |
-| `snapshot_groups` | A list of groups that have access to create volumes from the snapshot. | `""` |
-| `snapshot_users` | A list of groups that have access to create volumes from the snapshot. | `""` |
-| `skip_create_ami` |  If true, Packer will not create the AMI. Useful for setting to true during a build test stage. | `false` |
+| Variable | Description                                                                                    | Default |
+|----------|------------------------------------------------------------------------------------------------|---------|
+| `ami_groups` | A list of groups that have access to launch the resulting AMI.                                 | `"all"` |
+| `ami_regions` | A list of regions to copy the AMI to.                                                          | `"ap-south-1,eu-west-3,eu-west-2,eu-west-1,ap-northeast-2,ap-northeast-1,sa-east-1,ca-central-1,ap-southeast-1,ap-southeast-2,eu-central-1,us-east-1,us-east-2,us-west-1,us-west-2"` |
+| `ami_users` | A list of users that have access to launch the resulting AMI.                                  | `"all"` |
+| `aws_region` | The AWS region to build the AMI within.                                                        | `"us-east-1"` |
+| `encrypted` | Indicates whether or not to encrypt the volume.                                                | `"false"` |
+| `kms_key_id` | ID, alias or ARN of the KMS key to use for boot volume encryption.                             | `""` |
+| `snapshot_groups` | A list of groups that have access to create volumes from the snapshot.                         | `"all"` |
+| `snapshot_users` | A list of users that have access to create volumes from the snapshot.                          | `""` |
+| `skip_create_ami` | If true, Packer will not create the AMI. Useful for setting to true during a build test stage. | `false` |
 
 In the below examples, the parameters can be set via variable file and the use
 of `PACKER_VAR_FILES`. See [Customization](../capi.md#customization) for
