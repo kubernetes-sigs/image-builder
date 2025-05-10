@@ -1151,7 +1151,7 @@ clean-packer-cache:
 .PHONY: docker-pull-prerequisites
 docker-pull-prerequisites:
 	# We must pre-pull images https://github.com/moby/buildkit/issues/1271
-	docker pull docker/dockerfile:1.1-experimental
+	docker pull docker/dockerfile:1.14
 	docker pull $(BASE_IMAGE)
 
 .PHONY: docker-build
