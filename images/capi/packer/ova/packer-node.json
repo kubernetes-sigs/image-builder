@@ -188,7 +188,9 @@
       "username": "{{user `username`}}",
       "vcenter_server": "{{user `vcenter_server`}}",
       "vm_name": "{{user `base_build_version`}}",
-      "vm_version": "{{user `vmx_version`}}"
+      "vm_version": "{{user `vmx_version`}}",
+      "remove_cdrom": "true",
+      "remote_cache_cleanup": "true"
     },
     {
       "CPUs": "{{user `cpu`}}",
@@ -254,7 +256,9 @@
       "username": "{{user `username`}}",
       "vcenter_server": "{{user `vcenter_server`}}",
       "vm_name": "{{user `build_version`}}",
-      "vm_version": "{{user `vmx_version`}}"
+      "vm_version": "{{user `vmx_version`}}",
+      "remove_cdrom": "true",
+      "remote_cache_cleanup": "true"
     },
     {
       "CPUs": "{{user `cpu`}}",
