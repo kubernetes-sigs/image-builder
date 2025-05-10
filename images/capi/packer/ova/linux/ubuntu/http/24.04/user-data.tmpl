@@ -25,6 +25,8 @@ autoinstall:
   locale: en_US.UTF-8
   keyboard:
     layout: us
+  mounts:
+  - [ swap, null ]
   # Create a single-partition with no swap space. Kubernetes
   # really dislikes the idea of anyone else managing memory.
   # For more information on how partitioning is configured,
@@ -78,16 +80,10 @@ autoinstall:
         shell: /bin/bash
 
   # This command runs after all other steps; it:
-  # 1. Disables swapfiles
-  # 2. Removes the existing swapfile
-  # 3. Removes the swapfile entry from /etc/fstab
-  # 4. Removes snapd, https://bugs.launchpad.net/subiquity/+bug/1946609
-  # 5. Cleans up any packages that are no longer required
-  # 6. Removes the cached list of packages
+  # 1. Removes snapd, https://bugs.launchpad.net/subiquity/+bug/1946609
+  # 2. Cleans up any packages that are no longer required
+  # 3. Removes the cached list of packages
   late-commands:
-    - curtin in-target --target=/target -- swapoff -a
-    - curtin in-target --target=/target -- rm -f /swap.img
-    - curtin in-target --target=/target -- sed -ri '/\sswap\s/s/^#?/#/' /etc/fstab
     - chroot /target apt-get purge -y snapd
     - curtin in-target --target=/target -- apt-get purge --auto-remove -y
     - curtin in-target --target=/target -- apt-get clean
