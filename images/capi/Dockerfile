@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1.1-experimental
+# syntax=docker/dockerfile:1.14
 
 # Copyright 2020 The Kubernetes Authors.
 #
@@ -57,9 +57,9 @@ COPY --chown=imagebuilder:imagebuilder Makefile Makefile
 COPY --chown=imagebuilder:imagebuilder azure_targets.sh azure_targets.sh
 
 ENV PATH="/home/imagebuilder/.local/bin:${PATH}"
-ENV PACKER_ARGS ''
-ENV PACKER_VAR_FILES ''
-ENV IB_VERSION "${PASSED_IB_VERSION}"
+ENV PACKER_ARGS=''
+ENV PACKER_VAR_FILES=''
+ENV IB_VERSION="${PASSED_IB_VERSION}"
 
 RUN make deps
 
