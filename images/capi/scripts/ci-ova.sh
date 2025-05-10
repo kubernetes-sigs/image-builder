@@ -46,8 +46,17 @@ on_exit() {
 
 cleanup_build_vm() {
   # Setup govc to delete build VM after
-  wget https://github.com/vmware/govmomi/releases/download/v0.30.5/govc_Linux_x86_64.tar.gz
-  tar xf govc_Linux_x86_64.tar.gz
+  GOVC_VERSION=v0.49.0
+  GOVC_SHA256=a33d4b11ce10e8d1bfb89ef5ea1904a416df13111b409b89d7e29308ff584272
+
+  wget https://github.com/vmware/govmomi/releases/download/${GOVC_VERSION}/govc_Linux_x86_64.tar.gz
+  echo "${GOVC_SHA256} govc_Linux_x86_64.tar.gz" | sha256sum -c
+  if [[ $? -ne 0 ]]; then
+     echo "FATAL: checksum for govc_Linux_x86_64.tar.gz failed"
+     exit 1
+  fi
+
+  tar xf govc_Linux_x86_64.tar.gz govc
   chmod +x govc
   mv govc /usr/local/bin/govc
 
