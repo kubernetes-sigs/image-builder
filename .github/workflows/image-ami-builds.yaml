@@ -15,7 +15,13 @@ on:
                - "1.31.4"
                - "1.31.5"
                - "1.31.6"
+               - "1.31.7"
+               - "1.31.8"
                - "1.32.1"
+               - "1.32.2"
+               - "1.32.3"
+               - "1.32.4"
+               - "1.33.0"
 
 permissions:
   id-token: write   # This is crucial for OIDC authentication
@@ -61,7 +67,7 @@ jobs:
          - name: Build AMI
            env:
              AWS_PROFILE: ditto-prod-primary
-             K8S_VERSION: ${{ github.event.inputs.k8s_version || '1.30.10' }}
+             K8S_VERSION: ${{ github.event.inputs.k8s_version || '1.31.4' }}
            run: |
              AWS_REGION=${{ env.AWS_REGION }} \
              ./images/capi/update_k8s_version.sh && \
