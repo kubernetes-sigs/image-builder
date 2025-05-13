@@ -388,7 +388,7 @@ QEMU_BUILD_NAMES			?=	qemu-ubuntu-2004 qemu-ubuntu-2204 qemu-ubuntu-2204-cloudim
 
 QEMU_KUBEVIRT_BUILD_NAMES	:= $(addprefix kubevirt-,$(QEMU_BUILD_NAMES))
 
-RAW_BUILD_NAMES				?=	raw-ubuntu-2004 raw-ubuntu-2004-efi raw-ubuntu-2204 raw-ubuntu-2204-efi raw-flatcar raw-rhel-8 raw-rhel-9 raw-rhel-9-efi
+RAW_BUILD_NAMES				?=	raw-ubuntu-2004 raw-ubuntu-2004-efi raw-ubuntu-2204 raw-ubuntu-2204-efi raw-ubuntu-2404 raw-ubuntu-2404-efi raw-flatcar raw-rhel-8 raw-rhel-9 raw-rhel-9-efi
 
 POWERVS_BUILD_NAMES         ?= powervs-centos-8 powervs-centos-9
 
@@ -853,6 +853,8 @@ build-raw-ubuntu-2004: ## Builds Ubuntu 20.04 RAW image
 build-raw-ubuntu-2004-efi: ## Builds Ubuntu 20.04 RAW image that EFI boots
 build-raw-ubuntu-2204: ## Builds Ubuntu 22.04 RAW image
 build-raw-ubuntu-2204-efi: ## Builds Ubuntu 22.04 RAW image that EFI boots
+build-raw-ubuntu-2404: ## Builds Ubuntu 24.04 RAW image
+build-raw-ubuntu-2404-efi: ## Builds Ubuntu 24.04 RAW image that EFI boots
 build-raw-rhel-8: ## Builds RHEL 8 RAW image
 build-raw-rhel-9: ## Builds RHEL 9 RAW image
 build-raw-rhel-9-efi: ## Builds RHEL 9 RAW image that EFI boots
@@ -1040,6 +1042,8 @@ validate-raw-ubuntu-2004: ## Validates Ubuntu 20.04 RAW image packer config
 validate-raw-ubuntu-2004-efi: ## Validates Ubuntu 20.04 RAW EFI image packer config
 validate-raw-ubuntu-2204: ## Validates Ubuntu 22.04 RAW image packer config
 validate-raw-ubuntu-2204-efi: ## Validates Ubuntu 22.04 RAW EFI image packer config
+validate-raw-ubuntu-2404: ## Validates Ubuntu 24.04 RAW image packer config
+validate-raw-ubuntu-2404-efi: ## Validates Ubuntu 24.04 RAW EFI image packer config
 validate-raw-rhel-8: ## Validates RHEL 8 RAW image packer config
 validate-raw-all: $(RAW_VALIDATE_TARGETS) ## Validates all RAW Packer config
 
