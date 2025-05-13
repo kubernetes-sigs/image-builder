@@ -141,7 +141,7 @@
       ],
       "max_retries": 5,
       "pause_before": "15s",
-      "playbook_file": "ansible/windows/node_windows.yml",
+      "playbook_file": "ansible/windows/playbooks/node_windows.yml",
       "type": "ansible",
       "use_proxy": false,
       "user": "packer"

@@ -9,6 +9,7 @@ Image Builder is a tool for building Kubernetes virtual machine images across mu
 ### Useful links
 
 - [Quick Start for Cluster API Image Builder](https://image-builder.sigs.k8s.io/capi/quickstart.html)
+- [Ansible Galaxy Collection](https://galaxy.ansible.com/ui/repo/published/kubernetes_sigs/image_builder/)
 
 ## Community, discussion, contribution, and support
 

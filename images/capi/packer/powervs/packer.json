@@ -56,7 +56,7 @@
         "--ssh-extra-args",
         "{{user `existing_ansible_ssh_args`}} {{user `ansible_common_ssh_args`}}"
       ],
-      "playbook_file": "./ansible/node.yml",
+      "playbook_file": "./ansible/playbooks/node.yml",
       "type": "ansible"
     }
   ],

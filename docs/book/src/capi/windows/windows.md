@@ -63,7 +63,7 @@ ansible_connection=winrm
 ansible_winrm_server_cert_validation=ignore
 ```
 
-Then run: `ansible-playbook -vvv node_windows.yml --extra-vars "@example.vars.yml`
+Then run: `ansible-playbook -vvv playbooks/node_windows.yml --extra-vars "@example.vars.yml`
 
 ## macOS with ansible
 The WinRM connection plugin for Ansible on macOS causes connection issues which can result in `ERROR! A worker was found in a dead state`. See https://docs.ansible.com/ansible/latest/user_guide/windows_winrm.html#what-is-winrm for more details.
@@ -75,7 +75,7 @@ To fix the issue on macOS is to set the no_proxy environment variable. Example:
 ```
 
 ## Annual Channel
-The [Windows Server Annual](https://techcommunity.microsoft.com/t5/windows-server-news-and-best/windows-server-annual-channel-for-containers/ba-p/3866248) channel licensing  requires users to host their own image.  
+The [Windows Server Annual](https://techcommunity.microsoft.com/t5/windows-server-news-and-best/windows-server-annual-channel-for-containers/ba-p/3866248) channel licensing  requires users to host their own image.
 
 In Azure this can be uploaded to an [Azure SIG](https://learn.microsoft.com/en-us/azure/virtual-machines/azure-compute-gallery), and the following environment variables should be set to use the source [shared image gallery](https://developer.hashicorp.com/packer/integrations/hashicorp/azure/v1.4.5/components/builder/arm#shared-image-gallery).
 

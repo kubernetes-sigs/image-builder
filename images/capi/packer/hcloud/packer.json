@@ -58,7 +58,7 @@
         "--scp-extra-args",
         "{{user `ansible_scp_extra_args`}}"
       ],
-      "playbook_file": "./ansible/python.yml",
+      "playbook_file": "./ansible/playbooks/python.yml",
       "type": "ansible",
       "user": "packer"
     },
@@ -76,7 +76,7 @@
         "--scp-extra-args",
         "{{user `ansible_scp_extra_args`}}"
       ],
-      "playbook_file": "./ansible/node.yml",
+      "playbook_file": "./ansible/playbooks/node.yml",
       "type": "ansible",
       "user": "packer"
     },

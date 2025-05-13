@@ -43,7 +43,7 @@
         "--extra-vars",
         "{{user `ansible_extra_vars`}}"
       ],
-      "playbook_file": "./ansible/node.yml",
+      "playbook_file": "./ansible/playbooks/node.yml",
       "type": "ansible"
     },
     {

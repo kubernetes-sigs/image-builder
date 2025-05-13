@@ -74,7 +74,7 @@
     - ansible.builtin.include_role:
         name: systemprep
     - ansible.builtin.include_role:
-        name: cloudbase-init
+        name: cloudbase_init
       when: install_cloudbase_init
     - ansible.builtin.include_role:
         name: providers

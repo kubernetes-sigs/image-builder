@@ -1,0 +1,23 @@
+---
+name: Release
+run-name: Release Ansible Galaxy Collection
+on:
+  push:
+    tags:
+    - 'v[0-9]+.[0-9]+.[0-9]+*'
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    - name: Ansible Publish Linux/UNIX
+      uses: artis3n/ansible_galaxy_collection@v2
+      with:
+        api_key: ${{ secrets.ANSIBLE_GALAXY_API_KEY }}
+        collection_dir: "images/capi/ansible/"
+    - name: Ansible Publish Windows
+      uses: artis3n/ansible_galaxy_collection@v2
+      with:
+        api_key: ${{ secrets.ANSIBLE_GALAXY_API_KEY }}
+        collection_dir: "images/capi/ansible/windows/"

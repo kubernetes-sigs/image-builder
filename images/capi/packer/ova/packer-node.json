@@ -387,7 +387,7 @@
         "--scp-extra-args",
         "{{user `ansible_scp_extra_args`}}"
       ],
-      "playbook_file": "./ansible/firstboot.yml",
+      "playbook_file": "./ansible/playbooks/firstboot.yml",
       "type": "ansible",
       "user": "{{user `ssh_username`}}"
     },
@@ -420,7 +420,7 @@
         "--scp-extra-args",
         "{{user `ansible_scp_extra_args`}}"
       ],
-      "playbook_file": "./ansible/node.yml",
+      "playbook_file": "./ansible/playbooks/node.yml",
       "type": "ansible",
       "user": "{{user `ssh_username`}}"
     },

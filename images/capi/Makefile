@@ -1243,3 +1243,16 @@ update-centos-9-iso-checksums: ## Updates checksums for Centos 9 ISOs
 update-photon-iso-checksums: ## Updates checksums for Photon ISOs
 	hack/update-iso-checksums.sh photon true
 	$(MAKE) json-sort
+
+.PHONY: ansible-galaxy-build-linux
+ansible-galaxy-build-linux:
+	ansible-galaxy collection build ansible/
+
+.PHONY: ansible-galaxy-build-windows
+ansible-galaxy-build-windows:
+	ansible-galaxy collection build ansible/windows
+
+.PHONY: ansible-galaxy-publish
+ansible-galaxy-publish: ansible-galaxy-build-linux ansible-galaxy-build-windows
+	ansible-galaxy collection publish --api-key "${ANSIBLE_GALAXY_API_KEY}" ansible/
+	ansible-galaxy collection publish --api-key "${ANSIBLE_GALAXY_API_KEY}" ansible/windows/

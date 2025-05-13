@@ -1,0 +1,1 @@
+# Cloudbase Init Ansible Role (Windows)
