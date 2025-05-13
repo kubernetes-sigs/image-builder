@@ -107,6 +107,7 @@ deps-ova: deps-common
 	hack/ensure-ansible-windows.sh
 	hack/ensure-ovftool.sh
 	$(PACKER) init packer/config.pkr.hcl
+	$(PACKER) init packer/ova/config.pkr.hcl
 
 .PHONY: deps-openstack
 deps-openstack: ## Installs/checks dependencies for OpenStack builds
