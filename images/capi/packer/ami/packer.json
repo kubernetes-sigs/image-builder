@@ -34,7 +34,7 @@
       "source_ami": "{{user `source_ami`}}",
       "source_ami_filter": {
         "filters": {
-          "architecture": "x86_64",
+          "architecture": "{{ user `ami_filter_arch` }}",
           "name": "{{user `ami_filter_name`}}",
           "root-device-type": "ebs",
           "virtualization-type": "hvm"
@@ -48,6 +48,7 @@
       "subnet_id": "{{ user `subnet_id` }}",
       "tags": {
         "Name": "{{user `build_name`}}",
+        "arch": "{{ user `arch` }}",
         "build_date": "{{isotime}}",
         "build_timestamp": "{{user `build_timestamp`}}",
         "containerd_version": "{{user `containerd_version`}}",
