@@ -53,10 +53,14 @@
     state: absent
   when: http_proxy is defined or https_proxy is defined
 
+- name: Get installed service
+  ansible.builtin.service_facts:
+
 - name: Stop auditing
   ansible.builtin.service:
     name: rsyslog
     state: stopped
+  when: "'rsyslog' in services"
 
 - name: Remove apt package caches
   ansible.builtin.apt:
