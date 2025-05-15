@@ -1,6 +1,8 @@
 {
+  "ami_filter_arch": "x86_64",
   "ami_filter_name": "RHEL-8.6.0_HVM-*",
   "ami_filter_owners": "309956199498",
+  "arch": "amd64",
   "build_name": "rhel-8",
   "builder_instance_type": "m5.large",
   "distribution": "rhel",

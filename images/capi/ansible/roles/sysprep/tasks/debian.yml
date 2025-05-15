@@ -115,7 +115,7 @@
     - Update debian grub
   when: _stat_update_grub.stat.exists
 
-- name: Remvoing subiquity disable disable cloud-init networking config
+- name: Removing subiquity disable cloud-init networking config
   ansible.builtin.file:
     path: /etc/cloud/cloud.cfg.d/subiquity-disable-cloudinit-networking.cfg
     state: absent

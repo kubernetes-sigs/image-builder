@@ -172,6 +172,8 @@
         }
       ],
       "password": "{{user `password`}}",
+      "remote_cache_cleanup": "true",
+      "remove_cdrom": "true",
       "resource_pool": "{{user `resource_pool`}}",
       "shutdown_command": "echo '{{user `ssh_password`}}' | sudo -S -E sh -c '{{user `shutdown_command`}}'",
       "ssh_clear_authorized_keys": "false",
@@ -237,6 +239,8 @@
         }
       ],
       "password": "{{user `password`}}",
+      "remote_cache_cleanup": "true",
+      "remove_cdrom": "true",
       "resource_pool": "{{user `resource_pool`}}",
       "shutdown_command": "echo '{{user `ssh_password`}}' | sudo -S -E sh -c 'userdel -f -r {{user `ssh_username`}} && rm -f /etc/sudoers.d/{{user `ssh_username` }} && {{user `shutdown_command`}}'",
       "ssh_password": "{{user `ssh_password`}}",

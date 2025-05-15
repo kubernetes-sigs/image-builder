@@ -1,5 +1,5 @@
 #cloud-config
-# Copyright 2024 The Kubernetes Authors.
+# Copyright 2025 The Kubernetes Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -25,48 +25,66 @@ autoinstall:
   locale: en_US.UTF-8
   keyboard:
     layout: us
-  mounts:
-  - [ swap, null ]
-  # Create a single-partition with no swap space. Kubernetes
-  # really dislikes the idea of anyone else managing memory.
   # For more information on how partitioning is configured,
   # please refer to https://curtin.readthedocs.io/en/latest/topics/storage.html.
   storage:
     swap:
       size: 0
     grub:
+      reorder_uefi: false
       replace_linux_default: false
     config:
-      - type: disk
-        id: disk-0
-        size: largest
-        grub_device: true
-        preserve: false
-        ptable: msdos
-        wipe: superblock
-      - type: partition
-        id: partition-0
-        device: disk-0
-        size: -1
-        number: 1
-        preserve: false
-        flag: boot
-      - type: format
-        id: format-0
-        volume: partition-0
-        fstype: ext4
-        preserve: false
-      - type: mount
-        id: mount-0
-        device: format-0
-        path: /
+    - ptable: gpt
+      path: /dev/sda
+      wipe: superblock-recursive
+      preserve: false
+      name: ''
+      grub_device: false
+      type: disk
+      id: disk-sda
+    - device: disk-sda
+      size: 536870912
+      wipe: superblock
+      flag: boot
+      number: 1
+      preserve: false
+      grub_device: true
+      type: partition
+      id: partition-0
+    - fstype: fat32
+      volume: partition-0
+      preserve: false
+      type: format
+      id: format-0
+    - device: disk-sda
+      size: -1
+      wipe: superblock
+      flag: ''
+      number: 2
+      preserve: false
+      grub_device: false
+      type: partition
+      id: partition-1
+    - fstype: ext4
+      volume: partition-1
+      preserve: false
+      type: format
+      id: format-1
+    - path: /
+      device: format-1
+      type: mount
+      id: mount-1
+    - path: /boot/efi
+      device: format-0
+      type: mount
+      id: mount-0
+  apt:
+    fallback: offline-install
   updates: 'all'
   ssh:
     install-server: true
     allow-pw: true
-  # Customize the list of packages installed.
-  packages:
-    - open-vm-tools
+
   # Create the default user.
   # Ensures the "builder" user doesn't require a password to use sudo.
   user-data:
@@ -80,10 +98,16 @@ autoinstall:
         shell: /bin/bash
 
   # This command runs after all other steps; it:
-  # 1. Removes snapd, https://bugs.launchpad.net/subiquity/+bug/1946609
-  # 2. Cleans up any packages that are no longer required
-  # 3. Removes the cached list of packages
+  # 1. Disables swapfiles
+  # 2. Removes the existing swapfile
+  # 3. Removes the swapfile entry from /etc/fstab
+  # 4. Removes snapd, https://bugs.launchpad.net/subiquity/+bug/1946609
+  # 5. Cleans up any packages that are no longer required
+  # 6. Removes the cached list of packages
   late-commands:
+    - curtin in-target --target=/target -- swapoff -a
+    - curtin in-target --target=/target -- rm -f /swap.img
+    - curtin in-target --target=/target -- sed -ri '/\sswap\s/s/^#?/#/' /etc/fstab
     - chroot /target apt-get purge -y snapd
     - curtin in-target --target=/target -- apt-get purge --auto-remove -y
     - curtin in-target --target=/target -- apt-get clean
