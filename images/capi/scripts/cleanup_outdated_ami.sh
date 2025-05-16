@@ -12,7 +12,7 @@ DRY_RUN=true # Set to false to actually delete AMIs
 get_live_k8s_versions() {
     local live_versions=()
     for cluster in "${CLUSTER_NAMES[@]}"; do
-        version=$(aws eks describe-cluster --name "$cluster" --region "$AWS_REGION" --query "cluster.version" --output text)
+        version=$(kubectl --kubeconfig="/path/to/${cluster}/kubeconfig" version --short | grep "Server Version" | awk '{print $3}')
         live_versions+=("$version")
     done
     echo "${live_versions[@]}"
