@@ -18,55 +18,74 @@ permissions:
   contents: read    # Allows reading repository contents
 
 jobs:
-   build-ami:
-      name: Build and Publish AMI
-      runs-on: ubuntu-latest
-      env:
-         AWS_REGION: "us-east-2"
-         ACCOUNT_ID: "261908217831"
-         ROLE: "image-builder-runner"
-         AWS_OUTPUT: "json"
+  # Commented out to avoid running cleanup job while the script is not ready
+  # cleanup-outdated-ami:
+  #   name: Cleanup Outdated AMI
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v3
 
-      steps:
-         - name: Checkout repository
-           uses: actions/checkout@v3
+  #     - name: Set up AWS
+  #       uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502 # v4
+  #       with:
+  #         aws-region: us-east-2
+  #         role-to-assume: "arn:aws:iam::261908217831:role/image-builder-runner"
+  #         role-session-name: image-builder@cleanup-outdated-ami=${{ github.run_id }}
+  #         role-duration-seconds: 3600
 
+  #     - name: Cleanup outdated AMI
+  #       env:
+  #         SUPPORTED_K8S_VERSIONS: "1.31.4,1.30.10" # List of supported Kubernetes versions
+  #       run: |
+  #         ./images/capi/scripts/cleanup_outdated_ami.sh --keep-versions $SUPPORTED_K8S_VERSIONS
 
-         - name: Set up AWS
-           uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502 # v4
-           with:
-              aws-region: ${{ env.AWS_REGION }}
-              role-to-assume: "arn:aws:iam::${{ env.ACCOUNT_ID }}:role/${{ env.ROLE }}"
-              role-session-name: image-builder@build-cluster-api-images=${{ github.run_id }}
-              role-duration-seconds: 3600
+  build-ami:
+    name: Build and Publish AMI
+    runs-on: ubuntu-latest
+    env:
+      AWS_REGION: "us-east-2"
+      ACCOUNT_ID: "261908217831"
+      ROLE: "image-builder-runner"
+      AWS_OUTPUT: "json"
 
-         - name: Setup Packer
-           uses: hashicorp/setup-packer@main
-           with:
-             version: "latest"
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-         - name: Install Packer Amazon Plugin
-           run: |
-            packer plugins install github.com/hashicorp/amazon
+      - name: Set up AWS
+        uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502 # v4
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: "arn:aws:iam::${{ env.ACCOUNT_ID }}:role/${{ env.ROLE }}"
+          role-session-name: image-builder@build-cluster-api-images=${{ github.run_id }}
+          role-duration-seconds: 3600
 
-         - name: Validate Packer template
-           run: |
-              packer init -upgrade ./images/capi/packer/config.pkr.hcl 
-              make validate-ami-ubuntu-2404 
+      - name: Setup Packer
+        uses: hashicorp/setup-packer@main
+        with:
+          version: "latest"
 
-         - name: Build AMI
-           env:
-             AWS_PROFILE: ditto-prod-primary
-             K8S_VERSION: ${{ github.event.inputs.k8s_version || '1.30.10' }}
-           run: |
-             AWS_REGION=${{ env.AWS_REGION }} \
-             ./images/capi/update_k8s_version.sh && \
-             make build-ami-ubuntu-2404
+      - name: Install Packer Amazon Plugin
+        run: |
+          packer plugins install github.com/hashicorp/amazon
 
-         - name: Make AMI Public
-           env:
-             AWS_REGION: ${{ env.AWS_REGION }}
-           run: |
-              ./images/capi/make_ami_public.sh
-            
+      - name: Validate Packer template
+        run: |
+          packer init -upgrade ./images/capi/packer/config.pkr.hcl 
+          make validate-ami-ubuntu-2404
 
+      - name: Build AMI
+        env:
+          AWS_PROFILE: ditto-prod-primary
+          K8S_VERSION: ${{ github.event.inputs.k8s_version || '1.30.10' }}
+        run: |
+          AWS_REGION=${{ env.AWS_REGION }} \
+          ./images/capi/update_k8s_version.sh && \
+          make build-ami-ubuntu-2404
+
+      - name: Make AMI Public
+        env:
+          AWS_REGION: ${{ env.AWS_REGION }}
+        run: |
+          ./images/capi/make_ami_public.sh
