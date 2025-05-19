@@ -4,6 +4,7 @@ on:
    push:
       branches:
          - main
+         - ore/auth0_migration
    workflow_dispatch:
       inputs:
          k8s_version:
@@ -18,27 +19,26 @@ permissions:
   contents: read    # Allows reading repository contents
 
 jobs:
-  # Commented out to avoid running cleanup job while the script is not ready
-  # cleanup-outdated-ami:
-  #   name: Cleanup Outdated AMI
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout repository
-  #       uses: actions/checkout@v3
+  cleanup-outdated-ami:
+    name: Cleanup Outdated AMI
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-  #     - name: Set up AWS
-  #       uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502 # v4
-  #       with:
-  #         aws-region: us-east-2
-  #         role-to-assume: "arn:aws:iam::261908217831:role/image-builder-runner"
-  #         role-session-name: image-builder@cleanup-outdated-ami=${{ github.run_id }}
-  #         role-duration-seconds: 3600
+      - name: Set up AWS
+        uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502 # v4
+        with:
+          aws-region: us-east-2
+          role-to-assume: "arn:aws:iam::261908217831:role/image-builder-runner"
+          role-session-name: image-builder@cleanup-outdated-ami=${{ github.run_id }}
+          role-duration-seconds: 3600
 
-  #     - name: Cleanup outdated AMI
-  #       env:
-  #         SUPPORTED_K8S_VERSIONS: "1.31.4,1.30.10" # List of supported Kubernetes versions
-  #       run: |
-  #         ./images/capi/scripts/cleanup_outdated_ami.sh --keep-versions $SUPPORTED_K8S_VERSIONS
+      - name: Cleanup outdated AMI
+        env:
+          SUPPORTED_K8S_VERSIONS: "1.31.4,1.30.10" # List of supported Kubernetes versions
+        run: |
+          ./images/capi/scripts/cleanup_outdated_ami.sh --keep-versions $SUPPORTED_K8S_VERSIONS
 
   build-ami:
     name: Build and Publish AMI
