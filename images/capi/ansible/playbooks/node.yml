@@ -27,18 +27,18 @@
         loop_var: role
       when: node_custom_roles_pre != ""
     - ansible.builtin.include_role:
-        name: node
+        name: kubernetes_sigs.image_builder.node
     - ansible.builtin.include_role:
-        name: providers
+        name: kubernetes_sigs.image_builder.providers
     - ansible.builtin.include_role:
-        name: containerd
+        name: kubernetes_sigs.image_builder.containerd
     - ansible.builtin.include_role:
-        name: kubernetes
+        name: kubernetes_sigs.image_builder.kubernetes
     - ansible.builtin.include_role:
-        name: load_additional_components
+        name: kubernetes_sigs.image_builder.load_additional_components
       when: load_additional_components | bool
     - ansible.builtin.include_role:
-        name: ecr_credential_provider
+        name: kubernetes_sigs.image_builder.ecr_credential_provider
       when: ecr_credential_provider | bool
     - ansible.builtin.include_role:
         name: "{{ role }}"
@@ -47,7 +47,7 @@
         loop_var: role
       when: custom_role_names != "" or node_custom_roles_post != ""
     - ansible.builtin.include_role:
-        name: sysprep
+        name: kubernetes_sigs.image_builder.sysprep
 
   environment:
     http_proxy: "{{ http_proxy | default('') }}"

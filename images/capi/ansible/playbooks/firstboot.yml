@@ -42,7 +42,7 @@
         loop_var: role
       when: firstboot_custom_roles_pre != ""
     - ansible.builtin.include_role:
-        name: firstboot
+        name: kubernetes_sigs.image_builder.firstboot
     - ansible.builtin.include_role:
         name: "{{ role }}"
       loop: "{{ firstboot_custom_roles_post.split() }}"

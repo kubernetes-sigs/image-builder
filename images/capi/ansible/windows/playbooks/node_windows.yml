@@ -72,23 +72,23 @@
         loop_var: role
       when: node_custom_roles_pre != ""
     - ansible.builtin.include_role:
-        name: systemprep
+        name: kubernetes_sigs.image_builder_windows.systemprep
     - ansible.builtin.include_role:
-        name: cloudbase_init
+        name: kubernetes_sigs.image_builder_windows.cloudbase_init
       when: install_cloudbase_init
     - ansible.builtin.include_role:
-        name: providers
+        name: kubernetes_sigs.image_builder_windows.providers
     - ansible.builtin.include_role:
-        name: runtimes
+        name: kubernetes_sigs.image_builder_windows.runtimes
     - ansible.builtin.include_role:
-        name: kubernetes
+        name: kubernetes_sigs.image_builder_windows.kubernetes
     - ansible.builtin.include_role:
-        name: gmsa
+        name: kubernetes_sigs.image_builder_windows.gmsa
     - ansible.builtin.include_role:
-        name: load_additional_components
+        name: kubernetes_sigs.image_builder_windows.load_additional_components
       when: load_additional_components | bool
     - ansible.builtin.include_role:
-        name: debug
+        name: kubernetes_sigs.image_builder_windows.debug
     - ansible.builtin.include_role:
         name: "{{ role }}"
       loop: "{{ custom_role_names.split() + node_custom_roles_post.split() }}"
