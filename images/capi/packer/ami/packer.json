@@ -198,7 +198,7 @@
     "aws_security_group_ids": "",
     "aws_session_token": "",
     "build_timestamp": "{{timestamp}}",
-    "builder_instance_type": "t3.small",
+    "builder_instance_type": "m6a.xlarge",
     "containerd_gvisor_runtime": "false",
     "containerd_gvisor_version": "latest",
     "containerd_sha256": null,
