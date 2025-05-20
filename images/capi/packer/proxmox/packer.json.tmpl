@@ -103,7 +103,7 @@
         "--scp-extra-args",
         "{{user `ansible_scp_extra_args`}}"
       ],
-      "playbook_file": "./ansible/firstboot.yml",
+      "playbook_file": "./ansible/playbooks/firstboot.yml",
       "type": "ansible",
       "user": "builder"
     },
@@ -131,7 +131,7 @@
         "{{user `ansible_scp_extra_args`}}"
       ],
       "pause_before": "10s",
-      "playbook_file": "./ansible/node.yml",
+      "playbook_file": "./ansible/playbooks/node.yml",
       "type": "ansible",
       "user": "builder"
     },

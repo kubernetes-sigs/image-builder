@@ -7,6 +7,7 @@
 /.local/bin/
 manifest.json
 **.DS_Store
+*.tar.gz
 
 # Goss test droppings
 debug-goss-spec.yaml

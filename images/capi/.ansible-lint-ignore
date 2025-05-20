@@ -1,10 +1,10 @@
 # This file contains ignores rule violations for ansible-lint
-ansible/firstboot.yml name[missing]
-ansible/firstboot.yml name[play]
-ansible/node.yml name[missing]
-ansible/node.yml name[play]
-ansible/python.yml name[missing]
-ansible/python.yml name[play]
+ansible/playbooks/firstboot.yml name[missing]
+ansible/playbooks/firstboot.yml name[play]
+ansible/playbooks/node.yml name[missing]
+ansible/playbooks/node.yml name[play]
+ansible/playbooks/python.yml name[missing]
+ansible/playbooks/python.yml name[play]
 ansible/roles/containerd/tasks/main.yml name[missing]
 ansible/roles/containerd/tasks/main.yml risky-file-permissions
 ansible/roles/containerd/tasks/photon.yml no-changed-when
@@ -117,10 +117,10 @@ ansible/roles/sysprep/tasks/redhat.yml name[missing]
 ansible/roles/sysprep/tasks/redhat.yml no-changed-when
 ansible/roles/sysprep/tasks/rpm_repos.yml no-changed-when
 ansible/windows/example.vars.yml yaml[line-length]
-ansible/windows/node_windows.yml name[missing]
-ansible/windows/node_windows.yml name[play]
-ansible/windows/node_windows.yml schema[playbook]
-ansible/windows/roles/cloudbase-init/tasks/main.yml schema[tasks]
+ansible/windows/playbooks/node_windows.yml name[missing]
+ansible/windows/playbooks/node_windows.yml name[play]
+ansible/windows/playbooks/node_windows.yml schema[playbook]
+ansible/windows/roles/cloudbase_init/tasks/main.yml schema[tasks]
 ansible/windows/roles/debug/defaults/main.yml var-naming[no-role-prefix]
 ansible/windows/roles/gmsa/tasks/main.yml name[missing]
 ansible/windows/roles/kubernetes/tasks/kubelet.yml name[missing]

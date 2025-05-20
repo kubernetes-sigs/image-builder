@@ -1,4 +1,4 @@
-# Copyright 2020 The Kubernetes Authors.
+# Copyright 2018 The Kubernetes Authors.
 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,43 +12,42 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- name: Bootstrap Python
-  hosts: all
-  become: true
-  gather_facts: false
-  tasks:
-    - name: Check if Python is installed
-      changed_when: false
-      failed_when: false
-      ansible.builtin.raw: test -e "{{ ansible_python_interpreter | default('/usr/bin/python3') }}"
-      register: python_installed
-
-    - name: Install Python
-      changed_when: true
-      ansible.builtin.raw: test -e /usr/bin/apt && (apt-get update && apt-get install -y python3) || (yum install -y python3)
-      when: python_installed.rc != 0
-
 - hosts: all
   become: true
   vars:
-    firstboot_custom_roles_pre: ""
-    firstboot_custom_roles_post: ""
+    node_custom_roles_pre: ""
+    node_custom_roles_post: ""
+    custom_role_names: ""
 
   tasks:
     - ansible.builtin.include_role:
         name: "{{ role }}"
-      loop: "{{ firstboot_custom_roles_pre.split() }}"
+      loop: "{{ node_custom_roles_pre.split() }}"
       loop_control:
         loop_var: role
-      when: firstboot_custom_roles_pre != ""
+      when: node_custom_roles_pre != ""
     - ansible.builtin.include_role:
-        name: firstboot
+        name: kubernetes_sigs.image_builder.node
+    - ansible.builtin.include_role:
+        name: kubernetes_sigs.image_builder.providers
+    - ansible.builtin.include_role:
+        name: kubernetes_sigs.image_builder.containerd
+    - ansible.builtin.include_role:
+        name: kubernetes_sigs.image_builder.kubernetes
+    - ansible.builtin.include_role:
+        name: kubernetes_sigs.image_builder.load_additional_components
+      when: load_additional_components | bool
+    - ansible.builtin.include_role:
+        name: kubernetes_sigs.image_builder.ecr_credential_provider
+      when: ecr_credential_provider | bool
     - ansible.builtin.include_role:
         name: "{{ role }}"
-      loop: "{{ firstboot_custom_roles_post.split() }}"
+      loop: "{{ custom_role_names.split() + node_custom_roles_post.split() }}"
       loop_control:
         loop_var: role
-      when: firstboot_custom_roles_post != ""
+      when: custom_role_names != "" or node_custom_roles_post != ""
+    - ansible.builtin.include_role:
+        name: kubernetes_sigs.image_builder.sysprep
 
   environment:
     http_proxy: "{{ http_proxy | default('') }}"
@@ -57,3 +56,4 @@
     HTTP_PROXY: "{{ http_proxy | default('') }}"
     HTTPS_PROXY: "{{ https_proxy | default('') }}"
     NO_PROXY: "{{ no_proxy | default('') }}"
+    PYTHONPATH: "{{ python_path }}"
