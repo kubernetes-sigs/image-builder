@@ -12,8 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# From https://github.com/kubernetes-sigs/sig-windows-tools/blob/master/kubeadm/scripts/PrepareNode.ps1
-# Does not support kubeadm KUBELET_KUBEADM_ARGS which is used by Cluster API to pass extra user args
 # Need to keey sync with StartKubelet.ps1
 $FileContent = Get-Content -Path "$env:SYSTEMDRIVE/var/lib/kubelet/kubeadm-flags.env"
 $kubeAdmArgs = $FileContent.TrimStart('KUBELET_KUBEADM_ARGS=').Trim('"')
@@ -41,7 +39,7 @@ $null = sc.exe delete kubelet
 for ($i = 0; $i -lt 10; $i++) {
 	$service = Get-Service -Name kubelet -ErrorAction SilentlyContinue
 	if ($null -eq $service) {
-		Write-Host "kbuelet service deleted successfully, restarting"
+		Write-Host "kubelet service deleted successfully, restarting"
 		sc.exe create kubelet binPath= $KubeletCommandLine start= auto depend= containerd
 		sc.exe start kubelet
 		return
@@ -53,4 +51,4 @@ for ($i = 0; $i -lt 10; $i++) {
 }
 
 
-Write-Host "kbuelet service failed to restart."
+Write-Host "kubelet service failed to restart."
