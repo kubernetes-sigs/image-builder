@@ -16,3 +16,4 @@ kubernetes_bins:
   - kubeadm
   - kubectl
   - kubelet
+  - kube-log-runner
