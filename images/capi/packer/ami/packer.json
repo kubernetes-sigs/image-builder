@@ -47,7 +47,7 @@
       "ssh_username": "{{user `ssh_username`}}",
       "subnet_id": "{{ user `subnet_id` }}",
       "tags": {
-        "Name": "{{user `build_name`}}",
+        "Name": "{{user `image_name` | clean_resource_name}}",
         "arch": "{{ user `arch` }}",
         "build_date": "{{isotime}}",
         "build_timestamp": "{{user `build_timestamp`}}",
