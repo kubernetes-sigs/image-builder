@@ -48,6 +48,12 @@
       when: custom_role_names != "" or node_custom_roles_post != ""
     - ansible.builtin.include_role:
         name: sysprep
+    - ansible.builtin.include_role:
+        name: "{{ role }}"
+      loop: "{{ node_custom_roles_post_sysprep.split() }}"
+      loop_control:
+        loop_var: role
+      when: node_custom_roles_post_sysprep != ""
 
   environment:
     http_proxy: "{{ http_proxy | default('') }}"

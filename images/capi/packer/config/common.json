@@ -12,6 +12,7 @@
   "netplan_removal_excludes": "",
   "no_proxy": "",
   "node_custom_roles_post": "",
+  "node_custom_roles_post_sysprep": "",
   "node_custom_roles_pre": "",
   "pause_image": "registry.k8s.io/pause:3.9",
   "pip_conf_file": "",
