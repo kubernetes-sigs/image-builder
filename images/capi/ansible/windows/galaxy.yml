@@ -1,0 +1,19 @@
+namespace: kubernetes_sigs
+name: image_builder_windows
+version: 0.2.0
+readme: "README.md"
+authors:
+- image-builder-maintainers (see OWNERS_ALIASES)
+description: Collection of ansible roles that install and configure Kubernetes orchestrator and related software compatible with Windows operating system.
+license_file: 'LICENSE'
+tags: ["kubernetes", "k8s", "image_building"]
+dependencies: {}
+repository: https://github.com/kubernetes-sigs/image-builder
+documentation: https://image-builder.sigs.k8s.io/
+homepage: https://image-builder.sigs.k8s.io/
+issues: https://github.com/kubernetes-sigs/image-builder/issues
+build_ignore:
+- ansible_winrm.ps1
+- example.vars.yml
+- OWNERS
+- "*.tar.gz"

@@ -176,7 +176,7 @@
         "--extra-vars",
         "{{user `ansible_user_vars`}}"
       ],
-      "playbook_file": "ansible/windows/node_windows.yml",
+      "playbook_file": "ansible/windows/playbooks/node_windows.yml",
       "type": "ansible",
       "use_proxy": false,
       "user": "Administrator"

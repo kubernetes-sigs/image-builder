@@ -1,0 +1,1 @@
+# GMSA Ansible Role (Windows)

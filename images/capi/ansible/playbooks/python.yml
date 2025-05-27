@@ -20,7 +20,7 @@
 
   tasks:
     - ansible.builtin.include_role:
-        name: python
+        name: kubernetes_sigs.image_builder.python
 
   environment:
     http_proxy: "{{ http_proxy | default('') }}"

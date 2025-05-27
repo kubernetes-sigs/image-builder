@@ -1,0 +1,1 @@
+# ECR Credential Ansible Role
