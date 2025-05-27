@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Need to keey sync with StartKubelet.ps1
+# Need to keep sync with StartKubelet.ps1
 $FileContent = Get-Content -Path "$env:SYSTEMDRIVE/var/lib/kubelet/kubeadm-flags.env"
 $kubeAdmArgs = $FileContent.TrimStart('KUBELET_KUBEADM_ARGS=').Trim('"')
 
@@ -45,7 +45,7 @@ for ($i = 0; $i -lt 10; $i++) {
 		return
 	}
 	else {
-		Write-Host "Waiting for service to be fully deleted... (attempt $($i + 1)/$Retries)"
+		Write-Host "Waiting for service to be fully deleted... (attempt $($i + 1)/10)"
 	}
 	Start-Sleep -Seconds 3
 }
