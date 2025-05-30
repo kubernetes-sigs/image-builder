@@ -14,6 +14,11 @@ on:
             options:
             - "1.31.4"
 
+env:
+  ARGOCD_ENDPOINTS: "argocd.ops.k8s.ditto.live"
+  ARGOCD_TOKENS: "${{ secrets.ARGOCD_AUTH_TOKEN }}}"
+
+
 permissions:
   id-token: write   # This is crucial for OIDC authentication
   contents: read    # Allows reading repository contents
@@ -23,22 +28,59 @@ jobs:
     name: Cleanup Outdated AMI
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Set up AWS
-        uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502 # v4
-        with:
-          aws-region: us-east-2
-          role-to-assume: "arn:aws:iam::261908217831:role/image-builder-runner"
-          role-session-name: image-builder@cleanup-outdated-ami=${{ github.run_id }}
-          role-duration-seconds: 3600
-
-      - name: Cleanup outdated AMI
-        env:
-          SUPPORTED_K8S_VERSIONS: "1.31.4,1.30.10" # List of supported Kubernetes versions
+      - name: Install dependencies
         run: |
-          ./images/capi/scripts/cleanup_outdated_ami.sh --keep-versions $SUPPORTED_K8S_VERSIONS
+          sudo apt-get update
+          sudo apt-get install -y jq
+          curl -sSL -o argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+          chmod +x argocd
+          sudo mv argocd /usr/local/bin/
+
+      - name: Get live Kubernetes versions from ArgoCD
+        id: versions
+        run: |
+          IFS=',' read -ra ENDPOINTS <<< "$ARGOCD_ENDPOINTS"
+          IFS=',' read -ra TOKENS <<< "$ARGOCD_TOKENS"
+
+          versions=()
+          for i in "${!ENDPOINTS[@]}"; do
+            endpoint="${ENDPOINTS[$i]}"
+            token="${TOKENS[$i]}"
+            echo "🔍 Checking clusters on $endpoint"
+            v=$(argocd --server "$endpoint" --auth-token "$token" --grpc-web cluster list -ojson \
+              | jq -r '[.[].serverVersion | select(. != null)] | min')
+
+            echo "$endpoint live version: $v"
+            versions+=("$v")
+          done
+
+          # Save min version to output
+          min_version=$(printf '%s\n' "${versions[@]}" | sort -V | head -n1)
+          echo "Live minimum K8s version: $min_version"
+          echo "min_k8s_version=$min_version" >> $GITHUB_OUTPUT
+
+      - name: Assume AWS role with OIDC
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: "arn:aws:iam::${{ env.ACCOUNT_ID }}:role/${{ env.ROLE }}"
+
+      - name: Clean up old public AMIs
+        run: |
+          LIVE_VERSION="${{ steps.versions.outputs.min_k8s_version }}"
+          echo "Looking for public AMIs with K8s version less than $LIVE_VERSION"
+
+          # Replace with your AMI filtering logic (using tags or naming pattern)
+          AMI_IDS=$(aws ec2 describe-images \
+            --owners self \
+            --filters "Name=tag:K8sVersion,Values=*" \
+            --query "Images[?Tags[?Key=='K8sVersion']].{ID:ImageId,Version:Tags[?Key=='K8sVersion']|[0].Value}" \
+            --output json | jq -r '.[] | select(.Version < "'"$LIVE_VERSION"'") | .ID')
+
+          for ami in $AMI_IDS; do
+            echo "🧹 Deregistering AMI: $ami (older than $LIVE_VERSION)"
+            echo "$ami"
+          done
 
   build-ami:
     name: Build and Publish AMI
