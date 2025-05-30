@@ -12,7 +12,7 @@ on:
             required: false
             default: "1.31.4"
             options:
-               - "1.30.10"
+               - "1.31.4"
 
 env:
   ARGOCD_ENDPOINTS: "argocd.ops.k8s.ditto.live"
@@ -60,7 +60,7 @@ jobs:
           echo "min_k8s_version=$min_version" >> $GITHUB_OUTPUT
 
       - name: Assume AWS role with OIDC
-        uses: aws-actions/configure-aws-credentials@v2
+        uses: ws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502 # v4
         with:
           aws-region: ${{ env.AWS_REGION }}
           role-to-assume: "arn:aws:iam::${{ env.ACCOUNT_ID }}:role/${{ env.ROLE }}"
