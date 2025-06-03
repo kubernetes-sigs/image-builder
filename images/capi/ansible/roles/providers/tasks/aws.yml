@@ -89,7 +89,7 @@
 
 - name: Create cloud-init datasource config dynamically
   ansible.builtin.template:
-    src: 90_dpkg.cfg.j2
+    src: etc/logrotate.d/90_dpkg.cfg.j2
     dest: /etc/cloud/cloud.cfg.d/90_dpkg.cfg
     owner: root
     group: root
