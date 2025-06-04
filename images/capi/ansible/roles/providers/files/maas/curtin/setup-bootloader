@@ -1,0 +1,30 @@
+#!/bin/bash -ex
+#
+# This script was copied as-is from:
+# Source: https://github.com/canonical/packer-maas
+# Original Author: Alexsander de Souza <alexsander.souza@canonical.com>
+
+export DEBIAN_FRONTEND=noninteractive
+
+# Clean up remnants from packer-maas vm install
+rm /var/cache/debconf/config.dat
+dpkg --configure -a
+
+# Update the package lists before attempting to install the kernel
+apt-get update
+# Ensure the existence of linux-image-generic for non-cloudimg images.
+#apt-get -y install linux-image-generic
+
+dpkg-reconfigure grub-efi-amd64
+update-grub
+
+grub-install \
+    --target=x86_64-efi \
+    --efi-directory=/boot/efi \
+    --bootloader-id=ubuntu \
+    --recheck
+
+update-initramfs -uk all
+
+efibootmgr -v
+

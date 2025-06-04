@@ -402,6 +402,8 @@ PROXMOX_BUILD_NAMES 		?= proxmox-ubuntu-2204 proxmox-ubuntu-2404 proxmox-ubuntu-
 
 VULTR_BUILD_NAMES 				?=	vultr-ubuntu-2204
 
+MAAS_BUILD_NAMES 			?= maas-ubuntu-2204-efi maas-ubuntu-2404-efi
+
 ## --------------------------------------
 ## Dynamic build targets
 ## --------------------------------------
@@ -450,6 +452,8 @@ PROXMOX_BUILD_TARGETS		:= $(addprefix build-,$(PROXMOX_BUILD_NAMES))
 PROXMOX_VALIDATE_TARGETS	:= $(addprefix validate-,$(PROXMOX_BUILD_NAMES))
 VULTR_BUILD_TARGETS 	:= $(addprefix build-,$(VULTR_BUILD_NAMES))
 VULTR_VALIDATE_TARGETS 	:= $(addprefix validate-,$(VULTR_BUILD_NAMES))
+MAAS_BUILD_TARGETS 	:= $(addprefix build-,$(MAAS_BUILD_NAMES))
+MAAS_VALIDATE_TARGETS 	:= $(addprefix validate-,$(MAAS_BUILD_NAMES))
 
 .PHONY: $(NODE_OVA_LOCAL_BUILD_TARGETS)
 $(NODE_OVA_LOCAL_BUILD_TARGETS): deps-ova set-ssh-password
@@ -641,6 +645,15 @@ $(VULTR_BUILD_TARGETS): deps-vultr
 .PHONY: $(VULTR_VALIDATE_TARGETS)
 $(VULTR_VALIDATE_TARGETS): deps-vultr
 	$(PACKER) validate $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/vultr/$(subst validate-vultr-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/vultr/packer.json
+
+.PHONY: $(MAAS_BUILD_TARGETS)
+$(MAAS_BUILD_TARGETS): deps-qemu set-ssh-password
+	$(PACKER) build $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/maas/$(subst build-,,$@).json)" --var="ansible_user_vars=provider=maas" $(ABSOLUTE_PACKER_VAR_FILES) packer/maas/packer.json
+
+.PHONY: $(MAAS_VALIDATE_TARGETS)
+$(MAAS_VALIDATE_TARGETS): deps-qemu set-ssh-password
+	$(PACKER) validate $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/maas/$(subst validate-,,$@).json)" --var="ansible_user_vars=provider=maas" $(ABSOLUTE_PACKER_VAR_FILES) packer/maas/packer.json
+
 
 ## --------------------------------------
 ## Dynamic clean targets
@@ -850,6 +863,9 @@ build-qemu-rockylinux-8-cloudimg: ## Builds Rocky 8 QEMU image using cloud image
 build-qemu-rockylinux-9: ## Builds Rocky 9 QEMU image
 build-qemu-rockylinux-9-cloudimg: ## Builds Rocky 9 QEMU image using cloud image
 build-qemu-all: $(QEMU_BUILD_TARGETS) ## Builds all Qemu images
+
+build-maas-ubuntu-2204-efi: ## Builds Ubuntu 22.04 MaaS image that EFI boots
+build-maas-ubuntu-2404-efi: ## Builds Ubuntu 24.04 MaaS image that EFI boots
 
 build-raw-flatcar: ## Builds Flatcar RAW image
 build-raw-ubuntu-2004: ## Builds Ubuntu 20.04 RAW image
