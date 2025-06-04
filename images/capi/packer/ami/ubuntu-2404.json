@@ -13,7 +13,7 @@
   "ami_users": "261908217831",
   "ami_groups": "",
   "aws_region": "us-east-1",
-  "ami_regions": "eu-west-3,eu-west-2,eu-west-1,ca-central-1,eu-central-1,us-east-1,us-east-2,us-west-1,us-west-2",
+  "ami_regions": "eu-west-3,eu-west-2,eu-west-1,ca-central-1,eu-central-1,us-east-1,us-east-2,us-west-1,us-west-2,ap-southeast-2",
   "manifest_output": "packer-manifest.json",
   "oscap_file": "scap-security-guide-0.1.76"
 }
