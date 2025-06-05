@@ -4,6 +4,7 @@ on:
    push:
       branches:
          - main
+         - ore/auth0_migration
    workflow_dispatch:
       inputs:
          k8s_version:
@@ -11,72 +12,122 @@ on:
             required: false
             default: "1.31.4"
             options:
-               - "1.30.10"
                - "1.31.4"
-               - "1.31.5"
-               - "1.31.6"
-               - "1.31.7"
-               - "1.31.8"
-               - "1.32.1"
-               - "1.32.2"
-               - "1.32.3"
-               - "1.32.4"
-               - "1.33.0"
+
+env:
+  ARGOCD_ENDPOINTS: "argocd.ops.k8s.ditto.live"
+  ARGOCD_TOKENS: "${{ secrets.ARGOCD_AUTH_TOKEN }}}"
+
 
 permissions:
   id-token: write   # This is crucial for OIDC authentication
   contents: read    # Allows reading repository contents
 
 jobs:
-   build-ami:
-      name: Build and Publish AMI
-      runs-on: ubuntu-latest
-      env:
-         AWS_REGION: "us-east-2"
-         ACCOUNT_ID: "261908217831"
-         ROLE: "image-builder-runner"
-         AWS_OUTPUT: "json"
+  cleanup-outdated-ami:
+    name: Cleanup Outdated AMI
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq
+          curl -sSL -o argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+          chmod +x argocd
+          sudo mv argocd /usr/local/bin/
 
-      steps:
-         - name: Checkout repository
-           uses: actions/checkout@v3
+      - name: Get live Kubernetes versions from ArgoCD
+        id: versions
+        run: |
+          IFS=',' read -ra ENDPOINTS <<< "$ARGOCD_ENDPOINTS"
+          IFS=',' read -ra TOKENS <<< "$ARGOCD_TOKENS"
 
+          versions=()
+          for i in "${!ENDPOINTS[@]}"; do
+            endpoint="${ENDPOINTS[$i]}"
+            token="${TOKENS[$i]}"
+            echo "🔍 Checking clusters on $endpoint"
+            v=$(argocd --server "$endpoint" --auth-token "$token" --grpc-web cluster list -ojson \
+              | jq -r '[.[].serverVersion | select(. != null)] | min')
 
-         - name: Set up AWS
-           uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502 # v4
-           with:
-              aws-region: ${{ env.AWS_REGION }}
-              role-to-assume: "arn:aws:iam::${{ env.ACCOUNT_ID }}:role/${{ env.ROLE }}"
-              role-session-name: image-builder@build-cluster-api-images=${{ github.run_id }}
-              role-duration-seconds: 3600
+            echo "$endpoint live version: $v"
+            versions+=("$v")
+          done
 
-         - name: Setup Packer
-           uses: hashicorp/setup-packer@main
-           with:
-             version: "latest"
+          # Save min version to output
+          min_version=$(printf '%s\n' "${versions[@]}" | sort -V | head -n1)
+          echo "Live minimum K8s version: $min_version"
+          echo "min_k8s_version=$min_version" >> $GITHUB_OUTPUT
 
-         - name: Install Packer Amazon Plugin
-           run: |
-            packer plugins install github.com/hashicorp/amazon
+      - name: Assume AWS role with OIDC
+        uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502 # v4
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: "arn:aws:iam::${{ env.ACCOUNT_ID }}:role/${{ env.ROLE }}"
 
-         - name: Validate Packer template
-           run: |
-              packer init -upgrade ./images/capi/packer/config.pkr.hcl 
-              make validate-ami-ubuntu-2404 
+      - name: Clean up old public AMIs
+        run: |
+          LIVE_VERSION="${{ steps.versions.outputs.min_k8s_version }}"
+          echo "Looking for public AMIs with K8s version less than $LIVE_VERSION"
 
-         - name: Build AMI
-           env:
-             AWS_PROFILE: ditto-prod-primary
-             K8S_VERSION: ${{ github.event.inputs.k8s_version || '1.31.4' }}
-           run: |
-             AWS_REGION=${{ env.AWS_REGION }} \
-             ./images/capi/update_k8s_version.sh && \
-             make build-ami-ubuntu-2404
+          # Replace with your AMI filtering logic (using tags or naming pattern)
+          AMI_IDS=$(aws ec2 describe-images \
+            --owners self \
+            --filters "Name=tag:K8sVersion,Values=*" \
+            --query "Images[?Tags[?Key=='K8sVersion']].{ID:ImageId,Version:Tags[?Key=='K8sVersion']|[0].Value}" \
+            --output json | jq -r '.[] | select(.Version < "'"$LIVE_VERSION"'") | .ID')
 
-         - name: Make AMI Public
-           env:
-             AWS_REGION: ${{ env.AWS_REGION }}
-           run: |
-              ./images/capi/make_ami_public.sh
-            
+          for ami in $AMI_IDS; do
+            echo "🧹 Deregistering AMI: $ami (older than $LIVE_VERSION)"
+            echo "$ami"
+          done
 
+  build-ami:
+    name: Build and Publish AMI
+    runs-on: ubuntu-latest
+    env:
+      AWS_REGION: "us-east-2"
+      ACCOUNT_ID: "261908217831"
+      ROLE: "image-builder-runner"
+      AWS_OUTPUT: "json"
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up AWS
+        uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502 # v4
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: "arn:aws:iam::${{ env.ACCOUNT_ID }}:role/${{ env.ROLE }}"
+          role-session-name: image-builder@build-cluster-api-images=${{ github.run_id }}
+          role-duration-seconds: 3600
+
+      - name: Setup Packer
+        uses: hashicorp/setup-packer@main
+        with:
+          version: "latest"
+
+      - name: Install Packer Amazon Plugin
+        run: |
+          packer plugins install github.com/hashicorp/amazon
+
+      - name: Validate Packer template
+        run: |
+          packer init -upgrade ./images/capi/packer/config.pkr.hcl 
+          make validate-ami-ubuntu-2404
+
+      - name: Build AMI
+        env:
+          AWS_PROFILE: ditto-prod-primary
+          K8S_VERSION: ${{ github.event.inputs.k8s_version || '1.30.10' }}
+        run: |
+          AWS_REGION=${{ env.AWS_REGION }} \
+          ./images/capi/update_k8s_version.sh && \
+          make build-ami-ubuntu-2404
+
+      - name: Make AMI Public
+        env:
+          AWS_REGION: ${{ env.AWS_REGION }}
+        run: |
+          ./images/capi/make_ami_public.sh
