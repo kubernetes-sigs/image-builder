@@ -20,7 +20,7 @@ gmsa_keyvault_url: https://kubernetesartifacts.azureedge.net/ccgakvplugin/v1.1.4
 runtime: containerd
 kubernetes_install_path: c:\k
 windows_service_manager: nssm
-pause_image: registry.k8s.io/pause:3.9
+pause_image: registry.k8s.io/pause:3.10
 load_additional_components: true
 additional_registry_images: true
 additional_registry_images_list: sigwindowstools/kube-proxy:v1.28.4-calico-hostprocess, sigwindowstools/calico-node:v3.26.1-hostprocess
