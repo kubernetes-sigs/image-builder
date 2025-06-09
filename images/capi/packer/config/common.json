@@ -14,7 +14,7 @@
   "node_custom_roles_post": "",
   "node_custom_roles_post_sysprep": "",
   "node_custom_roles_pre": "",
-  "pause_image": "registry.k8s.io/pause:3.9",
+  "pause_image": "registry.k8s.io/pause:3.10",
   "pip_conf_file": "",
   "redhat_epel_rpm": "https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm",
   "reenable_public_repos": "true",

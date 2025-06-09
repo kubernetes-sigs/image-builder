@@ -135,7 +135,7 @@ sysctl_conf_file: >-
   {{ '/etc/sysctl.d/99-sysctl.conf' if ansible_os_family in ['Common Base Linux Mariner', 'Flatcar', 'Microsoft Azure Linux', 'VMware Photon OS']
     else '/etc/sysctl.conf' }}
 
-pause_image: registry.k8s.io/pause:3.9
+pause_image: registry.k8s.io/pause:3.10
 containerd_additional_settings:
 leak_local_mdns_to_dns: false
 build_target: virt
