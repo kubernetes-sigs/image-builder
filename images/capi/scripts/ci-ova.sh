@@ -22,7 +22,7 @@ CAPI_ROOT=$(dirname "${BASH_SOURCE[0]}")/..
 cd "${CAPI_ROOT}" || exit 1
 
 export ARTIFACTS="${ARTIFACTS:-${PWD}/_artifacts}"
-TARGETS=("ubuntu-2004" "ubuntu-2204" "ubuntu-2404" "photon-3" "photon-4" "photon-5" "rockylinux-8" "flatcar")
+TARGETS=("ubuntu-2004" "ubuntu-2204" "ubuntu-2404" "rockylinux-8" "flatcar")
 
 export BOSKOS_RESOURCE_OWNER=image-builder
 if [[ "${JOB_NAME}" != "" ]]; then
@@ -56,8 +56,8 @@ export PATH=${PWD}/.local/bin:$PATH
 export PATH=${PYTHON_BIN_DIR:-"/root/.local/bin"}:$PATH
 export GC_KIND="false"
 export TIMESTAMP="$(date -u '+%Y%m%dT%H%M%S')"
-export GOVC_DATACENTER="SDDC-Datacenter"
-export GOVC_CLUSTER="Cluster-1"
+export GOVC_DATACENTER="Datacenter"
+export GOVC_CLUSTER="k8s-gcve-cluster"
 export GOVC_INSECURE=true
 
 # Install xorriso which will be then used by packer to generate ISO for generating CD files
@@ -110,11 +110,11 @@ cat << EOF > packer/ova/vsphere.json
     "insecure_connection": "${GOVC_INSECURE}",
     "username":"${GOVC_USERNAME}",
     "password":"${GOVC_PASSWORD}",
-    "datastore":"WorkloadDatastore",
+    "datastore":"vsanDatastore",
     "datacenter":"${GOVC_DATACENTER}",
     "resource_pool": "${VSPHERE_RESOURCE_POOL}",
     "cluster": "${GOVC_CLUSTER}",
-    "network": "sddc-cgw-network-10",
+    "network": "k8s-ci",
     "folder": "${VSPHERE_FOLDER}"
 }
 EOF
