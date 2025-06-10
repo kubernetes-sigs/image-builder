@@ -22,7 +22,7 @@ CAPI_ROOT=$(dirname "${BASH_SOURCE[0]}")/..
 cd "${CAPI_ROOT}" || exit 1
 
 export ARTIFACTS="${ARTIFACTS:-${PWD}/_artifacts}"
-TARGETS=("ubuntu-2004" "ubuntu-2204" "ubuntu-2404" "rockylinux-8" "flatcar")
+TARGETS=("ubuntu-2204" "ubuntu-2404" "rockylinux-9" "flatcar")
 
 export BOSKOS_RESOURCE_OWNER=image-builder
 if [[ "${JOB_NAME}" != "" ]]; then
