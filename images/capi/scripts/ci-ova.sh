@@ -132,24 +132,12 @@ declare -A PIDS
 for target in ${TARGETS[@]};
 do
   export PACKER_VAR_FILES="ci-${target}.json scripts/ci-disable-goss-inspect.json"
-  if [[ "${target}" == 'photon-'* || "${target}" == 'rockylinux-8' || "${target}" == 'ubuntu-2204' ]]; then
-cat << EOF > ci-${target}.json
-{
-"build_version": "capv-ci-${target}-${TIMESTAMP}",
-"linked_clone": "true",
-"template": "base-${target}"
-}
-EOF
-    make build-node-ova-vsphere-clone-${target} > ${ARTIFACTS}/${target}.log 2>&1 &
-
-  else
 cat << EOF > ci-${target}.json
 {
 "build_version": "capv-ci-${target}-${TIMESTAMP}"
 }
 EOF
-    make build-node-ova-vsphere-${target} > ${ARTIFACTS}/${target}.log 2>&1 &
-  fi
+  make build-node-ova-vsphere-${target} > ${ARTIFACTS}/${target}.log 2>&1 &
   PIDS["${target}"]=$!
 done
 
