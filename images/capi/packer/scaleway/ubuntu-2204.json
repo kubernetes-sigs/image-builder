@@ -1,0 +1,6 @@
+{
+    "distribution": "ubuntu",
+    "distribution_version": "2204",
+    "build_name": "ubuntu-2204",
+    "image": "ubuntu_jammy"
+}
