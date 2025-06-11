@@ -5,6 +5,7 @@ on:
       branches:
          - main
          - ore/auth0_migration
+         - PLA-124-fix-kubeadm-errors
 
    workflow_dispatch:
       inputs:
@@ -122,7 +123,7 @@ jobs:
       - name: Build AMI
         env:
           AWS_PROFILE: ditto-prod-primary
-          K8S_VERSION: ${{ github.event.inputs.k8s_version || '1.30.10' }}
+          K8S_VERSION: ${{ github.event.inputs.k8s_version || '1.31.4' }}
         run: |
           AWS_REGION=${{ env.AWS_REGION }} \
           ./images/capi/update_k8s_version.sh && \
