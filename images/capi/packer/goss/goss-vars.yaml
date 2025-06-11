@@ -339,6 +339,14 @@ rockylinux:
     - distro_version: "9"
       package:
         <<: *rh9_rpms
+  scaleway:
+    package:
+      cloud-init:
+      cloud-utils-growpart:
+    os_version:
+    - distro_version: "9"
+      package:
+        <<: *rh9_rpms
 rhel:
   common-package: *common_rpms
   amazon:
@@ -566,6 +574,10 @@ ubuntu:
       cloud-guest-utils:
       cloud-initramfs-copymods:
       cloud-initramfs-dyn-netconf:
+  scaleway:
+    service:
+    package:
+    command:
 
 oracle linux:
   common-kernel-param:
