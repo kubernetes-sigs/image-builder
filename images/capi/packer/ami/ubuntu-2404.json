@@ -1,7 +1,9 @@
 {
+  "ami_filter_arch": "x86_64",
   "ami_filter_name": "ubuntu/images/*ubuntu-noble-24.04-amd64-server-*",
   "ami_filter_owners": "099720109477",
   "ansible_extra_vars": "",
+  "arch": "amd64",
   "build_name": "ubuntu-24.04",
   "distribution": "Ubuntu",
   "distribution_release": "noble",

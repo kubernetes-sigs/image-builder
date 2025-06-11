@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-pause_image: mcr.microsoft.com/oss/kubernetes/pause:3.9
+pause_image: mcr.microsoft.com/oss/kubernetes/pause:3.10
 containerd_additional_settings: ""
 containerd_config_file: config.toml
 

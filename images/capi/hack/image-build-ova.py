@@ -112,6 +112,7 @@ def main():
                  "centos8-64": {"id": "107", "version": "8", "type": "centos8_64Guest"},
                  "rhel7-64": {"id": "80", "version": "7", "type": "rhel7_64Guest"},
                  "rhel8-64": {"id": "80", "version": "8", "type": "rhel8_64Guest"},
+                 "rhel9-64": {"id": "80", "version": "9", "type": "rhel9_64Guest"},
                  "rockylinux-64": {"id": "80", "version": "", "type": "rockylinux_64Guest"},
                  "ubuntu-64": {"id": "94", "version": "", "type": "ubuntu64Guest"},
                  "flatcar-64": {"id": "100", "version": "", "type": "other4xLinux64Guest"},

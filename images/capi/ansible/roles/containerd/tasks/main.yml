@@ -137,7 +137,7 @@
     dest: /etc/systemd/system/containerd.service.d/limit-nofile.conf
     src: etc/systemd/system/containerd.service.d/limit-nofile.conf
     mode: "0644"
-  when: ansible_os_family in ["Common Base Linux Mariner", "Microsoft Azure Linux"]
+  when: ansible_os_family in ["Common Base Linux Mariner", "Flatcar", "Microsoft Azure Linux"]
 
 - name: Create containerd http proxy conf file if needed
   ansible.builtin.template:

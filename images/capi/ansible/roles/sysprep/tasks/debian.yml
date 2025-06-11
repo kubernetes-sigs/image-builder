@@ -53,10 +53,14 @@
     state: absent
   when: http_proxy is defined or https_proxy is defined
 
+- name: Get installed service
+  ansible.builtin.service_facts:
+
 - name: Stop auditing
   ansible.builtin.service:
     name: rsyslog
     state: stopped
+  when: "'rsyslog' in services"
 
 - name: Remove apt package caches
   ansible.builtin.apt:
@@ -115,7 +119,7 @@
     - Update debian grub
   when: _stat_update_grub.stat.exists
 
-- name: Remvoing subiquity disable disable cloud-init networking config
+- name: Removing subiquity disable cloud-init networking config
   ansible.builtin.file:
     path: /etc/cloud/cloud.cfg.d/subiquity-disable-cloudinit-networking.cfg
     state: absent

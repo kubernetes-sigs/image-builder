@@ -127,6 +127,7 @@ deps-ova: deps-common
 	hack/ensure-ansible-windows.sh
 	hack/ensure-ovftool.sh
 	$(PACKER) init packer/config.pkr.hcl
+	$(PACKER) init packer/ova/config.pkr.hcl
 
 .PHONY: deps-openstack
 deps-openstack: ## Installs/checks dependencies for OpenStack builds
@@ -227,6 +228,7 @@ CONTROLLER_IMG ?= $(REGISTRY)/$(IMAGE_NAME)
 TAG ?= dev
 ARCH ?= amd64
 BASE_IMAGE ?= docker.io/library/ubuntu:jammy
+BUILDKIT_SYNTAX ?= docker/dockerfile:1.14
 
 ## --------------------------------------
 ## Packer flags
@@ -382,7 +384,7 @@ NODE_OVA_VSPHERE_BUILD_NAMES		:=	$(addprefix node-ova-vsphere-,$(PLATFORMS_AND_V
 NODE_OVA_VSPHERE_BASE_BUILD_NAMES		:=	$(addprefix node-ova-vsphere-base-,$(PLATFORMS_AND_VERSIONS))
 NODE_OVA_VSPHERE_CLONE_BUILD_NAMES		:=	$(addprefix node-ova-vsphere-clone-,$(PLATFORMS_AND_VERSIONS))
 
-AMI_BUILD_NAMES			   ?= ami-centos-7 ami-ubuntu-2004 ami-ubuntu-2204 ami-ubuntu-2404 ami-amazon-2 ami-amazon-2023 ami-flatcar ami-windows-2019 ami-rockylinux-8 ami-rhel-8
+AMI_BUILD_NAMES			   ?= ami-centos-7 ami-ubuntu-2004 ami-ubuntu-2204 ami-ubuntu-2404 ami-amazon-2 ami-amazon-2023 ami-flatcar ami-flatcar-arm64 ami-windows-2019 ami-rockylinux-8 ami-rhel-8
 HUAWEICLOUD_BUILD_NAMES ?= huaweicloud-ubuntu-2204
 GCE_BUILD_NAMES			   ?= gce-ubuntu-2004 gce-ubuntu-2204 gce-ubuntu-2404 gce-rhel-8
 
@@ -400,7 +402,7 @@ OCI_BUILD_NAMES				?= oci-ubuntu-2004 oci-ubuntu-2204 oci-oracle-linux-8 oci-ora
 
 DO_BUILD_NAMES 				?=	do-centos-7 do-ubuntu-2004 do-ubuntu-2204 do-ubuntu-2404
 
-OPENSTACK_BUILD_NAMES		?=	openstack-ubuntu-2004 openstack-ubuntu-2204 openstack-ubuntu-2404 openstack-flatcar
+OPENSTACK_BUILD_NAMES		?=	openstack-ubuntu-2004 openstack-ubuntu-2204 openstack-ubuntu-2404 openstack-flatcar openstack-rockylinux-9
 
 OSC_BUILD_NAMES 			?=	osc-ubuntu-2004 osc-ubuntu-2204
 
@@ -408,17 +410,19 @@ QEMU_BUILD_NAMES			?=	qemu-ubuntu-2004 qemu-ubuntu-2204 qemu-ubuntu-2204-cloudim
 
 QEMU_KUBEVIRT_BUILD_NAMES	:= $(addprefix kubevirt-,$(QEMU_BUILD_NAMES))
 
-RAW_BUILD_NAMES				?=	raw-ubuntu-2004 raw-ubuntu-2004-efi raw-ubuntu-2204 raw-ubuntu-2204-efi raw-flatcar raw-rhel-8 raw-rhel-9 raw-rhel-9-efi
+RAW_BUILD_NAMES				?=	raw-ubuntu-2004 raw-ubuntu-2004-efi raw-ubuntu-2204 raw-ubuntu-2204-efi raw-ubuntu-2404 raw-ubuntu-2404-efi raw-flatcar raw-rhel-8 raw-rhel-9 raw-rhel-9-efi
 
 POWERVS_BUILD_NAMES         ?= powervs-centos-8 powervs-centos-9
 
 NUTANIX_BUILD_NAMES ?= nutanix-ubuntu-2004 nutanix-ubuntu-2204 nutanix-ubuntu-2404 nutanix-rhel-8 nutanix-rhel-9 nutanix-rockylinux-8 nutanix-rockylinux-9 nutanix-flatcar nutanix-windows-2022
 
-HCLOUD_BUILD_NAMES ?= hcloud-ubuntu-2004 hcloud-ubuntu-2204 hcloud-ubuntu-2404 hcloud-centos-7 hcloud-rockylinux-8 hcloud-rockylinux-9 hcloud-flatcar
+HCLOUD_BUILD_NAMES ?= hcloud-ubuntu-2004 hcloud-ubuntu-2204 hcloud-ubuntu-2404 hcloud-centos-7 hcloud-rockylinux-8 hcloud-rockylinux-9 hcloud-flatcar hcloud-flatcar-arm64
 
 PROXMOX_BUILD_NAMES 		?= proxmox-ubuntu-2204 proxmox-ubuntu-2404 proxmox-ubuntu-2404-efi proxmox-rockylinux-9 proxmox-flatcar
 
 VULTR_BUILD_NAMES 				?=	vultr-ubuntu-2204
+
+MAAS_BUILD_NAMES 			?= maas-ubuntu-2204-efi maas-ubuntu-2404-efi
 
 ## --------------------------------------
 ## Dynamic build targets
@@ -468,6 +472,8 @@ PROXMOX_BUILD_TARGETS		:= $(addprefix build-,$(PROXMOX_BUILD_NAMES))
 PROXMOX_VALIDATE_TARGETS	:= $(addprefix validate-,$(PROXMOX_BUILD_NAMES))
 VULTR_BUILD_TARGETS 	:= $(addprefix build-,$(VULTR_BUILD_NAMES))
 VULTR_VALIDATE_TARGETS 	:= $(addprefix validate-,$(VULTR_BUILD_NAMES))
+MAAS_BUILD_TARGETS 	:= $(addprefix build-,$(MAAS_BUILD_NAMES))
+MAAS_VALIDATE_TARGETS 	:= $(addprefix validate-,$(MAAS_BUILD_NAMES))
 
 .PHONY: $(NODE_OVA_LOCAL_BUILD_TARGETS)
 $(NODE_OVA_LOCAL_BUILD_TARGETS): deps-ova set-ssh-password
@@ -660,6 +666,15 @@ $(VULTR_BUILD_TARGETS): deps-vultr
 $(VULTR_VALIDATE_TARGETS): deps-vultr
 	$(PACKER) validate $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/vultr/$(subst validate-vultr-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/vultr/packer.json
 
+.PHONY: $(MAAS_BUILD_TARGETS)
+$(MAAS_BUILD_TARGETS): deps-qemu set-ssh-password
+	$(PACKER) build $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/maas/$(subst build-,,$@).json)" --var="ansible_user_vars=provider=maas" $(ABSOLUTE_PACKER_VAR_FILES) packer/maas/packer.json
+
+.PHONY: $(MAAS_VALIDATE_TARGETS)
+$(MAAS_VALIDATE_TARGETS): deps-qemu set-ssh-password
+	$(PACKER) validate $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/maas/$(subst validate-,,$@).json)" --var="ansible_user_vars=provider=maas" $(ABSOLUTE_PACKER_VAR_FILES) packer/maas/packer.json
+
+
 ## --------------------------------------
 ## Dynamic clean targets
 ## --------------------------------------
@@ -691,6 +706,7 @@ build-ami-ubuntu-2404: ## Builds Ubuntu 24.04 AMI
 build-ami-rockylinux-8: ## Builds RockyLinux 8 AMI
 build-ami-rhel-8: ## Builds RHEL-8 AMI
 build-ami-flatcar: ## Builds Flatcar
+build-ami-flatcar-arm64: ## Builds Flatcar arm64
 build-ami-windows-2019: ## Build Windows Server 2019 AMI Packer config
 build-ami-all: $(AMI_BUILD_TARGETS) ## Builds all AMIs
 
@@ -845,6 +861,7 @@ build-node-ova-local-base-ubuntu-2004: ## Builds Ubuntu 20.04 Base Node OVA w lo
 build-openstack-ubuntu-2004: ## Builds Ubuntu 20.04 OpenStack image
 build-openstack-ubuntu-2204: ## Builds Ubuntu 22.04 OpenStack image
 build-openstack-ubuntu-2404: ## Builds Ubuntu 24.04 OpenStack image
+build-openstack-rockylinux-9: ## Builds RockyLinux 9 OpenStack image
 build-openstack-flatcar: ## Builds Flatcar OpenStack image
 build-openstack-all: $(OPENSTACK_BUILD_TARGETS)
 
@@ -867,11 +884,16 @@ build-qemu-rockylinux-9: ## Builds Rocky 9 QEMU image
 build-qemu-rockylinux-9-cloudimg: ## Builds Rocky 9 QEMU image using cloud image
 build-qemu-all: $(QEMU_BUILD_TARGETS) ## Builds all Qemu images
 
+build-maas-ubuntu-2204-efi: ## Builds Ubuntu 22.04 MaaS image that EFI boots
+build-maas-ubuntu-2404-efi: ## Builds Ubuntu 24.04 MaaS image that EFI boots
+
 build-raw-flatcar: ## Builds Flatcar RAW image
 build-raw-ubuntu-2004: ## Builds Ubuntu 20.04 RAW image
 build-raw-ubuntu-2004-efi: ## Builds Ubuntu 20.04 RAW image that EFI boots
 build-raw-ubuntu-2204: ## Builds Ubuntu 22.04 RAW image
 build-raw-ubuntu-2204-efi: ## Builds Ubuntu 22.04 RAW image that EFI boots
+build-raw-ubuntu-2404: ## Builds Ubuntu 24.04 RAW image
+build-raw-ubuntu-2404-efi: ## Builds Ubuntu 24.04 RAW image that EFI boots
 build-raw-rhel-8: ## Builds RHEL 8 RAW image
 build-raw-rhel-9: ## Builds RHEL 9 RAW image
 build-raw-rhel-9-efi: ## Builds RHEL 9 RAW image that EFI boots
@@ -907,6 +929,7 @@ build-hcloud-centos-7: ## Builds the Hetzner Cloud CentOS 7 image
 build-hcloud-rockylinux-8: ## Builds the Hetzner Cloud Rocky Linux 8 image
 build-hcloud-rockylinux-9: ## Builds the Hetzner Cloud Rocky Linux 9 image
 build-hcloud-flatcar: ## Builds the Hetzner Cloud Flatcar image
+build-hcloud-flatcar-arm64: ## Builds the Hetzner Cloud Flatcar arm64 image
 build-hcloud-all: $(HCLOUD_BUILD_TARGETS) ## Builds all Hetzner Cloud image
 
 build-proxmox-flatcar: ## Builds Flatcar Proxmox image
@@ -927,6 +950,7 @@ validate-ami-centos-7: ## Validates CentOS 7 AMI Packer c`onfig
 validate-ami-rockylinux-8: ## Validates RockyLinux 8 AMI Packer config
 validate-ami-rhel-8: ## Validates RHEL-8 AMI Packer config
 validate-ami-flatcar: ## Validates Flatcar AMI Packer config
+validate-ami-flatcar-arm64: ## Validates Flatcar arm64 AMI Packer config
 validate-ami-ubuntu-2004: ## Validates Ubuntu 20.04 AMI Packer config
 validate-ami-ubuntu-2204: ## Validates Ubuntu 22.04 AMI Packer config
 validate-ami-ubuntu-2404: ## Validates Ubuntu 22.04 AMI Packer config
@@ -982,6 +1006,7 @@ validate-do-all: $(DO_VALIDATE_TARGETS) ## Validates all DigitalOcean Snapshot P
 validate-openstack-ubuntu-2004: ## Validates Ubuntu 20.04 Openstack Image Packer config
 validate-openstack-ubuntu-2204: ## Validates Ubuntu 22.04 Openstack Image Packer config
 validate-openstack-ubuntu-2404: ## Validates Ubuntu 22.04 Openstack Image Packer config
+validate-openstack-rocky-9: ## Validates Rocky 9 Openstack Image Packer config
 validate-openstack-flatcar: ## Validates Flatcar Openstack Image Packer config
 validate-openstack-all: $(OPENSTACK_VALIDATE_TARGETS) ## Validates all Openstack Glance Image Packer config
 
@@ -1057,6 +1082,8 @@ validate-raw-ubuntu-2004: ## Validates Ubuntu 20.04 RAW image packer config
 validate-raw-ubuntu-2004-efi: ## Validates Ubuntu 20.04 RAW EFI image packer config
 validate-raw-ubuntu-2204: ## Validates Ubuntu 22.04 RAW image packer config
 validate-raw-ubuntu-2204-efi: ## Validates Ubuntu 22.04 RAW EFI image packer config
+validate-raw-ubuntu-2404: ## Validates Ubuntu 24.04 RAW image packer config
+validate-raw-ubuntu-2404-efi: ## Validates Ubuntu 24.04 RAW EFI image packer config
 validate-raw-rhel-8: ## Validates RHEL 8 RAW image packer config
 validate-raw-all: $(RAW_VALIDATE_TARGETS) ## Validates all RAW Packer config
 
@@ -1094,6 +1121,7 @@ validate-hcloud-centos-7: ## Validates CentOS 7 Hetzner Cloud Packer config
 validate-hcloud-rockylinux-8: ## Validates Rocky Linux 8 Hetzner Cloud Packer config
 validate-hcloud-rockylinux-9: ## Validates the Hetzner Cloud Rocky Linux 9 Packer config
 validate-hcloud-flatcar: ## Validates the Hetzner Cloud Flatcar Packer config
+validate-hcloud-flatcar-arm64: ## Validates the Hetzner Cloud Flatcar arm64 Packer config
 validate-hcloud-all: $(HCLOUD_VALIDATE_TARGETS) ## Validates all Hetzner Cloud Packer config
 
 validate-proxmox-ubuntu-2204: ## Validates Ubuntu 22.04 Proxmox Packer config
@@ -1167,12 +1195,12 @@ clean-packer-cache:
 .PHONY: docker-pull-prerequisites
 docker-pull-prerequisites:
 	# We must pre-pull images https://github.com/moby/buildkit/issues/1271
-	docker pull docker/dockerfile:1.1-experimental
+	docker pull $(BUILDKIT_SYNTAX)
 	docker pull $(BASE_IMAGE)
 
 .PHONY: docker-build
 docker-build: docker-pull-prerequisites ## Build the Docker image for controller-manager
-	DOCKER_BUILDKIT=1 docker build --build-arg PASSED_IB_VERSION=$(IB_VERSION) --build-arg ARCH=$(ARCH) --build-arg BASE_IMAGE=$(BASE_IMAGE) --build-arg TAG=$(TAG) . -t $(CONTROLLER_IMG)-$(ARCH):$(TAG)
+	DOCKER_BUILDKIT=1 docker build --build-arg BUILDKIT_SYNTAX=$(BUILDKIT_SYNTAX) --build-arg PASSED_IB_VERSION=$(IB_VERSION) --build-arg ARCH=$(ARCH) --build-arg BASE_IMAGE=$(BASE_IMAGE) --build-arg TAG=$(TAG) . -t $(CONTROLLER_IMG)-$(ARCH):$(TAG)
 
 .PHONY: docker-push
 docker-push: ## Push the Docker image

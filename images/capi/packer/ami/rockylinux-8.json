@@ -1,6 +1,8 @@
 {
+  "ami_filter_arch": "x86_64",
   "ami_filter_name": "Rocky-8-ec2-8.5-*",
   "ami_filter_owners": "679593333241",
+  "arch": "amd64",
   "build_name": "rockylinux-8",
   "distribution": "rockylinux",
   "distribution_release": "Core",

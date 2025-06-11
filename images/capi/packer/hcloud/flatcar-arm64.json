@@ -1,0 +1,22 @@
+{
+  "ansible_extra_vars": "ansible_python_interpreter=/opt/bin/python",
+  "arch": "arm64",
+  "build_name": "flatcar",
+  "crictl_arch": "arm64",
+  "crictl_source_type": "http",
+  "distribution": "flatcar",
+  "distribution_release": "{{env `FLATCAR_CHANNEL`}}",
+  "distribution_version": "{{env `FLATCAR_CHANNEL`}}-{{env `FLATCAR_VERSION`}}",
+  "goss_arch": "arm64",
+  "kubernetes_cni_http_checksum_arch": "arm64",
+  "kubernetes_cni_source_type": "http",
+  "kubernetes_goarch": "arm64",
+  "kubernetes_source_type": "http",
+  "python_path": "/opt/pypy/site-packages",
+  "root_device_name": "/dev/sda",
+  "server_type": "cax11",
+  "ssh_username": "root",
+  "systemd_prefix": "/etc/systemd",
+  "sysusr_prefix": "/opt",
+  "sysusrlocal_prefix": "/opt"
+}

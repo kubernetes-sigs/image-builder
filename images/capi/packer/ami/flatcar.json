@@ -1,7 +1,9 @@
 {
+  "ami_filter_arch": "x86_64",
   "ami_filter_name": "Flatcar*{{env `FLATCAR_CHANNEL`}}*{{env `FLATCAR_VERSION`}}*",
   "ami_filter_owners": "075585003325",
   "ansible_extra_vars": "ansible_python_interpreter=/opt/bin/python",
+  "arch": "amd64",
   "build_name": "flatcar-{{env `FLATCAR_CHANNEL`}}",
   "crictl_source_type": "http",
   "distribution": "flatcar",

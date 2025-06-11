@@ -14,44 +14,70 @@
 
 ---
 
-- name: Add Falco package signing key
-  ansible.builtin.apt_key:
-    url: https://falco.org/repo/falcosecurity-packages.asc
-    state: present
+- name: Install Falco on Debian based systems
   when: ansible_os_family == "Debian"
+  block:
+    - name: Add Falco package signing key
+      ansible.builtin.apt_key:
+        url: https://falco.org/repo/falcosecurity-packages.asc
+        state: present
 
-- name: Add Falco apt repo
-  ansible.builtin.apt_repository:
-    repo: deb https://download.falco.org/packages/deb stable main
-    state: present
-    filename: falcosecurity
-  when: ansible_os_family == "Debian"
+    - name: Add Falco apt repo
+      ansible.builtin.apt_repository:
+        repo: deb https://download.falco.org/packages/deb stable main
+        state: present
+        filename: falcosecurity
 
-- name: Install Falco requirements
-  ansible.builtin.apt:
-    pkg:
-      - dkms
-      - make
-      - "linux-headers-{{ ansible_kernel }}"
-      - clang
-      - llvm
-    update_cache: true
-    state: present
-  ignore_errors: true
-  register: pkg_result
-  until: pkg_result is success
-  when: ansible_os_family == "Debian"
+    - name: Install Falco requirements
+      ansible.builtin.apt:
+        pkg:
+          - dkms
+          - make
+          - "linux-headers-{{ ansible_kernel }}"
+          - clang
+          - llvm
+        update_cache: true
+        state: present
+      ignore_errors: true
+      register: pkg_result
+      until: pkg_result is success
+
+- name: Install Falco on RedHat based systems
+  when: ansible_os_family == "RedHat"
+  block:
+    - name: Add Falco YUM repo
+      ansible.builtin.yum_repository:
+        name: Falco repository
+        description: Falco YUM repo
+        file: falcosecurity
+        baseurl: https://falco.org/repo/falcosecurity-rpm.repo
+        gpgcheck: true
+        enabled: true
+        gpgkey: https://falco.org/repo/falcosecurity-packages.asc
+
+    - name: Install Falco requirements
+      ansible.builtin.dnf:
+        pkg:
+          - dkms
+          - make
+          - "kernel-devel-{{ ansible_kernel }}"
+          - clang
+          - llvm
+          - dialog
+        state: present
+      ignore_errors: true
+      register: pkg_result
+      until: pkg_result is success
 
 - name: Install Falco
-  ansible.builtin.apt:
+  ansible.builtin.package:
     name: falco
-    update_cache: true
     state: present
-  when: ansible_os_family == "Debian"
+  when: ansible_os_family == "Debian" or ansible_os_family == "RedHat"
 
 - name: Enable Falco Modern eBPF
   ansible.builtin.service:
     name: falco-modern-bpf
     state: started
     enabled: true
-  when: ansible_os_family == "Debian"
+  when: ansible_os_family == "Debian" or ansible_os_family == "RedHat"
