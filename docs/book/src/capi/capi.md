@@ -27,6 +27,7 @@ If any needed binaries are not present, they can be installed to `images/capi/.b
 * [OpenStack](./providers/openstack.md)
 * [OpenStack remote image building](./providers/openstack-remote.md)
 * [Raw](./providers/raw.md)
+* [Scaleway](./providers/scaleway.md)
 * [VirtualBox](./providers/virtualbox.md)
 * [vSphere](./providers/vsphere.md)
 * [Proxmox](./providers/proxmox.md)

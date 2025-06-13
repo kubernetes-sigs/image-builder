@@ -54,6 +54,9 @@
 - ansible.builtin.include_tasks: huaweicloud.yml
   when: packer_builder_type.startswith('huaweicloud')
 
+- ansible.builtin.include_tasks: scaleway.yml
+  when: packer_builder_type.startswith('scaleway')
+
 - ansible.builtin.include_tasks: maas.yml
   when: packer_builder_type is search('qemu') and provider is defined and provider is search('maas')
 

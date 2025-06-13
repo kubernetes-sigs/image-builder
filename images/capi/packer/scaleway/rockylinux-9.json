@@ -1,0 +1,6 @@
+{
+    "distribution": "rockylinux",
+    "distribution_version": "9",
+    "build_name": "rockylinux-9",
+    "image": "rockylinux_9"
+}
