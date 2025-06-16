@@ -33,7 +33,7 @@ SHELL := /usr/bin/env bash
 # /tmp/$(oscap_file): /tmp/$(oscap_file).zip
 # 	unzip -n -d /tmp /tmp/$(oscap_file)
 
-PATCH_SCRIPT := ./packer/ami/scripts/oscap.sh
+PATCH_SCRIPT := ./scripts/oscap.sh
 
 .PHONY: patch-oscap-playbook
 patch-oscap-playbook:
@@ -526,11 +526,11 @@ $(AMI_VALIDATE_TARGETS): patch-oscap-playbook deps-ami
 	$(PACKER) validate $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="$(abspath packer/ami/$(subst validate-ami-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/ami/packer$(if $(findstring windows,$@),-windows,).json
 
 .PHONY: $(GCE_BUILD_TARGETS)
-$(GCE_BUILD_TARGETS): deps-gce
+$(GCE_BUILD_TARGETS): patch-oscap-playbook deps-gce
 	$(PACKER) build $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/gce/$(subst build-gce-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/gce/packer.json
 
 .PHONY: $(GCE_VALIDATE_TARGETS)
-$(GCE_VALIDATE_TARGETS): deps-gce
+$(GCE_VALIDATE_TARGETS): patch-oscap-playbook deps-gce
 	$(PACKER) validate $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/gce/$(subst validate-gce-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/gce/packer.json
 
 .PHONY: $(AZURE_BUILD_VHD_TARGETS)
