@@ -190,6 +190,12 @@ deps-vultr: deps-common
 	$(PACKER) init packer/config.pkr.hcl
 	$(PACKER) init packer/vultr/config.pkr.hcl
 
+.PHONY: deps-scaleway
+deps-scaleway: ## Installs/checks dependencies for Scaleway builds
+deps-scaleway: deps-common
+	$(PACKER) init packer/config.pkr.hcl
+	$(PACKER) init packer/scaleway/config.pkr.hcl
+
 ## --------------------------------------
 ## Packer Configuration
 ## --------------------------------------
@@ -404,6 +410,8 @@ VULTR_BUILD_NAMES 				?=	vultr-ubuntu-2204
 
 MAAS_BUILD_NAMES 			?= maas-ubuntu-2204-efi maas-ubuntu-2404-efi
 
+SCALEWAY_BUILD_NAMES 				?=	scaleway-rockylinux-9 scaleway-ubuntu-2204 scaleway-ubuntu-2404
+
 ## --------------------------------------
 ## Dynamic build targets
 ## --------------------------------------
@@ -454,6 +462,8 @@ VULTR_BUILD_TARGETS 	:= $(addprefix build-,$(VULTR_BUILD_NAMES))
 VULTR_VALIDATE_TARGETS 	:= $(addprefix validate-,$(VULTR_BUILD_NAMES))
 MAAS_BUILD_TARGETS 	:= $(addprefix build-,$(MAAS_BUILD_NAMES))
 MAAS_VALIDATE_TARGETS 	:= $(addprefix validate-,$(MAAS_BUILD_NAMES))
+SCALEWAY_BUILD_TARGETS		:= $(addprefix build-,$(SCALEWAY_BUILD_NAMES))
+SCALEWAY_VALIDATE_TARGETS	:= $(addprefix validate-,$(SCALEWAY_BUILD_NAMES))
 
 .PHONY: $(NODE_OVA_LOCAL_BUILD_TARGETS)
 $(NODE_OVA_LOCAL_BUILD_TARGETS): deps-ova set-ssh-password
@@ -654,6 +664,13 @@ $(MAAS_BUILD_TARGETS): deps-qemu set-ssh-password
 $(MAAS_VALIDATE_TARGETS): deps-qemu set-ssh-password
 	$(PACKER) validate $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/maas/$(subst validate-,,$@).json)" --var="ansible_user_vars=provider=maas" $(ABSOLUTE_PACKER_VAR_FILES) packer/maas/packer.json
 
+.PHONY: $(SCALEWAY_BUILD_TARGETS)
+$(SCALEWAY_BUILD_TARGETS): deps-scaleway
+	$(PACKER) build $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/scaleway/$(subst build-scaleway-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/scaleway/packer.json
+
+.PHONY: $(SCALEWAY_VALIDATE_TARGETS)
+$(SCALEWAY_VALIDATE_TARGETS): deps-scaleway
+	$(PACKER) validate $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/scaleway/$(subst validate-scaleway-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/scaleway/packer.json
 
 ## --------------------------------------
 ## Dynamic clean targets
@@ -919,6 +936,11 @@ build-proxmox-rockylinux-9: ## Builds the Proxmox rockylinux-9 image
 
 build-vultr-ubuntu-2204: ## Builds Ubuntu 22.04 Vultr Snapshot
 
+build-scaleway-rockylinux-9: ## Builds the Scaleway rockylinux-9 image
+build-scaleway-ubuntu-2204: ## Builds Ubuntu 22.04 Scaleway image
+build-scaleway-ubuntu-2404: ## Builds Ubuntu 24.04 Scaleway image
+build-scaleway-all: $(SCALEWAY_BUILD_TARGETS) ## Builds all Scaleway Cloud images
+
 ## --------------------------------------
 ## Document dynamic validate targets
 ## --------------------------------------
@@ -1107,6 +1129,11 @@ validate-proxmox-flatcar: ## Validates Flatcar Proxmox Packer config
 
 validate-vultr-ubuntu-2204: ## Validates Ubuntu 22.04 Vultr Snapshot Packer config
 
+validate-scaleway-rockylinux-9: ## Validates Rocky Linux 9 Scaleway image Packer config
+validate-scaleway-ubuntu-2204: ## Validates Ubuntu 22.04 Scaleway image Packer config
+validate-scaleway-ubuntu-2404: ## Validates Ubuntu 24.04 Scaleway image Packer config
+validate-scaleway-all: $(SCALEWAY_VALIDATE_TARGETS) ## Validates all Scaleway Cloud Packer config
+
 validate-all: validate-ami-all \
 	validate-azure-all \
 	validate-do-all \
@@ -1118,7 +1145,8 @@ validate-all: validate-ami-all \
 	validate-osc-all \
 	validate-powervs-all \
 	validate-nutanix-all \
-	validate-hcloud-all
+	validate-hcloud-all \
+	validate-scaleway-all
 
 validate-all: ## Validates the Packer config for all build targets
 

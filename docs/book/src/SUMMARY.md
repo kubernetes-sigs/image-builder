@@ -17,6 +17,7 @@
   - [OpenStack remote image building](./capi/providers/openstack-remote.md)
   - [OCI](./capi/providers/oci.md)
   - [raw](./capi/providers/raw.md)
+  - [Scaleway](./capi/providers/scaleway.md)
   - [vSphere](./capi/providers/vsphere.md)
   - [Proxmox](./capi/providers/proxmox.md)
   - [Windows](./capi/windows/windows.md)
