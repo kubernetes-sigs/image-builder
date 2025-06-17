@@ -1,0 +1,280 @@
+html {
+    font-family: 'Lato', sans-serif;
+    height: 100%;
+    overflow: hidden;
+}
+
+body {
+    padding: 0;
+    margin: 0;
+}
+
+#slack-archive-viewer {
+    padding: 0;
+    margin: 0;
+}
+
+#sidebar {
+  display: inline-block;
+  width: 280px;
+  color: white;
+  text-align: left;
+  background-color: #4D394B;
+  z-index: 10;
+  overflow-y: scroll;
+  overflow-x: auto;
+  height: 100vh;
+  user-select: none;
+}
+
+#sidebar a {
+    color: white;
+    font-size: 14px;
+}
+
+#sidebar h3 {
+  margin: 20px 20px;
+  color: white;
+  font-weight: 900;
+}
+
+#sidebar h3:hover {
+  cursor: pointer;
+}
+
+#sidebar h3::after {
+  content: '❯ ';
+  display: inline-block;
+  -webkit-transform: rotate(90deg);
+  transform: rotate(90deg);
+  margin-left: 15px;
+}
+
+#sidebar h3.arrow::after {
+  margin-left: 10px;
+  -webkit-transform: none;
+  transform: none;
+}
+
+.messages {
+    width: calc(100vw - 325px);
+    height: 100vh;
+    text-align: left;
+    display: inline-block;
+    padding-left: 20px;
+    padding-right: 20px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+.message-container {
+    clear: left;
+    min-height: 56px;
+    margin-bottom: 4px;
+}
+
+.message-container:first-child {
+    margin-top: 20px;
+}
+
+.message-container:last-child {
+    margin-bottom: 20px;
+}
+
+.message-container .user_icon {
+    background-color: rgb(248, 244, 240);
+    width: 50px;
+    height: 50px;
+    border-radius: 0.2em;
+    display: inline-block;
+    vertical-align: top;
+    margin-right: 0.65em;
+    float: left;
+}
+
+.message-container .user_icon_reply {
+    background-color: rgb(248, 244, 240);
+    width: 45px;
+    height: 45px;
+    border-radius: 0.2em;
+    display: inline-block;
+    vertical-align: top;
+    margin-right: 0.65em;
+    float: left;
+}
+
+.message-container .time {
+    display: inline-block;
+    color: rgb(200, 200, 200);
+    margin-left: 0.5em;
+}
+
+.message-container .username {
+    display: inline-block;
+    font-weight: 600;
+    line-height: 1;
+}
+
+.message-container .user-email {
+    font-weight: normal;
+    font-style: italic;
+}
+
+.message-container .message {
+    display: inline-block;
+    vertical-align: top;
+    line-height: 1;
+    width: calc(100% - 3em);
+    margin-bottom: -4px;
+}
+
+.message-container .reply {
+    vertical-align: top;
+    line-height: 1;
+    width: calc(97% - 3em);
+    margin-left: 60px;
+    margin-bottom: 10px;
+}
+
+.message-container .msg p {
+    white-space: pre-wrap;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.message-container .msg pre {
+    background-color: #E6E5DF;
+    white-space: pre-wrap;
+}
+
+.message-container .message .msg {
+    line-height: 1.4666;
+    padding-top: 2px;
+    margin-left: 60px;
+}
+
+
+.message-container .reply .msg {
+    line-height: 1.4666;
+    margin-top: 8px;
+    margin-left: 56px;
+}
+
+
+.message-container .message .msg a {
+    overflow-wrap: anywhere;
+}
+
+.message-container .reply .msg a {
+    overflow-wrap: anywhere;
+}
+
+.message-container .message-attachment {
+    padding-left: 20px;
+    border-left: 12px gray solid;
+    margin-left: 5px;
+    margin-bottom: 10px;
+    overflow-wrap: anywhere;
+}
+
+.message-container .message-attachment .service-name {
+    color: #999999;
+}
+
+.message-container .icon {
+    max-width: 10px;
+}
+
+.message-container .old-message {
+    color: #999999;
+}
+
+.message-reaction {
+    transform: scale(115%);
+    margin: 0 55px 20px;
+    transform-origin: left;
+}
+
+blockquote {
+    padding-left: 20px;
+    border-left: 12px gray solid;
+    margin-left: 5px;
+    margin-top: -2px;
+    margin-bottom: 2px;
+}
+
+.msg ul, .msg ol {
+  padding-left: 20px;
+  margin-left: 60px;
+  margin-bottom: -20px;
+  li {
+    margin: -10px auto;
+  }
+}
+
+
+.channel_join .msg, .channel_topic .msg,
+.bot_add .msg, .app_conversation_join .msg {
+    font-style: italic;
+}
+
+.attachment-footer {
+    font-size: small;
+}
+
+.list {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+}
+
+.list li {
+    padding: 4px 20px;
+}
+
+.list li a {
+  width: 100%;
+  padding: 10px 20px;
+}
+
+.list li.active {
+    background-color: #4C9689;
+}
+
+.list li.active:hover {
+    background-color: #4C9689;
+}
+
+.list li:hover {
+    text-decoration: none;
+    background: #3E313C;
+}
+
+.list li a:hover {
+    text-decoration: none;
+}
+
+a:link,
+a:visited,
+a:active {
+    color: #2a80b9;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #439fe0;
+    text-decoration: underline;
+}
+
+.close {
+  display: none;
+}
+
+@media screen {
+    .print-only { display: none }
+}
+
+img.preview {
+    max-width: 50%;
+    height: auto;
+}

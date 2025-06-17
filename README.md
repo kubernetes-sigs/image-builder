@@ -20,6 +20,7 @@ You can reach the maintainers of this project at:
   - [Meeting Agenda / Notes](https://docs.google.com/document/d/100uv2GmlgWyLBVP65W6ABNJ_EqbvVYTYtTilCLbnVYI/edit).
   - [Meeting recordings](https://www.youtube.com/playlist?list=PL69nYSiGNLP29D0nYgAGWt1ZFqS9Z7lw4).
 - [Slack channel](https://kubernetes.slack.com/messages/image-builder)
+  - An archive of the #image-builder channel is available at [https://image-builder.sigs.k8s.io/slack-archive/channel/image-builder/index.html] (From 2020-11-04 -> 2025-06-17)
 - [Mailing list](https://groups.google.com/forum/#!forum/kubernetes-sig-cluster-lifecycle)
 
 ### Code of conduct
