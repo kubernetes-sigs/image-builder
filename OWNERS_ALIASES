@@ -22,8 +22,7 @@ aliases:
   image-builder-scaleway-reviewers:
     - Tomy2e
     - Mia-Cross
-    # TODO: Add once added to kubernetes-sigs org
-    # - remyleone
+    - remyleone
   image-builder-raw-maintainers:
     - detiber
     - thebsdbox
