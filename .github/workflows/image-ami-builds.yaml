@@ -169,7 +169,7 @@ jobs:
 
       - name: Build GCP Images
         env:
-          K8S_VERSION: ${{ github.event.inputs.k8s_version || '1.31.4' }}
+          K8S_VERSION: ${{ github.event.inputs.k8s_version || '1.32.4' }} 
           PKR_VAR_google_access_token: "${{ steps.gcp-auth.outputs.access_token }}"
         run: |
           ./images/capi/update_k8s_version.sh && \
