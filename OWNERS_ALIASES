@@ -48,8 +48,10 @@ aliases:
     - mboersma
   cluster-api-gcp-maintainers:
     - cpanato
+    - damdo
     - dims
     - richardcase
+    - salasberryfin
   cluster-api-digitalocean-maintainers:
     - cpanato
     - gottwald
