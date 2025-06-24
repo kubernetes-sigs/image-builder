@@ -22,7 +22,20 @@ CAPI_ROOT=$(dirname "${BASH_SOURCE[0]}")/..
 cd "${CAPI_ROOT}" || exit 1
 
 export ARTIFACTS="${ARTIFACTS:-${PWD}/_artifacts}"
-TARGETS=("ubuntu-2204" "ubuntu-2404" "rockylinux-9" "flatcar" "photon-5")
+# Dynamically gets all targets and filters out the following:
+# - Any RHEL targets (because of subscription requirements)
+# - Any Windows targets (because of license requirements)
+# - Any efi targets (to reduce duplicate OSs)
+# The following are currently having issues running in the
+# test environment so are specifically excluded for now
+# - RockyLinux-8
+# - Photon-4
+TARGETS=( $(make build-node-ova-vsphere-all --recon -d | grep "Must remake" | \
+  grep -v build-node-ova-vsphere-all | \
+  grep -E -v 'rhel|windows|efi' | \
+  grep -v build-node-ova-vsphere-rockylinux-8 | \
+  grep -v build-node-ova-vsphere-photon-4 | \
+  grep -E -o 'build-node-ova-vsphere-[a-zA-Z0-9\-]+' ) )
 
 export BOSKOS_RESOURCE_OWNER=image-builder
 if [[ "${JOB_NAME}" != "" ]]; then
@@ -131,12 +144,14 @@ make deps-ova
 declare -A PIDS
 for target in ${TARGETS[@]};
 do
+  target=${target#build-node-ova-vsphere-}
   export PACKER_VAR_FILES="ci-${target}.json scripts/ci-disable-goss-inspect.json"
 cat << EOF > ci-${target}.json
 {
 "build_version": "capv-ci-${target}-${TIMESTAMP}"
 }
 EOF
+  export PACKER_LOG=1
   make build-node-ova-vsphere-${target} > ${ARTIFACTS}/${target}.log 2>&1 &
   PIDS["${target}"]=$!
 done
