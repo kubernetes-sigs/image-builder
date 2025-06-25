@@ -125,6 +125,7 @@
         "ansible_shell_executable=/bin/bash",
         "-b"
       ],
+      "playbook_file": "{{user `patched_playbook`}}",
       "type": "ansible"
     },
     {
