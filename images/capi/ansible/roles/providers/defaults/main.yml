@@ -16,4 +16,3 @@ networkd_dispatcher_download_url: https://gitlab.com/craftyguy/networkd-dispatch
 packer_builder_type: ""
 build_target: virt
 var_log_messages_maxsize: 100M
-cloud_init_primary_datasource: Ec2

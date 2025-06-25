@@ -123,12 +123,8 @@
       "extra_arguments": [
         "--extra-vars",
         "ansible_shell_executable=/bin/bash",
-        "-b",
-        "-e", 
-        "cloud_init_primary_datasource=Ec2Kubernetes"
+        "-b"
       ],
-      "playbook_file": "{{user `patched_playbook`}}", 
-
       "type": "ansible"
     },
     {
