@@ -120,7 +120,7 @@
     "kubernetes_semver": null,
     "kubernetes_series": null,
     "kubernetes_source_type": null,
-    "omi_name": "{{user `build_name`}}-{{user `distribution_version`}}-kubernetes-{{user `kubernetes_semver`}}-{{timestamp}}",
+    "omi_name": "{{user `build_name`}}-kubernetes-{{user `kubernetes_semver`}}-{{isotime `2006-01-02`}}",
     "owner": "Outscale",
     "region": "{{env `OSC_REGION`}}",
     "runc_sha256": null,
