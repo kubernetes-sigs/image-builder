@@ -7,6 +7,7 @@
         "{{ user `account_id` }}"
       ],
       "omi_name": "{{user `omi_name`}}",
+      "omi_boot_modes": ["legacy", "uefi"],
       "region": "{{ user `region` }}",
       "secret_key": "{{ user `secret_key` }}",
       "source_omi": "{{ user `source_image` }}",
@@ -126,6 +127,6 @@
     "runc_url": "https://github.com/opencontainers/runc/releases/download/v{{user `runc_version`}}/runc.amd64",
     "runc_version": null,
     "secret_key": "{{env `OSC_SECRET_KEY`}}",
-    "vm_type": "tinav5.c2r4p2"
+    "vm_type": "tinav6.c2r4p2"
   }
 }
