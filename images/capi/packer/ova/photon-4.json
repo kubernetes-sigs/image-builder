@@ -1,6 +1,6 @@
 {
-  "boot_command_prefix": "<esc><wait> vmlinuz initrd=initrd.img root/dev/ram0 loglevel=3 photon.media=cdrom ks=",
-  "boot_command_suffix": " insecure_installation=1<enter><wait>",
+  "boot_command_prefix": "<esc><wait>c linux /isolinux/vmlinuz root=/dev/ram0 loglevel=3 insecure_installation=1 photon.media=cdrom ks=",
+  "boot_command_suffix": " <enter> initrd /isolinux/initrd.img <enter> boot <enter>",
   "boot_media_path": "/dev/sr1:/4/ks.json",
   "build_name": "photon-4",
   "cd_content_location": "./packer/ova/linux/{{user `distro_name`}}/http/*",
