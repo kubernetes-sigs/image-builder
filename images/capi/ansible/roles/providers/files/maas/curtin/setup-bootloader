@@ -1,8 +1,9 @@
 #!/bin/bash -ex
 #
-# This script was copied as-is from:
+# This script was based on:
 # Source: https://github.com/canonical/packer-maas
 # Original Author: Alexsander de Souza <alexsander.souza@canonical.com>
+# and modified by the image-builder team
 
 export DEBIAN_FRONTEND=noninteractive
 
@@ -12,19 +13,27 @@ dpkg --configure -a
 
 # Update the package lists before attempting to install the kernel
 apt-get update
-# Ensure the existence of linux-image-generic for non-cloudimg images.
-#apt-get -y install linux-image-generic
 
-dpkg-reconfigure grub-efi-amd64
-update-grub
+if [ -d /sys/firmware/efi ]; then
+    echo "EFI MODE!"
+    dpkg-reconfigure grub-efi-amd64
+    update-grub
 
-grub-install \
-    --target=x86_64-efi \
-    --efi-directory=/boot/efi \
-    --bootloader-id=ubuntu \
-    --recheck
-
-update-initramfs -uk all
-
-efibootmgr -v
-
+    grub-install \
+        --target=x86_64-efi \
+        --efi-directory=/boot/efi \
+        --bootloader-id=ubuntu \
+        --recheck
+    update-initramfs -uk all
+    efibootmgr -v
+else
+    echo "BIOS MODE!"
+    apt-get remove -y --allow-change-held-packages --allow-remove-essential grub-efi-amd64 grub-efi-amd64-signed shim-signed
+    apt-get install -y grub-pc
+    dpkg-reconfigure grub-pc
+    update-grub
+    DEVICE=$(findmnt -no SOURCE "/")
+    BOOT_DISK=$(lsblk -no PKNAME "$DEVICE")
+    grub-install /dev/"$BOOT_DISK"
+    update-initramfs -uk all
+fi
