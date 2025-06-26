@@ -24,7 +24,6 @@ the different operating systems.
 
 | File                 | Description                              |
 |----------------------|------------------------------------------|
-| `centos-7.json`      | The settings for the CentOS 7 image      |
 | `flatcar.json`       | The settings for the Flatcar image       |
 | `flatcar-arm64.json` | The settings for the Flatcar arm64 image |
 | `rockylinux-8.json`  | The settings for the RockyLinux 8 image  |

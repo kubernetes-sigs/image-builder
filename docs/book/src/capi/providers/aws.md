@@ -41,7 +41,6 @@ the different operating systems.
 | File                 | Description                               |
 |----------------------|-------------------------------------------|
 | `amazon-2.json`      | The settings for the Amazon 2 Linux image |
-| `centos-7.json`      | The settings for the CentOS 7 image       |
 | `flatcar.json`       | The settings for the Flatcar image        |
 | `flatcar-arm64.json` | The settings for the Flatcar arm64 image  |
 | `rhel-8.json`        | The settings for the RHEL 8 image         |
