@@ -47,7 +47,7 @@ export ENCRYPTED_SSH_PASSWORD=$($openssl_binary passwd -6 -salt $SALT -stdin <<<
 
 for file in $(find $PACKER_DIR -type f -name "*.tmpl"); do
   if [ -f "${file%.*}" ]; then
-    rm ${file%.*}
+    rm ${file%.*} || true # HACK: Sometimes the rm fails due to the file not existing 🤷
   fi
   sed -e "s|\$SSH_PASSWORD|$SSH_PASSWORD|g" -e "s|\$ENCRYPTED_SSH_PASSWORD|$ENCRYPTED_SSH_PASSWORD|g" $file | tee ${file%.*}
 done
