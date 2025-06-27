@@ -142,6 +142,7 @@ cat << EOF > ci-${target}.json
 "build_version": "capv-ci-${target}-${TIMESTAMP}"
 }
 EOF
+  export PACKER_LOG=1
   make build-node-ova-vsphere-${target} > ${ARTIFACTS}/${target}.log 2>&1 &
   PIDS["${target}"]=$!
 done
