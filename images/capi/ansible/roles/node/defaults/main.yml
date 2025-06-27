@@ -94,12 +94,6 @@ common_photon_rpms:
   - unzip
   - curl
 
-photon_3_rpms:
-  - python-netifaces
-  - python-requests
-  - jq
-  - logrotate
-
 # Creating photon_4_rpms for adding future packages if needed.
 # Since empty list errors out, jq is added.
 photon_4_rpms:

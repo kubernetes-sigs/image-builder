@@ -87,12 +87,6 @@ common_photon_rpms: &common_photon_rpms
   tar:
   unzip:
 
-photon_3_rpms: &photon_3_rpms
-  python-netifaces:
-  python-requests:
-  jq:
-  logrotate:
-
 photon_4_rpms: &photon_4_rpms
   jq:
   logrotate:
@@ -245,9 +239,6 @@ photon:
       cloud-utils:
       python3-netifaces:
     os_version:
-    - distro_version: "3"
-      package:
-        <<: *photon_3_rpms
     - distro_version: "4"
       package:
         <<: *photon_4_rpms
