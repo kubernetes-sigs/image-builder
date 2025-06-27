@@ -340,7 +340,7 @@ PACKER_POWERVS_NODE_FLAGS := $(foreach f,$(abspath $(COMMON_POWERVS_VAR_FILES)),
 ## --------------------------------------
 CENTOS_VERSIONS			:=	centos-7
 FLATCAR_VERSIONS		:=	flatcar
-PHOTON_VERSIONS			:=	photon-3 photon-4 photon-5
+PHOTON_VERSIONS			:=	photon-4 photon-5
 RHEL_VERSIONS			:=	rhel-7 rhel-8 rhel-9
 ROCKYLINUX_VERSIONS		:=  rockylinux-8 rockylinux-9
 UBUNTU_VERSIONS			:=	ubuntu-2004 ubuntu-2004-efi ubuntu-2204 ubuntu-2204-efi ubuntu-2404 ubuntu-2404-efi
@@ -766,7 +766,6 @@ build-huaweicloud-all: $(HUAWEICLOUD_BUILD_TARGETS) ## Builds all HuaweiCloud im
 
 build-node-ova-local-centos-7: ## Builds CentOS 7 Node OVA w local hypervisor
 build-node-ova-local-flatcar: ## Builds Flatcar stable Node OVA w local hypervisor
-build-node-ova-local-photon-3: ## Builds Photon 3 Node OVA w local hypervisor
 build-node-ova-local-photon-4: ## Builds Photon 4 Node OVA w local hypervisor
 build-node-ova-local-photon-5: ## Builds Photon 5 Node OVA w local hypervisor
 build-node-ova-local-rhel-7: ## Builds RHEL 7 Node OVA w local hypervisor
@@ -780,7 +779,6 @@ build-node-ova-local-all: $(NODE_OVA_LOCAL_BUILD_TARGETS) ## Builds all Node OVA
 
 build-node-ova-vsphere-centos-7: ## Builds CentOS 7 Node OVA and template on vSphere
 build-node-ova-vsphere-flatcar: ## Builds Flatcar stable Node OVA and template on vSphere
-build-node-ova-vsphere-photon-3: ## Builds Photon 3 Node OVA and template on vSphere
 build-node-ova-vsphere-photon-4: ## Builds Photon 4 Node OVA and template on vSphere
 build-node-ova-vsphere-photon-5: ## Builds Photon 5 Node OVA and template on vSphere
 build-node-ova-vsphere-rhel-7: ## Builds RHEL 7 Node OVA and template on vSphere
@@ -801,7 +799,6 @@ build-node-ova-vsphere-windows-2022-efi: ## Builds for Windows Server 2022 templ
 build-node-ova-vsphere-all: $(NODE_OVA_VSPHERE_BUILD_TARGETS) ## Builds all Node OVAs and templates on vSphere
 
 build-node-ova-vsphere-clone-centos-7: ## Builds CentOS 7 Node OVA and template on vSphere
-build-node-ova-vsphere-clone-photon-3: ## Builds Photon 3 Node OVA and template on vSphere
 build-node-ova-vsphere-clone-photon-4: ## Builds Photon 4 Node OVA and template on vSphere
 build-node-ova-vsphere-clone-photon-5: ## Builds Photon 5 Node OVA and template on vSphere
 build-node-ova-vsphere-clone-rhel-7: ## Builds RHEL 7 Node OVA and template on vSphere
@@ -817,7 +814,6 @@ build-node-ova-vsphere-clone-ubuntu-2404-efi: ## ## Builds Ubuntu 24.04 Node OVA
 build-node-ova-vsphere-clone-all: $(NODE_OVA_VSPHERE_CLONE_BUILD_TARGETS) ## Builds all Node OVAs and templates on vSphere
 
 build-node-ova-vsphere-base-centos-7: ## Builds base CentOS 7 Node OVA and template on vSphere
-build-node-ova-vsphere-base-photon-3: ## Builds base Photon 3 Node OVA and template on vSphere
 build-node-ova-vsphere-base-photon-4: ## Builds base Photon 4 Node OVA and template on vSphere
 build-node-ova-vsphere-base-photon-5: ## Builds base Photon 5 Node OVA and template on vSphere
 build-node-ova-vsphere-base-rhel-7: ## Builds base RHEL 7 Node OVA and template on vSphere
@@ -832,7 +828,6 @@ build-node-ova-vsphere-base-ubuntu-2404: ## Builds base Ubuntu 24.04 Node OVA an
 build-node-ova-vsphere-base-ubuntu-2404-efi: ## Builds Ubuntu 24.04 Node OVA and template on vSphere that EFI boots
 build-node-ova-vsphere-base-all: $(NODE_OVA_VSPHERE_BASE_BUILD_TARGETS) ## Builds all base Node OVAs and templates on vSphere
 
-build-node-ova-local-vmx-photon-3: ## Builds Photon 3 Node OVA from VMX file w local hypervisor
 build-node-ova-local-vmx-photon-4: ## Builds Photon 4 Node OVA from VMX file w local hypervisor
 build-node-ova-local-vmx-photon-5: ## Builds Photon 5 Node OVA from VMX file w local hypervisor
 build-node-ova-local-vmx-centos-7: ## Builds Centos 7 Node OVA from VMX file w local hypervisor
@@ -843,7 +838,6 @@ build-node-ova-local-vmx-rockylinux-8: ## Builds RockyLinux 8 Node OVA from VMX 
 build-node-ova-local-vmx-rockylinux-9: ## Builds RockyLinux 9 Node OVA from VMX file w local hypervisor
 build-node-ova-local-vmx-ubuntu-2004: ## Builds Ubuntu 20.04 Node OVA from VMX file w local hypervisor
 
-build-node-ova-local-base-photon-3: ## Builds Photon 3 Base Node OVA w local hypervisor
 build-node-ova-local-base-photon-4: ## Builds Photon 4 Base Node OVA w local hypervisor
 build-node-ova-local-base-photon-5: ## Builds Photon 5 Base Node OVA w local hypervisor
 build-node-ova-local-base-centos-7: ## Builds Centos 7 Base Node OVA w local hypervisor
@@ -1018,7 +1012,6 @@ validate-gce-all: $(GCE_VALIDATE_TARGETS) ## Validates all GCE Snapshot Packer c
 
 validate-node-ova-local-centos-7: ## Validates CentOS 7 Node OVA Packer config w local hypervisor
 validate-node-ova-local-flatcar: ## Validates Flatcar stable Node OVA Packer config w local hypervisor
-validate-node-ova-local-photon-3: ## Validates Photon 3 Node OVA Packer config w local hypervisor
 validate-node-ova-local-photon-4: ## Validates Photon 4 Node OVA Packer config w local hypervisor
 validate-node-ova-local-photon-5: ## Validates Photon 5 Node OVA Packer config w local hypervisor
 validate-node-ova-local-rhel-7: ## Validates RHEL 7 Node OVA Packer config w local hypervisor
@@ -1033,7 +1026,6 @@ validate-node-ova-local-windows-2019: ## Validates Windows Server 2019 Node OVA 
 validate-node-ova-local-windows-2022: ## Validates Windows Server 2022 Node OVA Packer config w local hypervisor
 validate-node-ova-local-all: $(NODE_OVA_LOCAL_VALIDATE_TARGETS) ## Validates all Node OVAs Packer config w local hypervisor
 
-validate-node-ova-local-vmx-photon-3: ## Validates Photon 3 Node OVA from VMX file w local hypervisor
 validate-node-ova-local-vmx-photon-4: ## Validates Photon 4 Node OVA from VMX file w local hypervisor
 validate-node-ova-local-vmx-photon-5: ## Validates Photon 5 Node OVA from VMX file w local hypervisor
 validate-node-ova-local-vmx-centos-7: ## Validates Centos 7 Node OVA from VMX file w local hypervisor
@@ -1046,7 +1038,6 @@ validate-node-ova-local-vmx-ubuntu-2004: ## Validates Ubuntu 20.04 Node OVA from
 validate-node-ova-local-vmx-ubuntu-2204: ## Validates Ubuntu 22.04 Node OVA from VMX file w local hypervisor
 validate-node-ova-local-vmx-ubuntu-2404: ## Validates Ubuntu 24.04 Node OVA from VMX file w local hypervisor
 
-validate-node-ova-local-base-photon-3: ## Validates Photon 3 Base Node OVA w local hypervisor
 validate-node-ova-local-base-photon-4: ## Validates Photon 4 Base Node OVA w local hypervisor
 validate-node-ova-local-base-photon-5: ## Validates Photon 5 Base Node OVA w local hypervisor
 validate-node-ova-local-base-centos-7: ## Validates Centos 7 Base Node OVA w local hypervisor
