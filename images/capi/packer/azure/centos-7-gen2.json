@@ -1,9 +1,0 @@
-{
-  "build_name": "centos-7-gen2",
-  "distribution": "centos",
-  "distribution_release": "centos-7",
-  "distribution_version": "7",
-  "image_offer": "CentOS",
-  "image_publisher": "OpenLogic",
-  "image_sku": "7_7-gen2"
-}
