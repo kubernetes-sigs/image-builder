@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 #
-# This script was copied as-is from:
+# This original script was copied from:
 # Source: https://github.com/canonical/packer-maas
 # Original Author: Alexsander de Souza <alexsander.souza@canonical.com>
-#
+# and modified by the image-builder team
 
 
 import os
