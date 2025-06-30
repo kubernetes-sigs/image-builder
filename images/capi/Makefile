@@ -390,7 +390,7 @@ OPENSTACK_BUILD_NAMES		?=	openstack-ubuntu-2004 openstack-ubuntu-2204 openstack-
 
 OSC_BUILD_NAMES 			?=	osc-ubuntu-2004 osc-ubuntu-2204
 
-QEMU_BUILD_NAMES			?=	qemu-ubuntu-2004 qemu-ubuntu-2204 qemu-ubuntu-2204-cloudimg qemu-ubuntu-2304 qemu-ubuntu-2404 qemu-ubuntu-2404-efi qemu-ubuntu-2204-efi qemu-centos-9 qemu-ubuntu-2004-efi qemu-rhel-8 qemu-rhel-9 qemu-rockylinux-8 qemu-rockylinux-8-cloudimg qemu-rockylinux-9 qemu-rockylinux-9-cloudimg qemu-flatcar
+QEMU_BUILD_NAMES			?=	qemu-ubuntu-2004 qemu-ubuntu-2204 qemu-ubuntu-2204-cloudimg qemu-ubuntu-2404 qemu-ubuntu-2404-efi qemu-ubuntu-2204-efi qemu-centos-9 qemu-ubuntu-2004-efi qemu-rhel-8 qemu-rhel-9 qemu-rockylinux-8 qemu-rockylinux-8-cloudimg qemu-rockylinux-9 qemu-rockylinux-9-cloudimg qemu-flatcar
 
 QEMU_KUBEVIRT_BUILD_NAMES	:= $(addprefix kubevirt-,$(QEMU_BUILD_NAMES))
 
@@ -848,7 +848,6 @@ build-qemu-ubuntu-2004-efi: ## Builds Ubuntu 20.04 QEMU image that EFI boots
 build-qemu-ubuntu-2204: ## Builds Ubuntu 22.04 QEMU image
 build-qemu-ubuntu-2204-cloudimg: ## Builds Ubuntu 22.04 QEMU image using cloud image
 build-qemu-ubuntu-2204-efi: ## Builds Ubuntu 22.04 QEMU image that EFI boots
-build-qemu-ubuntu-2304: ## Builds Ubuntu 23.04 QEMU image
 build-qemu-ubuntu-2404: ## Builds Ubuntu 24.04 QEMU image
 build-qemu-ubuntu-2404-efi: ## Builds Ubuntu 24.04 QEMU image that EFI boots
 build-qemu-centos-9: ## Builds CentOS 9 Stream QEMU image
@@ -1033,7 +1032,6 @@ validate-qemu-ubuntu-2004-efi: ## Validates Ubuntu 20.04 QEMU EFI image packer c
 validate-qemu-ubuntu-2204: ## Validates Ubuntu 22.04 QEMU image packer config
 validate-qemu-ubuntu-2204-cloudimg: ## Validates Ubuntu 22.04 QEMU image packer config using cloud image
 validate-qemu-ubuntu-2204-efi: ## Validates Ubuntu 22.04 QEMU EFI image packer config
-validate-qemu-ubuntu-2304: ## Validates Ubuntu 23.04 QEMU image packer config
 validate-qemu-ubuntu-2404: ## Validates Ubuntu 24.04 QEMU image packer config
 validate-qemu-ubuntu-2404-efi: ## Validates Ubuntu 24.04 QEMU EFI image packer config
 validate-qemu-rhel-8: ## Validates RHEL 8 QEMU image
