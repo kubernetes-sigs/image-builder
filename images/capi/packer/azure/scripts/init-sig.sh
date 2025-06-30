@@ -150,9 +150,6 @@ case ${SIG_TARGET} in
   ubuntu-2404)
     create_image_definition ${SIG_TARGET} "24_04-lts" "V1" "Linux"
   ;;
-  mariner-2)
-    create_image_definition ${SIG_TARGET} "mariner-2" "V1" "Linux"
-  ;;
   azurelinux-3)
     create_image_definition ${SIG_TARGET} "azurelinux-3" "V1" "Linux"
   ;;
@@ -200,9 +197,6 @@ case ${SIG_TARGET} in
   ;;
   ubuntu-2404-cvm)
     create_image_definition ${SIG_TARGET} "24_04-lts-cvm" "V2" "Linux" ${SECURITY_TYPE_CVM_SUPPORTED_FEATURE}
-  ;;
-  mariner-2-gen2)
-    create_image_definition ${SIG_TARGET} "mariner-2-gen2" "V2" "Linux"
   ;;
   azurelinux-3-gen2)
     create_image_definition ${SIG_TARGET} "azurelinux-3-gen2" "V2" "Linux"
