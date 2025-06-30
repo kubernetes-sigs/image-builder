@@ -1,8 +1,0 @@
-{
-  "build_name": "centos-7",
-  "distribution": "centos",
-  "distribution_release": "centos-7",
-  "distribution_version": "7",
-  "image": "centos-7",
-  "ssh_username": "root"
-}
