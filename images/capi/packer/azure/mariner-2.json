@@ -1,9 +1,0 @@
-{
-  "build_name": "mariner-2",
-  "distribution": "mariner",
-  "distribution_release": "cbl-mariner-2",
-  "distribution_version": "2",
-  "image_offer": "cbl-mariner",
-  "image_publisher": "MicrosoftCBLMariner",
-  "image_sku": "cbl-mariner-2"
-}
