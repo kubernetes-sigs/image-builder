@@ -79,7 +79,8 @@ In addition to the configuration found in `images/capi/packer/config`, the `ova`
 |--------------------|--------------------------------------------------------------|
 | `flatcar.json`     | The settings for the Flatcar image                           |
 | `photon-4.json`    | The settings for the Photon 4 image                          |
-| `rhel-7.json`      | The settings for the RHEL 7 image                            |
+| `rhel-8.json`      | The settings for the RHEL 8 image                            |
+| `rhel-9.json`      | The settings for the RHEL 9 image                            |
 | `ubuntu-2204.json` | The settings for the Ubuntu 22.04 image                      |
 | `ubuntu-2204-efi.json` | The settings for the Ubuntu 22.04 EFI image                      |
 | `ubuntu-2404.json` | The settings for the Ubuntu 24.04 image                      |
@@ -98,7 +99,7 @@ an environment where you require DNS resolution .local, then add `leak_local_mdn
 When building the RHEL image, the OS must register itself with the Red Hat Subscription Manager (RHSM). To do this, the current supported method is to supply a username and password via environment variables. The two environment variables are `RHSM_USER` and `RHSM_PASS`. Although building RHEL images has been tested via this method, if an error is encountered during the build, the VM is deleted without the machine being unregistered with RHSM. To prevent this, it is recommended to build with the following command:
 
 ```shell
-PACKER_FLAGS=-on-error=ask RHSM_USER=user RHSM_PASS=pass make build-node-ova-<hypervisor>-rhel-7
+PACKER_FLAGS=-on-error=ask RHSM_USER=user RHSM_PASS=pass make build-node-ova-<hypervisor>-rhel-9
 ```
 
 The addition of `PACKER_FLAGS=-on-error=ask` means that if an error is encountered, the build will pause, allowing you to SSH into the machine and unregister manually.

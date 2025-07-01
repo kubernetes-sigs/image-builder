@@ -23,13 +23,6 @@ al2023_rpms: &al2023_rpms
   unzip:
   awscli-2:
 
-rh7_rpms: &rh7_rpms
-  curl:
-  yum-utils:
-  ebtables:
-  python-netifaces:
-  python-requests:
-
 rh8_rpms: &rh8_rpms
   curl:
   yum-utils:
@@ -151,10 +144,6 @@ centos:
   amazon:
     package:
       amazon-ssm-agent:
-    os_version:
-    - distro_version: "7"
-      package:
-        <<: *rh7_rpms
     command:
       /usr/local/sbin/aws --version:
         exit-status: 0
@@ -167,20 +156,12 @@ centos:
     package:
       python2-pip:
       open-vm-tools:
-    os_version:
-    - distro_version: "7"
-      package:
-        <<: *rh7_rpms
   qemu:
     package:
       open-vm-tools:
       cloud-init:
       cloud-utils-growpart:
     os_version:
-    - distro_version: "7"
-      package:
-        python2-pip:
-        <<: *rh7_rpms
     - distro_version: "9"
       package:
         <<: *rh9_rpms
@@ -380,10 +361,6 @@ rhel:
     package:
       open-vm-tools:
     os_version:
-    - distro_version: "7"
-      package:
-        python2-pip:
-        <<: *rh7_rpms
     - distro_version: "8"
       package:
         python2-pip:

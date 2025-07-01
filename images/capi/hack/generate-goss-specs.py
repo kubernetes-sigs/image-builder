@@ -140,7 +140,7 @@ def main():
                 os_versions = ["2019", "2022"]
             elif system == 'rhel':
                 runtimes = ["containerd"]
-                os_versions = ["7", "8"]
+                os_versions = ["8", "9"]
             elif system == 'photon':
                 runtimes = ["containerd"]
                 os_versions = ["3", "4", "5"]
