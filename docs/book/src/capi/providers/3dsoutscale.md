@@ -26,7 +26,6 @@ the different operating systems.
 
 | File | Description |
 |------|-------------|
-| `ubuntu-2004.json` | The settings for the Ubuntu 20.04 image |
 | `ubuntu-2204.json` | The settings for the Ubuntu 22.04 image |
 | `ubuntu-2404.json` | The settings for the Ubuntu 24.04 image |
 
@@ -37,5 +36,5 @@ Please set the following environment variables before building image:
 OSC_SECRET_KEY: Outscale Secret Key
 OSC_REGION: Outscale Region
 OSC_ACCESS_KEY: Outscale Access Key Id
-OSC_ACCOUNT_ID: Outscale Account Id 
+OSC_ACCOUNT_ID: Outscale Account Id
 ```

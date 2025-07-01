@@ -1,8 +1,0 @@
-{
-  "build_name": "ubuntu-2004",
-  "distro_name": "ubuntu",
-  "guest_os_type": "Linux",
-  "image_url": "https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.img",
-  "shutdown_command": "shutdown -P now",
-  "user_data": "I2Nsb3VkLWNvbmZpZwp1c2VyczoKICAtIG5hbWU6IGJ1aWxkZXIKICAgIHN1ZG86IFsnQUxMPShBTEwpIE5PUEFTU1dEOkFMTCddCiAgICBzaGVsbDogL2Jpbi9iYXNoCmNocGFzc3dkOgogIGxpc3Q6IHwKICAgIGJ1aWxkZXI6YnVpbGRlcgogIGV4cGlyZTogRmFsc2UKc3NoX3B3YXV0aDogVHJ1ZQo="
-}

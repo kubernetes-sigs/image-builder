@@ -46,7 +46,6 @@ version: ## Display version of image-builder
 
 GET_UBUNTU_DOTTED_SEMVER=$(strip \
 	$(eval _UBUNTU_SEMVER:=$1) \
-	$(eval _UBUNTU_SEMVER:=$(subst ubuntu-2004,ubuntu-20.04,$(_UBUNTU_SEMVER))) \
 	$(eval _UBUNTU_SEMVER:=$(subst ubuntu-2204,ubuntu-22.04,$(_UBUNTU_SEMVER))) \
 	$(eval _UBUNTU_SEMVER:=$(subst ubuntu-2404,ubuntu-24.04,$(_UBUNTU_SEMVER))) \
 	$(_UBUNTU_SEMVER) \
@@ -342,7 +341,7 @@ FLATCAR_VERSIONS		:=	flatcar
 PHOTON_VERSIONS			:=	photon-4 photon-5
 RHEL_VERSIONS			:=	rhel-7 rhel-8 rhel-9
 ROCKYLINUX_VERSIONS		:=  rockylinux-8 rockylinux-9
-UBUNTU_VERSIONS			:=	ubuntu-2004 ubuntu-2004-efi ubuntu-2204 ubuntu-2204-efi ubuntu-2404 ubuntu-2404-efi
+UBUNTU_VERSIONS			:=	ubuntu-2204 ubuntu-2204-efi ubuntu-2404 ubuntu-2404-efi
 WINDOWS_VERSIONS		:=	windows-2019 windows-2019-efi windows-2022 windows-2022-efi
 
 # Set Flatcar Container Linux channel and version if not supplied
@@ -368,7 +367,7 @@ NODE_OVA_VSPHERE_BUILD_NAMES		:=	$(addprefix node-ova-vsphere-,$(PLATFORMS_AND_V
 NODE_OVA_VSPHERE_BASE_BUILD_NAMES		:=	$(addprefix node-ova-vsphere-base-,$(PLATFORMS_AND_VERSIONS))
 NODE_OVA_VSPHERE_CLONE_BUILD_NAMES		:=	$(addprefix node-ova-vsphere-clone-,$(PLATFORMS_AND_VERSIONS))
 
-AMI_BUILD_NAMES			   ?= ami-ubuntu-2004 ami-ubuntu-2204 ami-ubuntu-2404 ami-amazon-2 ami-amazon-2023 ami-flatcar ami-flatcar-arm64 ami-windows-2019 ami-rockylinux-8 ami-rhel-8
+AMI_BUILD_NAMES			   ?= ami-ubuntu-2204 ami-ubuntu-2404 ami-amazon-2 ami-amazon-2023 ami-flatcar ami-flatcar-arm64 ami-windows-2019 ami-rockylinux-8 ami-rhel-8
 HUAWEICLOUD_BUILD_NAMES ?= huaweicloud-ubuntu-2204
 GCE_BUILD_NAMES			   ?= gce-ubuntu-2204 gce-ubuntu-2404 gce-rhel-8
 
@@ -382,25 +381,25 @@ AZURE_BUILD_SIG_NAMES	   ?= $(addprefix azure-sig-,$(SIG_TARGETS))
 AZURE_BUILD_SIG_GEN2_NAMES ?= $(addsuffix -gen2,$(addprefix azure-sig-,$(SIG_GEN2_TARGETS)))
 AZURE_BUILD_SIG_CVM_NAMES ?= $(addsuffix -cvm,$(addprefix azure-sig-,$(SIG_CVM_TARGETS)))
 
-OCI_BUILD_NAMES				?= oci-ubuntu-2004 oci-ubuntu-2204 oci-oracle-linux-8 oci-oracle-linux-9 oci-windows-2019 oci-windows-2022
+OCI_BUILD_NAMES				?= oci-ubuntu-2204 oci-oracle-linux-8 oci-oracle-linux-9 oci-windows-2019 oci-windows-2022
 
-DO_BUILD_NAMES 				?=	do-ubuntu-2004 do-ubuntu-2204 do-ubuntu-2404
+DO_BUILD_NAMES 				?=	do-ubuntu-2204 do-ubuntu-2404
 
-OPENSTACK_BUILD_NAMES		?=	openstack-ubuntu-2004 openstack-ubuntu-2204 openstack-ubuntu-2404 openstack-flatcar openstack-rockylinux-9
+OPENSTACK_BUILD_NAMES		?=	openstack-ubuntu-2204 openstack-ubuntu-2404 openstack-flatcar openstack-rockylinux-9
 
-OSC_BUILD_NAMES 			?=	osc-ubuntu-2004 osc-ubuntu-2204 osc-ubuntu-2404
+OSC_BUILD_NAMES 			?=	osc-ubuntu-2204 osc-ubuntu-2404
 
-QEMU_BUILD_NAMES			?=	qemu-ubuntu-2004 qemu-ubuntu-2204 qemu-ubuntu-2204-cloudimg qemu-ubuntu-2404 qemu-ubuntu-2404-efi qemu-ubuntu-2204-efi qemu-centos-9 qemu-ubuntu-2004-efi qemu-rhel-8 qemu-rhel-9 qemu-rockylinux-8 qemu-rockylinux-8-cloudimg qemu-rockylinux-9 qemu-rockylinux-9-cloudimg qemu-flatcar
+QEMU_BUILD_NAMES			?=	qemu-ubuntu-2204 qemu-ubuntu-2204-cloudimg qemu-ubuntu-2404 qemu-ubuntu-2404-efi qemu-ubuntu-2204-efi qemu-centos-9 qemu-rhel-8 qemu-rhel-9 qemu-rockylinux-8 qemu-rockylinux-8-cloudimg qemu-rockylinux-9 qemu-rockylinux-9-cloudimg qemu-flatcar
 
 QEMU_KUBEVIRT_BUILD_NAMES	:= $(addprefix kubevirt-,$(QEMU_BUILD_NAMES))
 
-RAW_BUILD_NAMES				?=	raw-ubuntu-2004 raw-ubuntu-2004-efi raw-ubuntu-2204 raw-ubuntu-2204-efi raw-ubuntu-2404 raw-ubuntu-2404-efi raw-flatcar raw-rhel-8 raw-rhel-9 raw-rhel-9-efi
+RAW_BUILD_NAMES				?=	raw-ubuntu-2204 raw-ubuntu-2204-efi raw-ubuntu-2404 raw-ubuntu-2404-efi raw-flatcar raw-rhel-8 raw-rhel-9 raw-rhel-9-efi
 
 POWERVS_BUILD_NAMES         ?= powervs-centos-8 powervs-centos-9
 
-NUTANIX_BUILD_NAMES ?= nutanix-ubuntu-2004 nutanix-ubuntu-2204 nutanix-ubuntu-2404 nutanix-rhel-8 nutanix-rhel-9 nutanix-rockylinux-8 nutanix-rockylinux-9 nutanix-flatcar nutanix-windows-2022
+NUTANIX_BUILD_NAMES ?= nutanix-ubuntu-2204 nutanix-ubuntu-2404 nutanix-rhel-8 nutanix-rhel-9 nutanix-rockylinux-8 nutanix-rockylinux-9 nutanix-flatcar nutanix-windows-2022
 
-HCLOUD_BUILD_NAMES ?= hcloud-ubuntu-2004 hcloud-ubuntu-2204 hcloud-ubuntu-2404 hcloud-rockylinux-8 hcloud-rockylinux-9 hcloud-flatcar hcloud-flatcar-arm64
+HCLOUD_BUILD_NAMES ?= hcloud-ubuntu-2204 hcloud-ubuntu-2404 hcloud-rockylinux-8 hcloud-rockylinux-9 hcloud-flatcar hcloud-flatcar-arm64
 
 PROXMOX_BUILD_NAMES 		?= proxmox-ubuntu-2204 proxmox-ubuntu-2404 proxmox-ubuntu-2404-efi proxmox-rockylinux-9 proxmox-flatcar
 
@@ -696,7 +695,6 @@ $(RAW_CLEAN_TARGETS):
 ##@ Builds
 build-ami-amazon-2: ## Builds Amazon-2 Linux AMI
 build-ami-amazon-2023: ## Builds Amazon-2023 Linux AMI
-build-ami-ubuntu-2004: ## Builds Ubuntu 20.04 AMI
 build-ami-ubuntu-2204: ## Builds Ubuntu 22.04 AMI
 build-ami-ubuntu-2404: ## Builds Ubuntu 24.04 AMI
 build-ami-rockylinux-8: ## Builds RockyLinux 8 AMI
@@ -706,7 +704,6 @@ build-ami-flatcar-arm64: ## Builds Flatcar arm64
 build-ami-windows-2019: ## Build Windows Server 2019 AMI Packer config
 build-ami-all: $(AMI_BUILD_TARGETS) ## Builds all AMIs
 
-build-azure-sig-ubuntu-2004: ## Builds Ubuntu 20.04 Azure managed image in Shared Image Gallery
 build-azure-sig-ubuntu-2204: ## Builds Ubuntu 22.04 Azure managed image in Shared Image Gallery
 build-azure-sig-ubuntu-2404: ## Builds Ubuntu 24.04 Azure managed image in Shared Image Gallery
 build-azure-sig-azurelinux-3: ## Builds Azure Linux 3 Azure managed image in Shared Image Gallery
@@ -716,7 +713,6 @@ build-azure-sig-windows-2022-containerd: ## Builds Windows Server 2022 with cont
 build-azure-sig-windows-2025-containerd: ## Builds Windows Server 2025 with containerd Azure managed image in Shared Image Gallery
 build-azure-sig-windows-2019-containerd-cvm: ## Builds Windows Server 2019 with containerd CVM Azure managed image in Shared Image Gallery
 build-azure-sig-windows-2022-containerd-cvm: ## Builds Windows Server 2022 with containerd CVM Azure managed image in Shared Image Gallery
-build-azure-vhd-ubuntu-2004: ## Builds Ubuntu 20.04 VHD image for Azure
 build-azure-vhd-ubuntu-2204: ## Builds Ubuntu 22.04 VHD image for Azure
 build-azure-vhd-ubuntu-2404: ## Builds Ubuntu 24.04 VHD image for Azure
 build-azure-vhd-azurelinux-3: ## Builds Azure Linux 3 VHD image for Azure
@@ -727,16 +723,13 @@ build-azure-sig-windows-annual-containerd: ## Builds for Windows Server Annual C
 build-azure-sig-azurelinux-3-gen2: ## Builds Azure Linux 3 Gen2 managed image in Shared Image Gallery
 build-azure-sig-flatcar: ## Builds Flatcar Azure managed image in Shared Image Gallery
 build-azure-sig-flatcar-gen2: ## Builds Flatcar Azure Gen2 managed image in Shared Image Gallery
-build-azure-sig-ubuntu-2004-gen2: ## Builds Ubuntu 20.04 Gen2 managed image in Shared Image Gallery
 build-azure-sig-ubuntu-2204-gen2: ## Builds Ubuntu 22.04 Gen2 managed image in Shared Image Gallery
 build-azure-sig-ubuntu-2404-gen2: ## Builds Ubuntu 24.04 Gen2 managed image in Shared Image Gallery
-build-azure-sig-ubuntu-2004-cvm: ## Builds Ubuntu 20.04 CVM managed image in Shared Image Gallery
 build-azure-sig-ubuntu-2204-cvm: ## Builds Ubuntu 22.04 CVM managed image in Shared Image Gallery
 build-azure-sig-ubuntu-2404-cvm: ## Builds Ubuntu 24.04 CVM managed image in Shared Image Gallery
 build-azure-vhds: $(AZURE_BUILD_VHD_TARGETS) ## Builds all Azure VHDs
 build-azure-sigs: $(AZURE_BUILD_SIG_TARGETS) $(AZURE_BUILD_SIG_GEN2_TARGETS) $(AZURE_BUILD_SIG_CVM_TARGETS) ## Builds all Azure Shared Image Gallery images
 
-build-do-ubuntu-2004: ## Builds Ubuntu 20.04 DigitalOcean Snapshot
 build-do-ubuntu-2204: ## Builds Ubuntu 22.04 DigitalOcean Snapshot
 build-do-ubuntu-2404: ## Builds Ubuntu 24.04 DigitalOcean Snapshot
 build-do-all: $(DO_BUILD_TARGETS) ## Builds all DigitalOcean Snapshot
@@ -757,7 +750,6 @@ build-node-ova-local-rhel-8: ## Builds RHEL 8 Node OVA w local hypervisor
 build-node-ova-local-rhel-9: ## Builds RHEL 9 Node OVA w local hypervisor
 build-node-ova-local-rockylinux-8: ## Builds RockyLinux 8 Node OVA w local hypervisor
 build-node-ova-local-rockylinux-9: ## Builds RockyLinux 9 Node OVA w local hypervisor
-build-node-ova-local-ubuntu-2004: ## Builds Ubuntu 20.04 Node OVA w local hypervisor
 build-node-ova-local-windows-2019: ## Builds for Windows Server 2019 Node OVA w local hypervisor
 build-node-ova-local-all: $(NODE_OVA_LOCAL_BUILD_TARGETS) ## Builds all Node OVAs w local hypervisor
 
@@ -769,8 +761,6 @@ build-node-ova-vsphere-rhel-8: ## Builds RHEL 8 Node OVA and template on vSphere
 build-node-ova-vsphere-rhel-9: ## Builds RHEL 9 Node OVA and template on vSphere
 build-node-ova-vsphere-rockylinux-8: ## Builds RockyLinux 8 Node OVA and template on vSphere
 build-node-ova-vsphere-rockylinux-9: ## Builds RockyLinux 9 Node OVA and template on vSphere
-build-node-ova-vsphere-ubuntu-2004: ## Builds Ubuntu 20.04 Node OVA and template on vSphere
-build-node-ova-vsphere-ubuntu-2004-efi: ## Builds Ubuntu 20.04 Node OVA and template on vSphere that EFI boots
 build-node-ova-vsphere-ubuntu-2204: ## Builds Ubuntu 22.04 Node OVA and template on vSphere
 build-node-ova-vsphere-ubuntu-2204-efi: ## Builds Ubuntu 22.04 Node OVA and template on vSphere that EFI boots
 build-node-ova-vsphere-ubuntu-2404: ## Builds Ubuntu 24.04 Node OVA and template on vSphere
@@ -788,7 +778,6 @@ build-node-ova-vsphere-clone-rhel-8: ## Builds RHEL 8 Node OVA and template on v
 build-node-ova-vsphere-clone-rhel-9: ## Builds RHEL 9 Node OVA and template on vSphere
 build-node-ova-vsphere-clone-rockylinux-8: ## Builds RockyLinux 8 Node OVA and template on vSphere
 build-node-ova-vsphere-clone-rockylinux-9: ## Builds RockyLinux 9 Node OVA and template on vSphere
-build-node-ova-vsphere-clone-ubuntu-2004: ## Builds Ubuntu 20.04 Node OVA and template on vSphere
 build-node-ova-vsphere-clone-ubuntu-2204: ## Builds Ubuntu 22.04 Node OVA and template on vSphere
 build-node-ova-vsphere-clone-ubuntu-2204-efi: ## ## Builds Ubuntu 22.04 Node OVA and template on vSphere that EFI boots
 build-node-ova-vsphere-clone-ubuntu-2404: ## Builds Ubuntu 24.04 Node OVA and template on vSphere
@@ -802,7 +791,6 @@ build-node-ova-vsphere-base-rhel-8: ## Builds base RHEL 8 Node OVA and template 
 build-node-ova-vsphere-base-rhel-9: ## Builds base RHEL 9 Node OVA and template on vSphere
 build-node-ova-vsphere-base-rockylinux-8: ## Builds base RockyLinux 8 Node OVA and template on vSphere
 build-node-ova-vsphere-base-rockylinux-9: ## Builds base RockyLinux 9 Node OVA and template on vSphere
-build-node-ova-vsphere-base-ubuntu-2004: ## Builds base Ubuntu 20.04 Node OVA and template on vSphere
 build-node-ova-vsphere-base-ubuntu-2204: ## Builds base Ubuntu 22.04 Node OVA and template on vSphere
 build-node-ova-vsphere-base-ubuntu-2204-efi: ## Builds Ubuntu 22.04 Node OVA and template on vSphere that EFI boots
 build-node-ova-vsphere-base-ubuntu-2404: ## Builds base Ubuntu 24.04 Node OVA and template on vSphere
@@ -816,7 +804,6 @@ build-node-ova-local-vmx-rhel-8: ## Builds RHEL 8 Node OVA from VMX file w local
 build-node-ova-local-vmx-rhel-9: ## Builds RHEL 9 Node OVA from VMX file w local hypervisor
 build-node-ova-local-vmx-rockylinux-8: ## Builds RockyLinux 8 Node OVA from VMX file w local hypervisor
 build-node-ova-local-vmx-rockylinux-9: ## Builds RockyLinux 9 Node OVA from VMX file w local hypervisor
-build-node-ova-local-vmx-ubuntu-2004: ## Builds Ubuntu 20.04 Node OVA from VMX file w local hypervisor
 
 build-node-ova-local-base-photon-4: ## Builds Photon 4 Base Node OVA w local hypervisor
 build-node-ova-local-base-photon-5: ## Builds Photon 5 Base Node OVA w local hypervisor
@@ -825,9 +812,7 @@ build-node-ova-local-base-rhel-8: ## Builds RHEL 8 Base Node OVA w local hypervi
 build-node-ova-local-base-rhel-9: ## Builds RHEL 9 Base Node OVA w local hypervisor
 build-node-ova-local-base-rockylinux-8: ## Builds RockyLinux 8 Base Node OVA w local hypervisor
 build-node-ova-local-base-rockylinux-9: ## Builds RockyLinux 9 Base Node OVA w local hypervisor
-build-node-ova-local-base-ubuntu-2004: ## Builds Ubuntu 20.04 Base Node OVA w local hypervisor
 
-build-openstack-ubuntu-2004: ## Builds Ubuntu 20.04 OpenStack image
 build-openstack-ubuntu-2204: ## Builds Ubuntu 22.04 OpenStack image
 build-openstack-ubuntu-2404: ## Builds Ubuntu 24.04 OpenStack image
 build-openstack-rockylinux-9: ## Builds RockyLinux 9 OpenStack image
@@ -835,8 +820,6 @@ build-openstack-flatcar: ## Builds Flatcar OpenStack image
 build-openstack-all: $(OPENSTACK_BUILD_TARGETS)
 
 build-qemu-flatcar: ## Builds Flatcar QEMU image
-build-qemu-ubuntu-2004: ## Builds Ubuntu 20.04 QEMU image
-build-qemu-ubuntu-2004-efi: ## Builds Ubuntu 20.04 QEMU image that EFI boots
 build-qemu-ubuntu-2204: ## Builds Ubuntu 22.04 QEMU image
 build-qemu-ubuntu-2204-cloudimg: ## Builds Ubuntu 22.04 QEMU image using cloud image
 build-qemu-ubuntu-2204-efi: ## Builds Ubuntu 22.04 QEMU image that EFI boots
@@ -855,8 +838,6 @@ build-maas-ubuntu-2204-efi: ## Builds Ubuntu 22.04 MaaS image that EFI boots
 build-maas-ubuntu-2404-efi: ## Builds Ubuntu 24.04 MaaS image that EFI boots
 
 build-raw-flatcar: ## Builds Flatcar RAW image
-build-raw-ubuntu-2004: ## Builds Ubuntu 20.04 RAW image
-build-raw-ubuntu-2004-efi: ## Builds Ubuntu 20.04 RAW image that EFI boots
 build-raw-ubuntu-2204: ## Builds Ubuntu 22.04 RAW image
 build-raw-ubuntu-2204-efi: ## Builds Ubuntu 22.04 RAW image that EFI boots
 build-raw-ubuntu-2404: ## Builds Ubuntu 24.04 RAW image
@@ -866,7 +847,6 @@ build-raw-rhel-9: ## Builds RHEL 9 RAW image
 build-raw-rhel-9-efi: ## Builds RHEL 9 RAW image that EFI boots
 build-raw-all: $(RAW_BUILD_TARGETS) ## Builds all RAW images
 
-build-oci-ubuntu-2004: ## Builds the OCI ubuntu-2004 image
 build-oci-ubuntu-2204: ## Builds the OCI ubuntu-2204 image
 build-oci-oracle-linux-8: ## Builds the OCI Oracle Linux 8.x image
 build-oci-oracle-linux-9: ## Builds the OCI Oracle Linux 9.x image
@@ -874,12 +854,10 @@ build-oci-windows-2019: ## Builds the OCI Windows Server 2019 image
 build-oci-windows-2022: ## Builds the OCI Windows Server 2022 image
 build-oci-all: $(OCI_BUILD_TARGETS) ## Builds all OCI image
 
-build-osc-ubuntu-2004: ## Builds Ubuntu 20.04 Outscale Snapshot
 build-osc-ubuntu-2204: ## Builds Ubuntu 22.04 Outscale Snapshot
 build-osc-ubuntu-2404: ## Builds Ubuntu 24.04 Outscale Snapshot
 build-osc-all: $(OSC_BUILD_TARGETS) ## Builds all Outscale Snapshot
 
-build-nutanix-ubuntu-2004: ## Builds the Nutanix ubuntu-2004 image
 build-nutanix-ubuntu-2204: ## Builds the Nutanix ubuntu-2204 image
 build-nutanix-ubuntu-2404: ## Builds the Nutanix ubuntu-2404 image
 build-nutanix-rhel-8: ## Builds the Nutanix RedHat Enterprise Linux 8 image
@@ -890,7 +868,6 @@ build-nutanix-flatcar: ## Builds the Nutanix Flatcar image
 build-nutanix-windows-2022: ## Builds the Nutanix Windows 2022 image
 build-nutanix-all: $(NUTANIX_BUILD_TARGETS) ## Builds all Nutanix image
 
-build-hcloud-ubuntu-2004: ## Builds the Hetzner Cloud ubuntu-2004 image
 build-hcloud-ubuntu-2204: ## Builds the Hetzner Cloud ubuntu-2204 image
 build-hcloud-ubuntu-2404: ## Builds the Hetzner Cloud ubuntu-2404 image
 build-hcloud-rockylinux-8: ## Builds the Hetzner Cloud Rocky Linux 8 image
@@ -922,17 +899,15 @@ validate-ami-rockylinux-8: ## Validates RockyLinux 8 AMI Packer config
 validate-ami-rhel-8: ## Validates RHEL-8 AMI Packer config
 validate-ami-flatcar: ## Validates Flatcar AMI Packer config
 validate-ami-flatcar-arm64: ## Validates Flatcar arm64 AMI Packer config
-validate-ami-ubuntu-2004: ## Validates Ubuntu 20.04 AMI Packer config
 validate-ami-ubuntu-2204: ## Validates Ubuntu 22.04 AMI Packer config
 validate-ami-ubuntu-2404: ## Validates Ubuntu 22.04 AMI Packer config
 validate-ami-windows-2019: ## Validates Windows Server 2019 AMI Packer config
 validate-ami-all: $(AMI_VALIDATE_TARGETS) ## Validates all AMIs Packer config
 
-validate-huaweicloud-ubuntu-2004: ## Validates Ubuntu 20.04 HuaweiCloud Snapshot Packer config
+validate-huaweicloud-ubuntu-2204: ## Validates Ubuntu 22.04 HuaweiCloud Snapshot Packer config
 
 validate-azure-sig-azurelinux-3: ## Validates Azure Linux 3 Azure managed image in Shared Image Gallery Packer config
 validate-azure-sig-rhel-8: ## Validates RHEL 8 Azure managed image in Shared Image Gallery Packer config
-validate-azure-sig-ubuntu-2004: ## Validates Ubuntu 20.04 Azure managed image in Shared Image Gallery Packer config
 validate-azure-sig-ubuntu-2204: ## Validates Ubuntu 22.04 Azure managed image in Shared Image Gallery Packer config
 validate-azure-sig-ubuntu-2404: ## Validates Ubuntu 24.04 Azure managed image in Shared Image Gallery Packer config
 validate-azure-sig-windows-2019-containerd: ## Validate Windows Server 2019 with containerd Azure managed image in Shared Image Gallery Packer config
@@ -941,26 +916,21 @@ validate-azure-sig-windows-2025-containerd: ## Validate Windows Server 2025 with
 validate-azure-sig-windows-annual-containerd: ## Validate Windows Server Annual Channel with containerd Azure managed image in Shared Image Gallery Packer config
 validate-azure-vhd-azurelinux-3: ## Validates Azure Linux 3 VHD image Azure Packer config
 validate-azure-vhd-rhel-8: ## Validates RHEL 8 VHD image Azure Packer config
-validate-azure-vhd-ubuntu-2004: ## Validates Ubuntu 20.04 VHD image Azure Packer config
 validate-azure-vhd-ubuntu-2204: ## Validates Ubuntu 22.04 VHD image Azure Packer config
 validate-azure-vhd-ubuntu-2404: ## Validates Ubuntu 24.04 VHD image Azure Packer config
 validate-azure-vhd-windows-2019-containerd: ## Validate Windows Server 2019 VHD with containerd image Azure Packer config
 validate-azure-vhd-windows-2022-containerd: ## Validate Windows Server 2022 VHD with containerd image Azure Packer config
 validate-azure-sig-azurelinux-3-gen2: ## Validates Azure Linux 3 Gen2 Azure managed image in Shared Image Gallery Packer config
-validate-azure-sig-ubuntu-2004-gen2: ## Validates Ubuntu 20.04 Azure managed image in Shared Image Gallery Packer config
-validate-azure-sig-ubuntu-2004-cvm: ## Validates Ubuntu 20.04 CVM Azure managed image in Shared Image Gallery Packer config
 validate-azure-sig-ubuntu-2204-gen2: ## Validates Ubuntu 22.04 Azure managed image in Shared Image Gallery Packer config
 validate-azure-sig-ubuntu-2204-cvm: ## Validates Ubuntu 22.04 CVM Azure managed image in Shared Image Gallery Packer config
 validate-azure-sig-ubuntu-2404-gen2: ## Validates Ubuntu 24.04 Azure managed image in Shared Image Gallery Packer config
 validate-azure-sig-ubuntu-2404-cvm: ## Validates Ubuntu 24.04 CVM Azure managed image in Shared Image Gallery Packer config
 validate-azure-all: $(AZURE_VALIDATE_SIG_TARGETS) $(AZURE_VALIDATE_VHD_TARGETS) $(AZURE_VALIDATE_SIG_GEN2_TARGETS) $(AZURE_VALIDATE_SIG_CVM_TARGETS) ## Validates all images for Azure Packer config
 
-validate-do-ubuntu-2004: ## Validates Ubuntu 20.04 DigitalOcean Snapshot Packer config
 validate-do-ubuntu-2204: ## Validates Ubuntu 22.04 DigitalOcean Snapshot Packer config
 validate-do-ubuntu-2404: ## Validates Ubuntu 24.04 DigitalOcean Snapshot Packer config
 validate-do-all: $(DO_VALIDATE_TARGETS) ## Validates all DigitalOcean Snapshot Packer config
 
-validate-openstack-ubuntu-2004: ## Validates Ubuntu 20.04 Openstack Image Packer config
 validate-openstack-ubuntu-2204: ## Validates Ubuntu 22.04 Openstack Image Packer config
 validate-openstack-ubuntu-2404: ## Validates Ubuntu 22.04 Openstack Image Packer config
 validate-openstack-rocky-9: ## Validates Rocky 9 Openstack Image Packer config
@@ -980,7 +950,6 @@ validate-node-ova-local-rhel-8: ## Validates RHEL 8 Node OVA Packer config w loc
 validate-node-ova-local-rhel-9: ## Validates RHEL 9 Node OVA Packer config w local hypervisor
 validate-node-ova-local-rockylinux-8: ## Validates RockyLinux 8 Node OVA Packer config w local hypervisor
 validate-node-ova-local-rockylinux-9: ## Validates RockyLinux 9 Node OVA Packer config w local hypervisor
-validate-node-ova-local-ubuntu-2004: ## Validates Ubuntu 20.04 Node OVA Packer config w local hypervisor
 validate-node-ova-local-ubuntu-2204: ## Validates Ubuntu 22.04 Node OVA Packer config w local hypervisor
 validate-node-ova-local-ubuntu-2404: ## Validates Ubuntu 24.04 Node OVA Packer config w local hypervisor
 validate-node-ova-local-windows-2019: ## Validates Windows Server 2019 Node OVA Packer config w local hypervisor
@@ -994,7 +963,6 @@ validate-node-ova-local-vmx-rhel-8: ## Validates RHEL 8 Node OVA from VMX file w
 validate-node-ova-local-vmx-rhel-9: ## Validates RHEL 9 Node OVA from VMX file w local hypervisor
 validate-node-ova-local-vmx-rockylinux-8: ## Validates RockyLinux 8 Node OVA from VMX file w local hypervisor
 validate-node-ova-local-vmx-rockylinux-9: ## Validates RockyLinux 9 Node OVA from VMX file w local hypervisor
-validate-node-ova-local-vmx-ubuntu-2004: ## Validates Ubuntu 20.04 Node OVA from VMX file w local hypervisor
 validate-node-ova-local-vmx-ubuntu-2204: ## Validates Ubuntu 22.04 Node OVA from VMX file w local hypervisor
 validate-node-ova-local-vmx-ubuntu-2404: ## Validates Ubuntu 24.04 Node OVA from VMX file w local hypervisor
 
@@ -1005,13 +973,10 @@ validate-node-ova-local-base-rhel-8: ## Validates RHEL 8 Base Node OVA w local h
 validate-node-ova-local-base-rhel-9: ## Validates RHEL 9 Base Node OVA w local hypervisor
 validate-node-ova-local-base-rockylinux-8: ## Validates RockyLinux 8 Base Node OVA w local hypervisor
 validate-node-ova-local-base-rockylinux-9: ## Validates RockyLinux 9 Base Node OVA w local hypervisor
-validate-node-ova-local-base-ubuntu-2004: ## Validates Ubuntu 20.04 Base Node OVA w local hypervisor
 validate-node-ova-local-base-ubuntu-2204: ## Validates Ubuntu 22.04 Base Node OVA w local hypervisor
 validate-node-ova-local-base-ubuntu-2404: ## Validates Ubuntu 24.04 Base Node OVA w local hypervisor
 
 validate-qemu-flatcar: ## Validates Flatcar QEMU image packer config
-validate-qemu-ubuntu-2004: ## Validates Ubuntu 20.04 QEMU image packer config
-validate-qemu-ubuntu-2004-efi: ## Validates Ubuntu 20.04 QEMU EFI image packer config
 validate-qemu-ubuntu-2204: ## Validates Ubuntu 22.04 QEMU image packer config
 validate-qemu-ubuntu-2204-cloudimg: ## Validates Ubuntu 22.04 QEMU image packer config using cloud image
 validate-qemu-ubuntu-2204-efi: ## Validates Ubuntu 22.04 QEMU EFI image packer config
@@ -1026,8 +991,6 @@ validate-qemu-rockylinux-9-cloudimg: ## Validates Rocky Linux 9 QEMU image packe
 validate-qemu-all: $(QEMU_VALIDATE_TARGETS) ## Validates all Qemu Packer config
 
 validate-raw-flatcar: ## Validates Flatcar RAW image packer config
-validate-raw-ubuntu-2004: ## Validates Ubuntu 20.04 RAW image packer config
-validate-raw-ubuntu-2004-efi: ## Validates Ubuntu 20.04 RAW EFI image packer config
 validate-raw-ubuntu-2204: ## Validates Ubuntu 22.04 RAW image packer config
 validate-raw-ubuntu-2204-efi: ## Validates Ubuntu 22.04 RAW EFI image packer config
 validate-raw-ubuntu-2404: ## Validates Ubuntu 24.04 RAW image packer config
@@ -1035,7 +998,6 @@ validate-raw-ubuntu-2404-efi: ## Validates Ubuntu 24.04 RAW EFI image packer con
 validate-raw-rhel-8: ## Validates RHEL 8 RAW image packer config
 validate-raw-all: $(RAW_VALIDATE_TARGETS) ## Validates all RAW Packer config
 
-validate-oci-ubuntu-2004: ## Validates the OCI ubuntu-2004 image packer config
 validate-oci-ubuntu-2204: ## Validates the OCI ubuntu-2204 image packer config
 validate-oci-oracle-linux-8: ## Validates the OCI Oracle Linux 8.x image packer config
 validate-oci-oracle-linux-9: ## Validates the OCI Oracle Linux 9.x image packer config
@@ -1043,7 +1005,6 @@ validate-oci-windows-2019: ## Validates the OCI Windows 2019 image packer config
 validate-oci-windows-2022: ## Validates the OCI Windows 2022 image packer config
 validate-oci-all: $(OCI_VALIDATE_TARGETS) ## Validates all OCI image packer config
 
-validate-osc-ubuntu-2004: ## Validates Ubuntu 20.04 Outscale Snapshot Packer config
 validate-osc-ubuntu-2204: ## Validates Ubuntu 22.04 Outscale Snapshot Packer config
 validate-osc-ubuntu-2404: ## Validates Ubuntu 24.04 Outscale Snapshot Packer config
 validate-osc-all: $(OSC_VALIDATE_TARGETS) ## Validates all Outscale Snapshot Packer config
@@ -1052,7 +1013,6 @@ validate-powervs-centos-8: ## Validates the PowerVS CentOS 8 image packer config
 validate-powervs-centos-9: ## Validates the PowerVS CentOS 9 image packer config
 validate-powervs-all: $(POWERVS_VALIDATE_TARGETS) ## Validates all PowerVS Packer config
 
-validate-nutanix-ubuntu-2004: ## Validates Ubuntu 20.04 Nutanix Packer config
 validate-nutanix-ubuntu-2204: ## Validates Ubuntu 22.04 Nutanix Packer config
 validate-nutanix-ubuntu-2404: ## Validates Ubuntu 24.04 Nutanix Packer config
 validate-nutanix-rhel-8: ## Validates RedHat Enterprise Linux 8 Nutanix Packer config
@@ -1063,7 +1023,6 @@ validate-nutanix-flatcar: ## Validates the Nutanix Flatcar Nutanix Packer config
 validate-nutanix-windows-2022: ## Validates Windows Server 2022 Nutanix Packer config
 validate-nutanix-all: $(NUTANIX_VALIDATE_TARGETS) ## Validates all Nutanix Packer config
 
-validate-hcloud-ubuntu-2004: ## Validates Ubuntu 20.04 Hetzner Cloud Packer config
 validate-hcloud-ubuntu-2204: ## Validates Ubuntu 22.04 Hetzner Cloud Packer config
 validate-hcloud-ubuntu-2404: ## Validates Ubuntu 24.04 Hetzner Cloud Packer config
 validate-hcloud-rockylinux-8: ## Validates Rocky Linux 8 Hetzner Cloud Packer config

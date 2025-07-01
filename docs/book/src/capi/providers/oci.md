@@ -28,8 +28,6 @@ the different operating systems.
 |------|-------------|
 | `oracle-linux-8.json` | The settings for the Oracle Linux 8 image |
 | `oracle-linux-9.json` | The settings for the Oracle Linux 9 image |
-| `ubuntu-1804.json` | The settings for the Ubuntu 18.04 image |
-| `ubuntu-2004.json` | The settings for the Ubuntu 20.04 image |
 | `ubuntu-2204.json` | The settings for the Ubuntu 22.04 image |
 | `windows-2019.json` | The settings for the Windows Server 2019 image |
 | `windows-2022.json` | The settings for the Windows Server 2022 image |
