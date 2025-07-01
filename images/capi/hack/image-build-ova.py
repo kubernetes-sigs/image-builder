@@ -110,7 +110,6 @@ def main():
     OS_id_map = {"vmware-photon-64": {"id": "36", "version": "", "type": "vmwarePhoton64Guest"},
                  "centos7-64": {"id": "107", "version": "7", "type": "centos7_64Guest"},
                  "centos8-64": {"id": "107", "version": "8", "type": "centos8_64Guest"},
-                 "rhel7-64": {"id": "80", "version": "7", "type": "rhel7_64Guest"},
                  "rhel8-64": {"id": "80", "version": "8", "type": "rhel8_64Guest"},
                  "rhel9-64": {"id": "80", "version": "9", "type": "rhel9_64Guest"},
                  "rockylinux-64": {"id": "80", "version": "", "type": "rockylinux_64Guest"},
