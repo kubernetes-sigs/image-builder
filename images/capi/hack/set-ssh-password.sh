@@ -47,7 +47,11 @@ export ENCRYPTED_SSH_PASSWORD=$($openssl_binary passwd -6 -salt $SALT -stdin <<<
 
 for file in $(find $PACKER_DIR -type f -name "*.tmpl"); do
   if [ -f "${file%.*}" ]; then
-    rm ${file%.*}
+    # HACK: There seems to be a case where this can actually
+    # fail with the file not being found, leading to test failures.
+    # If we fail to remove the file we just continue and assume
+    # that the file was already removed.
+    rm ${file%.*} || true
   fi
   sed -e "s|\$SSH_PASSWORD|$SSH_PASSWORD|g" -e "s|\$ENCRYPTED_SSH_PASSWORD|$ENCRYPTED_SSH_PASSWORD|g" $file | tee ${file%.*}
 done
