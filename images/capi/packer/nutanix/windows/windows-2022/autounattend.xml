@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <!--*************************************************
 Windows Server 2019 Answer File Generator
 Created using Windows AFG found at:
@@ -6,8 +7,6 @@ Created using Windows AFG found at:
 Installation Notes:
 - This file need to be adapted based on your needs
 **************************************************-->
-
-<?xml version="1.0" encoding="utf-8"?>
 <unattend xmlns="urn:schemas-microsoft-com:unattend">
     <settings pass="windowsPE">
         <component name="Microsoft-Windows-PnpCustomizationsWinPE" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS"
@@ -141,7 +140,7 @@ Installation Notes:
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
             <AutoLogon>
                 <Password>
-                    <Value>S3cr3t0!</Value>
+                    <Value></Value>
                     <PlainText>true</PlainText>
                 </Password>
                 <Enabled>true</Enabled>
@@ -248,7 +247,7 @@ Installation Notes:
             <TimeZone>Pacific Standard Time</TimeZone>
             <UserAccounts>
                 <AdministratorPassword>
-                    <Value>S3cr3t0!</Value>
+                    <Value></Value>
                     <PlainText>true</PlainText>
                 </AdministratorPassword>
                 <LocalAccounts>

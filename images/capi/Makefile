@@ -467,7 +467,7 @@ SCALEWAY_VALIDATE_TARGETS	:= $(addprefix validate-,$(SCALEWAY_BUILD_NAMES))
 $(NODE_OVA_LOCAL_BUILD_TARGETS): deps-ova set-ssh-password
     # This uses a packer file builder to input unattend variables into a JSON file to be consumed by the python script before running the vmware-iso provisioner
 	$(if $(findstring windows,$@),$(PACKER) build $(PACKER_WINDOWS_NODE_FLAGS) -var-file="packer/ova/packer-common.json" -var-file="$(abspath packer/ova/$(subst build-node-ova-local-,,$@).json)" -only=file $(ABSOLUTE_PACKER_VAR_FILES) packer/ova/packer-windows.json,)
-	$(if $(findstring windows,$@),hack/windows-ova-unattend.py --unattend-file='./packer/ova/windows/$(subst build-node-ova-local-,,$@)/autounattend.xml',)
+	$(if $(findstring windows,$@),hack/windows-unattend.py --unattend-file='./packer/ova/windows/$(subst build-node-ova-local-,,$@)/autounattend.xml',)
 	$(PACKER) build $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="packer/ova/packer-common.json" -var-file="$(abspath packer/ova/$(subst build-node-ova-local-,,$@).json)" -except=vsphere -only=vmware-iso $(ABSOLUTE_PACKER_VAR_FILES) packer/ova/packer-$(if $(findstring windows,$@),windows,node).json
 
 .PHONY: $(NODE_OVA_LOCAL_VALIDATE_TARGETS)
@@ -486,7 +486,7 @@ $(NODE_OVA_LOCAL_BASE_BUILD_TARGETS): deps-ova set-ssh-password
 $(NODE_OVA_VSPHERE_BUILD_TARGETS): deps-ova set-ssh-password
     # This uses a packer file builder to input unattend variables into a JSON file to be consumed by the python script before running the vsphere provisioner
 	$(if $(findstring windows,$@),$(PACKER) build $(PACKER_WINDOWS_NODE_FLAGS) -var-file="packer/ova/packer-common.json" -var-file="$(abspath packer/ova/$(subst build-node-ova-vsphere-,,$@).json)" -only=file $(ABSOLUTE_PACKER_VAR_FILES) packer/ova/packer-windows.json,)
-	$(if $(findstring windows,$@),hack/windows-ova-unattend.py --unattend-file='./packer/ova/windows/$(subst build-node-ova-vsphere-,,$@)/autounattend.xml',)
+	$(if $(findstring windows,$@),hack/windows-unattend.py --unattend-file='./packer/ova/windows/$(subst build-node-ova-vsphere-,,$@)/autounattend.xml',)
 	$(PACKER) build $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS))  -var-file="packer/ova/packer-common.json" -var-file="$(abspath packer/ova/$(subst build-node-ova-vsphere-,,$@).json)" -var-file="packer/ova/vsphere.json"  -except=local -only=vsphere-iso $(ABSOLUTE_PACKER_VAR_FILES) -only=vsphere packer/ova/packer-$(if $(findstring windows,$@),windows,node).json
 
 .PHONY: $(NODE_OVA_VSPHERE_BASE_BUILD_TARGETS)
@@ -624,6 +624,8 @@ $(NUTANIX_BUILD_TARGETS): deps-nutanix set-ssh-password
 	$(eval NUTANIX_USERDATA:=$(shell cat $(abspath packer/nutanix/linux/cloud-init/$(subst -,/,$(if $(findstring ubuntu,$@),$(call GET_UBUNTU_DOTTED_SEMVER,$(subst build-nutanix-,,$@)),$(subst build-nutanix-,,$@)))/user-data) | base64 -w0))
 	$(eval NUTANIX_VAR_FILE:=$(abspath packer/nutanix/$(subst build-nutanix-,,$@).json))
 	jq '.user_data = "$(NUTANIX_USERDATA)"' $(NUTANIX_VAR_FILE) > $(NUTANIX_VAR_FILE).templated && mv $(NUTANIX_VAR_FILE).templated $(NUTANIX_VAR_FILE)
+	# This uses a packer file builder to input unattend variables into a JSON file to be consumed by the python script before running the nutanix provisioner
+	$(if $(findstring windows,$@),hack/windows-unattend.py --unattend-file='./packer/nutanix/windows/$(subst build-nutanix-,,$@)/autounattend.xml',)
 	$(PACKER) build $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="packer/nutanix/nutanix.json" -var-file="$(abspath packer/nutanix/$(subst build-nutanix-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/nutanix/packer$(if $(findstring windows,$@),-windows,).json
 
 .PHONY: $(NUTANIX_VALIDATE_TARGETS)

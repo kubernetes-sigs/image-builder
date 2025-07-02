@@ -48,7 +48,7 @@ def main():
                         help='The Unattend file')
     args = parser.parse_args()
 
-    print("windows-ova-unattend: cd %s" % args.build_dir)
+    print("windows-unattend: cd %s" % args.build_dir)
 
     # Load the packer manifest JSON
     data = None
@@ -61,26 +61,32 @@ def main():
     ET.register_namespace('', "urn:schemas-microsoft-com:unattend")
     ET.register_namespace('wcm', "http://schemas.microsoft.com/WMIConfig/2002/State")
     ET.register_namespace('xsi', "http://www.w3.org/2001/XMLSchema-instance")
-    
+
     root = unattend.getroot()
 
     if data.get("unattend_timezone"):
       modified=1
       setting = set_xmlstring(root, ".//*[@pass='oobeSystem']/*[@name='Microsoft-Windows-Shell-Setup']",'{urn:schemas-microsoft-com:unattend}TimeZone', data["unattend_timezone"])
-      print("windows-ova-unattend: Setting Timezone to %s" % data["unattend_timezone"])
-    
-    admin_password = data.get("admin_password")
-    if admin_password:
+      print("windows-unattend: Setting Timezone to %s" % data["unattend_timezone"])
+
+    # Setting a windows_admin_password is required
+    BAD_PASSWORD = "S3cr3t0!"
+    admin_password = os.environ.get("WINDOWS_ADMIN_PASSWORD") or data.get("admin_password")
+    if not admin_password:
+      raise ValueError("windows-unattend: No administrator password set, please set the environment variable WINDOWS_ADMIN_PASSWORD or provide it in the unattend.json file")
+    elif admin_password == BAD_PASSWORD:
+      raise ValueError("windows-unattend: The administrator password \"%s\" is disallowed, please set the environment variable WINDOWS_ADMIN_PASSWORD to a different value or provide it in the unattend.json file" % BAD_PASSWORD)
+    else:
       modified=1
       set_xmlstring(root, ".//*[@pass='oobeSystem']/*[@name='Microsoft-Windows-Shell-Setup']/{*}UserAccounts/{*}AdministratorPassword",'{urn:schemas-microsoft-com:unattend}Value', admin_password)
       set_xmlstring(root, ".//*[@pass='oobeSystem']/*[@name='Microsoft-Windows-Shell-Setup']/{*}AutoLogon/{*}Password",'{urn:schemas-microsoft-com:unattend}Value', admin_password)
-      print("windows-ova-unattend: Setting Administrator Password")
+      print("windows-unattend: Setting Administrator Password")
 
     if modified == 1:
-      print("windows-ova-unattend: Updating %s ..." % args.unattend_file)
+      print("windows-unattend: Updating %s ..." % args.unattend_file)
       unattend.write(args.unattend_file)
     else:
-      print("windows-ova-unattend: skipping...")
+      print("windows-unattend: skipping...")
 
 if __name__ == "__main__":
     main()
