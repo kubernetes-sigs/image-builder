@@ -1,7 +1,0 @@
-{
-  "build_name": "ubuntu-2004",
-  "distribution": "ubuntu",
-  "operating_system": "Canonical Ubuntu",
-  "operating_system_version": "20.04",
-  "ssh_username": "ubuntu"
-}

@@ -25,6 +25,5 @@ the different operating systems.
 
 | File | Description |
 |------|-------------|
-| `ubuntu-2004.json` | The settings for the Ubuntu 20.04 image |
 | `ubuntu-2204.json` | The settings for the Ubuntu 22.04 image |
 | `ubuntu-2404.json` | The settings for the Ubuntu 24.04 image |

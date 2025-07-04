@@ -1,8 +1,0 @@
-{
-  "build_name": "ubuntu-2004",
-  "distribution": "ubuntu",
-  "distribution_release": "focal",
-  "distribution_version": "2004",
-  "image": "ubuntu-22.04",
-  "ssh_username": "root"
-}

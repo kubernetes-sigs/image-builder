@@ -8,7 +8,7 @@ The image is built using OpenStack.
 
 First, check for prerequisites at [Packer docs for the OpenStack builder](https://developer.hashicorp.com/packer/plugins/builders/openstack).
 
-Also ensure that you have a [Ubuntu 20.04](https://cloud-images.ubuntu.com/focal/current/) or [Ubuntu 22.04](https://cloud-images.ubuntu.com/jammy/current/) cloud image available in your OpenStack instance before continuing as it will need to be referenced.
+Also ensure that you have a [Ubuntu 24.04](https://cloud-images.ubuntu.com/noble/current/) or [Ubuntu 22.04](https://cloud-images.ubuntu.com/jammy/current/) cloud image available in your OpenStack instance before continuing as it will need to be referenced.
 This build process also supports Flatcar Linux, but only Stable has been tested.
 
 #### Note

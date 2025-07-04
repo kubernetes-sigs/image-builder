@@ -45,7 +45,6 @@ the different operating systems.
 | `flatcar-arm64.json` | The settings for the Flatcar arm64 image  |
 | `rhel-8.json`        | The settings for the RHEL 8 image         |
 | `rockylinux.json`    | The settings for the Rocky Linux image    |
-| `ubuntu-2004.json`   | The settings for the Ubuntu 20.04 image   |
 | `ubuntu-2204.json`   | The settings for the Ubuntu 22.04 image   |
 | `ubuntu-2404.json`   | The settings for the Ubuntu 24.04 image   |
 | `windows-2019.json`  | The settings for the Windows 2019 image   |
