@@ -261,7 +261,7 @@
     "output_dir": "./output/{{user `build_version`}}",
     "prepull": null,
     "unattend_timezone": "Pacific Standard Time",
-    "windows_admin_password": "S3cr3t0!",
+    "windows_admin_password": "{{user `windows_admin_password`}}",
     "windows_service_manager": null,
     "windows_updates_categories": null,
     "windows_updates_kbs": null

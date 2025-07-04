@@ -45,7 +45,7 @@
         "subnet_name": "{{user `nutanix_subnet_name`}}"
       },
       "winrm_insecure": true,
-      "winrm_password": "S3cr3t0!",
+      "winrm_password": "{{user `windows_admin_password`}}",
       "winrm_port": 5986,
       "winrm_timeout": "4h",
       "winrm_use_ssl": true,
