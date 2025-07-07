@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - ore/auth0_migration
+      - vignesh/fix-k8s-version
   workflow_dispatch:
     inputs:
       k8s_version:
