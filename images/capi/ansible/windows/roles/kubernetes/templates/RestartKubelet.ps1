@@ -31,7 +31,7 @@ $args = "--cert-dir=$env:SYSTEMDRIVE/var/lib/kubelet/pki",
 $KubeletArgListStr = ($args -join " ") + " $kubeAdmArgs"
 $KubeletArgListStr = $KubeletArgListStr.Replace("`"", "\`"")
 # Used by sc.exe to create the service 
-$KubeletCommandLine =  "`"" + "\`"" + "$env:SYSTEMDRIVE\k\kube-log-runner.exe" + "\`" " + "--log-file=/var/log/kubelet/kubelet.log " + "$env:SYSTEMDRIVE\k\kubelet.exe " + $KubeletArgListStr + "`""
+$KubeletCommandLine =  "`"" + "\`"" + "$env:SYSTEMDRIVE\k\kube-log-runner.exe" + "\`" " + "--log-file=/var/log/kubelet/kubelet.err.log " + "$env:SYSTEMDRIVE\k\kubelet.exe " + $KubeletArgListStr + "`""
 
 # Write-Output $kubeletCommandLine
 $null = sc.exe stop kubelet

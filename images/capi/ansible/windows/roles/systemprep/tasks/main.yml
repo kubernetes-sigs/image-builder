@@ -123,6 +123,16 @@
     start_mode: auto
     state: started
 
+# Disable VPF changes to reduce lock contention, which breaks test grid since 2025-4B patch
+- name: Apply the fix for 2025-4B patch of windows 2022
+  ansible.windows.win_regedit:
+    path: HKLM:\SYSTEM\CurrentControlSet\Policies\Microsoft\FeatureManagement\Overrides
+    state: present
+    name: 1114842764
+    data: 0
+    type: dword
+  when: distribution_version == "2022"
+
 # Apply HNS flags for fixes that need to be enabled via Registry
 # these eventually get turned on automatically and can be removed in future releases
 - name: Apply HNS control Flags 0x40 and 0x10 in 2022-11B patches
