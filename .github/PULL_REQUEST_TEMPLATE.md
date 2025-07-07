@@ -15,13 +15,18 @@ If you'd like to discuss your change with us please reach out any of the communi
 <!-- What this PR does / why we need it. -->
 
 
+<!--
+If your PR include introducing new Providers or Operating systems to support please fill out the following questions.
+If not, please feel free to leave blank or remove.
+-->
+- Is this change including a new Provider or a new OS? (y/n) ____
+- If yes, has the Provider/OS matrix been updated in the readme? (y/n) ____
+- If adding a new provider, are you a representative of that provider? (y/n) ____
 
 ## Related issues
 <!-- A list of any open issues that this PR fixes (in the format `Fixes #1234`) which will cause the issues to be closed when this PR merges -->
 
 - Fixes #
-
-
 
 ## Additional context
 <!--

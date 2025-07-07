@@ -10,6 +10,41 @@ Image Builder is a tool for building Kubernetes virtual machine images across mu
 
 - [Quick Start for Cluster API Image Builder](https://image-builder.sigs.k8s.io/capi/quickstart.html)
 
+## Provider / OS Matrix
+
+The table below shows the currently provided operating systems for each provider built-in to image builder. (Note: This doesn't mean this is an exhaustive list of OSs each provider can support, only which are currently available within image-builder by default)
+
+**Legend:**
+
+- 💙: Image is available and is covered by CI tests
+- ✅: Image is available for the provider
+- ❌: Image is not available for the provider
+
+| OS                | ami | azure | digitalocean | gce | hcloud | huaweicloud | maas | nutanix | oci | openstack | outscale | ova | powervs | proxmox | qemu | raw | scaleway | vultr |
+|-------------------|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|
+| Amazon Linux 2    | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| Amazon Linux 2023 | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| Azure Linux 3     | ❌ | 💙 | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| CentOS 8          | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| CentOS 9          | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ | ❌ | ✅ | ❌ | ❌ | ❌ |
+| Flatcar           | ✅ | 💙 | ❌ | ❌ | ✅ | ❌ | ❌ | ✅ | ❌ | ✅ | ❌ | 💙 | ❌ | ✅ | ✅ | ✅ | ❌ | ❌ |
+| Oracle Linux 8    | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| Oracle Linux 9    | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| Photon 4          | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| Photon 5          | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | 💙 | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| RHEL 7            | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| RHEL 8            | ✅ | ✅ | ❌ | 💙 | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ | ✅ | ✅ | ❌ | ❌ |
+| RHEL 9            | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ | ✅ | ✅ | ❌ | ❌ |
+| Rocky Linux 8     | ✅ | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ | ✅ | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ | ✅ | ❌ | ❌ | ❌ |
+| Rocky Linux 9     | ❌ | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ | ✅ | ❌ | ✅ | ❌ | 💙 | ❌ | ✅ | ✅ | ❌ | ✅ | ❌ |
+| Ubuntu 20.04      | ✅ | 💙 | ✅ | ❌ | ✅ | ❌ | ❌ | ✅ | ✅ | ✅ | ✅ | 💙 | ❌ | ❌ | ✅ | ✅ | ❌ | ❌ |
+| Ubuntu 22.04      | ✅ | 💙 | ✅ | 💙 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 💙 | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Ubuntu 24.04      | ✅ | 💙 | ✅ | 💙 | ✅ | ❌ | ✅ | ✅ | ❌ | ✅ | ❌ | 💙 | ❌ | ✅ | ✅ | ✅ | ✅ | ❌ |
+| Windows 2019      | ✅ | 💙 | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| Windows 2022      | ❌ | 💙 | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ | ✅ | ❌ | ❌ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| Windows 2025      | ❌ | 💙 | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| Windows Annual    | ❌ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+
 ## Community, discussion, contribution, and support
 
 Learn how to engage with the Kubernetes community on the [community page](http://kubernetes.io/community/).
