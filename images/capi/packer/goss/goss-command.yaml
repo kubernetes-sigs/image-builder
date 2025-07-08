@@ -37,6 +37,23 @@ command:
     stderr: [ ]
     timeout: 0
 {{end}}
+{{if eq .Vars.containerd_gvisor_runtime "true"}}
+  runsc --version:
+    exit-status: 0
+    stdout: [ ]
+    stderr: []
+    timeout: 0
+  containerd-shim-runsc-v1:
+    exit-status: 1
+    stdout: [ ]
+    stderr: ["io.containerd.runsc.v1: shim namespace cannot be empty"]
+    timeout: 0
+  grep -E 'io\.containerd\.(runsc)\.v' /etc/containerd/config.toml:
+    exit-status: 0
+    stdout: [ ]
+    stderr: [ ]
+    timeout: 0
+{{end}}
 {{if eq .Vars.kubernetes_source_type "pkg"}}
 {{if eq .Vars.kubernetes_cni_source_type "pkg"}}
   crictl images | grep -v 'IMAGE ID' | awk '{print $1}' | awk -F'/' '{print $NF}' | sed 's/-{{ .Vars.arch }}//g' | sort:

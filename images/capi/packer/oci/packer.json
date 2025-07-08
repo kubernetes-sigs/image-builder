@@ -84,6 +84,8 @@
         "ARCH": "amd64",
         "OS": "{{user `distribution` | lower }}",
         "PROVIDER": "oci",
+        "containerd_gvisor_runtime": "{{user `containerd_gvisor_runtime`}}",
+        "containerd_gvisor_version": "{{user `containerd_gvisor_version`}}",
         "containerd_version": "{{user `containerd_version`}}",
         "kubernetes_cni_deb_version": "{{ user `kubernetes_cni_deb_version` }}",
         "kubernetes_cni_rpm_version": "{{ split (user `kubernetes_cni_rpm_version`) \"-\" 0 }}",

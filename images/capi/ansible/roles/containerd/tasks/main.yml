@@ -199,14 +199,14 @@
   loop:
     - runsc
     - containerd-shim-runsc-v1
-  when: containerd_gvisor_runtime
+  when: containerd_gvisor_runtime | bool
 
 - name: Install runsc as a runtime
   ansible.builtin.command:
     cmd: >
       {{ sysusr_prefix }}/bin/runsc install
   register: runsc_install_output
-  when: containerd_gvisor_runtime
+  when: containerd_gvisor_runtime | bool
   changed_when:
     - runsc_install_output.rc == 0
     - runsc_install_output.stderr is search('Successfully added')
