@@ -102,6 +102,8 @@
         "OS": "{{user `distribution` | lower}}",
         "OS_VERSION": "{{user `distribution_version` | lower}}",
         "PROVIDER": "hcloud",
+        "containerd_gvisor_runtime": "{{user `containerd_gvisor_runtime`}}",
+        "containerd_gvisor_version": "{{user `containerd_gvisor_version`}}",
         "containerd_version": "{{user `containerd_version`}}",
         "containerd_wasm_shims_runtimes": "{{user `containerd_wasm_shims_runtimes` }}",
         "kubernetes_cni_deb_version": "{{ user `kubernetes_cni_deb_version` }}",

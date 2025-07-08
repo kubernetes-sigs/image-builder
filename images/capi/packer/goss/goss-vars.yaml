@@ -96,6 +96,8 @@ photon_5_rpms: &photon_5_rpms
   logrotate:
 
 arch: "amd64"
+containerd_gvisor_runtime: ""
+containerd_gvisor_version: ""
 containerd_version: ""
 containerd_wasm_shims_runtimes: ""
 kubernetes_cni_source_type: ""
