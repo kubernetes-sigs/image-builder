@@ -8,6 +8,7 @@ aliases:
     - mboersma
     - drew-viles
   image-builder-reviewers:
+    - AndiDog
     - randomvariable
   image-builder-azure-reviewers:
     - jsturtevant
