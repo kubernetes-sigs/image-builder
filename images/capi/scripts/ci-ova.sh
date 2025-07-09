@@ -28,12 +28,10 @@ export ARTIFACTS="${ARTIFACTS:-${PWD}/_artifacts}"
 # - Any efi targets (to reduce duplicate OSs)
 # The following are currently having issues running in the
 # test environment so are specifically excluded for now
-# - RockyLinux-8
 # - Photon-4
 TARGETS=( $(make build-node-ova-vsphere-all --recon -d | grep "Must remake" | \
   grep -v build-node-ova-vsphere-all | \
   grep -E -v 'rhel|windows|efi' | \
-  grep -v build-node-ova-vsphere-rockylinux-8 | \
   grep -v build-node-ova-vsphere-photon-4 | \
   grep -E -o 'build-node-ova-vsphere-[a-zA-Z0-9\-]+' ) )
 
