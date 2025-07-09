@@ -44,14 +44,6 @@ azurelinux_rpms:
   - yum-utils
   - lsof
 
-# Used for RedHat based distributions ==  7 (ex. RHEL-7, CentOS-7 etc.)
-rh7_rpms:
-  - curl
-  - yum-utils
-  - ebtables
-  - python-netifaces
-  - python-requests
-
 # Used for RedHat based distributions =!  7 (ex. RHEL-8, RockyLinux-8, RockyLinux-9 etc.)
 rh8_rpms:
   - curl
