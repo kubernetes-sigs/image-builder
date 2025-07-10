@@ -28,7 +28,7 @@
   ansible.builtin.file:
     src: /usr/local/bin/{{ item }}
     dest: /usr/bin/{{ item }}
-    mode: "0777"
+    mode: "0755"
     state: link
     force: true
   loop:
