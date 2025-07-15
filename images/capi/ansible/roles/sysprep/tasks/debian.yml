@@ -20,7 +20,7 @@
 - name: Pin all installed packages with apt-mark
   ansible.builtin.shell: |
     set -o pipefail
-    dpkg-query -f '${binary:Package}\n' -W | xargs apt-mark hold
+    dpkg-query -f '${binary:Package}\n' -W | grep -v grub | xargs apt-mark hold
 
   args:
     executable: /bin/bash
