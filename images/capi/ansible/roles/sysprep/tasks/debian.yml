@@ -32,7 +32,7 @@
 
   args:
     executable: /bin/bash
-  when: provider == "maas"
+  when: provider is defined and provider is search('maas')
 
 - name: Remove extra repos
   ansible.builtin.file:
