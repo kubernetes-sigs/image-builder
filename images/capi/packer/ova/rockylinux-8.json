@@ -1,6 +1,6 @@
 {
   "boot_command_prefix": "<up><tab> text inst.ks=",
-  "boot_command_suffix": "hd:LABEL=cidata:/ks.cfg<leftCtrlOn>x<leftCtrlOff>",
+  "boot_command_suffix": "hd:LABEL=cidata:/ks.cfg<enter>",
   "build_name": "rockylinux-8",
   "cd_content_location": "./packer/ova/linux/{{user `distro_name`}}/http/{{user `distro_version`}}/*",
   "cd_label": "cidata",
