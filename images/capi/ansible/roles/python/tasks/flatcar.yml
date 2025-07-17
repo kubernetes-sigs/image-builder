@@ -20,7 +20,7 @@
   when:
     - pypy_installed.stdout_lines[0] == "false"
   vars:
-    pypy_url_base: https://downloads.python.org/pypy/pypy{{ pypy_python_version }}-v{{ pypy_version }}-linux64.tar.bz2
+    pypy_url_base: https://downloads.python.org/pypy
     pypy_url_path: pypy{{ pypy_python_version }}-v{{ pypy_version }}-linux64.tar.bz2
   block:
     - name: Download pypy archive
