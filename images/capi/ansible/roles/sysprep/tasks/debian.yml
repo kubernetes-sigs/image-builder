@@ -25,6 +25,15 @@
   args:
     executable: /bin/bash
 
+- name: Unpin grub packages with apt-mark for MaaS
+  ansible.builtin.shell: |
+    set -o pipefail
+    dpkg-query -f '${binary:Package}\n' -W | grep grub | xargs apt-mark unhold
+
+  args:
+    executable: /bin/bash
+  when: provider is defined and provider is search('maas')
+
 - name: Remove extra repos
   ansible.builtin.file:
     path: /etc/apt/sources.list.d/{{ item | basename }}
