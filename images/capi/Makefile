@@ -388,7 +388,7 @@ DO_BUILD_NAMES 				?=	do-ubuntu-2004 do-ubuntu-2204 do-ubuntu-2404
 
 OPENSTACK_BUILD_NAMES		?=	openstack-ubuntu-2004 openstack-ubuntu-2204 openstack-ubuntu-2404 openstack-flatcar openstack-rockylinux-9
 
-OSC_BUILD_NAMES 			?=	osc-ubuntu-2004 osc-ubuntu-2204
+OSC_BUILD_NAMES 			?=	osc-ubuntu-2004 osc-ubuntu-2204 osc-ubuntu-2404
 
 QEMU_BUILD_NAMES			?=	qemu-ubuntu-2004 qemu-ubuntu-2204 qemu-ubuntu-2204-cloudimg qemu-ubuntu-2404 qemu-ubuntu-2404-efi qemu-ubuntu-2204-efi qemu-centos-9 qemu-ubuntu-2004-efi qemu-rhel-8 qemu-rhel-9 qemu-rockylinux-8 qemu-rockylinux-8-cloudimg qemu-rockylinux-9 qemu-rockylinux-9-cloudimg qemu-flatcar
 
