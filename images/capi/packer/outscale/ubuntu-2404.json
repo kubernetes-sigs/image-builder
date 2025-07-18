@@ -1,0 +1,7 @@
+{
+  "build_name": "ubuntu-2404",
+  "distribution": "ubuntu",
+  "distribution_release": "ubuntu",
+  "distribution_version": "2404",
+  "image_name": "Ubuntu-24.04-2025-07-07"
+}
