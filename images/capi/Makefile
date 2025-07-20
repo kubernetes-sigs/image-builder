@@ -876,6 +876,7 @@ build-oci-all: $(OCI_BUILD_TARGETS) ## Builds all OCI image
 
 build-osc-ubuntu-2004: ## Builds Ubuntu 20.04 Outscale Snapshot
 build-osc-ubuntu-2204: ## Builds Ubuntu 22.04 Outscale Snapshot
+build-osc-ubuntu-2404: ## Builds Ubuntu 24.04 Outscale Snapshot
 build-osc-all: $(OSC_BUILD_TARGETS) ## Builds all Outscale Snapshot
 
 build-nutanix-ubuntu-2004: ## Builds the Nutanix ubuntu-2004 image
@@ -1043,7 +1044,8 @@ validate-oci-windows-2022: ## Validates the OCI Windows 2022 image packer config
 validate-oci-all: $(OCI_VALIDATE_TARGETS) ## Validates all OCI image packer config
 
 validate-osc-ubuntu-2004: ## Validates Ubuntu 20.04 Outscale Snapshot Packer config
-validate-osc-ubuntu-2204: ## Validates Ubuntu 20.04 Outscale Snapshot Packer config
+validate-osc-ubuntu-2204: ## Validates Ubuntu 22.04 Outscale Snapshot Packer config
+validate-osc-ubuntu-2404: ## Validates Ubuntu 24.04 Outscale Snapshot Packer config
 validate-osc-all: $(OSC_VALIDATE_TARGETS) ## Validates all Outscale Snapshot Packer config
 
 validate-powervs-centos-8: ## Validates the PowerVS CentOS 8 image packer config
