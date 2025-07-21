@@ -427,6 +427,14 @@
       "user": "{{user `ssh_username`}}"
     },
     {
+      "environment_vars": [
+        "ENABLE_DISK_PACKING={{user `enable_disk_packing`}}"
+      ],
+      "execute_command": "if [[ \"${ENABLE_DISK_PACKING}\" == *\"true\"* ]]; then chmod +x {{ .Path }}; sudo {{ .Path }}; fi",
+      "script": "./packer/files/ova/scripts/optimize-disk.sh",
+      "type": "shell"
+    },
+    {
       "arch": "{{user `goss_arch`}}",
       "download_path": "{{user `goss_download_path`}}",
       "except": [
@@ -526,6 +534,7 @@
     "resource_pool": "",
     "username": "",
     "vcenter_server": "",
-    "vsphere_guest_os_type": null
+    "vsphere_guest_os_type": null,
+    "enable_disk_packing": "true"
   }
 }
