@@ -500,6 +500,7 @@
     "datastore": "",
     "destroy": "false",
     "disk_size": "20480",
+    "enable_disk_packing": "true",
     "existing_ansible_ssh_args": "{{env `ANSIBLE_SSH_ARGS`}}",
     "export_manifest": "none",
     "folder": "",
@@ -534,7 +535,6 @@
     "resource_pool": "",
     "username": "",
     "vcenter_server": "",
-    "vsphere_guest_os_type": null,
-    "enable_disk_packing": "true"
+    "vsphere_guest_os_type": null
   }
 }
