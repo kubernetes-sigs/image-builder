@@ -388,7 +388,7 @@ DO_BUILD_NAMES 				?=	do-ubuntu-2004 do-ubuntu-2204 do-ubuntu-2404
 
 OPENSTACK_BUILD_NAMES		?=	openstack-ubuntu-2004 openstack-ubuntu-2204 openstack-ubuntu-2404 openstack-flatcar openstack-rockylinux-9
 
-OSC_BUILD_NAMES 			?=	osc-ubuntu-2004 osc-ubuntu-2204
+OSC_BUILD_NAMES 			?=	osc-ubuntu-2004 osc-ubuntu-2204 osc-ubuntu-2404
 
 QEMU_BUILD_NAMES			?=	qemu-ubuntu-2004 qemu-ubuntu-2204 qemu-ubuntu-2204-cloudimg qemu-ubuntu-2404 qemu-ubuntu-2404-efi qemu-ubuntu-2204-efi qemu-centos-9 qemu-ubuntu-2004-efi qemu-rhel-8 qemu-rhel-9 qemu-rockylinux-8 qemu-rockylinux-8-cloudimg qemu-rockylinux-9 qemu-rockylinux-9-cloudimg qemu-flatcar
 
@@ -876,6 +876,7 @@ build-oci-all: $(OCI_BUILD_TARGETS) ## Builds all OCI image
 
 build-osc-ubuntu-2004: ## Builds Ubuntu 20.04 Outscale Snapshot
 build-osc-ubuntu-2204: ## Builds Ubuntu 22.04 Outscale Snapshot
+build-osc-ubuntu-2404: ## Builds Ubuntu 24.04 Outscale Snapshot
 build-osc-all: $(OSC_BUILD_TARGETS) ## Builds all Outscale Snapshot
 
 build-nutanix-ubuntu-2004: ## Builds the Nutanix ubuntu-2004 image
@@ -1043,7 +1044,8 @@ validate-oci-windows-2022: ## Validates the OCI Windows 2022 image packer config
 validate-oci-all: $(OCI_VALIDATE_TARGETS) ## Validates all OCI image packer config
 
 validate-osc-ubuntu-2004: ## Validates Ubuntu 20.04 Outscale Snapshot Packer config
-validate-osc-ubuntu-2204: ## Validates Ubuntu 20.04 Outscale Snapshot Packer config
+validate-osc-ubuntu-2204: ## Validates Ubuntu 22.04 Outscale Snapshot Packer config
+validate-osc-ubuntu-2404: ## Validates Ubuntu 24.04 Outscale Snapshot Packer config
 validate-osc-all: $(OSC_VALIDATE_TARGETS) ## Validates all Outscale Snapshot Packer config
 
 validate-powervs-centos-8: ## Validates the PowerVS CentOS 8 image packer config
