@@ -1154,7 +1154,7 @@ docker-pull-prerequisites:
 
 .PHONY: docker-build
 docker-build: docker-pull-prerequisites ## Build the Docker image for controller-manager
-	DOCKER_BUILDKIT=1 docker build --build-arg BUILDKIT_SYNTAX=$(BUILDKIT_SYNTAX) --build-arg PASSED_IB_VERSION=$(IB_VERSION) --build-arg ARCH=$(ARCH) --build-arg BASE_IMAGE=$(BASE_IMAGE) --build-arg TAG=$(TAG) . -t $(CONTROLLER_IMG)-$(ARCH):$(TAG)
+	DOCKER_BUILDKIT=1 docker build --build-arg BUILDKIT_SYNTAX=$(BUILDKIT_SYNTAX) --build-arg PASSED_IB_VERSION=$(IB_VERSION) --build-arg ARCH=$(ARCH) --build-arg BASE_IMAGE=$(BASE_IMAGE) --build-arg TAG=$(TAG) --secret id=packer-github-token,env=PACKER_GITHUB_API_TOKEN . -t $(CONTROLLER_IMG)-$(ARCH):$(TAG)
 
 .PHONY: docker-push
 docker-push: ## Push the Docker image
