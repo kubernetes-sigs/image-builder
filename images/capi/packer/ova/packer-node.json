@@ -427,6 +427,14 @@
       "user": "{{user `ssh_username`}}"
     },
     {
+      "environment_vars": [
+        "ENABLE_DISK_PACKING={{user `enable_disk_packing`}}"
+      ],
+      "execute_command": "if [[ \"${ENABLE_DISK_PACKING}\" == *\"true\"* ]]; then chmod +x {{ .Path }}; sudo {{ .Path }}; fi",
+      "script": "./packer/files/ova/scripts/optimize-disk.sh",
+      "type": "shell"
+    },
+    {
       "arch": "{{user `goss_arch`}}",
       "download_path": "{{user `goss_download_path`}}",
       "except": [
@@ -492,6 +500,7 @@
     "datastore": "",
     "destroy": "false",
     "disk_size": "20480",
+    "enable_disk_packing": "true",
     "existing_ansible_ssh_args": "{{env `ANSIBLE_SSH_ARGS`}}",
     "export_manifest": "none",
     "folder": "",
