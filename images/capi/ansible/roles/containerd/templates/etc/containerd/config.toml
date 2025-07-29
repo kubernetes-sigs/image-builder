@@ -2,13 +2,49 @@
 
 # Use config version 2 to enable new configuration fields.
 # Config file is parsed as version 1 by default.
-version = 2
+version = {% if containerd_version is version('2.0.0', '>=') %}3{% else %}2{% endif %}
 
 {% if 'imports' not in containerd_additional_settings | b64decode %}
 imports = ["/etc/containerd/conf.d/*.toml"]
 {% endif %}
 
 [plugins]
+{% if containerd_version is version('2.0.0', '>=') %}
+  [plugins.'io.containerd.cri.v1.images'.pinned_images]
+    sandbox = "{{ pause_image }}"
+  [plugins.'io.containerd.cri.v1.images'.registry]
+    config_path = '/etc/containerd/certs.d'
+{% if kubernetes_semver is version('v1.21.0', '>=') %}
+  [plugins.'io.containerd.cri.v1.runtime'.containerd.runtimes.runc]
+    runtime_type = 'io.containerd.runc.v2'
+  [plugins.'io.containerd.cri.v1.runtime'.containerd.runtimes.runc.options]
+    SystemdCgroup = true
+{% if 'lunatic' in containerd_wasm_shims_runtimes %}
+  [plugins.'io.containerd.cri.v1.runtime'.containerd.runtimes.lunatic]
+    runtime_type = "io.containerd.lunatic.{{ runtime_versions['lunatic'] }}"
+{% endif %}
+{% if 'slight' in containerd_wasm_shims_runtimes %}
+  [plugins.'io.containerd.cri.v1.runtime'.containerd.runtimes.slight]
+    runtime_type = "io.containerd.slight.{{ runtime_versions['slight'] }}"
+{% endif %}
+{% if 'spin' in containerd_wasm_shims_runtimes %}
+  [plugins.'io.containerd.cri.v1.runtime'.containerd.runtimes.spin]
+    runtime_type = "io.containerd.spin.{{ runtime_versions['spin'] }}"
+{% endif %}
+{% if 'wws' in containerd_wasm_shims_runtimes %}
+  [plugins.'io.containerd.cri.v1.runtime'.containerd.runtimes.wws]
+    runtime_type = "io.containerd.wws.{{ runtime_versions['wws'] }}"
+{% endif %}
+{% if containerd_gvisor_runtime %}
+  [plugins.'io.containerd.cri.v1.runtime'.containerd.runtimes.gvisor]
+    runtime_type = 'io.containerd.runsc.v1'
+{% endif %}
+{% endif %}
+{% if packer_builder_type.startswith('azure') %}
+  [plugins.'io.containerd.cri.v1.images'.registry.headers]
+    X-Meta-Source-Client = ['azure/capz']
+{% endif %}
+{% else %}
   [plugins."io.containerd.grpc.v1.cri"]
     sandbox_image = "{{ pause_image }}"
   [plugins."io.containerd.grpc.v1.cri".registry]
@@ -42,6 +78,7 @@ imports = ["/etc/containerd/conf.d/*.toml"]
 {% if packer_builder_type.startswith('azure') %}
   [plugins."io.containerd.grpc.v1.cri".registry.headers]
     X-Meta-Source-Client = ["azure/capz"]
+{% endif %}
 {% endif %}
 
 {{containerd_additional_settings | b64decode}}
