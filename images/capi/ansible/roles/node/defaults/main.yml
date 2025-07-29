@@ -21,6 +21,7 @@ common_rpms:
   - python3-pip
   - socat
   - sysstat
+  - nfs-utils
 
 # Used for AmazonLinux-2 distributions
 al2_rpms:
@@ -75,6 +76,7 @@ common_debs:
   - python3-netifaces
   - python3-pip
   - socat
+  - nfs-common
 
 common_photon_rpms:
   - audit
