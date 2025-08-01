@@ -23,6 +23,7 @@ set -o pipefail
 source hack/utils.sh
 
 _version="6.21.1"
+_version_core="2.15.13"
 
 # Change directories to the parent directory of the one in which this
 # script is located.
@@ -32,6 +33,6 @@ cd "$(dirname "${BASH_SOURCE[0]}")/.."
 export PIP_DISABLE_PIP_VERSION_CHECK=1 PIP_ROOT_USER_ACTION=ignore
 
 if ! command -v ansible-lint >/dev/null 2>&1; then
-    pip3_install "ansible-lint==${_version}"
+    pip3_install "ansible-lint==${_version}" "ansible-core==${_version_core}"
     ensure_py3_bin ansible-lint
 fi
