@@ -13,6 +13,12 @@ Run the docker build target of Makefile
    make docker-build
    ```
 
+To avoid hitting API rate limit issues when Packer tries to pull plugins from GitHub, `PACKER_GITHUB_API_TOKEN` variable can be passed during the `docker-build`
+
+  ```commandline
+  PACKER_GITHUB_API_TOKEN=<github api token>  make docker-build
+  ```
+
 ## Using a Container Image
 
 The latest image-builder container image release is available here:
