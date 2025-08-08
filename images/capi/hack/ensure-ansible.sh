@@ -22,9 +22,6 @@ set -o pipefail
 
 source hack/utils.sh
 
-# Note: ansible-core v2.16.x requires Python >= 3.10.
-_version="2.15.13"
-
 # Change directories to the parent directory of the one in which this
 # script is located.
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
@@ -33,18 +30,18 @@ cd "$(dirname "${BASH_SOURCE[0]}")/.."
 export PIP_DISABLE_PIP_VERSION_CHECK=1 PIP_ROOT_USER_ACTION=ignore
 
 if ! command -v ansible >/dev/null 2>&1; then
-    pip3_install "ansible-core==${_version}"
+    pip3_install "ansible-core==${_version_ansible_core}"
     ensure_py3_bin ansible
     ensure_py3_bin ansible-playbook
 fi
 
 ansible_version=""
 IFS=" " read -ra ansible_version <<< "$(ansible --version)"
-if [[ "${_version}" != $(echo -e "${_version}\n${ansible_version[2]}" | sort -s -t. -k 1,1 -k 2,2n -k 3,3n | head -n1) && "${ansible_version[2]}" != "devel" ]]; then
+if [[ "${_version_ansible_core}" != $(echo -e "${_version_ansible_core}\n${ansible_version[2]}" | sort -s -t. -k 1,1 -k 2,2n -k 3,3n | head -n1) && "${ansible_version[2]}" != "devel" ]]; then
   cat <<EOF
 Detected ansible version: ${ansible_version[*]}.
-Image builder requires ${_version} or greater.
-Please install ${_version} or later.
+Image builder requires ${_version_ansible_core} or greater.
+Please install ${_version_ansible_core} or later.
 EOF
   exit 2
 fi

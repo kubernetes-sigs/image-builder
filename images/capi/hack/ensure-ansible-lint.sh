@@ -32,6 +32,6 @@ cd "$(dirname "${BASH_SOURCE[0]}")/.."
 export PIP_DISABLE_PIP_VERSION_CHECK=1 PIP_ROOT_USER_ACTION=ignore
 
 if ! command -v ansible-lint >/dev/null 2>&1; then
-    pip3_install "ansible-lint==${_version}"
+    pip3_install "ansible-lint==${_version}" "ansible-core==${_version_ansible_core}"
     ensure_py3_bin ansible-lint
 fi
