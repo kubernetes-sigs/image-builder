@@ -248,6 +248,7 @@
     "containerd_version": null,
     "disable_hypervisor": null,
     "disk_size": "81920",
+    "enable_auto_kubelet_service_restart": "false",
     "firmware": "bios",
     "http_port_max": "",
     "http_port_min": "",

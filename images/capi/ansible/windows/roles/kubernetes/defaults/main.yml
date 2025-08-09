@@ -16,4 +16,4 @@ kubernetes_bins:
   - kubeadm
   - kubectl
   - kubelet
-  - kube-log-runner
+enable_auto_kubelet_service_restart: true
