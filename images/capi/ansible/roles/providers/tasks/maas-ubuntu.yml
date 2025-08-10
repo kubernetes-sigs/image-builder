@@ -4,7 +4,7 @@
     state: directory
     mode: "0775"
 
-# Don't copy in hard-coded scripts as modern MaaS already has builtin tasks that are more flexible and powerful
+# Uncomment this ansible task and customize the curtin scripts to replace the builtin MaaS curtin hooks
 # - name: Copy curtin scripts to /curtin
 #   ansible.builtin.copy:
 #     src: "files/maas/curtin/{{ item }}"
