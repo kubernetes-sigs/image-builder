@@ -152,6 +152,23 @@
         "kubernetes_version": "{{user `kubernetes_semver` | replace \"v\" \"\" 1}}"
       },
       "version": "{{user `goss_version`}}"
+    },      
+    {
+        "type": "shell",
+        "environment_vars": [
+          "REMOVE_NAMESERVER={{user `remove_nameserver`}}"
+        ],
+        "inline": [
+          "if [ \"$REMOVE_NAMESERVER\" = \"true\" ]; then",
+          "  cat /etc/resolv.conf",
+          "  echo 'Removing nameserver from resolv.conf...'",
+          "  sudo sed -i '/^nameserver/d' /etc/resolv.conf",
+          "  echo 'Removing stale nameserver is done, checking the current content of /etc/resolv.conf...'",
+          "  cat /etc/resolv.conf",
+          "else",
+          "  echo 'Skipping nameserver cleanup.'",
+          "fi"
+        ]
     }
   ],
   "variables": {
