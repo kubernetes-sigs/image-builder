@@ -276,6 +276,6 @@
     "virtual_network_name": "",
     "virtual_network_resource_group_name": "",
     "virtual_network_subnet_name": "",
-    "vm_size": ""
+    "vm_size": "Standard_B2ms"
   }
 }
