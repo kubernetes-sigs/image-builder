@@ -15,23 +15,52 @@
 # Install kubelet as a windows service
 # Requires --windows-service flag: https://github.com/kubernetes/kubernetes/blob/7f23a743e8c23ac6489340bbb34fa6f1d392db9d/cmd/kubelet/app/options/osflags_windows.go#L26
 # Does not support kubeadm KUBELET_KUBEADM_ARGS which is used by Cluster API to pass extra user args
-- name: Install kubelet as service
-  ansible.windows.win_service:
-    name: kubelet
-    start_mode: auto
-    path: >
-      "{{ kubernetes_install_path }}\kube-log-runner.exe" --log-file={{ systemdrive.stdout | trim }}/var/log/kubelet/kubelet.log
-      {{kubernetes_install_path }}\kubelet.exe --windows-service
-      --cert-dir={{ systemdrive.stdout | trim }}/var/lib/kubelet/pki
-      --config={{ systemdrive.stdout | trim }}/var/lib/kubelet/config.yaml
-      --bootstrap-kubeconfig={{ systemdrive.stdout | trim }}/etc/kubernetes/bootstrap-kubelet.conf
-      --kubeconfig={{ systemdrive.stdout | trim }}/etc/kubernetes/kubelet.conf
-      --pod-infra-container-image="{{ pause_image }}"
-      --enable-debugging-handlers --cgroups-per-qos=false --enforce-node-allocatable=""
-      --container-runtime-endpoint="npipe:////./pipe/containerd-containerd"
-      --resolv-conf=""
+- name: Install kubelet service - with restart template
+  when: kubernetes_auto_kubelet_service_restart | bool
+  block:
+    - name: Install kube-log-runner
+      ansible.windows.win_get_url:
+        url: "{{ kubernetes_base_url }}/kube-log-runner.exe"
+        dest: "{{ kubernetes_install_path }}\\"
+      retries: 5
+      delay: 3
+      register: kubernetes_download
+      until: kubernetes_download is not failed
+    - name: Install kubelet as service
+      ansible.windows.win_service:
+        name: kubelet
+        start_mode: auto
+        path: >
+          "{{ kubernetes_install_path }}\kube-log-runner.exe" --log-file={{ systemdrive.stdout | trim }}/var/log/kubelet/kubelet.log
+          {{ kubernetes_install_path }}\kubelet.exe --windows-service
+          --cert-dir={{ systemdrive.stdout | trim }}/var/lib/kubelet/pki
+          --config={{ systemdrive.stdout | trim }}/var/lib/kubelet/config.yaml
+          --bootstrap-kubeconfig={{ systemdrive.stdout | trim }}/etc/kubernetes/bootstrap-kubelet.conf
+          --kubeconfig={{ systemdrive.stdout | trim }}/etc/kubernetes/kubelet.conf
+          --pod-infra-container-image="{{ pause_image }}"
+          --enable-debugging-handlers --cgroups-per-qos=false --enforce-node-allocatable=""
+          --container-runtime-endpoint="npipe:////./pipe/containerd-containerd"
+          --resolv-conf=""
 
-- name: Create file to restart kubelet as a windows service
-  ansible.windows.win_template:
-    src: templates/RestartKubelet.ps1
-    dest: "{{ kubernetes_install_path }}\\RestartKubelet.ps1"
+    - name: Create file to restart kubelet as a windows service
+      ansible.windows.win_template:
+        src: templates/RestartKubelet.ps1
+        dest: "{{ kubernetes_install_path }}\\RestartKubelet.ps1"
+
+- name: Install kubelet service - without restart template
+  when: not kubernetes_auto_kubelet_service_restart | bool
+  block:
+    - name: Install kubelet as service
+      ansible.windows.win_service:
+        name: kubelet
+        start_mode: manual
+        path: >
+          {{ kubernetes_install_path }}\kubelet.exe --windows-service
+          --cert-dir={{ systemdrive.stdout | trim }}/var/lib/kubelet/pki
+          --config={{ systemdrive.stdout | trim }}/var/lib/kubelet/config.yaml
+          --bootstrap-kubeconfig={{ systemdrive.stdout | trim }}/etc/kubernetes/bootstrap-kubelet.conf
+          --kubeconfig={{ systemdrive.stdout | trim }}/etc/kubernetes/kubelet.conf
+          --hostname-override=$(hostname) --pod-infra-container-image=`"{{ pause_image }}`"
+          --enable-debugging-handlers --cgroups-per-qos=false --enforce-node-allocatable=`"`"
+          --resolv-conf=`"`" --log-dir={{ systemdrive.stdout | trim }}/var/log/kubelet
+          --logtostderr=false {{ additional_kubelet_args if additional_kubelet_args is defined }}
