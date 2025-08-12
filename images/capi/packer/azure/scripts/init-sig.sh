@@ -134,6 +134,7 @@ create_image_definition() {
       --offer ${SIG_OFFER:-capz-demo} \
       --sku ${SIG_SKU:-$2} \
       --hyper-v-generation ${3} \
+      --architecture ${SIG_ARCHITECTURE:-x64} \
       --os-type ${4} \
       --features ${5:-''} \
       "${plan_args[@]}" # TODO: Delete this line after the image is GA

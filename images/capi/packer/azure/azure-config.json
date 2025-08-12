@@ -5,5 +5,5 @@
   "containerd_wasm_shims_runtimes": "lunatic,slight,spin,wws",
   "subscription_id": "{{env `AZURE_SUBSCRIPTION_ID`}}",
   "use_azure_cli_auth": "{{env `USE_AZURE_CLI_AUTH`}}",
-  "vm_size": "Standard_B2ms"
+  "vm_size": "{{ user `vm_size` }}"
 }
