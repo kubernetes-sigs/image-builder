@@ -14,7 +14,7 @@
 
 root = "{{ allusersprofile }}\\containerd\\root"
 state = "{{ allusersprofile }}\\containerd\\state"
-version = 2
+version = {% if containerd_version is version('2.0.0', '>=') %}3{% else %}2{% endif %}
 
 {% if 'imports' not in containerd_additional_settings | b64decode %}
 imports = ["{{ containerd_conf_dir }}\\conf.d\\*.toml"]
@@ -22,8 +22,19 @@ imports = ["{{ containerd_conf_dir }}\\conf.d\\*.toml"]
 
 [grpc]
   address = "\\\\.\\pipe\\containerd-containerd"
-  
+
 [plugins]
+{% if containerd_version is version('2.0.0', '>=') %}
+  [plugins.'io.containerd.cri.v1.images'.pinned_images]
+    sandbox = "{{ pause_image }}"
+    [plugins.'io.containerd.cri.v1.runtime'.cni]
+      bin_dir = "{{ plugin_bin_dir }}"
+      conf_dir = "{{ plugin_conf_dir }}"
+{% if packer_builder_type.startswith('azure') %}
+    [plugins.'io.containerd.cri.v1.images'.registry.headers]
+      X-Meta-Source-Client = ["azure/capz"]
+{% endif %}
+{% else %}
   [plugins."io.containerd.grpc.v1.cri"]
     sandbox_image = "{{ pause_image }}"
     [plugins."io.containerd.grpc.v1.cri".cni]
@@ -32,6 +43,7 @@ imports = ["{{ containerd_conf_dir }}\\conf.d\\*.toml"]
 {% if packer_builder_type.startswith('azure') %}
     [plugins."io.containerd.grpc.v1.cri".registry.headers]
       X-Meta-Source-Client = ["azure/capz"]
+{% endif %}
 {% endif %}
 
 {{containerd_additional_settings | b64decode}}

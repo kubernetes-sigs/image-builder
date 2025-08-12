@@ -30,6 +30,19 @@
     dest: /tmp/containerd.tar.gz
     mode: "0600"
 
+- name: Download containerd.service
+  ansible.builtin.get_url:
+    url: "{{ containerd_service_url }}"
+    dest: /tmp/containerd.service
+    mode: "0600"
+
+- name: Download runc
+  ansible.builtin.get_url:
+    url: "{{ runc_url }}"
+    checksum: sha256:{{ runc_sha256 }}
+    dest: /tmp/runc
+    mode: "0600"
+
 - name: Download containerd-wasm-shims
   vars:
     sha256sums: "{{ containerd_wasm_shims_sha256 | from_json }}"
@@ -54,9 +67,24 @@
   ansible.builtin.unarchive:
     remote_src: true
     src: /tmp/containerd.tar.gz
-    dest: "{{ containerd_prefix | default('/') }}"
+    dest: "{{ containerd_prefix | default('/usr/local') }}"
     extra_opts:
       - --no-overwrite-dir
+  when: ansible_os_family != "Flatcar"
+
+- name: Copy containerd.service to /etc/systemd/system
+  ansible.builtin.copy:
+    remote_src: true
+    src: /tmp/containerd.service
+    dest: /etc/systemd/system/containerd.service
+    mode: "0600"
+
+- name: Copy runc to /usr/local/sbin
+  ansible.builtin.copy:
+    remote_src: true
+    src: /tmp/runc
+    dest: /usr/local/sbin/runc
+    mode: "0755"
   when: ansible_os_family != "Flatcar"
 
 # Install containerd Wasm shims specified in a comma-separated string. Known runtimes are 'lunatic', 'slight', 'spin', and 'wws'.
@@ -74,15 +102,15 @@
   ansible.builtin.unarchive:
     remote_src: true
     src: /tmp/containerd.tar.gz
-    dest: "{{ containerd_prefix | default('/') }}"
-    extra_opts:
-      - --absolute-names
-      - --transform
-      - s@usr@opt@
-      - --transform
-      - s@sbin@bin@
-      - --transform
-      - s@opt/local@opt@
+    dest: "{{ containerd_prefix | default('/opt') }}"
+  when: ansible_os_family == "Flatcar"
+
+- name: Copy runc to /opt/bin
+  ansible.builtin.copy:
+    remote_src: true
+    src: /tmp/runc
+    dest: /opt/bin/runc
+    mode: "0755"
   when: ansible_os_family == "Flatcar"
 
 # Install containerd Wasm shims specified in a comma-separated string. Known runtimes are 'lunatic', 'slight', 'spin', and 'wws'.
@@ -95,18 +123,6 @@
       - --no-overwrite-dir
   when: ansible_os_family == "Flatcar" and (containerd_wasm_shims_runtimes | length > 0)
   loop: "{{ containerd_wasm_shims_runtimes | split(',') }}"
-
-# Remove /opt/cni directory, as we will install cni later
-- name: Delete /opt/cni directory
-  ansible.builtin.file:
-    path: /opt/cni
-    state: absent
-
-# Remove /etc/cni directory, as we will configure cni later
-- name: Delete /etc/cni directory
-  ansible.builtin.file:
-    path: /etc/cni
-    state: absent
 
 - name: Create unit file directory
   ansible.builtin.file:
@@ -179,6 +195,16 @@
 - name: Delete containerd tarball
   ansible.builtin.file:
     path: /tmp/containerd.tar.gz
+    state: absent
+
+- name: Delete runc bin
+  ansible.builtin.file:
+    path: /tmp/runc
+    state: absent
+
+- name: Delete containerd.service
+  ansible.builtin.file:
+    path: /tmp/containerd.service
     state: absent
 
 - name: Delete containerd-wasm-shims tarballs

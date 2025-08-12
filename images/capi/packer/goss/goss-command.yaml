@@ -189,6 +189,18 @@ command:
     stdout:
     - "{{.Vars.containerd_version}}"
     timeout: 30000
+  {{ if (semverCompare ">=2.0.0" .Vars.containerd_version) }}
+  Correct Containerd config:
+    exec: "\"/Program Files/containerd/containerd.exe\" config dump"
+    exit-status: 0
+    stdout:
+    - "sandbox = \"{{.Vars.pause_image}}\""
+    - "conf_dir = \"C:/etc/cni/net.d\""
+    - "bin_dir = \"C:/opt/cni/bin\""
+    - "root = \"C:\\\\ProgramData\\\\containerd\\\\root\""
+    - "state = \"C:\\\\ProgramData\\\\containerd\\\\state\""
+    timeout: 30000
+  {{ else }}
   Correct Containerd config:
     exec: "\"/Program Files/containerd/containerd.exe\" config dump"
     exit-status: 0
@@ -199,6 +211,7 @@ command:
     - "root = \"C:\\\\ProgramData\\\\containerd\\\\root\""
     - "state = \"C:\\\\ProgramData\\\\containerd\\\\state\""
     timeout: 30000
+  {{ end }}
   Check Windows Defender Exclusions are in place:
     exit-status: 0
     exec: powershell -command "(Get-MpPreference | select ExclusionProcess)"

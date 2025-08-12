@@ -3,7 +3,9 @@
   "containerd_cri_socket": "/var/run/containerd/containerd.sock",
   "containerd_gvisor_runtime": "false",
   "containerd_gvisor_version": "latest",
-  "containerd_sha256": "{{ if user `containerd_url` }}{{ user `containerd_url` }}.sha256sum{{ else }}041fa3cfd4e6689d37516e4c7752741df0974e7985d97258c1009b20f25f33c7{{ end }}",
-  "containerd_sha256_windows": "{{ if user `containerd_url` }}{{ user `containerd_url` }}.sha256sum{{ else }}a51c9a7d625b393023e587fd76cec01d9025af23677c734bfca04506d06b0ac3{{ end }}",
-  "containerd_version": "1.7.20"
+  "containerd_sha256": "{{ if user `containerd_url` }}{{ user `containerd_url` }}.sha256sum{{ else }}02990fa281c0a2c4b073c6d2415d264b682bd693aa7d86c5d8eb4b86d684a18c{{ end }}",
+  "containerd_sha256_windows": "{{ if user `containerd_url` }}{{ user `containerd_url` }}.sha256sum{{ else }}ec819a29d81b52a1aa8ffd995751639de7102ac08d54a0248d1d1484809e0460{{ end }}",
+  "containerd_version": "1.7.25",
+  "runc_sha256": "e6e8c8049b1910fce58fa68c057aaa5f42cee2a73834df5e59e5da7612d2739d",
+  "runc_version": "1.2.3"
 }

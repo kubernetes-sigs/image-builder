@@ -24,6 +24,13 @@
 - ansible.builtin.import_tasks: photon.yml
   when: kubernetes_source_type == "pkg" and ansible_os_family == "VMware Photon OS"
 
+- ansible.builtin.import_tasks: url.yml
+  when: kubernetes_source_type == "http" and kubernetes_cni_source_type == "http"
+
+# must include crictl-url.yml after installing containerd,
+# as the cri-containerd tarball also includes crictl.
+- ansible.builtin.import_tasks: crictl-url.yml
+
 - name: Symlink cri-tools
   ansible.builtin.file:
     src: /usr/local/bin/{{ item }}
@@ -36,14 +43,6 @@
     - crictl
     - critest
   when: ansible_os_family != "Flatcar"
-
-- ansible.builtin.import_tasks: url.yml
-  when: kubernetes_source_type == "http" and kubernetes_cni_source_type == "http"
-
-# must include crictl-url.yml after installing containerd,
-# as the cri-containerd tarball also includes crictl.
-- ansible.builtin.import_tasks: crictl-url.yml
-  when: crictl_source_type == "http"
 
 - name: Create kubelet default config file
   ansible.builtin.template:
