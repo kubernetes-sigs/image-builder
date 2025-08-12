@@ -13,7 +13,7 @@
 # limitations under the License.
 
 ---
-pypy_python_version: "3.6"
-pypy_version: 7.2.0
+pypy_python_version: "3.9"
+pypy_version: 7.3.16
 pypy_download_path: /tmp/pypy.tar.bz2
 pypy_install_path: /opt
