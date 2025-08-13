@@ -1,3 +1,5 @@
+# syntax=docker/dockerfile:1.4
+
 # Copyright 2020 The Kubernetes Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
