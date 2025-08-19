@@ -71,6 +71,32 @@ export GOVC_DATACENTER="Datacenter"
 export GOVC_CLUSTER="k8s-gcve-cluster"
 export GOVC_INSECURE=true
 
+# Ensure vSphere is reachable
+function wait_for_vsphere_reachable() {
+  local n=0
+  until [ $n -ge 300 ]; do
+    curl -s -v "https://${VSPHERE_SERVER}/sdk" --connect-timeout 2 -k && RET=$? || RET=$?
+    if [[ "$RET" -eq 0 ]]; then
+      break
+    fi
+    n=$((n + 1))
+    echo "Failed to reach https://${VSPHERE_SERVER}/sdk. Retrying in 1s ($n/300)"
+    sleep 1
+  done
+  if [ "$RET" -ne 0 ]; then
+    # Output some debug information in case of failing connectivity.
+    echo "$ ip link"
+    ip link
+    echo "# installing tcptraceroute to check route"
+    apt-get update && apt-get install -y tcptraceroute
+    echo "$ tcptraceroute ${VSPHERE_SERVER} 443"
+    tcptraceroute "${VSPHERE_SERVER}" 443
+  fi
+  return "$RET"
+}
+
+wait_for_vsphere_reachable
+
 # Install xorriso which will be then used by packer to generate ISO for generating CD files
 apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y xorriso
 
