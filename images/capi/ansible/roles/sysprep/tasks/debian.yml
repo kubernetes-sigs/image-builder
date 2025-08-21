@@ -128,7 +128,9 @@
     mode: "0644"
   notify:
     - Update debian grub
-  when: _stat_update_grub.stat.exists
+  when:
+    - _stat_update_grub.stat.exists
+    - sysprep_require_grub_file|default(true)|bool
 
 - name: Removing subiquity disable cloud-init networking config
   ansible.builtin.file:
