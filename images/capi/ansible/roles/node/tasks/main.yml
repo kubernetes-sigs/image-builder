@@ -89,21 +89,12 @@
 
 - name: Configure auditd rules for containerd
   ansible.builtin.copy:
-    src: etc/audit/rules.d/containerd.rules
+    src: "etc/audit/rules.d/containerd.rules{{ '-flatcar' if ansible_os_family == 'Flatcar' else '' }}"
     dest: /etc/audit/rules.d/containerd.rules
     owner: root
     group: root
     mode: "0644"
-  when: ansible_os_family != "Flatcar" and enable_containerd_audit
-
-- name: Configure auditd rules for containerd (Flatcar)
-  ansible.builtin.copy:
-    src: etc/audit/rules.d/containerd.rules-flatcar
-    dest: /etc/audit/rules.d/containerd.rules
-    owner: root
-    group: root
-    mode: "0644"
-  when: ansible_os_family == "Flatcar" and enable_containerd_audit
+  when: enable_containerd_audit|default(false)|bool
 
 - name: Ensure reverse packet filtering is set as strict
   ansible.posix.sysctl:
