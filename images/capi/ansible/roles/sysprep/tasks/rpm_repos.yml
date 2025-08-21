@@ -17,7 +17,9 @@
     path: /etc/yum.repos.d/{{ item | basename }}
     state: absent
   loop: "{{ extra_repos.split() }}"
-  when: remove_extra_repos and extra_repos != ""
+  when:
+    - remove_extra_repos|default(false)|bool
+    - extra_repos != ""
 
 - name: Find disabled repo files
   ansible.builtin.find:

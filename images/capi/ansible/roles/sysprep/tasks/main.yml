@@ -37,7 +37,9 @@
   ansible.builtin.file:
     path: /etc/pip.conf
     state: absent
-  when: remove_extra_repos and pip_conf_file != ""
+  when:
+    - remove_extra_repos|default(false)|bool
+    - pip_conf_file != ""
 
 - name: Truncate machine id
   ansible.builtin.file:
