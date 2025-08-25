@@ -81,6 +81,7 @@ aliases:
     - tuxtof
   cluster-api-nutanix-reviewers:
     - tuxtof
+    - ntnx-psirt
   cluster-api-maas-maintainers:
     - vasartori
   cluster-api-maas-reviewers:
