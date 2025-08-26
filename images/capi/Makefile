@@ -620,10 +620,11 @@ $(POWERVS_VALIDATE_TARGETS): deps-powervs
 
 .PHONY: $(NUTANIX_BUILD_TARGETS)
 $(NUTANIX_BUILD_TARGETS): deps-nutanix set-ssh-password
-	$(eval NUTANIX_USERDATA:=$(shell cat $(abspath packer/nutanix/linux/cloud-init/$(subst -,/,$(if $(findstring ubuntu,$@),$(call GET_UBUNTU_DOTTED_SEMVER,$(subst build-nutanix-,,$@)),$(subst build-nutanix-,,$@)))/user-data) | base64 -w0))
-	$(eval NUTANIX_VAR_FILE:=$(abspath packer/nutanix/$(subst build-nutanix-,,$@).json))
-	jq '.user_data = "$(NUTANIX_USERDATA)"' $(NUTANIX_VAR_FILE) > $(NUTANIX_VAR_FILE).templated && mv $(NUTANIX_VAR_FILE).templated $(NUTANIX_VAR_FILE)
+	$(if $(findstring windows,$@),,$(eval NUTANIX_USERDATA:=$(shell cat $(abspath packer/nutanix/linux/cloud-init/$(subst -,/,$(if $(findstring ubuntu,$@),$(call GET_UBUNTU_DOTTED_SEMVER,$(subst build-nutanix-,,$@)),$(subst build-nutanix-,,$@)))/user-data) | base64 -w0)))
+	$(if $(findstring windows,$@),,$(eval NUTANIX_VAR_FILE:=$(abspath packer/nutanix/$(subst build-nutanix-,,$@).json)))
+	$(if $(findstring windows,$@),,jq '.user_data = "$(NUTANIX_USERDATA)"' $(NUTANIX_VAR_FILE) > $(NUTANIX_VAR_FILE).templated && mv $(NUTANIX_VAR_FILE).templated $(NUTANIX_VAR_FILE))
 	# This uses a packer file builder to input unattend variables into a JSON file to be consumed by the python script before running the nutanix provisioner
+	$(if $(findstring windows,$@),$(PACKER) build $(PACKER_WINDOWS_NODE_FLAGS) -var-file="packer/nutanix/nutanix.json" -var-file="$(abspath packer/nutanix/$(subst build-nutanix-,,$@).json)" -only=file $(ABSOLUTE_PACKER_VAR_FILES) packer/nutanix/packer$(if $(findstring windows,$@),-windows,).json,)
 	$(if $(findstring windows,$@),hack/windows-unattend.py --unattend-file='./packer/nutanix/windows/$(subst build-nutanix-,,$@)/autounattend.xml',)
 	$(PACKER) build $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="packer/nutanix/nutanix.json" -var-file="$(abspath packer/nutanix/$(subst build-nutanix-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/nutanix/packer$(if $(findstring windows,$@),-windows,).json
 

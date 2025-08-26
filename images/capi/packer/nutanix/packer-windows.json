@@ -1,6 +1,11 @@
 {
   "builders": [
     {
+      "content": "{\n \"unattend_timezone\" : \"{{user `unattend_timezone`}}\"\n, \"admin_password\" : \"{{user `windows_admin_password`}}\"\n}",
+      "target": "./packer_cache/unattend.json",
+      "type": "file"
+    },
+    {
       "boot_type": "{{user `boot_type`}}",
       "cd_files": [
         "./packer/nutanix/windows/{{user `build_name`}}/autounattend.xml",
@@ -54,6 +59,7 @@
   ],
   "provisioners": [
     {
+      "except": "file",
       "extra_arguments": [
         "-e",
         "ansible_winrm_server_cert_validation=ignore",
@@ -70,12 +76,14 @@
       "user": "Administrator"
     },
     {
+      "except": "file",
       "restart_timeout": "10m",
       "type": "windows-restart"
     },
     {
       "arch": "{{user `goss_arch`}}",
       "download_path": "{{user `goss_download_path`}}",
+      "except": "file",
       "format": "{{user `goss_format`}}",
       "format_options": "{{user `goss_format_options`}}",
       "goss_file": "{{user `goss_entry_file`}}",
@@ -91,7 +99,8 @@
       "url": "{{user `goss_url`}}",
       "use_sudo": false,
       "vars_env": {
-        "GOSS_MAX_CONCURRENT": "1"
+        "GOSS_MAX_CONCURRENT": "1",
+        "GOSS_USE_ALPHA": "1"
       },
       "vars_file": "{{user `goss_vars_file`}}",
       "vars_inline": {
@@ -107,6 +116,7 @@
       "version": "{{user `goss_version`}}"
     },
     {
+      "except": "file",
       "inline": [
         "rm -Force -Recurse C:\\var\\log\\kubelet\\*"
       ],
@@ -155,6 +165,7 @@
     "nutanix_subnet_name": "{{env `NUTANIX_SUBNET_NAME`}}",
     "nutanix_username": "{{env `NUTANIX_USERNAME`}}",
     "scp_extra_vars": "",
-    "vm_force_delete": "false"
+    "vm_force_delete": "false",
+    "windows_admin_password": "{{env `WINDOWS_ADMIN_PASSWORD`}}"
   }
 }
