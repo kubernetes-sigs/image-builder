@@ -8,8 +8,11 @@
       "omi_account_ids": [
         "{{ user `account_id` }}"
       ],
+      "omi_boot_modes": [
+        "legacy",
+        "uefi"
+      ],
       "omi_name": "{{user `omi_name`}}",
-      "omi_boot_modes": ["legacy", "uefi"],
       "region": "{{ user `region` }}",
       "secret_key": "{{ user `secret_key` }}",
       "source_omi": "{{ user `source_image` }}",
@@ -21,6 +24,7 @@
           "{{ user `owner` }}"
         ]
       },
+      "ssh_interface": "public_ip",
       "ssh_username": "outscale",
       "tags": {
         "Base_OMI_Name": "{{ .SourceOMIName }}",
@@ -31,6 +35,7 @@
         "distribution_version": "{{user `distribution_version`}}",
         "kubernetes_version": "{{user `kubernetes_semver`}}"
       },
+      "temporary_security_group_source_cidr": "{{user `ssh_source_cidr` }}",
       "type": "outscale-bsu",
       "vm_type": "{{user `vm_type`}}"
     }
@@ -130,6 +135,7 @@
     "runc_url": "https://github.com/opencontainers/runc/releases/download/v{{user `runc_version`}}/runc.amd64",
     "runc_version": null,
     "secret_key": "{{env `OSC_SECRET_KEY`}}",
+    "ssh_source_cidr": "0.0.0.0/0",
     "vm_type": "tinav6.c2r4p2"
   }
 }
