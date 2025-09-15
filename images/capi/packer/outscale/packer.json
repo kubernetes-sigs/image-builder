@@ -2,9 +2,15 @@
   "builders": [
     {
       "access_key": "{{ user `access_key` }}",
+      "force_delete_snapshot": "{{user `overwrite_existing`}}",
+      "force_deregister": "{{user `overwrite_existing`}}",
       "global_permission": "{{ user `global_permission` }}",
       "omi_account_ids": [
         "{{ user `account_id` }}"
+      ],
+      "omi_boot_modes": [
+        "legacy",
+        "uefi"
       ],
       "omi_name": "{{user `omi_name`}}",
       "region": "{{ user `region` }}",
@@ -18,6 +24,7 @@
           "{{ user `owner` }}"
         ]
       },
+      "ssh_interface": "public_ip",
       "ssh_username": "outscale",
       "tags": {
         "Base_OMI_Name": "{{ .SourceOMIName }}",
@@ -28,6 +35,7 @@
         "distribution_version": "{{user `distribution_version`}}",
         "kubernetes_version": "{{user `kubernetes_semver`}}"
       },
+      "temporary_security_group_source_cidr": "{{user `ssh_source_cidr` }}",
       "type": "outscale-bsu",
       "vm_type": "{{user `vm_type`}}"
     }
@@ -119,13 +127,15 @@
     "kubernetes_semver": null,
     "kubernetes_series": null,
     "kubernetes_source_type": null,
-    "omi_name": "{{user `build_name`}}-{{user `distribution_version`}}-kubernetes-{{user `kubernetes_semver`}}-{{timestamp}}",
+    "omi_name": "{{user `build_name`}}-kubernetes-{{user `kubernetes_semver`}}-{{isotime `2006-01-02`}}",
+    "overwrite_existing": "false",
     "owner": "Outscale",
     "region": "{{env `OSC_REGION`}}",
     "runc_sha256": null,
     "runc_url": "https://github.com/opencontainers/runc/releases/download/v{{user `runc_version`}}/runc.amd64",
     "runc_version": null,
     "secret_key": "{{env `OSC_SECRET_KEY`}}",
-    "vm_type": "tinav5.c2r4p2"
+    "ssh_source_cidr": "0.0.0.0/0",
+    "vm_type": "tinav6.c2r4p2"
   }
 }
