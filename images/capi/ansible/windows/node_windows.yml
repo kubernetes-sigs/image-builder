@@ -18,6 +18,7 @@
     node_custom_roles_pre: ""
     node_custom_roles_post: ""
     custom_role_names: ""
+    system: windows
 
   tasks:
     - name: Check if cloudbase-init url is set

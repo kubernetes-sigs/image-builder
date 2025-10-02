@@ -51,7 +51,7 @@
       "type": "shell-local"
     },
     {
-      "inline": [ 
+      "inline": [
         "sudo bash ./packer/maas/scripts/generate-maas-image.sh {{user `output_directory`}}/{{user `artifact_name`}}"
       ],
       "name": "convert-to-maas",
@@ -190,7 +190,7 @@
     "kubernetes_source_type": null,
     "runc_sha256": null,
     "runc_url": "https://github.com/opencontainers/runc/releases/download/v{{user `runc_version`}}/runc.amd64",
-    "runc_version": null,    
+    "runc_version": null,
     "machine_id_mode": "444",
     "memory": "2048",
     "oem_id": "",
