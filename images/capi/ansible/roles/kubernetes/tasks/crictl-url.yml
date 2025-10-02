@@ -12,24 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- name: Download crictl checksum
-  ansible.builtin.get_url:
-    url: "{{ crictl_sha256 }}"
-    dest: /tmp/crictl.tar.gz.sha256
-    mode: "0600"
-
-- name: Register checksum value for crictl
-  ansible.builtin.slurp:
-    src: /tmp/crictl.tar.gz.sha256
-  register: csum
-
 - name: Download crictl
-  vars:
-    sha256: "{{ csum['content'] | b64decode | trim }}"
   ansible.builtin.get_url:
     url: "{{ crictl_url }}"
-    checksum: sha256:{{ sha256 }}
-    dest: /tmp/crictl.tar.gz
+    checksum: sha256:{{ crictl_url }}.sha256
+    dest: /tmp/{{ crictl_filename }}
     mode: "0600"
 
 - name: Create "{{ sysusrlocal_prefix }}/bin" directory
@@ -43,7 +30,7 @@
 - name: Unpack crictl
   ansible.builtin.unarchive:
     remote_src: true
-    src: /tmp/crictl.tar.gz
+    src: /tmp/{{ crictl_filename }}
     dest: "{{ sysusrlocal_prefix }}/bin"
     extra_opts:
       - --no-overwrite-dir
@@ -51,4 +38,4 @@
 - name: Remove crictl tarball
   ansible.builtin.file:
     state: absent
-    path: /tmp/crictl.tar.gz
+    path: /tmp/{{ crictl_filename }}

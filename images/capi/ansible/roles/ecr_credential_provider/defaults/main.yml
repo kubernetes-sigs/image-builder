@@ -14,7 +14,7 @@
 ---
 ecr_credential_provider_version: v1.31.0
 ecr_credential_provider_os: linux
-ecr_credential_provider_arch: amd64
+ecr_credential_provider_arch: "{{ arch }}"
 ecr_credential_provider_base_url: https://artifacts.k8s.io/binaries/cloud-provider-aws
 ecr_credential_provider_install_dir: /opt/bin
 ecr_credential_provider_binary_filename: ecr-credential-provider

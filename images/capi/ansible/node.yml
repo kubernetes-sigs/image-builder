@@ -18,6 +18,9 @@
     node_custom_roles_pre: ""
     node_custom_roles_post: ""
     custom_role_names: ""
+    system: linux
+    arch_uname: "{{ ansible_architecture }}"
+    arch: "{{ 'amd64' if arch_uname in ['x86_64', 'amd64'] else 'arm64' if arch_uname in ['aarch64', 'arm64'] else 'unsupported' }}"
 
   tasks:
     - ansible.builtin.include_role:
