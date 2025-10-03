@@ -52,8 +52,15 @@
     regexp: ^(?!.*apparmor=0)(photon_cmdline.*)
     line: \1 apparmor=0
 
+- name: Check if tdnf cache timer exists
+  ansible.builtin.systemd:
+    name: tdnf-cache-updateinfo.timer
+  register: tdnf_timer_status
+  failed_when: false
+
 - name: Disable tdnf cache timer
   ansible.builtin.systemd:
     name: tdnf-cache-updateinfo.timer
     enabled: false
     state: stopped
+  when: tdnf_timer_status.status is defined and tdnf_timer_status.status.LoadState == "loaded"
