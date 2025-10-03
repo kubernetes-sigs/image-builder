@@ -47,9 +47,7 @@
     "containerd_gvisor_version": "latest",
     "containerd_service_url": "https://raw.githubusercontent.com/containerd/containerd/refs/tags/v{{user `containerd_version`}}/containerd.service",
     "containerd_sha256": null,
-    "containerd_url": "https://github.com/containerd/containerd/releases/download/v{{user `containerd_version`}}/containerd-{{user `containerd_version`}}-linux-amd64.tar.gz",
     "containerd_version": null,
-    "crictl_url": "https://github.com/kubernetes-sigs/cri-tools/releases/download/v{{user `crictl_version`}}/crictl-v{{user `crictl_version`}}-linux-amd64.tar.gz",
     "crictl_version": null,
     "existing_ansible_ssh_args": "{{env `ANSIBLE_SSH_ARGS`}}",
     "kubernetes_cni_deb_version": null,
@@ -72,7 +70,7 @@
     "kubernetes_source_type": null,
     "region": "nyc1",
     "runc_sha256": null,
-    "runc_url": "https://github.com/opencontainers/runc/releases/download/v{{user `runc_version`}}/runc.amd64",
+    "runc_sha256_arm64": null,
     "runc_version": null,
     "size": "s-1vcpu-1gb"
   }
