@@ -117,7 +117,6 @@
     "containerd_gvisor_runtime": "false",
     "containerd_gvisor_version": "latest",
     "containerd_service_url": "https://raw.githubusercontent.com/containerd/containerd/refs/tags/v{{user `containerd_version`}}/containerd.service",
-    "containerd_sha256": null,
     "containerd_version": null,
     "crictl_version": null,
     "existing_ansible_ssh_args": "{{env `ANSIBLE_SSH_ARGS`}}",

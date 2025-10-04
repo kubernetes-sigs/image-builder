@@ -138,7 +138,6 @@
     "build_name": null,
     "build_timestamp": "{{timestamp}}",
     "containerd_service_url": "https://raw.githubusercontent.com/containerd/containerd/refs/tags/v{{user `containerd_version`}}/containerd.service",
-    "containerd_sha256": null,
     "containerd_version": null,
     "containerd_wasm_shims_runtimes": null,
     "crictl_version": null,

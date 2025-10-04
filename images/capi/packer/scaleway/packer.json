@@ -80,7 +80,6 @@
     "commercial_type": "DEV1-S",
     "containerd_gvisor_runtime": "false",
     "containerd_gvisor_version": "latest",
-    "containerd_sha256": null,
     "containerd_version": null,
     "crictl_version": null,
     "existing_ansible_ssh_args": "{{env `ANSIBLE_SSH_ARGS`}}",
