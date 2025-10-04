@@ -75,7 +75,6 @@
     "containerd_gvisor_runtime": "false",
     "containerd_gvisor_version": "latest",
     "containerd_service_url": "null",
-    "containerd_sha256": null,
     "containerd_version": null,
     "crictl_version": null,
     "dhcp_network": "false",
