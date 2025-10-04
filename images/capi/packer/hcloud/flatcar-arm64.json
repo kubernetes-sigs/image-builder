@@ -10,7 +10,6 @@
   "goss_arch": "arm64",
   "kubernetes_cni_http_checksum_arch": "arm64",
   "kubernetes_cni_source_type": "http",
-  "kubernetes_goarch": "arm64",
   "kubernetes_source_type": "http",
   "python_path": "/opt/pypy/site-packages",
   "root_device_name": "/dev/sda",
