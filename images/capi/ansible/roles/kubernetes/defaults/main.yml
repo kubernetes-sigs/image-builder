@@ -16,6 +16,8 @@ crictl_baseurl: https://github.com/kubernetes-sigs/cri-tools/releases/download/v
 crictl_filename: crictl-v{{ crictl_version }}-{{ system }}-{{ arch }}.tar.gz
 crictl_url: "{{ crictl_baseurl }}/{{ crictl_filename }}"
 
+kubernetes_goarch: "{{ arch }}"
+
 kubernetes_bins:
   - kubeadm
   - kubectl
