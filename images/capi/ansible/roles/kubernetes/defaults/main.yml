@@ -16,7 +16,7 @@ crictl_baseurl: https://github.com/kubernetes-sigs/cri-tools/releases/download/v
 crictl_filename: crictl-v{{ crictl_version }}-{{ system }}-{{ arch }}.tar.gz
 crictl_url: "{{ crictl_baseurl }}/{{ crictl_filename }}"
 
-kubernetes_goarch: "{{ arch }}"
+kubernetes_goarch: "{{ arch}}"
 
 kubernetes_bins:
   - kubeadm
@@ -38,7 +38,7 @@ kubernetes_load_additional_imgs: false
 
 kubernetes_imgs: "{{ kubernetes_primary_imgs | union(kubernetes_additional_imgs) if kubernetes_load_additional_imgs | bool else kubernetes_primary_imgs }}"
 
-kubernetes_cni_http_checksum: sha1:{{ kubernetes_cni_http_source }}/{{ kubernetes_cni_semver }}/cni-plugins-{{ arch }}-{{ kubernetes_cni_semver }}.tgz.sha1
+kubernetes_cni_http_checksum: sha256:{{ kubernetes_cni_http_source }}/{{ kubernetes_cni_semver }}/cni-plugins-linux-{{ kubernetes_goarch }}-{{ kubernetes_cni_semver }}.tgz.sha256
 
 kubeadm_template: etc/kubeadm.yml
 
