@@ -38,7 +38,7 @@
 
 - name: Download runc
   ansible.builtin.get_url:
-    url: "{{ runc_url }}"
+    url: "{{ containerd_runc_url }}"
     checksum: sha256:{{ runc_sha256_arm64 if arch == 'arm64' else runc_sha256 }}
     dest: /tmp/runc
     mode: "0600"
