@@ -143,8 +143,6 @@
     "kubernetes_semver": null,
     "kubernetes_series": null,
     "kubernetes_source_type": null,
-    "runc_sha256": null,
-    "runc_sha256_arm64": null,
     "runc_version": null,
     "security_groups": "default",
     "ssh_username": "{{user `ssh_username`}}",

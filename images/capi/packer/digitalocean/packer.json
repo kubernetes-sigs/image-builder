@@ -68,8 +68,6 @@
     "kubernetes_series": null,
     "kubernetes_source_type": null,
     "region": "nyc1",
-    "runc_sha256": null,
-    "runc_sha256_arm64": null,
     "runc_version": null,
     "size": "s-1vcpu-1gb"
   }

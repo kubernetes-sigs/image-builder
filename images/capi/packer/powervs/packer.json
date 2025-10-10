@@ -100,8 +100,6 @@
     "manifest_output": "manifest.json",
     "python_path": "",
     "region": "",
-    "runc_sha256": null,
-    "runc_sha256_arm64": null,
     "runc_version": null,
     "service_instance_id": "",
     "ssh_private_key_file": "",

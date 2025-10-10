@@ -128,8 +128,6 @@
     "overwrite_existing": "false",
     "owner": "Outscale",
     "region": "{{env `OSC_REGION`}}",
-    "runc_sha256": null,
-    "runc_sha256_arm64": null,
     "runc_version": null,
     "secret_key": "{{env `OSC_SECRET_KEY`}}",
     "ssh_source_cidr": "0.0.0.0/0",

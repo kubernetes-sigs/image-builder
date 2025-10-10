@@ -4,7 +4,5 @@
   "containerd_gvisor_runtime": "false",
   "containerd_gvisor_version": "latest",
   "containerd_version": "1.7.25",
-  "runc_sha256": "e6e8c8049b1910fce58fa68c057aaa5f42cee2a73834df5e59e5da7612d2739d",
-  "runc_sha256_arm64": "4ef19ab21ce1ae5a01e1d3fa5b005e45cdf59f5d3ab32541c9e262cb2b2d3451",
   "runc_version": "1.2.3"
 }

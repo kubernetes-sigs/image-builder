@@ -158,8 +158,6 @@
     "pause_before_connecting": "1m",
     "python_path": "",
     "region": "ap-southeast-1",
-    "runc_sha256": null,
-    "runc_sha256_arm64": null,
     "runc_version": null,
     "secret_key": "",
     "security_groups": "",

@@ -116,8 +116,6 @@
     "kubernetes_source_type": null,
     "machine_type": "n1-standard-1",
     "project_id": "{{env `GCP_PROJECT_ID`}}",
-    "runc_sha256": null,
-    "runc_sha256_arm64": null,
     "runc_version": null,
     "service_account_email": "",
     "source_image_family": "{{user `source_image_family`}}",

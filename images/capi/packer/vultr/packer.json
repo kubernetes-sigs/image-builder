@@ -64,8 +64,6 @@
     "os": "1743",
     "plan": "vc2-1c-1gb",
     "region": "ewr",
-    "runc_sha256": null,
-    "runc_sha256_arm64": null,
     "runc_version": null
   }
 }

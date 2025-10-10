@@ -194,8 +194,6 @@
     "kubernetes_source_type": null,
     "manifest_output": "manifest.json",
     "python_path": "",
-    "runc_sha256": null,
-    "runc_sha256_arm64": null,
     "runc_version": null,
     "skip_create_ami": "false",
     "skip_profile_validation": "false",
