@@ -531,8 +531,6 @@
     "kubernetes_typed_version": "kube-{{user `kubernetes_semver`}}",
     "output_dir": "./output/{{user `build_version`}}",
     "resource_pool": "",
-    "runc_sha256": null,
-    "runc_sha256_arm64": null,
     "runc_version": null,
     "username": "",
     "vcenter_server": "",

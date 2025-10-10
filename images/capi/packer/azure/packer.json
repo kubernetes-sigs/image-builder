@@ -265,8 +265,6 @@
     "plan_image_sku": "",
     "private_virtual_network_with_public_ip": "",
     "provisioner_remote_folder": "/tmp",
-    "runc_sha256": null,
-    "runc_sha256_arm64": null,
     "runc_version": null,
     "source_sig_image_name": "",
     "source_sig_image_version": "",

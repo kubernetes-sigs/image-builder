@@ -79,7 +79,6 @@ is defined in images/capi/packer/config/containerd.json.
   "availability_domain": "Fill Availability Domain here",
   "shape": "VM.Standard.A1.Flex",
   "kubernetes_rpm_repo": "https://packages.cloud.google.com/yum/repos/kubernetes-el7-aarch64",
-  "runc_sha256": "4ef19ab21ce1ae5a01e1d3fa5b005e45cdf59f5d3ab32541c9e262cb2b2d3451"
 }
 ```
 

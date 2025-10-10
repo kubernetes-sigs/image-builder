@@ -157,8 +157,6 @@
     "kubernetes_series": null,
     "kubernetes_source_type": null,
     "manifest_output": "manifest.json",
-    "runc_sha256": null,
-    "runc_sha256_arm64": null,
     "runc_version": null
   }
 }

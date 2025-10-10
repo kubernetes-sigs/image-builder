@@ -20,3 +20,4 @@ containerd_filename: "containerd-{{ containerd_version }}-{{ system }}-{{ arch }
 containerd_url: "{{ containerd_baseurl }}/{{ containerd_filename }}"
 containerd_runc_url: "https://github.com/opencontainers/runc/releases/download/v{{ containerd_runc_version }}/runc.{{ arch }}"
 containerd_runc_version: "1.2.3"
+containerd_runc_checksum_url: "https://github.com/opencontainers/runc/releases/download/v{{ containerd_runc_version }}/runc.sha256sum"
