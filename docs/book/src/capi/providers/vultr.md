@@ -19,8 +19,10 @@ From the `images/capi` directory, run `make build-vultr-<OS>` where `<OS>` is th
 ### Configuration
 
 In addition to the configuration found in `images/capi/packer/config`, the `Vultr`
-directory includes the JSON files that define the default configuration for Ubuntu 22.04
+directory includes the JSON files that define the default configuration 
+for the different operating systems.
 
 | File | Description |
 |------|-------------|
 | `ubuntu-2204.json` | The settings for the Ubuntu 22.04 image |
+| `ubuntu-2404.json` | The settings for the Ubuntu 24.04 image |

@@ -61,7 +61,7 @@
     "kubernetes_semver": null,
     "kubernetes_series": null,
     "kubernetes_source_type": null,
-    "os": "1743",
+    "os": "{{ user `os` }}",
     "plan": "vc2-1c-1gb",
     "region": "ewr",
     "runc_version": null
