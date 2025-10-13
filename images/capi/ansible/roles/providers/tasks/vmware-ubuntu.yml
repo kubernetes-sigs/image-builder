@@ -61,4 +61,5 @@
     force: true
     content: |
       datasource: VMware
+    mode: "0644"
   when: ansible_distribution_version is version('22.04', '>=')

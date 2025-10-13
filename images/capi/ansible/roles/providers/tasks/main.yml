@@ -67,6 +67,7 @@
   ansible.builtin.file:
     path: /etc/systemd/system/cloud-final.service.d
     state: directory
+    mode: "0755"
   when: ansible_os_family != "Flatcar"
 
 - name: Create cloud-final boot order drop in file
@@ -82,6 +83,7 @@
   ansible.builtin.file:
     path: /etc/systemd/system/cloud-config.service.d
     state: directory
+    mode: "0755"
   when: ansible_os_family != "Flatcar"
 
 - name: Create cloud-config boot order drop in file
