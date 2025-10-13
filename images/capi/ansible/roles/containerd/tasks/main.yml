@@ -128,6 +128,7 @@
   ansible.builtin.file:
     path: /etc/systemd/system/containerd.service.d
     state: directory
+    mode: "0755"
 
 - name: Create systemd unit drop-in file for containerd to run from /opt/bin
   ansible.builtin.template:
@@ -166,11 +167,13 @@
   ansible.builtin.file:
     path: /etc/containerd
     state: directory
+    mode: "0755"
 
 - name: Creates containerd certificates directory
   ansible.builtin.file:
     path: /etc/containerd/certs.d
     state: directory
+    mode: "0755"
 
 - name: Copy in containerd config file {{ containerd_config_file }}
   vars:
@@ -184,6 +187,7 @@
   ansible.builtin.template:
     dest: /etc/crictl.yaml
     src: etc/crictl.yaml
+    mode: "0644"
 
 - name: Start containerd service
   ansible.builtin.systemd:
