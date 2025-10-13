@@ -1,8 +1,5 @@
 {
-  "crictl_arch": "amd64",
-  "crictl_sha256": "https://github.com/kubernetes-sigs/cri-tools/releases/download/v{{user `crictl_version`}}/crictl-v{{user `crictl_version`}}-linux-{{user `crictl_arch`}}.tar.gz.sha256",
   "crictl_source_type": "pkg",
-  "crictl_url": "https://github.com/kubernetes-sigs/cri-tools/releases/download/v{{user `crictl_version`}}/crictl-v{{user `crictl_version`}}-linux-{{user `crictl_arch`}}.tar.gz",
   "crictl_version": "1.32.0",
   "kubeadm_template": "etc/kubeadm.yml",
   "kubernetes_apiserver_port": "6443",
@@ -10,7 +7,6 @@
   "kubernetes_deb_gpg_key": "https://pkgs.k8s.io/core:/stable:/{{ user `kubernetes_series` }}/deb/Release.key",
   "kubernetes_deb_repo": "https://pkgs.k8s.io/core:/stable:/{{ user `kubernetes_series` }}/deb/",
   "kubernetes_deb_version": "1.32.4-1.1",
-  "kubernetes_goarch": "amd64",
   "kubernetes_http_source": "https://dl.k8s.io/release",
   "kubernetes_load_additional_imgs": "false",
   "kubernetes_rpm_gpg_check": "True",

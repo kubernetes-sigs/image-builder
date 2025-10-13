@@ -78,12 +78,7 @@ is defined in images/capi/packer/config/containerd.json.
   "subnet_ocid": "Fill Subnet OCID here",
   "availability_domain": "Fill Availability Domain here",
   "shape": "VM.Standard.A1.Flex",
-  "containerd_url": "https://github.com/containerd/containerd/releases/download/v{{user `containerd_version`}}/containerd-{{user `containerd_version`}}-linux-arm64.tar.gz",
-  "crictl_url": "https://github.com/kubernetes-sigs/cri-tools/releases/download/v{{user `crictl_version`}}/crictl-v{{user `crictl_version`}}-linux-arm64.tar.gz",
   "kubernetes_rpm_repo": "https://packages.cloud.google.com/yum/repos/kubernetes-el7-aarch64",
-  "containerd_sha256": "9ac616b5f23c1d10353bd45b26cb736efa75dfef31a2113baff2435dbc7becb8",
-  "runc_sha256": "4ef19ab21ce1ae5a01e1d3fa5b005e45cdf59f5d3ab32541c9e262cb2b2d3451",
-  "runc_url": "https://github.com/opencontainers/runc/releases/download/v{{user `runc_version`}}/runc.arm64",
 }
 ```
 

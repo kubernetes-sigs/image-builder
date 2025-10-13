@@ -51,7 +51,7 @@
       "type": "shell-local"
     },
     {
-      "inline": [ 
+      "inline": [
         "sudo bash ./packer/maas/scripts/generate-maas-image.sh {{user `output_directory`}}/{{user `artifact_name`}}"
       ],
       "name": "convert-to-maas",
@@ -155,11 +155,8 @@
     "boot_wait": "10s",
     "build_timestamp": "{{timestamp}}",
     "cd_files": "linux/base/*.nothing",
-    "containerd_sha256": null,
-    "containerd_url": "https://github.com/containerd/containerd/releases/download/v{{user `containerd_version`}}/cri-containerd-cni-{{user `containerd_version`}}-linux-amd64.tar.gz",
     "containerd_version": null,
     "cpus": "1",
-    "crictl_url": "https://github.com/kubernetes-sigs/cri-tools/releases/download/v{{user `crictl_version`}}/crictl-v{{user `crictl_version`}}-linux-amd64.tar.gz",
     "crictl_version": null,
     "disk_compression": "false",
     "disk_discard": "unmap",

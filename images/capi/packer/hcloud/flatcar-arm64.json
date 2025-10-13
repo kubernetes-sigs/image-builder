@@ -8,7 +8,6 @@
   "distribution_release": "{{env `FLATCAR_CHANNEL`}}",
   "distribution_version": "{{env `FLATCAR_CHANNEL`}}-{{env `FLATCAR_VERSION`}}",
   "goss_arch": "arm64",
-  "kubernetes_cni_http_checksum_arch": "arm64",
   "kubernetes_cni_source_type": "http",
   "kubernetes_goarch": "arm64",
   "kubernetes_source_type": "http",
