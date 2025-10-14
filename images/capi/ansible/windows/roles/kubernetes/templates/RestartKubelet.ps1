@@ -21,7 +21,6 @@ $args = "--cert-dir=$env:SYSTEMDRIVE/var/lib/kubelet/pki",
         "--bootstrap-kubeconfig=$env:SYSTEMDRIVE/etc/kubernetes/bootstrap-kubelet.conf",
         "--kubeconfig=$env:SYSTEMDRIVE/etc/kubernetes/kubelet.conf",
         "--hostname-override=$(hostname)",
-        "--pod-infra-container-image=`"{{ pause_image }}`"",
         "--enable-debugging-handlers",
         "--cgroups-per-qos=false",
         "--enforce-node-allocatable=`"`"",
@@ -30,7 +29,7 @@ $args = "--cert-dir=$env:SYSTEMDRIVE/var/lib/kubelet/pki",
 
 $KubeletArgListStr = ($args -join " ") + " $kubeAdmArgs"
 $KubeletArgListStr = $KubeletArgListStr.Replace("`"", "\`"")
-# Used by sc.exe to create the service 
+# Used by sc.exe to create the service
 $KubeletCommandLine =  "`"" + "\`"" + "$env:SYSTEMDRIVE\k\kube-log-runner.exe" + "\`" " + "--log-file=/var/log/kubelet/kubelet.err.log " + "$env:SYSTEMDRIVE\k\kubelet.exe " + $KubeletArgListStr + "`""
 
 # Write-Output $kubeletCommandLine
