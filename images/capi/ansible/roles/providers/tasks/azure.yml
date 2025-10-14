@@ -20,6 +20,7 @@
     path: /etc/chrony/chrony.conf
     create: true
     line: refclock PHC /dev/ptp0 poll 3 dpoll -2 offset 0
+    mode: "0644"
   # Flatcar now includes this by default as of 3975.2.0 which causes this task to fail
   when: ansible_os_family != "Flatcar" or (ansible_os_family == "Flatcar" and  ansible_distribution_version is version('3975.2.0', '<'))
 
