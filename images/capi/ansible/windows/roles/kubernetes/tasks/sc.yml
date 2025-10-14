@@ -26,7 +26,6 @@
       --config={{ systemdrive.stdout | trim }}/var/lib/kubelet/config.yaml
       --bootstrap-kubeconfig={{ systemdrive.stdout | trim }}/etc/kubernetes/bootstrap-kubelet.conf
       --kubeconfig={{ systemdrive.stdout | trim }}/etc/kubernetes/kubelet.conf
-      --pod-infra-container-image="{{ pause_image }}"
       --enable-debugging-handlers --cgroups-per-qos=false --enforce-node-allocatable=""
       --container-runtime-endpoint="npipe:////./pipe/containerd-containerd"
       --resolv-conf=""
