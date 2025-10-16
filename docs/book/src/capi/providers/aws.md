@@ -173,11 +173,11 @@ As root:
 
 ```sh
 mkdir -p /etc/cni/net.d
-wget -q https://github.com/containernetworking/cni/releases/download/v0.7.0/cni-amd64-v0.7.0.tgz
-tar -xzf cni-amd64-v0.7.0.tgz --directory /etc/cni/net.d
+wget -q https://github.com/containernetworking/plugins/releases/download/v0.7.0/cni-plugins-amd64-v0.7.0.tgz
+tar -xzf cni-plugins-amd64-v0.7.0.tgz --directory /etc/cni/net.d
 cat >/etc/cni/net.d/10-mynet.conf <<EOF
 {
-    "cniVersion": "0.2.0",
+    "cniVersion": "0.7.0",
     "name": "mynet",
     "type": "bridge",
     "bridge": "cni0",
@@ -194,7 +194,7 @@ cat >/etc/cni/net.d/10-mynet.conf <<EOF
 EOF
 cat >/etc/cni/net.d/99-loopback.conf <<EOF
 {
-    "cniVersion": "0.2.0",
+    "cniVersion": "0.7.0",
     "name": "lo",
     "type": "loopback"
 }
@@ -206,8 +206,8 @@ EOF
 As a non-root user:
 
 ```sh
-wget https://dl.k8s.io/$(< /etc/kubernetes_community_ami_version)/kubernetes-test.tar.gz
-tar -zxvf kubernetes-test.tar.gz kubernetes/platforms/linux/amd64
+wget https://cdn.dl.k8s.io/release/$(< /etc/kubernetes_version)/kubernetes-test-linux-amd64.tar.gz
+tar -zxvf kubernetes-test-linux-amd64.tar.gz kubernetes/platforms/linux/amd64
 cd kubernetes/platforms/linux/amd64
 sudo ./ginkgo --nodes=8 --flakeAttempts=2 --focus="\[Conformance\]" --skip="\[Flaky\]|\[Serial\]|\[sig-network\]|Container Lifecycle Hook" ./e2e_node.test -- --k8s-bin-dir=/usr/bin --container-runtime=remote --container-runtime-endpoint unix:///var/run/containerd/containerd.sock --container-runtime-process-name /usr/local/bin/containerd --container-runtime-pid-file= --kubelet-flags="--cgroups-per-qos=true --cgroup-root=/ --runtime-cgroups=/system.slice/containerd.service" --extra-log="{\"name\": \"containerd.log\", \"journalctl\": [\"-u\", \"containerd\"]}"
 ```
