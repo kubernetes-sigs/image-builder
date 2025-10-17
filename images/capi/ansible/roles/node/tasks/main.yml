@@ -26,6 +26,9 @@
   tags:
     - facts
 
+- ansible.builtin.import_tasks: flatcar.yml
+  when: ansible_os_family == "Flatcar"
+
 - name: Ensure overlay module is present
   community.general.modprobe:
     name: overlay
@@ -124,7 +127,3 @@
     src: usr/local/bin/etcd-network-tuning.sh
     dest: "{{ external_binary_path }}/etcd-network-tuning.sh"
     mode: "0755"
-
-- name: Set default HOME_MODE in login.defs (Flatcar)
-  ansible.builtin.shell: sed -ri "s/^#?HOME_MODE\>.*/HOME_MODE 0700/" /etc/login.defs
-  when: ansible_os_family == "Flatcar"
