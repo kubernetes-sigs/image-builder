@@ -117,7 +117,7 @@ class DataSourceEc2Kubernetes(DataSourceEc2.DataSourceEc2):
 
 class DataSourceEc2KubernetesLocal(DataSourceEc2Kubernetes):
     def _get_data(self):
-        return super(DataSourceEc2KubernetesLocal, self).get_data()
+        return super(DataSourceEc2KubernetesLocal, self)._get_data()
 
 
 # Used to match classes to dependencies
