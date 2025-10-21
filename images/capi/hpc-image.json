@@ -1,0 +1,10 @@
+{
+    "image_publisher": "",
+    "image_offer": "",
+    "image_sku": "",
+    "source_sig_name": "PackerSigGalleryEastUS",
+    "source_sig_image_name": "2404gen2arm64gb200containerd",
+    "source_sig_image_version": "1.0.0",
+    "source_sig_resource_group_name": "aksvhdtestbuildrg",
+    "source_sig_subscription_id": "8ecadfc9-d1a3-4ea4-b844-0d9f87e4d7c8"
+}

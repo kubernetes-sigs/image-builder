@@ -1,0 +1,4 @@
+{
+  "ubuntu_security_repo": "http://security.ubuntu.com/ubuntu",
+  "ubuntu_repo": "http://us.archive.ubuntu.com/ubuntu"
+}
