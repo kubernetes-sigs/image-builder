@@ -124,7 +124,7 @@
       "user": "builder"
     },
     {
-      "arch": "{{user `goss_arch`}}",
+      "arch": "{{user `arch`}}",
       "format": "{{user `goss_format`}}",
       "format_options": "{{user `goss_format_options`}}",
       "goss_file": "{{user `goss_entry_file`}}",
@@ -137,7 +137,7 @@
       "use_sudo": true,
       "vars_file": "{{user `goss_vars_file`}}",
       "vars_inline": {
-        "ARCH": "amd64",
+        "ARCH": "arm64",
         "OS": "{{user `distro_name` | lower}}",
         "OS_VERSION": "{{user `distribution_version` | lower}}",
         "PROVIDER": "qemu",
