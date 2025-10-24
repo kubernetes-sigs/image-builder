@@ -231,3 +231,15 @@ Put the Ansible role files in the `ansible/roles` directory.
 ```
 
 Note, for backwards compatibility reasons, the variable `custom_role_names` is still accepted as an alternative to `node_custom_roles_post`, and they are functionally equivalent.
+
+##### Reenabling Flatcar USB devices
+
+Flatcar usb devices are disabled by default for security reasons.
+See [flatcar documentation](https://www.flatcar.org/docs/latest/setup/security/hardening-guide/#disable-usb) for more information.
+To reenable them, set the following variable:
+
+```json
+{
+  "ansible_user_vars": "disable_flatcar_usb=false"
+}
+```

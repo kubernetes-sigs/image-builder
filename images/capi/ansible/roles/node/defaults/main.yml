@@ -131,3 +131,7 @@ external_binary_path: "{{ '/opt/bin' if ansible_os_family == 'Flatcar' else '/us
 
 # Enable containerd trace audit in auditd, default: false.
 enable_containerd_audit: false
+
+# Disable flatcar usb devices, default: true
+# See hardening guide: https://www.flatcar.org/docs/latest/setup/security/hardening-guide/#disable-usb
+disable_flatcar_usb: true
