@@ -2,7 +2,7 @@
 
 ## Please see our [Book](https://image-builder.sigs.k8s.io) for more in-depth documentation.
 
-## What is Image Builder?
+## What is the Image Builder?
 
 Image Builder is a tool for building Kubernetes virtual machine images across multiple infrastructure providers. The resulting VM images are specifically intended to be used with [Cluster API](https://github.com/kubernetes-sigs/cluster-api) but should be suitable for other setups that rely on Kubeadm.
 
