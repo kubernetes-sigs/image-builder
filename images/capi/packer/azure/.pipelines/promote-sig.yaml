@@ -14,7 +14,16 @@
 # - SIG_OFFER - the name of the offer to attach to image definitions, defaults to `reference-images`
 
 jobs:
+- deployment: approve_promotion
+  displayName: 'Approve Image Promotion'
+  environment: 'image-promotion-approval'
+  strategy:
+    runOnce:
+      deploy:
+        steps:
+        - script: echo "Approved for promotion"
 - job: publish_to_sig
+  dependsOn: approve_promotion
   timeoutInMinutes: 120
   strategy:
     maxParallel: 0
