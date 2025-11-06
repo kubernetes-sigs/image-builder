@@ -3,6 +3,6 @@
   "containerd_cri_socket": "/var/run/containerd/containerd.sock",
   "containerd_gvisor_runtime": "false",
   "containerd_gvisor_version": "latest",
-  "containerd_version": "1.7.25",
-  "runc_version": "1.2.3"
+  "containerd_version": "1.7.28",
+  "runc_version": "1.2.8"
 }
