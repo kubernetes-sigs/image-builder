@@ -26,8 +26,21 @@
 - name: Download containerd
   ansible.builtin.get_url:
     url: "{{ containerd_url }}"
-    checksum: sha256:{{ containerd_sha256 }}
-    dest: /tmp/containerd.tar.gz
+    checksum: sha256:{{ containerd_url }}.sha256sum
+    dest: /tmp/{{ containerd_filename }}
+    mode: "0600"
+
+- name: Download containerd.service
+  ansible.builtin.get_url:
+    url: "{{ containerd_service_url }}"
+    dest: /tmp/containerd.service
+    mode: "0600"
+
+- name: Download runc
+  ansible.builtin.get_url:
+    url: "{{ containerd_runc_url }}"
+    checksum: sha256:{{ containerd_runc_checksum_url }}
+    dest: /tmp/runc
     mode: "0600"
 
 - name: Download containerd-wasm-shims
@@ -53,10 +66,25 @@
 - name: Unpack containerd
   ansible.builtin.unarchive:
     remote_src: true
-    src: /tmp/containerd.tar.gz
-    dest: "{{ containerd_prefix | default('/') }}"
+    src: /tmp/{{ containerd_filename }}
+    dest: "{{ containerd_prefix | default('/usr/local') }}"
     extra_opts:
       - --no-overwrite-dir
+  when: ansible_os_family != "Flatcar"
+
+- name: Copy containerd.service to /etc/systemd/system
+  ansible.builtin.copy:
+    remote_src: true
+    src: /tmp/containerd.service
+    dest: /etc/systemd/system/containerd.service
+    mode: "0600"
+
+- name: Copy runc to /usr/local/sbin
+  ansible.builtin.copy:
+    remote_src: true
+    src: /tmp/runc
+    dest: /usr/local/sbin/runc
+    mode: "0755"
   when: ansible_os_family != "Flatcar"
 
 # Install containerd Wasm shims specified in a comma-separated string. Known runtimes are 'lunatic', 'slight', 'spin', and 'wws'.
@@ -73,16 +101,16 @@
 - name: Unpack containerd for Flatcar to /opt/bin
   ansible.builtin.unarchive:
     remote_src: true
-    src: /tmp/containerd.tar.gz
-    dest: "{{ containerd_prefix | default('/') }}"
-    extra_opts:
-      - --absolute-names
-      - --transform
-      - s@usr@opt@
-      - --transform
-      - s@sbin@bin@
-      - --transform
-      - s@opt/local@opt@
+    src: /tmp/{{ containerd_filename }}
+    dest: "{{ containerd_prefix | default('/opt') }}"
+  when: ansible_os_family == "Flatcar"
+
+- name: Copy runc to /opt/bin
+  ansible.builtin.copy:
+    remote_src: true
+    src: /tmp/runc
+    dest: /opt/bin/runc
+    mode: "0755"
   when: ansible_os_family == "Flatcar"
 
 # Install containerd Wasm shims specified in a comma-separated string. Known runtimes are 'lunatic', 'slight', 'spin', and 'wws'.
@@ -96,22 +124,11 @@
   when: ansible_os_family == "Flatcar" and (containerd_wasm_shims_runtimes | length > 0)
   loop: "{{ containerd_wasm_shims_runtimes | split(',') }}"
 
-# Remove /opt/cni directory, as we will install cni later
-- name: Delete /opt/cni directory
-  ansible.builtin.file:
-    path: /opt/cni
-    state: absent
-
-# Remove /etc/cni directory, as we will configure cni later
-- name: Delete /etc/cni directory
-  ansible.builtin.file:
-    path: /etc/cni
-    state: absent
-
 - name: Create unit file directory
   ansible.builtin.file:
     path: /etc/systemd/system/containerd.service.d
     state: directory
+    mode: "0755"
 
 - name: Create systemd unit drop-in file for containerd to run from /opt/bin
   ansible.builtin.template:
@@ -137,7 +154,7 @@
     dest: /etc/systemd/system/containerd.service.d/limit-nofile.conf
     src: etc/systemd/system/containerd.service.d/limit-nofile.conf
     mode: "0644"
-  when: ansible_os_family in ["Common Base Linux Mariner", "Microsoft Azure Linux"]
+  when: ansible_os_family in ["Common Base Linux Mariner", "Flatcar", "Microsoft Azure Linux"]
 
 - name: Create containerd http proxy conf file if needed
   ansible.builtin.template:
@@ -150,11 +167,13 @@
   ansible.builtin.file:
     path: /etc/containerd
     state: directory
+    mode: "0755"
 
 - name: Creates containerd certificates directory
   ansible.builtin.file:
     path: /etc/containerd/certs.d
     state: directory
+    mode: "0755"
 
 - name: Copy in containerd config file {{ containerd_config_file }}
   vars:
@@ -168,6 +187,7 @@
   ansible.builtin.template:
     dest: /etc/crictl.yaml
     src: etc/crictl.yaml
+    mode: "0644"
 
 - name: Start containerd service
   ansible.builtin.systemd:
@@ -178,7 +198,17 @@
 
 - name: Delete containerd tarball
   ansible.builtin.file:
-    path: /tmp/containerd.tar.gz
+    path: /tmp/{{ containerd_filename }}
+    state: absent
+
+- name: Delete runc bin
+  ansible.builtin.file:
+    path: /tmp/runc
+    state: absent
+
+- name: Delete containerd.service
+  ansible.builtin.file:
+    path: /tmp/containerd.service
     state: absent
 
 - name: Delete containerd-wasm-shims tarballs
@@ -199,14 +229,14 @@
   loop:
     - runsc
     - containerd-shim-runsc-v1
-  when: containerd_gvisor_runtime
+  when: containerd_gvisor_runtime | bool
 
 - name: Install runsc as a runtime
   ansible.builtin.command:
     cmd: >
       {{ sysusr_prefix }}/bin/runsc install
   register: runsc_install_output
-  when: containerd_gvisor_runtime
+  when: containerd_gvisor_runtime | bool
   changed_when:
     - runsc_install_output.rc == 0
     - runsc_install_output.stderr is search('Successfully added')

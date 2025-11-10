@@ -37,6 +37,23 @@ command:
     stderr: [ ]
     timeout: 0
 {{end}}
+{{if eq .Vars.containerd_gvisor_runtime "true"}}
+  runsc --version:
+    exit-status: 0
+    stdout: [ ]
+    stderr: []
+    timeout: 0
+  containerd-shim-runsc-v1:
+    exit-status: 1
+    stdout: [ ]
+    stderr: ["io.containerd.runsc.v1: shim namespace cannot be empty"]
+    timeout: 0
+  grep -E 'io\.containerd\.(runsc)\.v' /etc/containerd/config.toml:
+    exit-status: 0
+    stdout: [ ]
+    stderr: [ ]
+    timeout: 0
+{{end}}
 {{if eq .Vars.kubernetes_source_type "pkg"}}
 {{if eq .Vars.kubernetes_cni_source_type "pkg"}}
   crictl images | grep -v 'IMAGE ID' | awk '{print $1}' | awk -F'/' '{print $NF}' | sed 's/-{{ .Vars.arch }}//g' | sort:
@@ -172,6 +189,18 @@ command:
     stdout:
     - "{{.Vars.containerd_version}}"
     timeout: 30000
+  {{ if (semverCompare ">=2.0.0" .Vars.containerd_version) }}
+  Correct Containerd config:
+    exec: "\"/Program Files/containerd/containerd.exe\" config dump"
+    exit-status: 0
+    stdout:
+    - "sandbox = \"{{.Vars.pause_image}}\""
+    - "conf_dir = \"C:/etc/cni/net.d\""
+    - "bin_dir = \"C:/opt/cni/bin\""
+    - "root = \"C:\\\\ProgramData\\\\containerd\\\\root\""
+    - "state = \"C:\\\\ProgramData\\\\containerd\\\\state\""
+    timeout: 30000
+  {{ else }}
   Correct Containerd config:
     exec: "\"/Program Files/containerd/containerd.exe\" config dump"
     exit-status: 0
@@ -182,6 +211,7 @@ command:
     - "root = \"C:\\\\ProgramData\\\\containerd\\\\root\""
     - "state = \"C:\\\\ProgramData\\\\containerd\\\\state\""
     timeout: 30000
+  {{ end }}
   Check Windows Defender Exclusions are in place:
     exit-status: 0
     exec: powershell -command "(Get-MpPreference | select ExclusionProcess)"

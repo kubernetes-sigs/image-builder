@@ -1,0 +1,40 @@
+# Copyright 2025 The Kubernetes Authors.
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+
+# http://www.apache.org/licenses/LICENSE-2.0
+
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+---
+# See hardening guide: https://www.flatcar.org/docs/latest/setup/security/hardening-guide/#disable-usb
+- name: Create /etc/modprobe.d directory
+  ansible.builtin.file:
+    path: /etc/modprobe.d
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  when: disable_flatcar_usb
+
+- name: Blacklist usb-storage module
+  ansible.builtin.copy:
+    dest: /etc/modprobe.d/blacklist.conf
+    content: |
+      blacklist usb-storage
+    owner: root
+    group: root
+    mode: '0644'
+  when: disable_flatcar_usb
+
+# sed is used here instead of the ansible.builtin.lineinfile module
+# because of the read-only filesystem on Flatcar in /etc.
+- name: Set default HOME_MODE in login.defs
+  ansible.builtin.shell: sed -ri "s/^#?HOME_MODE\>.*/HOME_MODE 0700/" /etc/login.defs
+  tags:
+    - skip_ansible_lint

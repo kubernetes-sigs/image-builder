@@ -40,17 +40,10 @@ al2023_rpms:
 
 # Used for Azure Linux distributions
 azurelinux_rpms:
+  - ca-certificates-legacy
   - curl
   - yum-utils
   - lsof
-
-# Used for RedHat based distributions ==  7 (ex. RHEL-7, CentOS-7 etc.)
-rh7_rpms:
-  - curl
-  - yum-utils
-  - ebtables
-  - python-netifaces
-  - python-requests
 
 # Used for RedHat based distributions =!  7 (ex. RHEL-8, RockyLinux-8, RockyLinux-9 etc.)
 rh8_rpms:
@@ -94,12 +87,6 @@ common_photon_rpms:
   - unzip
   - curl
 
-photon_3_rpms:
-  - python-netifaces
-  - python-requests
-  - jq
-  - logrotate
-
 # Creating photon_4_rpms for adding future packages if needed.
 # Since empty list errors out, jq is added.
 photon_4_rpms:
@@ -135,7 +122,7 @@ sysctl_conf_file: >-
   {{ '/etc/sysctl.d/99-sysctl.conf' if ansible_os_family in ['Common Base Linux Mariner', 'Flatcar', 'Microsoft Azure Linux', 'VMware Photon OS']
     else '/etc/sysctl.conf' }}
 
-pause_image: registry.k8s.io/pause:3.9
+pause_image: registry.k8s.io/pause:3.10
 containerd_additional_settings:
 leak_local_mdns_to_dns: false
 build_target: virt
@@ -144,3 +131,7 @@ external_binary_path: "{{ '/opt/bin' if ansible_os_family == 'Flatcar' else '/us
 
 # Enable containerd trace audit in auditd, default: false.
 enable_containerd_audit: false
+
+# Disable flatcar usb devices, default: true
+# See hardening guide: https://www.flatcar.org/docs/latest/setup/security/hardening-guide/#disable-usb
+disable_flatcar_usb: true

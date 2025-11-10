@@ -48,7 +48,6 @@ The `gce` sub-directory inside `images/capi/packer` stores JSON configuration fi
 
 | File | Description
 | -------- | --------
-| `ubuntu-2004.json`     | Settings for Ubuntu 20.04 image     |
 | `ubuntu-2204.json`     | Settings for Ubuntu 22.04 image     |
 | `ubuntu-2404.json`     | Settings for Ubuntu 24.04 image     |
 | `rhel-8.json`     | Settings for RHEL 8 image     |
@@ -79,7 +78,6 @@ $ gcloud compute images list --project ${GCP_PROJECT_ID} --no-standard-images
 
 NAME                                         PROJECT            FAMILY                      DEPRECATED  STATUS
 cluster-api-ubuntu-2404-v1-17-11-1603233313  myregistry-292303  capi-ubuntu-2404-k8s-v1-17              READY
-cluster-api-ubuntu-2004-v1-17-11-1603233874  myregistry-292303  capi-ubuntu-2004-k8s-v1-17              READY
 ```
 
 ### Delete Images

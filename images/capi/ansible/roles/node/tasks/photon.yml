@@ -19,6 +19,7 @@
     section: Network
     option: Domains
     value: ~local
+    mode: "0644"
   when: leak_local_mdns_to_dns
 
 - name: Leak mDNS to DNS (dhcp) (enable .local domain lookups)
@@ -27,6 +28,7 @@
     section: Network
     option: Domains
     value: ~local
+    mode: "0644"
   when: leak_local_mdns_to_dns
 
 - name: Double TCP small queue limit to be the same as Ubuntu
@@ -52,8 +54,15 @@
     regexp: ^(?!.*apparmor=0)(photon_cmdline.*)
     line: \1 apparmor=0
 
+- name: Check if tdnf cache timer exists
+  ansible.builtin.systemd:
+    name: tdnf-cache-updateinfo.timer
+  register: tdnf_timer_status
+  failed_when: false
+
 - name: Disable tdnf cache timer
   ansible.builtin.systemd:
     name: tdnf-cache-updateinfo.timer
     enabled: false
     state: stopped
+  when: tdnf_timer_status.status is defined and tdnf_timer_status.status.LoadState == "loaded"

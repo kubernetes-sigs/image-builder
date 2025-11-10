@@ -71,12 +71,14 @@
   ansible.builtin.get_url:
     url: https://awscli.amazonaws.com/awscli-exe-linux-{{ ansible_architecture }}.zip.sig
     dest: /tmp/awscliv2.zip.sig
+    mode: "0644"
   when: ansible_os_family != "Flatcar"
 
 - name: Download AWS CLI v2 archive
   ansible.builtin.get_url:
     url: https://awscli.amazonaws.com/awscli-exe-linux-{{ ansible_architecture }}.zip
     dest: /tmp/awscliv2.zip
+    mode: "0644"
   when: ansible_os_family != "Flatcar"
 
 - name: Verify AWS CLI v2 archive

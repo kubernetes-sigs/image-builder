@@ -1,5 +1,0 @@
-{
-  "build_name": "ubuntu-2004",
-  "snapshot_name_suffix": "on Ubuntu 20.04",
-  "source_image": "ubuntu-20-04-x64"
-}

@@ -18,6 +18,7 @@
   ansible.builtin.file:
     path: /etc/systemd/system-environment-generators
     state: directory
+    mode: "0755"
 
 - name: Add env generator that includes system PATH on service path
   ansible.builtin.copy:

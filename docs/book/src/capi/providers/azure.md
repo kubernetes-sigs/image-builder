@@ -47,8 +47,8 @@ Generation 2 images may only be used with Shared Image Gallery, not VHD.
 Confidential VMs require specific generation 2 OS images. The naming pattern of those images includes the suffix `-cvm`. For example:
 
 ```bash
-# Ubuntu 20.04 LTS for Confidential VMs
-make build-azure-sig-ubuntu-2004-cvm
+# Ubuntu 24.04 LTS for Confidential VMs
+make build-azure-sig-ubuntu-2404-cvm
 
 # Windows 2019 with containerd for Confindential VMs
 make build-azure-sig-windows-2019-containerd-cvm

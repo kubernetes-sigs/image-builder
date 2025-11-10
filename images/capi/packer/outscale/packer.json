@@ -2,11 +2,17 @@
   "builders": [
     {
       "access_key": "{{ user `access_key` }}",
+      "force_delete_snapshot": "{{user `overwrite_existing`}}",
+      "force_deregister": "{{user `overwrite_existing`}}",
       "global_permission": "{{ user `global_permission` }}",
       "omi_account_ids": [
         "{{ user `account_id` }}"
       ],
-      "omi_name": "{{user `build_name`}}-{{user `distribution_version`}}-kubernetes-{{user `kubernetes_semver`}}-{{timestamp}}",
+      "omi_boot_modes": [
+        "legacy",
+        "uefi"
+      ],
+      "omi_name": "{{user `omi_name`}}",
       "region": "{{ user `region` }}",
       "secret_key": "{{ user `secret_key` }}",
       "source_omi": "{{ user `source_image` }}",
@@ -18,6 +24,7 @@
           "{{ user `owner` }}"
         ]
       },
+      "ssh_interface": "public_ip",
       "ssh_username": "outscale",
       "tags": {
         "Base_OMI_Name": "{{ .SourceOMIName }}",
@@ -28,6 +35,7 @@
         "distribution_version": "{{user `distribution_version`}}",
         "kubernetes_version": "{{user `kubernetes_semver`}}"
       },
+      "temporary_security_group_source_cidr": "{{user `ssh_source_cidr` }}",
       "type": "outscale-bsu",
       "vm_type": "{{user `vm_type`}}"
     }
@@ -68,6 +76,8 @@
         "OS": "{{user `distribution` | lower}}",
         "OS_VERSION": "{{user `distribution_version` | lower}}",
         "PROVIDER": "outscale",
+        "containerd_gvisor_runtime": "{{user `containerd_gvisor_runtime`}}",
+        "containerd_gvisor_version": "{{user `containerd_gvisor_version`}}",
         "containerd_version": "{{user `containerd_version`}}",
         "kubernetes_cni_deb_version": "{{ user `kubernetes_cni_deb_version` }}",
         "kubernetes_cni_rpm_version": "{{ split (user `kubernetes_cni_rpm_version`) \"-\" 0 }}",
@@ -89,10 +99,8 @@
     "build_timestamp": "{{timestamp}}",
     "containerd_gvisor_runtime": "false",
     "containerd_gvisor_version": "latest",
-    "containerd_sha256": null,
-    "containerd_url": "https://github.com/containerd/containerd/releases/download/v{{user `containerd_version`}}/cri-containerd-cni-{{user `containerd_version`}}-linux-amd64.tar.gz",
+    "containerd_service_url": "https://raw.githubusercontent.com/containerd/containerd/refs/tags/v{{user `containerd_version`}}/containerd.service",
     "containerd_version": null,
-    "crictl_url": "https://github.com/kubernetes-sigs/cri-tools/releases/download/v{{user `crictl_version`}}/crictl-v{{user `crictl_version`}}-linux-amd64.tar.gz",
     "crictl_version": null,
     "distribution_release": null,
     "distribution_version": null,
@@ -116,9 +124,13 @@
     "kubernetes_semver": null,
     "kubernetes_series": null,
     "kubernetes_source_type": null,
+    "omi_name": "{{user `build_name`}}-kubernetes-{{user `kubernetes_semver`}}-{{isotime `2006-01-02`}}",
+    "overwrite_existing": "false",
     "owner": "Outscale",
     "region": "{{env `OSC_REGION`}}",
+    "runc_version": null,
     "secret_key": "{{env `OSC_SECRET_KEY`}}",
-    "vm_type": "tinav5.c2r4p2"
+    "ssh_source_cidr": "0.0.0.0/0",
+    "vm_type": "tinav6.c2r4p2"
   }
 }

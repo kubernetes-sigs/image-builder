@@ -22,7 +22,7 @@
 
 - name: Download CNI tarball
   ansible.builtin.get_url:
-    url: "{{ kubernetes_cni_http_source }}/{{ kubernetes_cni_semver }}/cni-plugins-linux-{{ kubernetes_goarch }}-{{ kubernetes_cni_semver }}.tgz"
+    url: "{{ kubernetes_cni_http_source }}/{{ kubernetes_cni_semver }}/cni-plugins-linux-{{ kubernetes_resolved_arch }}-{{ kubernetes_cni_semver }}.tgz"
     checksum: "{{ kubernetes_cni_http_checksum }}"
     dest: /tmp/cni.tar.gz
     mode: "0755"
@@ -42,7 +42,7 @@
 
 - name: Download Kubernetes binaries
   ansible.builtin.get_url:
-    url: "{{ kubernetes_http_source }}/{{ kubernetes_semver }}/bin/linux/{{ kubernetes_goarch }}/{{ item }}"
+    url: "{{ kubernetes_http_source }}/{{ kubernetes_semver }}/bin/linux/{{ kubernetes_resolved_arch }}/{{ item }}"
     # TODO(akutz) Write a script to separately download the checksum
     #             and verify the associated file using the correct
     #             checksum file format
@@ -55,7 +55,7 @@
 
 - name: Download Kubernetes images
   ansible.builtin.get_url:
-    url: "{{ kubernetes_http_source }}/{{ kubernetes_semver }}/bin/linux/{{ kubernetes_goarch }}/{{ item }}"
+    url: "{{ kubernetes_http_source }}/{{ kubernetes_semver }}/bin/linux/{{ kubernetes_resolved_arch }}/{{ item }}"
     # TODO(akutz) Write a script to separately download the checksum
     #             and verify the associated file using the correct
     #             checksum file format

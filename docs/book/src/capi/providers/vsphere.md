@@ -43,7 +43,7 @@ This file must have the following format (`cluster` can be replace by `host`):
     "network": "network_attached_to_template",
     "insecure_connection": "false",
     "template": "base_template_used_by_clone_builder",
-    "create_snbapshot": "creates a snaphot on base OVA after building",
+    "create_snapshot": "creates a snaphot on base OVA after building",
     "linked_clone": "Uses link cloning in vsphere-clone builder: true, by default"
 }
 ```
@@ -77,13 +77,10 @@ In addition to the configuration found in `images/capi/packer/config`, the `ova`
 
 | File               | Description                                                  |
 |--------------------|--------------------------------------------------------------|
-| `centos-7.json`    | The settings for the CentOS 7 image                          |
 | `flatcar.json`     | The settings for the Flatcar image                           |
-| `photon-3.json`    | The settings for the Photon 3 image                          |
 | `photon-4.json`    | The settings for the Photon 4 image                          |
-| `rhel-7.json`      | The settings for the RHEL 7 image                            |
-| `ubuntu-1804.json` | The settings for the Ubuntu 18.04 image                      |
-| `ubuntu-2004.json` | The settings for the Ubuntu 20.04 image                      |
+| `rhel-8.json`      | The settings for the RHEL 8 image                            |
+| `rhel-9.json`      | The settings for the RHEL 9 image                            |
 | `ubuntu-2204.json` | The settings for the Ubuntu 22.04 image                      |
 | `ubuntu-2204-efi.json` | The settings for the Ubuntu 22.04 EFI image                      |
 | `ubuntu-2404.json` | The settings for the Ubuntu 24.04 image                      |
@@ -102,7 +99,7 @@ an environment where you require DNS resolution .local, then add `leak_local_mdn
 When building the RHEL image, the OS must register itself with the Red Hat Subscription Manager (RHSM). To do this, the current supported method is to supply a username and password via environment variables. The two environment variables are `RHSM_USER` and `RHSM_PASS`. Although building RHEL images has been tested via this method, if an error is encountered during the build, the VM is deleted without the machine being unregistered with RHSM. To prevent this, it is recommended to build with the following command:
 
 ```shell
-PACKER_FLAGS=-on-error=ask RHSM_USER=user RHSM_PASS=pass make build-node-ova-<hypervisor>-rhel-7
+PACKER_FLAGS=-on-error=ask RHSM_USER=user RHSM_PASS=pass make build-node-ova-<hypervisor>-rhel-9
 ```
 
 The addition of `PACKER_FLAGS=-on-error=ask` means that if an error is encountered, the build will pause, allowing you to SSH into the machine and unregister manually.
@@ -110,40 +107,6 @@ The addition of `PACKER_FLAGS=-on-error=ask` means that if an error is encounter
 ### Output
 
 The images are built and located in `images/capi/output/BUILD_NAME+kube-KUBERNETES_VERSION`
-
-## Uploading Images
-
-The images are uploaded to the GCS bucket `capv-images`. The path to the image depends on the version of Kubernetes:
-
-| Build type | Upload location                                                                      |
-| ---------- | ------------------------------------------------------------------------------------ |
-| CI         | `gs://capv-images/ci/KUBERNETES_VERSION/BUILD_NAME-kube-KUBERNETES_VERSION.ova`      |
-| Release    | `gs://capv-images/release/KUBERNETES_VERSION/BUILD_NAME-kube-KUBERNETES_VERSION.ova` |
-
-Uploading the images requires the `gcloud` and `gsutil` programs, an active Google Cloud account, or a service account with an associated key file. The latter may be specified via the environment variable `KEY_FILE`.
-
-```shell
-hack/image-upload.py --key-file KEY_FILE BUILD_DIR
-```
-
-First the images are checksummed (SHA256). If a matching checksum already exists remotely then the image is not re-uploaded. Otherwise the images are uploaded to the GCS bucket.
-
-### Listing Available Images
-
-Once uploaded the available images may be listed using the `gsutil` program, for example:
-
-```shell
-gsutil ls gs://capv-images/release
-```
-
-### Downloading Images
-
-Images may be downloaded via HTTP:
-
-| Build type | Download location                                                                                             |
-| ---------- | ------------------------------------------------------------------------------------------------------------- |
-| CI         | `http://storage.googleapis.com/capv-images/ci/KUBERNETES_VERSION/BUILD_NAME-kube-KUBERNETES_VERSION.ova`      |
-| Release    | `http://storage.googleapis.com/capv-images/release/KUBERNETES_VERSION/BUILD_NAME-kube-KUBERNETES_VERSION.ova` |
 
 ## Testing Images
 

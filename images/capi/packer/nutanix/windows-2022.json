@@ -6,5 +6,5 @@
   "runtime": "containerd",
   "shutdown_command": "shutdown /s /t 10 /f /d p:4:1 /c \"Packer Shutdown\"",
   "source_image_name": "en-us_windows_server_2022_x64_dvd_620d7eac",
-  "virtio_image_name": "Nutanix-VirtIO-1.2.1"
+  "virtio_image_name": "Nutanix-VirtIO-1.2.5"
 }

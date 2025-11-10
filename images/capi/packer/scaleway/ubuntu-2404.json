@@ -1,0 +1,6 @@
+{
+  "build_name": "ubuntu-2404",
+  "distribution": "ubuntu",
+  "distribution_version": "2404",
+  "image": "ubuntu_noble"
+}

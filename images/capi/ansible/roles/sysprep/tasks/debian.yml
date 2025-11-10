@@ -25,12 +25,23 @@
   args:
     executable: /bin/bash
 
+- name: Unpin grub packages with apt-mark for MaaS
+  ansible.builtin.shell: |
+    set -o pipefail
+    dpkg-query -f '${binary:Package}\n' -W | grep grub | xargs apt-mark unhold
+
+  args:
+    executable: /bin/bash
+  when: provider is defined and provider is search('maas')
+
 - name: Remove extra repos
   ansible.builtin.file:
     path: /etc/apt/sources.list.d/{{ item | basename }}
     state: absent
   loop: "{{ extra_repos.split() }}"
-  when: remove_extra_repos and extra_repos != ""
+  when:
+    - remove_extra_repos|default(false)|bool
+    - extra_repos != ""
 
 - name: Find disabled repo files
   ansible.builtin.find:
@@ -53,10 +64,14 @@
     state: absent
   when: http_proxy is defined or https_proxy is defined
 
+- name: Get installed service
+  ansible.builtin.service_facts:
+
 - name: Stop auditing
   ansible.builtin.service:
     name: rsyslog
     state: stopped
+  when: "'rsyslog' in services"
 
 - name: Remove apt package caches
   ansible.builtin.apt:
@@ -113,9 +128,11 @@
     mode: "0644"
   notify:
     - Update debian grub
-  when: _stat_update_grub.stat.exists
+  when:
+    - _stat_update_grub.stat.exists
+    - sysprep_require_grub_file|default(true)|bool
 
-- name: Remvoing subiquity disable disable cloud-init networking config
+- name: Removing subiquity disable cloud-init networking config
   ansible.builtin.file:
     path: /etc/cloud/cloud.cfg.d/subiquity-disable-cloudinit-networking.cfg
     state: absent

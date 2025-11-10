@@ -15,13 +15,6 @@ $ sudo -i
 # apt install qemu-kvm libvirt-bin qemu-utils
 ```
 
-If you're on Ubuntu 20.04 LTS, then execute the following command to install qemu-kvm packages.
-
-```bash
-$ sudo -i
-# apt install qemu-kvm libvirt-daemon-system libvirt-clients virtinst cpu-checker libguestfs-tools libosinfo-bin
-```
-
 #### Adding your user to the kvm group
 
 ```bash

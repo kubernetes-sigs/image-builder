@@ -112,7 +112,7 @@
       "use_sudo": true,
       "vars_file": "{{user `goss_vars_file`}}",
       "vars_inline": {
-        "ARCH": "amd64",
+        "ARCH": "{{ user `arch` | lower }}",
         "OS": "{{user `distribution` | lower}}",
         "OS_VERSION": "{{user `distribution_version` | lower}}",
         "PROVIDER": "hcloud",
@@ -137,11 +137,9 @@
     "ansible_user_vars": "",
     "build_name": null,
     "build_timestamp": "{{timestamp}}",
-    "containerd_sha256": null,
-    "containerd_url": "https://github.com/containerd/containerd/releases/download/v{{user `containerd_version`}}/cri-containerd-cni-{{user `containerd_version`}}-linux-amd64.tar.gz",
+    "containerd_service_url": "https://raw.githubusercontent.com/containerd/containerd/refs/tags/v{{user `containerd_version`}}/containerd.service",
     "containerd_version": null,
     "containerd_wasm_shims_runtimes": null,
-    "crictl_url": "https://github.com/kubernetes-sigs/cri-tools/releases/download/v{{user `crictl_version`}}/crictl-v{{user `crictl_version`}}-linux-amd64.tar.gz",
     "crictl_version": null,
     "direct_shared_gallery_image_id": "",
     "distribution": null,
@@ -170,6 +168,7 @@
     "kubernetes_semver": null,
     "kubernetes_series": null,
     "kubernetes_source_type": null,
-    "manifest_output": "manifest.json"
+    "manifest_output": "manifest.json",
+    "runc_version": null
   }
 }

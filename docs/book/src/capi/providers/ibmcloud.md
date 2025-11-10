@@ -59,7 +59,7 @@ This table lists several common options that a user may want to set via `PACKER_
 The parameters can be set via a variable file and passed via `PACKER_VAR_FILES`. See [Customization](../capi.md#customization) for examples.
 
 
-> **Note:** 
+> **Note:**
 > 1. When setting `dhcp_network: true`, you need to build an OS image with certain network settings using [pvsadm tool](https://github.com/ppc64le-cloud/pvsadm/blob/main/docs/Build%20DHCP%20enabled%20Centos%20Images.md) and replace [the fields](https://github.com/kubernetes-sigs/image-builder/blob/cb925047f388090a0db3430ca3172da63eff952c/images/capi/packer/powervs/centos-8.json#L6) with the custom image details.
 > 2. Clone the image-builder repo and run `make build` commands from a system where the DHCP private IP can be reached and SSH able.
 
@@ -78,13 +78,6 @@ Execute the following command to install qemu-kvm and other packages if you are 
 ```bash
 $ sudo -i
 # apt install qemu-kvm libvirt-bin qemu-utils
-```
-
-If you're on Ubuntu 20.04 LTS, then execute the following command to install qemu-kvm packages.
-
-```bash
-$ sudo -i
-# apt install qemu-kvm libvirt-daemon-system libvirt-clients virtinst cpu-checker libguestfs-tools libosinfo-bin
 ```
 
 #### Adding your user to the kvm group
@@ -107,12 +100,12 @@ make deps-qemu
 
 From the `images/capi` directory, run `make build-qemu-ubuntu-xxxx`. The image is built and located in images/capi/output/{BUILD_NAME}-kube-{KUBERNETES_VERSION}. Please replace xxxx with `1804` or `2004` depending on the version you want to build the image for.
 
-For building a ubuntu-2004 based CAPI image, run the following commands -
+For building a ubuntu-2404 based CAPI image, run the following commands -
 
 ```bash
 $ git clone https://github.com/kubernetes-sigs/image-builder.git
 $ cd image-builder/images/capi/
-$ make build-qemu-ubuntu-2004
+$ make build-qemu-ubuntu-2404
 ```
 
 #### Customizing Build

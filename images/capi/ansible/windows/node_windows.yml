@@ -13,11 +13,13 @@
 # limitations under the License.
 
 ---
-- hosts: all
+- name: Configure Windows node
+  hosts: all
   vars:
     node_custom_roles_pre: ""
     node_custom_roles_post: ""
     custom_role_names: ""
+    system: windows
 
   tasks:
     - name: Check if cloudbase-init url is set
@@ -46,7 +48,7 @@
         }
         Optimize-PowershellAssemblies
       become: true
-      become_method: runas
+      become_method: ansible.builtin.runas
       become_user: SYSTEM
 
     - name: Get Install Drive
@@ -65,31 +67,41 @@
       ansible.windows.win_shell: $env:TEMP
       register: tempdir
 
-    - ansible.builtin.include_role:
+    - name: Include custom pre-configuration roles
+      ansible.builtin.include_role:
         name: "{{ role }}"
       loop: "{{ node_custom_roles_pre.split() }}"
       loop_control:
         loop_var: role
       when: node_custom_roles_pre != ""
-    - ansible.builtin.include_role:
+    - name: Configure Windows system preparation
+      ansible.builtin.include_role:
         name: systemprep
-    - ansible.builtin.include_role:
+    - name: Install and configure cloudbase-init
+      ansible.builtin.include_role:
         name: cloudbase-init
       when: install_cloudbase_init
-    - ansible.builtin.include_role:
+    - name: Configure cloud provider specific settings
+      ansible.builtin.include_role:
         name: providers
-    - ansible.builtin.include_role:
+    - name: Install and configure container runtime
+      ansible.builtin.include_role:
         name: runtimes
-    - ansible.builtin.include_role:
+    - name: Install and configure Kubernetes
+      ansible.builtin.include_role:
         name: kubernetes
-    - ansible.builtin.include_role:
+    - name: Configure gMSA support
+      ansible.builtin.include_role:
         name: gmsa
-    - ansible.builtin.include_role:
+    - name: Load additional components
+      ansible.builtin.include_role:
         name: load_additional_components
       when: load_additional_components | bool
-    - ansible.builtin.include_role:
+    - name: Install debug tools
+      ansible.builtin.include_role:
         name: debug
-    - ansible.builtin.include_role:
+    - name: Include custom post-configuration roles
+      ansible.builtin.include_role:
         name: "{{ role }}"
       loop: "{{ custom_role_names.split() + node_custom_roles_post.split() }}"
       loop_control:

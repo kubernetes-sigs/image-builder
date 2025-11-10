@@ -13,7 +13,7 @@ $ make deps-nutanix
 
 ## Configure the Nutanix builder
 
-Modify the `packer/nutanix/nutanix.json` configuration file with credentials and informations specific to your Nutanix Prism Central used to build the image, you can also use the corresponding env variables.  
+Modify the `packer/nutanix/nutanix.json` configuration file with credentials and informations specific to your Nutanix Prism Central used to build the image, you can also use the corresponding env variables.
 This file have the following format:
 
 ```
@@ -32,12 +32,12 @@ This file have the following format:
 
 Corresponding env variables
 
-`NUTANIX_ENDPOINT`  
-`NUTANIX_PORT`  
-`NUTANIX_INSECURE`  
-`NUTANIX_USERNAME`  
-`NUTANIX_PASSWORD`  
-`NUTANIX_CLUSTER_NAME`  
+`NUTANIX_ENDPOINT`
+`NUTANIX_PORT`
+`NUTANIX_INSECURE`
+`NUTANIX_USERNAME`
+`NUTANIX_PASSWORD`
+`NUTANIX_CLUSTER_NAME`
 `NUTANIX_SUBNET_NAME`
 
 
@@ -88,7 +88,6 @@ The `nutanix` sub-directory inside `images/capi/packer` stores JSON configuratio
 
 | File                | Description                                   |
 |---------------------|-----------------------------------------------|
-| `ubuntu-2004.json`  | Settings for Ubuntu 20.04 image               |
 | `ubuntu-2204.json`  | Settings for Ubuntu 22.04 image               |
 | `rockylinux-8.json` | Settings for Rocky Linux 8 image (UEFI)       |
 | `rockylinux-9.json` | Settings for Rocky Linux 9 image              |

@@ -177,8 +177,6 @@
     "cloudbase_metadata_services_unattend": "cloudbaseinit.metadata.services.base.EmptyMetadataService",
     "cloudbase_plugins": "cloudbaseinit.plugins.windows.createuser.CreateUserPlugin, cloudbaseinit.plugins.common.setuserpassword.SetUserPasswordPlugin, cloudbaseinit.plugins.windows.extendvolumes.ExtendVolumesPlugin, cloudbaseinit.plugins.common.userdata.UserDataPlugin, cloudbaseinit.plugins.common.ephemeraldisk.EphemeralDiskPlugin, cloudbaseinit.plugins.common.mtu.MTUPlugin, cloudbaseinit.plugins.common.sethostname.SetHostNamePlugin, cloudbaseinit.plugins.common.sshpublickeys.SetUserSSHPublicKeysPlugin",
     "cloudbase_plugins_unattend": "cloudbaseinit.plugins.common.mtu.MTUPlugin",
-    "containerd_sha256": null,
-    "containerd_url": "",
     "containerd_version": null,
     "encrypted": "false",
     "iam_instance_profile": "",

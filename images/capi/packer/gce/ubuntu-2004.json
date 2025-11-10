@@ -1,9 +1,0 @@
-{
-  "build_name": "ubuntu-2004",
-  "distribution": "ubuntu",
-  "distribution_release": "focal",
-  "distribution_version": "2004",
-  "source_image_family": "ubuntu-2004-lts",
-  "ssh_username": "ubuntu",
-  "zone": "us-central1-a"
-}

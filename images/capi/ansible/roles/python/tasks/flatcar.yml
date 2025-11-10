@@ -20,14 +20,14 @@
   when:
     - pypy_installed.stdout_lines[0] == "false"
   vars:
-    pypy_url_base: https://github.com/squeaky-pl/portable-pypy/releases/download/pypy{{ pypy_python_version }}-{{ pypy_version }}
-    pypy_url_path: pypy{{ pypy_python_version }}-{{ pypy_version }}-linux_x86_64-portable.tar.bz2
+    pypy_url_base: https://downloads.python.org/pypy
+    pypy_url_path: pypy{{ pypy_python_version }}-v{{ pypy_version }}-linux64.tar.bz2
   block:
     - name: Download pypy archive
       ansible.builtin.raw: curl {{ pypy_url_base }}/{{ pypy_url_path }} -L --output {{ pypy_download_path }}
     - name: Extract archive
       ansible.builtin.raw: tar -xjf {{ pypy_download_path }} -C {{ pypy_install_path }}
     - name: Rename pypy folder
-      ansible.builtin.raw: mv {{ pypy_install_path }}/pypy{{ pypy_python_version }}-{{ pypy_version }}-linux_x86_64-portable/ {{ pypy_install_path }}/pypy
+      ansible.builtin.raw: mv {{ pypy_install_path }}/pypy{{ pypy_python_version }}-v{{ pypy_version }}-linux64/ {{ pypy_install_path }}/pypy
     - name: Delete downloaded archive
       ansible.builtin.raw: rm -f {{ pypy_download_path }}

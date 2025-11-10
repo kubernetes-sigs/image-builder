@@ -13,5 +13,6 @@
   "iso_url": "https://dl.rockylinux.org/vault/rocky/9.4/isos/x86_64/Rocky-9.4-x86_64-minimal.iso",
   "os_display_name": "RockyLinux 9",
   "redhat_epel_rpm": "https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm",
+  "remove_nameserver": "true",
   "shutdown_command": "/sbin/halt -h -p"
 }

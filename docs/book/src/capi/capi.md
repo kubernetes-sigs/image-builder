@@ -27,9 +27,11 @@ If any needed binaries are not present, they can be installed to `images/capi/.b
 * [OpenStack](./providers/openstack.md)
 * [OpenStack remote image building](./providers/openstack-remote.md)
 * [Raw](./providers/raw.md)
+* [Scaleway](./providers/scaleway.md)
 * [VirtualBox](./providers/virtualbox.md)
 * [vSphere](./providers/vsphere.md)
 * [Proxmox](./providers/proxmox.md)
+* [MaaS](./providers/maas.md)
 
 ## Make targets
 
@@ -71,9 +73,9 @@ Several variables can be used to customize the image build.
 | `no_proxy`                                                                                                                 | This can be set to a comma-delimited list of domains that should be excluded from proxying during the Ansible stage of building                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | `""`                          |
 | `reenable_public_repos`                                                                                                    | If set to `"false"`, the package repositories disabled by setting `disable_public_repos` will remain disabled at the end of the build.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | `"true"`                      |
 | `remove_extra_repos`                                                                                                       | If set to `"true"`, the package repositories added to the OS through the use of `extra_repos` will be removed at the end of the build.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | `"false"`                     |
-| `pause_image`                                                                                                              | This can be used to override the default pause image used to hold the network namespace and IP for the pod.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | `"registry.k8s.io/pause:3.9"` |
+| `pause_image`                                                                                                              | This can be used to override the default pause image used to hold the network namespace and IP for the pod.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | `"registry.k8s.io/pause:3.10"` |
 | `pip_conf_file`                                                                                                            | The path to a file to be copied into the image at `/etc/pip.conf` for use as a global config file. This file will be removed at the end of the build if `remove_extra_repos` is `true`.                                                                                                                                                                                                                                                                                                                                                                                                                                                    | `""`                          |
-| `containerd_additional_settings`                                                                                           | This is a string, base64 encoded, that contains additional configuration for containerd. It must be version 2 and not contain the pause image configuration block. See `image-builder/images/capi/ansible/roles/containerd/templates/etc/containerd/config.toml` for the template.                                                                                                                                                                                                                                                                                                                                                         | `null`                        |
+| `containerd_additional_settings`                                                                                           | This is a string, base64 encoded, that contains additional configuration for containerd. Version 2 and 3 are supported, please use the appropriate version based on your containerd version. It must not contain the pause image configuration block. See `image-builder/images/capi/ansible/roles/containerd/templates/etc/containerd/config.toml` for the template.                                                                                                                                                                                                                                                                                                                                                         | `null`                        |
 | `load_additional_components`                                                                                               | If set to `"true"`, the `load_additional_components` role will be executed. This needs to be set to `"true"` if any of `additional_url_images`, `additional_registry_images` or `additional_executables` are set to `"true"`                                                                                                                                                                                                                                                                                                                                                                                                               | `"false"`                     |
 | `additional_url_images`                                                                                                    | Set this to `"true"` to load additional container images using a tar url. `additional_url_images_list` var should be set to a comma separated string of tar urls of the container images.                                                                                                                                                                                                                                                                                                                                                                                                                                                  | `"false"`                     |
 | `additional_registry_images`                                                                                               | Set this to `"true"` to load additional container images using their registry url. `additional_registry_images_list` var should be set to a comma separated string of registry urls of the container images.                                                                                                                                                                                                                                                                                                                                                                                                                               | `"false"`                     |
@@ -120,7 +122,7 @@ Note that since the `extra_rpms` variable is a string, and we need the string to
 Then, execute the build (using a Photon OVA as an example) with the following:
 
 ```sh
-PACKER_VAR_FILES=extra_vars.json make build-node-ova-local-photon-3
+PACKER_VAR_FILES=extra_vars.json make build-node-ova-local-photon-5
 ```
 
 ##### Configuring Containerd at runtime
@@ -163,7 +165,7 @@ For Ubuntu images, the process works the same but you would need to add a `.list
 Then, execute the build (using a Photon OVA as an example) with the following:
 
 ```sh
-PACKER_VAR_FILES=internal_repos.json make build-node-ova-local-photon-3
+PACKER_VAR_FILES=internal_repos.json make build-node-ova-local-photon-5
 ```
 
 ##### Setting up an HTTP Proxy
@@ -181,7 +183,7 @@ For example, to set the HTTP_PROXY env var for the Ansible stage of the build, c
 Then, execute the build (using a Photon OVA as an example) with the following:
 
 ```sh
-PACKER_VAR_FILES=proxy.json make build-node-ova-local-photon-3
+PACKER_VAR_FILES=proxy.json make build-node-ova-local-photon-5
 ```
 
 
@@ -229,3 +231,15 @@ Put the Ansible role files in the `ansible/roles` directory.
 ```
 
 Note, for backwards compatibility reasons, the variable `custom_role_names` is still accepted as an alternative to `node_custom_roles_post`, and they are functionally equivalent.
+
+##### Reenabling Flatcar USB devices
+
+Flatcar usb devices are disabled by default for security reasons.
+See [flatcar documentation](https://www.flatcar.org/docs/latest/setup/security/hardening-guide/#disable-usb) for more information.
+To reenable them, set the following variable:
+
+```json
+{
+  "ansible_user_vars": "disable_flatcar_usb=false"
+}
+```

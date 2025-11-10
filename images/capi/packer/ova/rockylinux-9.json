@@ -1,8 +1,9 @@
 {
   "boot_command_prefix": "<up>e<down><down><end><bs><bs><bs><bs><bs>text inst.ks=",
-  "boot_command_suffix": "/9/ks.cfg<leftCtrlOn>x<leftCtrlOff>",
-  "boot_media_path": "http://{{ .HTTPIP }}:{{ .HTTPPort }}",
+  "boot_command_suffix": "hd:LABEL=cidata:/ks.cfg<leftCtrlOn>x<leftCtrlOff>",
   "build_name": "rockylinux-9",
+  "cd_content_location": "./packer/ova/linux/{{user `distro_name`}}/http/{{user `distro_version`}}/*",
+  "cd_label": "cidata",
   "distro_arch": "amd64",
   "distro_name": "rockylinux",
   "distro_version": "9",
@@ -15,5 +16,6 @@
   "os_display_name": "RockyLinux 9",
   "redhat_epel_rpm": "https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm",
   "shutdown_command": "/sbin/halt -h -p",
+  "vmx_version": "20",
   "vsphere_guest_os_type": "rockylinux_64Guest"
 }

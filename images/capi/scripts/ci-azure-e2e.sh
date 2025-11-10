@@ -31,23 +31,25 @@ cd "${CAPI_ROOT}" || exit 1
 export ARTIFACTS="${ARTIFACTS:-${PWD}/_artifacts}"
 mkdir -p "${ARTIFACTS}/azure-sigs" "${ARTIFACTS}/azure-vhds"
 
-# Get list of Azure target names from common file
-source azure_targets.sh
-
-# Convert single line entries into arrays
-IFS=' ' read -r -a VHD_CI_TARGETS <<< "${VHD_CI_TARGETS}"
-IFS=' ' read -r -a SIG_CI_TARGETS <<< "${SIG_CI_TARGETS}"
-IFS=' ' read -r -a SIG_GEN2_CI_TARGETS <<< "${SIG_GEN2_CI_TARGETS}"
-IFS=' ' read -r -a SIG_CVM_CI_TARGETS <<< "${SIG_CVM_CI_TARGETS}"
-
-# Append the "gen2" targets to the original SIG list
-for element in "${SIG_GEN2_CI_TARGETS[@]}"
-do
-    SIG_CI_TARGETS+=("${element}-gen2")
-done
-
-# Append "-cvm" suffix to SIG CVM targets
-SIG_CVM_CI_TARGETS=("${SIG_CVM_CI_TARGETS[@]/%/-cvm}")
+# Dynamically gets all targets and filters out the following:
+# - Any RHEL targets (because of subscription requirements)
+VHD_CI_TARGETS=( $(make build-azure-vhds --recon -d | grep "Must remake" | \
+  grep -v build-azure-vhds | grep -v deps- | \
+  grep -v gen2 | grep -v cvm | \
+  grep -E -v 'rhel' | \
+  grep -E -o 'build-azure-vhd-[a-zA-Z0-9\-]+' | \
+  sed -E 's/build-azure-vhd-([0-9a-z\-]*)/\1/' ) )
+SIG_CI_TARGETS=( $(make build-azure-sigs --recon -d | grep "Must remake" | \
+  grep -v build-azure-sigs | grep -v deps- | \
+  grep -v cvm | \
+  grep -E -v 'rhel' | \
+  grep -E -o 'build-azure-sig-[a-zA-Z0-9\-]+' | \
+  sed -E 's/build-azure-sig-([0-9a-z\-]*)/\1/' ) )
+SIG_CVM_CI_TARGETS=( $(make build-azure-sigs --recon -d | grep "Must remake" | \
+  grep cvm | \
+  grep -E -v 'rhel' | \
+  grep -E -o 'build-azure-sig-[a-zA-Z0-9\-]+' | \
+  sed -E 's/build-azure-sig-([0-9a-z\-]*)/\1/' ) )
 
 # shellcheck source=parse-prow-creds.sh
 source "packer/azure/scripts/parse-prow-creds.sh"

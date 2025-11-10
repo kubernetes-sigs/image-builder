@@ -26,6 +26,9 @@
   tags:
     - facts
 
+- ansible.builtin.import_tasks: flatcar.yml
+  when: ansible_os_family == "Flatcar"
+
 - name: Ensure overlay module is present
   community.general.modprobe:
     name: overlay
@@ -89,21 +92,12 @@
 
 - name: Configure auditd rules for containerd
   ansible.builtin.copy:
-    src: etc/audit/rules.d/containerd.rules
+    src: "etc/audit/rules.d/containerd.rules{{ '-flatcar' if ansible_os_family == 'Flatcar' else '' }}"
     dest: /etc/audit/rules.d/containerd.rules
     owner: root
     group: root
     mode: "0644"
-  when: ansible_os_family != "Flatcar" and enable_containerd_audit
-
-- name: Configure auditd rules for containerd (Flatcar)
-  ansible.builtin.copy:
-    src: etc/audit/rules.d/containerd.rules-flatcar
-    dest: /etc/audit/rules.d/containerd.rules
-    owner: root
-    group: root
-    mode: "0644"
-  when: ansible_os_family == "Flatcar" and enable_containerd_audit
+  when: enable_containerd_audit|default(false)|bool
 
 - name: Ensure reverse packet filtering is set as strict
   ansible.posix.sysctl:
@@ -133,7 +127,3 @@
     src: usr/local/bin/etcd-network-tuning.sh
     dest: "{{ external_binary_path }}/etcd-network-tuning.sh"
     mode: "0755"
-
-- name: Set default HOME_MODE in login.defs (Flatcar)
-  ansible.builtin.shell: sed -ri "s/^#?HOME_MODE\>.*/HOME_MODE 0700/" /etc/login.defs
-  when: ansible_os_family == "Flatcar"

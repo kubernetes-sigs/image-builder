@@ -141,20 +141,11 @@ create_image_definition() {
 }
 
 case ${SIG_TARGET} in
-  ubuntu-2004)
-    create_image_definition ${SIG_TARGET} "20_04-lts" "V1" "Linux"
-  ;;
   ubuntu-2204)
     create_image_definition ${SIG_TARGET} "22_04-lts" "V1" "Linux"
   ;;
   ubuntu-2404)
     create_image_definition ${SIG_TARGET} "24_04-lts" "V1" "Linux"
-  ;;
-  centos-7)
-    create_image_definition "centos-7" "centos-7" "V1" "Linux"
-  ;;
-  mariner-2)
-    create_image_definition ${SIG_TARGET} "mariner-2" "V1" "Linux"
   ;;
   azurelinux-3)
     create_image_definition ${SIG_TARGET} "azurelinux-3" "V1" "Linux"
@@ -186,12 +177,6 @@ case ${SIG_TARGET} in
     SKU="flatcar-${FLATCAR_CHANNEL}-${FLATCAR_VERSION}"
     create_image_definition ${SKU} ${SKU} "V1" "Linux"
   ;;
-  ubuntu-2004-gen2)
-    create_image_definition ${SIG_TARGET} "20_04-lts-gen2" "V2" "Linux"
-  ;;
-  ubuntu-2004-cvm)
-    create_image_definition ${SIG_TARGET} "20_04-lts-cvm" "V2" "Linux" ${SECURITY_TYPE_CVM_SUPPORTED_FEATURE}
-  ;;
   ubuntu-2204-gen2)
     create_image_definition ${SIG_TARGET} "22_04-lts-gen2" "V2" "Linux"
   ;;
@@ -203,12 +188,6 @@ case ${SIG_TARGET} in
   ;;
   ubuntu-2404-cvm)
     create_image_definition ${SIG_TARGET} "24_04-lts-cvm" "V2" "Linux" ${SECURITY_TYPE_CVM_SUPPORTED_FEATURE}
-  ;;
-  centos-7-gen2)
-    create_image_definition "centos-7-gen2" "centos-7-gen2" "V2" "Linux"
-  ;;
-  mariner-2-gen2)
-    create_image_definition ${SIG_TARGET} "mariner-2-gen2" "V2" "Linux"
   ;;
   azurelinux-3-gen2)
     create_image_definition ${SIG_TARGET} "azurelinux-3-gen2" "V2" "Linux"

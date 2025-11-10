@@ -30,7 +30,7 @@
           "virtio"
         ]
       ],
-      "shutdown_command": "echo '{{user `ssh_password`}}' | sudo -S -E sh -c 'usermod -L {{user `ssh_username`}} && {{user `shutdown_command`}}'",
+      "shutdown_command": "echo '{{user `ssh_password`}}' | sudo -S -E sh -c 'userdel -f -r {{user `ssh_username`}} && rm -f /etc/sudoers.d/{{user `ssh_username` }} && rm -f /etc/sudoers.d/90-cloud-init-users && {{user `shutdown_command`}}'",
       "ssh_handshake_attempts": "100",
       "ssh_password": "{{user `ssh_password`}}",
       "ssh_timeout": "2h",
@@ -94,6 +94,7 @@
       "type": "shell"
     },
     {
+      "pause_before": "30s",
       "ansible_env_vars": [
         "ANSIBLE_SSH_ARGS='{{user `existing_ansible_ssh_args`}} {{user `ansible_common_ssh_args`}}'"
       ],
@@ -131,6 +132,8 @@
         "OS": "{{user `distro_name` | lower}}",
         "OS_VERSION": "{{user `distro_version` | lower}}",
         "PROVIDER": "raw",
+        "containerd_gvisor_runtime": "{{user `containerd_gvisor_runtime`}}",
+        "containerd_gvisor_version": "{{user `containerd_gvisor_version`}}",
         "containerd_version": "{{user `containerd_version`}}",
         "kubernetes_cni_deb_version": "{{ user `kubernetes_cni_deb_version` }}",
         "kubernetes_cni_rpm_version": "{{ split (user `kubernetes_cni_rpm_version`) \"-\" 0 }}",
@@ -153,11 +156,12 @@
     "boot_media_path": "http://{{ .HTTPIP }}:{{ .HTTPPort }}",
     "boot_wait": "10s",
     "build_timestamp": "{{timestamp}}",
-    "containerd_sha256": null,
-    "containerd_url": "https://github.com/containerd/containerd/releases/download/v{{user `containerd_version`}}/cri-containerd-cni-{{user `containerd_version`}}-linux-amd64.tar.gz",
+    "containerd_gvisor_runtime": "false",
+    "containerd_gvisor_version": "latest",
     "containerd_version": null,
+    "containerd_service_url": "https://raw.githubusercontent.com/containerd/containerd/refs/tags/v{{user `containerd_version`}}/containerd.service",
+    "runc_version": null,
     "cpus": "1",
-    "crictl_url": "https://github.com/kubernetes-sigs/cri-tools/releases/download/v{{user `crictl_version`}}/crictl-v{{user `crictl_version`}}-linux-amd64.tar.gz",
     "crictl_version": null,
     "disk_compression": "false",
     "disk_discard": "unmap",

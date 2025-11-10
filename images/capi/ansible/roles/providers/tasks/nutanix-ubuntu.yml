@@ -44,6 +44,7 @@
     path: /etc/udev/rules.d/50-udev.rules
     line: SUBSYSTEMS=="scsi", ACTION=="add", ATTRS{vendor}=="NUTANIX", RUN+="/bin/sh -c 'echo 60 > /sys$$DEVPATH/timeout'"
     create: true
+    mode: "0644"
 
 - name: Nutanix iSCSI client tuning recommendations
   community.general.ini_file:
@@ -51,6 +52,7 @@
     section: ""
     option: "{{ item.key }}"
     value: "{{ item.value }}"
+    mode: "0644"
   loop: "{{ iscsi_settings | dict2items }}"
   vars:
     iscsi_settings:

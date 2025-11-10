@@ -14,3 +14,9 @@
 ---
 - name: Install libseccomp package
   ansible.builtin.command: tdnf install libseccomp -y
+
+- name: Create /usr/local/sbin directory if it does not exist
+  ansible.builtin.file:
+    path: /usr/local/sbin
+    state: directory
+    mode: '0755'

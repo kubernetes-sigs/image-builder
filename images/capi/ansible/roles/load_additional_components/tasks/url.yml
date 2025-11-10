@@ -16,6 +16,7 @@
   ansible.builtin.file:
     path: /tmp/images
     state: directory
+    mode: "0755"
 
 - name: Download additional images from url
   ansible.builtin.get_url:

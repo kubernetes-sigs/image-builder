@@ -37,7 +37,9 @@
   ansible.builtin.file:
     path: /etc/pip.conf
     state: absent
-  when: remove_extra_repos and pip_conf_file != ""
+  when:
+    - remove_extra_repos|default(false)|bool
+    - pip_conf_file != ""
 
 - name: Truncate machine id
   ansible.builtin.file:
@@ -210,12 +212,12 @@
 
 - name: Remove swapfile
   ansible.builtin.file:
-    state: "{{ item.state }}"
-    path: "{{ item.path }}"
+    state: absent
+    path: "{{ item }}"
   loop:
-    - { path: /swap.img, state: absent }
-    - { path: /swapfile, state: absent }
-    - { path: /mnt/resource/swapfile, state: absent }
+    - /swap.img
+    - /swapfile
+    - /mnt/resource/swapfile
   when: ansible_memory_mb.swap.total != 0
 
 - name: Truncate shell history
@@ -243,6 +245,7 @@
     path: /boot/flatcar/first_boot
     owner: root
     group: root
+    mode: "0644"
   when: ansible_os_family == "Flatcar"
 
 - name: Remove any default Ignition files used by Packer

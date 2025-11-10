@@ -8,6 +8,7 @@ aliases:
     - mboersma
     - drew-viles
   image-builder-reviewers:
+    - AndiDog
     - randomvariable
   image-builder-azure-reviewers:
     - jsturtevant
@@ -19,6 +20,10 @@ aliases:
   image-builder-cloudstack-reviewers:
     - rohityadavcloud
     - davidjumani
+  image-builder-scaleway-reviewers:
+    - Tomy2e
+    - Mia-Cross
+    - remyleone
   image-builder-raw-maintainers:
     - detiber
     - thebsdbox
@@ -44,8 +49,10 @@ aliases:
     - mboersma
   cluster-api-gcp-maintainers:
     - cpanato
+    - damdo
     - dims
     - richardcase
+    - salasberryfin
   cluster-api-digitalocean-maintainers:
     - cpanato
     - gottwald
@@ -74,3 +81,7 @@ aliases:
     - tuxtof
   cluster-api-nutanix-reviewers:
     - tuxtof
+  cluster-api-maas-maintainers:
+    - vasartori
+  cluster-api-maas-reviewers:
+    - vasartori

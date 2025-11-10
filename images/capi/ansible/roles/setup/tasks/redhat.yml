@@ -42,14 +42,14 @@
   ansible.builtin.rpm_key:
     state: present
     key: "{{ epel_rpm_gpg_key }}"
-  when: epel_rpm_gpg_key != "" and not packer_builder_type.startswith('amazon')
+  when: epel_rpm_gpg_key != "" and not packer_builder_type.startswith('amazon') and not packer_builder_type.startswith('scaleway')
 
 - name: Add epel repo
   ansible.builtin.yum:
     name: "{{ redhat_epel_rpm }}"
     state: present
     lock_timeout: 60
-  when: redhat_epel_rpm != "" and not packer_builder_type.startswith('amazon')
+  when: redhat_epel_rpm != "" and not packer_builder_type.startswith('amazon') and not packer_builder_type.startswith('scaleway')
 
 - ansible.builtin.import_tasks: rpm_repos.yml
 

@@ -23,13 +23,6 @@ al2023_rpms: &al2023_rpms
   unzip:
   awscli-2:
 
-rh7_rpms: &rh7_rpms
-  curl:
-  yum-utils:
-  ebtables:
-  python-netifaces:
-  python-requests:
-
 rh8_rpms: &rh8_rpms
   curl:
   yum-utils:
@@ -87,12 +80,6 @@ common_photon_rpms: &common_photon_rpms
   tar:
   unzip:
 
-photon_3_rpms: &photon_3_rpms
-  python-netifaces:
-  python-requests:
-  jq:
-  logrotate:
-
 photon_4_rpms: &photon_4_rpms
   jq:
   logrotate:
@@ -102,6 +89,8 @@ photon_5_rpms: &photon_5_rpms
   logrotate:
 
 arch: "amd64"
+containerd_gvisor_runtime: ""
+containerd_gvisor_version: ""
 containerd_version: ""
 containerd_wasm_shims_runtimes: ""
 kubernetes_cni_source_type: ""
@@ -155,10 +144,6 @@ centos:
   amazon:
     package:
       amazon-ssm-agent:
-    os_version:
-    - distro_version: "7"
-      package:
-        <<: *rh7_rpms
     command:
       /usr/local/sbin/aws --version:
         exit-status: 0
@@ -171,20 +156,12 @@ centos:
     package:
       python2-pip:
       open-vm-tools:
-    os_version:
-    - distro_version: "7"
-      package:
-        <<: *rh7_rpms
   qemu:
     package:
       open-vm-tools:
       cloud-init:
       cloud-utils-growpart:
     os_version:
-    - distro_version: "7"
-      package:
-        python2-pip:
-        <<: *rh7_rpms
     - distro_version: "9"
       package:
         <<: *rh9_rpms
@@ -245,9 +222,6 @@ photon:
       cloud-utils:
       python3-netifaces:
     os_version:
-    - distro_version: "3"
-      package:
-        <<: *photon_3_rpms
     - distro_version: "4"
       package:
         <<: *photon_4_rpms
@@ -331,6 +305,22 @@ rockylinux:
     - distro_version: "8"
       package:
         <<: *rh8_rpms
+  openstack:
+    package:
+      cloud-init:
+      cloud-utils-growpart:
+    os_version:
+    - distro_version: "9"
+      package:
+        <<: *rh9_rpms
+  scaleway:
+    package:
+      cloud-init:
+      cloud-utils-growpart:
+    os_version:
+    - distro_version: "9"
+      package:
+        <<: *rh9_rpms
 rhel:
   common-package: *common_rpms
   amazon:
@@ -371,10 +361,6 @@ rhel:
     package:
       open-vm-tools:
     os_version:
-    - distro_version: "7"
-      package:
-        python2-pip:
-        <<: *rh7_rpms
     - distro_version: "8"
       package:
         python2-pip:
@@ -546,6 +532,22 @@ ubuntu:
       linux-tools-generic:
   huaweicloud:
     package: {}
+  openstack:
+    service:
+      networkd-dispatcher:
+        enabled: true
+        running: true
+    package:
+      linux-cloud-tools-virtual:
+      linux-tools-virtual:
+      open-vm-tools:
+      cloud-guest-utils:
+      cloud-initramfs-copymods:
+      cloud-initramfs-dyn-netconf:
+  scaleway:
+    service:
+    package:
+    command:
 
 oracle linux:
   common-kernel-param:
