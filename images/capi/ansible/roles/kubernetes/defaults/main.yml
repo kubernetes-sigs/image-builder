@@ -43,6 +43,6 @@ kubernetes_cni_http_checksum: sha256:{{ kubernetes_cni_http_source }}/{{ kuberne
 
 kubeadm_template: etc/kubeadm.yml
 
-kubelet_extra_args: --pod-infra-container-image={{ pause_image }}
+kubelet_extra_args: ""
 
 kubernetes_enable_automatic_resource_sizing: false
