@@ -155,7 +155,7 @@
     "nutanix_subnet_name": "{{env `NUTANIX_SUBNET_NAME`}}",
     "nutanix_username": "{{env `NUTANIX_USERNAME`}}",
     "python_path": "",
-    "scp_extra_vars": "",
+    "scp_extra_vars": "{{user `ansible_scp_extra_args`}}",
     "source_image_delete": "false",
     "source_image_force": "false",
     "ssh_password": "$SSH_PASSWORD",

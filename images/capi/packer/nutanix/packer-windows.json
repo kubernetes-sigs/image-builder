@@ -161,7 +161,7 @@
     "nutanix_port": "{{env `NUTANIX_PORT`}}",
     "nutanix_subnet_name": "{{env `NUTANIX_SUBNET_NAME`}}",
     "nutanix_username": "{{env `NUTANIX_USERNAME`}}",
-    "scp_extra_vars": "",
+    "scp_extra_vars": "{{user `ansible_scp_extra_args`}}",
     "vm_force_delete": "false",
     "windows_admin_password": "{{env `WINDOWS_ADMIN_PASSWORD`}}"
   }
