@@ -1,6 +1,8 @@
 # This file is used for initial provisioning of a Flatcar machine on platforms which use SSH
 # password authentication during the build process. The actions in this file are performed before
 # Packer provisioners (e.g. Ansible) are executed.
+variant: flatcar
+version: 1.1.0
 passwd:
   users:
   - name: builder
@@ -13,7 +15,7 @@ passwd:
 systemd:
   units:
   - name: docker.service
-    enable: true
+    enabled: true
   # Mask update-engine and locksmithd to disable automatic updates during image creation.
   - name: update-engine.service
     mask: true
