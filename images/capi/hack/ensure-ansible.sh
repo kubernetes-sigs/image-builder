@@ -49,7 +49,7 @@ fi
 echo ${ansible_version[*]}
 
 ansible-galaxy collection install \
-  community.general \
+  'community.general:<12.0.0' \
   ansible.posix \
   'ansible.windows:>=1.7.0' \
   community.windows
