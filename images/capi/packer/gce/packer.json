@@ -19,6 +19,7 @@
       "service_account_email": "{{ user `service_account_email` }}",
       "source_image_family": "{{ user `source_image_family` }}",
       "ssh_username": "{{user `ssh_username`}}",
+      "tags": "{{ user `tags` }}",
       "type": "googlecompute",
       "use_internal_ip": "{{ user `use_internal_ip`}}",
       "zone": "{{ user `zone` }}"
