@@ -20,7 +20,7 @@ set -o pipefail
 
 [[ -n ${DEBUG:-} ]] && set -o xtrace
 
-_version="v0.9.3"
+_version="v0.25.1"
 
 # Change directories to the parent directory of the one in which this
 # script is located.
@@ -33,11 +33,11 @@ if command -v ct >/dev/null 2>&1; then exit 0; fi
 mkdir -p .local/bin && cd .local/bin
 
 if [[ ${HOSTOS} == "linux" ]]; then
-  _binfile="ct-${_version}-x86_64-unknown-linux-gnu"
+  _binfile="butane-x86_64-unknown-linux-gnu"
 elif [[ ${HOSTOS} == "darwin" ]]; then
-  _binfile="ct-${_version}-x86_64-apple-darwin"
+  _binfile="butane-x86_64-apple-darwin"
 fi
-_bin_url="https://github.com/flatcar/container-linux-config-transpiler/releases/download/${_version}/${_binfile}"
-curl -SsL "${_bin_url}" -o ct
-chmod 0755 ct
-echo "'ct' has been installed to $(pwd), make sure this directory is in your \$PATH"
+_bin_url="https://github.com/coreos/butane/releases/download/${_version}/${_binfile}"
+curl -SsL "${_bin_url}" -o butane
+chmod 0755 butane
+echo "'butane' has been installed to $(pwd), make sure this directory is in your \$PATH"

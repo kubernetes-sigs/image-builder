@@ -143,7 +143,7 @@ deps-powervs: deps-common
 deps-ignition: ## Installs/checks dependencies for generating Ignition files
 deps-ignition:
 	hack/ensure-jq.sh
-	hack/ensure-ct.sh
+	hack/ensure-butane.sh
 
 .PHONY: deps-nutanix
 deps-nutanix: ## Installs/checks dependencies for Nutanix builds
@@ -1155,7 +1155,7 @@ json-sort: ## Sort all JSON files alphabetically
 .PHONY: gen-ignition
 ignition_files = bootstrap-pass-auth bootstrap-cloud
 gen-ignition: deps-ignition ## Generates Ignition files from CLC
-	for f in $(ignition_files); do (ct < packer/files/flatcar/clc/$$f.yaml | jq '.' > packer/files/flatcar/ignition/$$f.json) || exit 1; done
+	for f in $(ignition_files); do (butane --pretty --strict < packer/files/flatcar/clc/$$f.yaml | jq '.' > packer/files/flatcar/ignition/$$f.json) || exit 1; done
 
 ## --------------------------------------
 ## ISO checksum updates
