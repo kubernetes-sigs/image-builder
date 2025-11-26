@@ -7,6 +7,7 @@ ansible/python.yml name[missing]
 ansible/python.yml name[play]
 ansible/roles/containerd/tasks/main.yml name[missing]
 ansible/roles/containerd/tasks/photon.yml no-changed-when
+ansible/roles/containerd/defaults/main.yml var-naming[no-role-prefix]
 ansible/roles/ecr_credential_provider/tasks/main.yaml no-changed-when
 ansible/roles/ecr_credential_provider/tasks/main.yaml yaml[line-length]
 ansible/roles/firstboot/tasks/main.yaml name[missing]
