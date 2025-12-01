@@ -34,7 +34,6 @@ docker pull registry.k8s.io/scl-image-builder/cluster-node-image-builder-amd64:v
       ```commandline
       AWS_ACCESS_KEY_ID=xxxxxxx
       AWS_SECRET_ACCESS_KEY=xxxxxxxx
-      AWS_DEFAULT_REGION=xxxxxx
       ```
 
     ```commandline
