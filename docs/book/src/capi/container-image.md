@@ -18,7 +18,7 @@ Run the docker build target of Makefile
 The latest image-builder container image release is available here:
 
 ```commandline
-docker pull registry.k8s.io/scl-image-builder/cluster-node-image-builder-amd64:v0.1.47
+docker pull registry.k8s.io/scl-image-builder/cluster-node-image-builder-amd64:v0.1.48
 ```
 
 ### Examples
@@ -27,7 +27,7 @@ docker pull registry.k8s.io/scl-image-builder/cluster-node-image-builder-amd64:v
     - If the AWS CLI is already installed on your machine, you can simply mount the `~/.aws` folder that stores all the required credentials.
 
     ```commandline
-    docker run -it --rm -v /Users/<user>/.aws:/home/imagebuilder/.aws registry.k8s.io/scl-image-builder/cluster-node-image-builder-amd64:v0.1.47 build-ami-ubuntu-2404
+    docker run -it --rm -v /Users/<user>/.aws:/home/imagebuilder/.aws registry.k8s.io/scl-image-builder/cluster-node-image-builder-amd64:v0.1.48 build-ami-ubuntu-2404
     ```
     - Another alternative is to use an `aws-creds.env` file to load the credentials and pass it during docker run.
 
@@ -37,7 +37,7 @@ docker pull registry.k8s.io/scl-image-builder/cluster-node-image-builder-amd64:v
       ```
 
     ```commandline
-        docker run -it --rm --env-file aws-creds.env registry.k8s.io/scl-image-builder/cluster-node-image-builder-amd64:v0.1.47 build-ami-ubuntu-2404
+        docker run -it --rm --env-file aws-creds.env registry.k8s.io/scl-image-builder/cluster-node-image-builder-amd64:v0.1.48 build-ami-ubuntu-2404
     ```
 
 - AZURE
@@ -51,7 +51,7 @@ docker pull registry.k8s.io/scl-image-builder/cluster-node-image-builder-amd64:v
       ```
 
     ```commandline
-    docker run -it --rm --env-file az-creds.env registry.k8s.io/scl-image-builder/cluster-node-image-builder-amd64:v0.1.47 build-azure-sig-ubuntu-2404
+    docker run -it --rm --env-file az-creds.env registry.k8s.io/scl-image-builder/cluster-node-image-builder-amd64:v0.1.48 build-azure-sig-ubuntu-2404
     ```
 
 - Proxmox
@@ -83,7 +83,7 @@ docker pull registry.k8s.io/scl-image-builder/cluster-node-image-builder-amd64:v
     - Docker's `--net=host` option to ensure http server starts with the host IP and not the Docker container IP. This option is Linux specific and thus implies that it can be run only from a Linux machine.
 
     ```commandline
-    docker run -it --rm --net=host --env PACKER_VAR_FILES=/home/imagebuilder/vsphere.json -v <complete path of vsphere.json>:/home/imagebuilder/vsphere.json registry.k8s.io/scl-image-builder/cluster-node-image-builder-amd64:v0.1.47 build-node-ova-vsphere-ubuntu-2404
+    docker run -it --rm --net=host --env PACKER_VAR_FILES=/home/imagebuilder/vsphere.json -v <complete path of vsphere.json>:/home/imagebuilder/vsphere.json registry.k8s.io/scl-image-builder/cluster-node-image-builder-amd64:v0.1.48 build-node-ova-vsphere-ubuntu-2404
     ```
 
 In addition to this, further customizations can be done as discussed [here](./capi.md#customization).
