@@ -56,6 +56,8 @@ az sig create --resource-group ${RESOURCE_GROUP_NAME} --gallery-name ${GALLERY_N
 
 SECURITY_TYPE_CVM_SUPPORTED_FEATURE="SecurityType=ConfidentialVmSupported"
 
+DISK_CONTROLLER_TYPES_FEATURE="DiskControllerTypes=SCSI,NVMe"
+
 SIG_TARGET=$1
 
 # Accept Azure VM image terms if available and required
@@ -126,6 +128,12 @@ accept_image_terms
 # Create a shared image gallery image definition if it does not exist
 create_image_definition() {
   if ! az sig image-definition show --gallery-name ${GALLERY_NAME} --gallery-image-definition ${SIG_IMAGE_DEFINITION:-capi-${SIG_SKU:-$1}} --resource-group ${RESOURCE_GROUP_NAME} -o none 2>/dev/null; then
+    
+    local FEATURES=("$DISK_CONTROLLER_TYPES_FEATURE")
+    if [[ -n "$5" ]]; then
+      FEATURES+=("$5")
+    fi
+
     az sig image-definition create \
       --resource-group ${RESOURCE_GROUP_NAME} \
       --gallery-name ${GALLERY_NAME} \
@@ -135,7 +143,7 @@ create_image_definition() {
       --sku ${SIG_SKU:-$2} \
       --hyper-v-generation ${3} \
       --os-type ${4} \
-      --features ${5:-''} \
+      --features "${FEATURES[@]}" \
       "${plan_args[@]}" # TODO: Delete this line after the image is GA
   fi
 }
