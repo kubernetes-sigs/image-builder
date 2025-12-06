@@ -115,6 +115,13 @@
       "user": "builder"
     },
     {
+      "inline": [
+        "sudo rm -f /etc/fstab"
+      ],
+      "inline_shebang": "/bin/bash -e",
+      "type": "shell"
+    },
+    {
       "arch": "{{user `goss_arch`}}",
       "format": "{{user `goss_format`}}",
       "format_options": "{{user `goss_format_options`}}",
@@ -160,7 +167,7 @@
     "containerd_version": null,
     "cpus": "1",
     "crictl_version": null,
-    "crictl_url": "https://github.com/kubernetes-sigs/cri-tools/releases/download/v{{user `crictl_version`}}/crictl-v{{user `crictl_version`}}-linux-amd64.tar.gz",    
+    "crictl_url": "https://github.com/kubernetes-sigs/cri-tools/releases/download/v{{user `crictl_version`}}/crictl-v{{user `crictl_version`}}-linux-amd64.tar.gz",
     "disk_compression": "false",
     "disk_discard": "unmap",
     "disk_image": "false",
@@ -188,7 +195,7 @@
     "kubernetes_series": null,
     "kubernetes_source_type": null,
     "runc_url": "https://github.com/opencontainers/runc/releases/download/v{{user `runc_version`}}/runc.amd64",
-    "runc_version": null,    
+    "runc_version": null,
     "machine_id_mode": "444",
     "memory": "2048",
     "oem_id": "",
