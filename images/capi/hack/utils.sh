@@ -15,7 +15,7 @@
 # limitations under the License.
 
 # Note: ansible-core v2.16.x requires Python >= 3.10.
-_version_ansible_core="2.15.13"
+_version_ansible_core="2.20.0"
 
 case "${OSTYPE}" in
 linux*)
