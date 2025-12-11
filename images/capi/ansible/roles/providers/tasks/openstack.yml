@@ -39,6 +39,13 @@
     enabled: true
   when: ansible_os_family == "Debian"
 
+- name: Create directory for DHCP chrony server files
+  ansible.builtin.file:
+    path: /var/lib/dhcp
+    state: directory
+    mode: '0755'
+  when: ansible_os_family == "Debian"
+
 - name: Copy networkd-dispatcher scripts to add DHCP provided NTP servers
   ansible.builtin.template:
     src: "{{ item.src }}"
