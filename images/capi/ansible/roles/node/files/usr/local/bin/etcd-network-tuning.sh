@@ -18,6 +18,8 @@ set -o errexit  # exits immediately on any unexpected error (does not bypass tra
 set -o nounset  # will error if variables are used without first being defined
 set -o pipefail # any non-zero exit code in a piped command causes the pipeline to fail with that code
 
+export PATH="${PATH}:/usr/sbin"
+
 trap on_exit ERR
 on_exit() {
     echo "Error setting etcd network tuning parameters for interface: ${DEV}" | systemd-cat -p emerg -t etcd-tuning
