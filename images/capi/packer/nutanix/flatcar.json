@@ -2,7 +2,6 @@
   "ansible_extra_vars": "ansible_python_interpreter=/opt/bin/python3",
   "build_name": "flatcar-{{env `FLATCAR_CHANNEL`}}-{{env `FLATCAR_VERSION`}}",
   "channel_name": "{{env `FLATCAR_CHANNEL`}}",
-  "crictl_source_type": "http",
   "distribution": "flatcar",
   "distribution_release": "Core",
   "distribution_version": "{{env `FLATCAR_CHANNEL`}}",

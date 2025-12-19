@@ -1,5 +1,4 @@
 {
-  "crictl_source_type": "pkg",
   "crictl_version": "1.32.0",
   "kubeadm_template": "etc/kubeadm.yml",
   "kubernetes_apiserver_port": "6443",

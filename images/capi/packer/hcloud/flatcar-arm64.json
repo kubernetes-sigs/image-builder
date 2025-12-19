@@ -3,7 +3,6 @@
   "arch": "arm64",
   "build_name": "flatcar",
   "crictl_arch": "arm64",
-  "crictl_source_type": "http",
   "distribution": "flatcar",
   "distribution_release": "{{env `FLATCAR_CHANNEL`}}",
   "distribution_version": "{{env `FLATCAR_CHANNEL`}}-{{env `FLATCAR_VERSION`}}",
