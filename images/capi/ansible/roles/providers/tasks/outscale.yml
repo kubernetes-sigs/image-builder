@@ -8,5 +8,16 @@
     packages:
       - cloud-init
       - cloud-guest-utils
-      - cloud-initramfs-copymods
       - cloud-initramfs-dyn-netconf
+
+- name: Install Debian specific packages
+  ansible.builtin.apt:
+    name: cloud-initramfs-dyn-netconf
+    state: present
+  when: ansible_distribution == 'Debian'
+
+- name: Install Ubuntu specific packages
+  ansible.builtin.apt:
+    name: cloud-initramfs-copymods
+    state: present
+  when: ansible_distribution == 'Ubuntu'
