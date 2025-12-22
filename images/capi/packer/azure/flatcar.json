@@ -1,7 +1,6 @@
 {
   "ansible_extra_vars": "ansible_python_interpreter=/opt/pypy/bin/pypy",
   "build_name": "flatcar",
-  "crictl_source_type": "http",
   "custom_data_file": "packer/files/flatcar/ignition/bootstrap-cloud.json",
   "distribution": "flatcar",
   "distribution_release": "{{env `FLATCAR_CHANNEL`}}",

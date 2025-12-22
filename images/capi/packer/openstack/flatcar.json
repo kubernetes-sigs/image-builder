@@ -1,7 +1,6 @@
 {
   "ansible_extra_vars": "ansible_python_interpreter=/opt/bin/python",
   "build_name": "flatcar",
-  "crictl_source_type": "http",
   "distro_name": "flatcar",
   "kubernetes_cni_source_type": "http",
   "kubernetes_source_type": "http",
