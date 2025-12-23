@@ -42,6 +42,12 @@
     state: started
     enabled: true
 
+- name: Create directory for DHCP chrony server files
+  ansible.builtin.file:
+    path: /var/lib/dhcp
+    state: directory
+    mode: '0755'
+
 - name: Copy networkd-dispatcher scripts to add DHCP provided NTP servers
   ansible.builtin.template:
     src: "{{ item.src }}"
@@ -49,7 +55,7 @@
     mode: a+x
   vars:
     server_dir: /var/lib/dhcp
-    chrony_helper_dir: /usr/lib/chrony
+    chrony_helper_dir: "{{ '/usr/libexec/chrony' if ansible_distribution_version is version('22.04', '>=') else '/usr/lib/chrony' }}"
   loop:
     - { src: files/etc/networkd-dispatcher/routable.d/20-chrony.j2, dest: /etc/networkd-dispatcher/routable.d/20-chrony }
     - { src: files/etc/networkd-dispatcher/off.d/20-chrony.j2, dest: /etc/networkd-dispatcher/off.d/20-chrony }
