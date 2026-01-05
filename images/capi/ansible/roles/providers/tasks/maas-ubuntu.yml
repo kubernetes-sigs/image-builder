@@ -4,12 +4,13 @@
     state: directory
     mode: "0775"
 
-- name: Copy curtin scripts to /curtin
-  ansible.builtin.copy:
-    src: "files/maas/curtin/{{ item }}"
-    dest: "/curtin/{{ item }}"
-    mode: "0750"
-  loop:
-    - curtin-hooks
-    - install-custom-packages
-    - setup-bootloader
+# Uncomment this ansible task and customize the curtin scripts to replace the builtin MaaS curtin hooks
+# - name: Copy curtin scripts to /curtin
+#   ansible.builtin.copy:
+#     src: "files/maas/curtin/{{ item }}"
+#     dest: "/curtin/{{ item }}"
+#     mode: "0750"
+#   loop:
+#     - curtin-hooks
+#     - install-custom-packages
+#     - setup-bootloader
