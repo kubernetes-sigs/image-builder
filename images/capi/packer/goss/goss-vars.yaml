@@ -435,8 +435,8 @@ ubuntu:
         title: "Check exact for the contains in /etc/cloud/cloud.cfg.d/15_azure-vnet.cfg"
     package:
       open-vm-tools:
-      linux-cloud-tools-virtual:
-      linux-tools-virtual:
+      linux-cloud-tools-azure:
+      linux-tools-azure:
     service:
       chrony:
         enabled: true
