@@ -18,8 +18,10 @@ aliases:
   image-builder-openstack-maintainers:
     - yankcrime
   image-builder-cloudstack-reviewers:
-    - rohityadavcloud
     - davidjumani
+    - vishesh92
+    - weizhouapache
+    - yadvr
   image-builder-scaleway-reviewers:
     - Tomy2e
     - Mia-Cross
@@ -66,9 +68,11 @@ aliases:
     - seanschneeweiss
     - tobiasgiese
   cluster-api-cloudstack-maintainers:
-    - rohityadavcloud
     - davidjumani
     - Pearl1594
+    - vishesh92
+    - weizhouapache
+    - yadvr
   cluster-api-vsphere-maintainers:
     - chrischdi
     - gab-satchi
