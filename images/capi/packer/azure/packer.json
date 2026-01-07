@@ -172,7 +172,7 @@
       "use_sudo": true,
       "vars_file": "{{user `goss_vars_file`}}",
       "vars_inline": {
-        "ARCH": "{{ user `arch` }}",
+        "ARCH": "{{ user `goss_arch` }}",
         "OS": "{{user `distribution` | lower}}",
         "OS_VERSION": "{{user `distribution_version` | lower}}",
         "PROVIDER": "azure",
