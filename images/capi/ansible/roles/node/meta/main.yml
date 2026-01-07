@@ -46,7 +46,7 @@ dependencies:
     when: >
       ansible_distribution not in ["VMware Photon OS", "Amazon"]
         and not (packer_builder_type == "oracle-oci" and ansible_architecture == "aarch64")
-        and not (ansible_distribution == "Ubuntu" and ansible_distribution_version == "2404-arm64" and packer_builder_type == "azure-arm" and ansible_architecture == "aarch64")
+        and not packer_builder_type == "azure-arm"
         and not packer_builder_type is search('qemu')
 
   - role: setup
@@ -56,5 +56,6 @@ dependencies:
 
   - role: setup
     vars:
-      debs: "{{ common_debs +  lookup('vars', 'common_virt_arm64_azure_debs') }}"
-    when: ansible_distribution == "Ubuntu" and ansible_distribution_version == "2404-arm64" and packer_builder_type == "azure-arm" and ansible_architecture == "aarch64"
+      debs: "{{ common_debs +  lookup('vars', 'common_virt_azure_debs') }}"
+    when: >-
+      packer_builder_type == "azure-arm"

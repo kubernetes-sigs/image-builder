@@ -56,8 +56,8 @@
       "image_sku": "{{user `image_sku`}}",
       "image_version": "{{user `image_version`}}",
       "location": "{{user `azure_location`}}",
-      "managed_image_name": "{{user `image_name`}}-{{user `build_timestamp`}}",
-      "managed_image_resource_group_name": "{{user `resource_group_name`}}",
+      "managed_image_name": "{{user `managed_image_name`}}",
+      "managed_image_resource_group_name": "{{user `managed_image_resource_group_name`}}",
       "managed_image_storage_account_type": "{{user `managed_image_storage_account_type`}}",
       "name": "sig-{{user `build_name`}}",
       "os_disk_size_gb": "{{user `os_disk_size_gb`}}",
@@ -166,9 +166,7 @@
       "remote_folder": "{{user `goss_remote_folder`}}",
       "remote_path": "{{user `goss_remote_path`}}",
       "skip_install": "{{user `goss_skip_install`}}",
-      "tests": [
-        "{{user `goss_tests_dir`}}"
-      ],
+      "tests": ["{{user `goss_tests_dir`}}"],
       "type": "goss",
       "url": "{{user `goss_url`}}",
       "use_sudo": true,
@@ -194,9 +192,7 @@
       "version": "{{user `goss_version`}}"
     },
     {
-      "environment_vars": [
-        "BUILD_NAME={{user `build_name`}}"
-      ],
+      "environment_vars": ["BUILD_NAME={{user `build_name`}}"],
       "inline": [
         "if [[ $BUILD_NAME != \"flatcar\"* ]]; then exit 0; fi",
         "sudo PATH=\"$PATH:/usr/share/oem/python/bin:/usr/share/oem/bin\" bash -c \"waagent -force -deprovision && userdel -f -r $USER && ln -sf ../run/systemd/resolve/resolv.conf /etc/resolv.conf && sync\""
@@ -233,7 +229,7 @@
     "distribution_version": null,
     "exclude_from_latest": "false",
     "existing_ansible_ssh_args": "{{env `ANSIBLE_SSH_ARGS`}}",
-    "goss_arch": "arm64",
+    "goss_arch": "amd64",
     "ib_version": "{{env `IB_VERSION`}}",
     "image_offer": "",
     "image_publisher": "",
@@ -258,6 +254,8 @@
     "kubernetes_semver": null,
     "kubernetes_series": null,
     "kubernetes_source_type": null,
+    "managed_image_name": "{{user `image_name`}}-{{user `build_timestamp`}}",
+    "managed_image_resource_group_name": "{{user `resource_group_name`}}",
     "managed_image_storage_account_type": "{{user `storage_account_type`}}",
     "manifest_output": "manifest.json",
     "os_disk_size_gb": "",

@@ -295,8 +295,8 @@ COMMON_NODE_VAR_FILES := packer/config/kubernetes.json \
 					packer/config/additional_components.json \
 					packer/config/ecr_credential_provider.json
 
-COMMON_X86_64_NODE_VAR_FILES := ${COMMON_NODE_VAR_FILES} \
-					packer/config/x86_64/common.json
+COMMON_AMD64_NODE_VAR_FILES := ${COMMON_NODE_VAR_FILES} \
+					packer/config/amd64/common.json
 					
 COMMON_ARM64_NODE_VAR_FILES := ${COMMON_NODE_VAR_FILES} \
 					packer/config/arm64/common.json
@@ -332,8 +332,9 @@ COMMON_POWERVS_VAR_FILES := packer/config/kubernetes.json \
 # files from COMMON_VAR_FILES, with each file prefixed by -var-file=.
 #
 # Any existing values from PACKER_FLAGS take precendence over variable files.
-PACKER_NODE_FLAGS := $(foreach f,$(abspath $(COMMON_X86_64_NODE_VAR_FILES)),-var-file="$(f)" ) \
+PACKER_NODE_FLAGS := $(foreach f,$(abspath $(COMMON_AMD64_NODE_VAR_FILES)),-var-file="$(f)" ) \
 				$(PACKER_FLAGS)
+# ARM64 needs to use a different Ubuntu repository (ports.ubuntu.com) for source packages.
 PACKER_ARM64_NODE_FLAGS := $(foreach f,$(abspath $(COMMON_ARM64_NODE_VAR_FILES)),-var-file="$(f)" ) \
 				$(PACKER_FLAGS)
 ABSOLUTE_PACKER_VAR_FILES := $(foreach f,$(abspath $(PACKER_VAR_FILES)),-var-file="$(f)" )
@@ -399,7 +400,7 @@ OPENSTACK_BUILD_NAMES		?=	openstack-ubuntu-2204 openstack-ubuntu-2404 openstack-
 
 OSC_BUILD_NAMES 			?=	osc-ubuntu-2204 osc-ubuntu-2404
 
-QEMU_BUILD_NAMES			?=	qemu-ubuntu-2204 qemu-ubuntu-2204-cloudimg qemu-ubuntu-2404 qemu-ubuntu-2404-efi qemu-ubuntu-2204-efi qemu-ubuntu-2404-arm64 qemu-centos-9 qemu-rhel-8 qemu-rhel-9 qemu-rockylinux-8 qemu-rockylinux-8-cloudimg qemu-rockylinux-9 qemu-rockylinux-9-cloudimg qemu-flatcar
+QEMU_BUILD_NAMES			?=	qemu-ubuntu-2204 qemu-ubuntu-2204-cloudimg qemu-ubuntu-2404 qemu-ubuntu-2404-efi qemu-ubuntu-2204-efi qemu-centos-9 qemu-rhel-8 qemu-rhel-9 qemu-rockylinux-8 qemu-rockylinux-8-cloudimg qemu-rockylinux-9 qemu-rockylinux-9-cloudimg qemu-flatcar
 
 QEMU_KUBEVIRT_BUILD_NAMES	:= $(addprefix kubevirt-,$(QEMU_BUILD_NAMES))
 
@@ -836,7 +837,6 @@ build-qemu-ubuntu-2204-cloudimg: ## Builds Ubuntu 22.04 QEMU image using cloud i
 build-qemu-ubuntu-2204-efi: ## Builds Ubuntu 22.04 QEMU image that EFI boots
 build-qemu-ubuntu-2404: ## Builds Ubuntu 24.04 QEMU image
 build-qemu-ubuntu-2404-efi: ## Builds Ubuntu 24.04 QEMU image that EFI boots
-build-qemu-ubuntu-2404-arm64: ## Builds Ubuntu 24.04 QEMU image for ARM64
 build-qemu-centos-9: ## Builds CentOS 9 Stream QEMU image
 build-qemu-rhel-8: ## Builds RHEL 8 QEMU image
 build-qemu-rhel-9: ## Builds RHEL 9 QEMU image

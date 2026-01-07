@@ -103,11 +103,11 @@ common_virt_rpms:
   - open-vm-tools
 
 common_virt_debs:
-  - linux-cloud-tools-azure
-  - linux-tools-azure
+  - linux-cloud-tools-virtual
+  - linux-tools-virtual
   - open-vm-tools
 
-common_virt_arm64_azure_debs:
+common_virt_azure_debs:
   - linux-cloud-tools-azure
   - linux-tools-azure
   - open-vm-tools

@@ -9,5 +9,8 @@
   "image_offer": "ubuntu-24_04-lts",
   "image_publisher": "Canonical",
   "image_sku": "server-arm64",
+  "managed_image_name": "",
+  "managed_image_resource_group_name": "",
+  "managed_image_storage_account_type": "",
   "vm_size": "Standard_D2ps_v6"
 }
