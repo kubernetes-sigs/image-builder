@@ -43,7 +43,7 @@
     dest: /tmp/runc
     mode: "0600"
 
-- name: Download containerd-wasm-shims
+- name: Download containerd-wasm-shims for AMD64
   vars:
     sha256sums: "{{ containerd_wasm_shims_sha256_amd64 | from_json }}"
     runtime_versions: "{{ containerd_wasm_shims_runtime_versions | from_json }}"
@@ -57,7 +57,7 @@
     and ansible_architecture == 'x86_64'
   loop: "{{ containerd_wasm_shims_runtimes | split(',') }}"
 
-- name: Download containerd-wasm-shims
+- name: Download containerd-wasm-shims for ARM64
   vars:
     sha256sums: "{{ containerd_wasm_shims_sha256_aarch64 | from_json }}"
     runtime_versions: "{{ containerd_wasm_shims_runtime_versions | from_json }}"
