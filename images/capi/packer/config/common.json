@@ -18,7 +18,5 @@
   "pip_conf_file": "",
   "redhat_epel_rpm": "https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm",
   "reenable_public_repos": "true",
-  "remove_extra_repos": "false",
-  "ubuntu_repo": "http://us.archive.ubuntu.com/ubuntu",
-  "ubuntu_security_repo": "http://security.ubuntu.com/ubuntu"
+  "remove_extra_repos": "false"
 }

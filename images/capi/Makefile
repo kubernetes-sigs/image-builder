@@ -295,6 +295,12 @@ COMMON_NODE_VAR_FILES := packer/config/kubernetes.json \
 					packer/config/additional_components.json \
 					packer/config/ecr_credential_provider.json
 
+COMMON_AMD64_NODE_VAR_FILES := ${COMMON_NODE_VAR_FILES} \
+					packer/config/amd64/common.json
+					
+COMMON_ARM64_NODE_VAR_FILES := ${COMMON_NODE_VAR_FILES} \
+					packer/config/arm64/common.json
+
 COMMON_WINDOWS_VAR_FILES :=	packer/config/kubernetes.json \
 					packer/config/windows/kubernetes.json \
 					packer/config/containerd.json \
@@ -326,7 +332,10 @@ COMMON_POWERVS_VAR_FILES := packer/config/kubernetes.json \
 # files from COMMON_VAR_FILES, with each file prefixed by -var-file=.
 #
 # Any existing values from PACKER_FLAGS take precendence over variable files.
-PACKER_NODE_FLAGS := $(foreach f,$(abspath $(COMMON_NODE_VAR_FILES)),-var-file="$(f)" ) \
+PACKER_NODE_FLAGS := $(foreach f,$(abspath $(COMMON_AMD64_NODE_VAR_FILES)),-var-file="$(f)" ) \
+				$(PACKER_FLAGS)
+# ARM64 needs to use a different Ubuntu repository (ports.ubuntu.com) for source packages.
+PACKER_ARM64_NODE_FLAGS := $(foreach f,$(abspath $(COMMON_ARM64_NODE_VAR_FILES)),-var-file="$(f)" ) \
 				$(PACKER_FLAGS)
 ABSOLUTE_PACKER_VAR_FILES := $(foreach f,$(abspath $(PACKER_VAR_FILES)),-var-file="$(f)" )
 PACKER_WINDOWS_NODE_FLAGS := $(foreach f,$(abspath $(COMMON_WINDOWS_VAR_FILES)),-var-file="$(f)" ) \
@@ -375,10 +384,12 @@ GCE_BUILD_NAMES			   ?= gce-ubuntu-2204 gce-ubuntu-2404 gce-rhel-8
 VHD_TARGETS := $(shell grep VHD_TARGETS azure_targets.sh | sed 's/VHD_TARGETS=//' | tr -d \")
 SIG_TARGETS := $(shell grep SIG_TARGETS azure_targets.sh | sed 's/SIG_TARGETS=//' | tr -d \")
 SIG_GEN2_TARGETS := $(shell grep SIG_GEN2_TARGETS azure_targets.sh | sed 's/SIG_GEN2_TARGETS=//' | tr -d \")
+SIG_ARM64_GEN2_TARGETS := $(shell grep SIG_ARM64_GEN2_TARGETS azure_targets.sh | sed 's/SIG_ARM64_GEN2_TARGETS=//' | tr -d \")
 SIG_CVM_TARGETS := $(shell grep SIG_CVM_TARGETS azure_targets.sh | sed 's/SIG_CVM_TARGETS=//' | tr -d \")
 AZURE_BUILD_VHD_NAMES	   ?= $(addprefix azure-vhd-,$(VHD_TARGETS))
 AZURE_BUILD_SIG_NAMES	   ?= $(addprefix azure-sig-,$(SIG_TARGETS))
 AZURE_BUILD_SIG_GEN2_NAMES ?= $(addsuffix -gen2,$(addprefix azure-sig-,$(SIG_GEN2_TARGETS)))
+AZURE_BUILD_SIG_ARM64_GEN2_NAMES ?= $(addsuffix -gen2,$(addprefix azure-sig-arm64-,$(SIG_ARM64_GEN2_TARGETS)))
 AZURE_BUILD_SIG_CVM_NAMES ?= $(addsuffix -cvm,$(addprefix azure-sig-,$(SIG_CVM_TARGETS)))
 
 OCI_BUILD_NAMES				?= oci-ubuntu-2204 oci-oracle-linux-8 oci-oracle-linux-9 oci-windows-2019 oci-windows-2022
@@ -427,9 +438,11 @@ AZURE_BUILD_VHD_TARGETS	:= $(addprefix build-,$(AZURE_BUILD_VHD_NAMES))
 AZURE_VALIDATE_VHD_TARGETS	:= $(addprefix validate-,$(AZURE_BUILD_VHD_NAMES))
 AZURE_BUILD_SIG_TARGETS	:= $(addprefix build-,$(AZURE_BUILD_SIG_NAMES))
 AZURE_BUILD_SIG_GEN2_TARGETS	:= $(addprefix build-,$(AZURE_BUILD_SIG_GEN2_NAMES))
+AZURE_BUILD_SIG_ARM64_GEN2_TARGETS	:= $(addprefix build-,$(AZURE_BUILD_SIG_ARM64_GEN2_NAMES))
 AZURE_BUILD_SIG_CVM_TARGETS	:= $(addprefix build-,$(AZURE_BUILD_SIG_CVM_NAMES))
 AZURE_VALIDATE_SIG_TARGETS	:= $(addprefix validate-,$(AZURE_BUILD_SIG_NAMES))
 AZURE_VALIDATE_SIG_GEN2_TARGETS	:= $(addprefix validate-,$(AZURE_BUILD_SIG_GEN2_NAMES))
+AZURE_VALIDATE_SIG_ARM64_GEN2_TARGETS	:= $(addprefix validate-,$(AZURE_BUILD_SIG_ARM64_GEN2_NAMES))
 AZURE_VALIDATE_SIG_CVM_TARGETS	:= $(addprefix validate-,$(AZURE_BUILD_SIG_CVM_NAMES))
 DO_BUILD_TARGETS 	:= $(addprefix build-,$(DO_BUILD_NAMES))
 DO_VALIDATE_TARGETS 	:= $(addprefix validate-,$(DO_BUILD_NAMES))
@@ -527,6 +540,10 @@ $(AZURE_BUILD_SIG_TARGETS): deps-azure
 .PHONY: $(AZURE_BUILD_SIG_GEN2_TARGETS)
 $(AZURE_BUILD_SIG_GEN2_TARGETS): deps-azure
 	. $(abspath packer/azure/scripts/init-sig.sh) $(subst build-azure-sig-,,$@) && $(PACKER) build $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="$(abspath packer/azure/azure-config.json)" -var-file="$(abspath packer/azure/azure-sig-gen2.json)" -var-file="$(abspath packer/azure/$(subst build-azure-sig-,,$@).json)" -only="$(subst build-azure-,,$@)" $(ABSOLUTE_PACKER_VAR_FILES) packer/azure/packer$(findstring -windows,$@).json
+
+.PHONY: $(AZURE_BUILD_SIG_ARM64_GEN2_TARGETS)
+$(AZURE_BUILD_SIG_ARM64_GEN2_TARGETS): deps-azure
+	. $(abspath packer/azure/scripts/init-sig.sh) $(subst build-azure-sig-,,$@) && $(PACKER) build $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_ARM64_NODE_FLAGS)) -var-file="$(abspath packer/azure/azure-config.json)" -var-file="$(abspath packer/azure/azure-sig-gen2.json)" -var-file="$(abspath packer/azure/$(subst build-azure-sig-,,$@).json)" -only="$(subst build-azure-,,$@)" $(ABSOLUTE_PACKER_VAR_FILES) packer/azure/packer$(findstring -windows,$@).json
 
 .PHONY: $(AZURE_BUILD_SIG_CVM_TARGETS)
 $(AZURE_BUILD_SIG_CVM_TARGETS): deps-azure

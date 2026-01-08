@@ -1,7 +1,8 @@
 {
   "containerd_wasm_shims_runtime_versions": "{\"lunatic\":\"v1\",\"slight\":\"v1\",\"spin\":\"v2\",\"wws\":\"v1\"}",
   "containerd_wasm_shims_runtimes": "",
-  "containerd_wasm_shims_sha256": "{\"lunatic\":\"7054bc882db755ce5f3ded46d114bfd4e0a318e437fa18a2601295d20b616b32\",\"slight\":\"a6ea87d965037933a7d9edb5e20cfc175265c8e1ca92a16535f1f3c3f376f5b0\",\"spin\":\"dcffedb8e4d2f585a851b3de489fa1e8a0054ec0ad72cf111c623623919245d0\",\"wws\":\"e917f90692d798d80873aa0f37990c7d652f2846129d64fecbfd41ffa77799b8\"}",
-  "containerd_wasm_shims_url": "https://github.com/deislabs/containerd-wasm-shims/releases/download/{{ user `containerd_wasm_shims_version` }}/containerd-wasm-shims-<RTVERSION>-<SHIM>-linux-x86_64.tar.gz",
+  "containerd_wasm_shims_sha256_amd64": "{\"lunatic\":\"7054bc882db755ce5f3ded46d114bfd4e0a318e437fa18a2601295d20b616b32\",\"slight\":\"a6ea87d965037933a7d9edb5e20cfc175265c8e1ca92a16535f1f3c3f376f5b0\",\"spin\":\"dcffedb8e4d2f585a851b3de489fa1e8a0054ec0ad72cf111c623623919245d0\",\"wws\":\"e917f90692d798d80873aa0f37990c7d652f2846129d64fecbfd41ffa77799b8\"}",
+  "containerd_wasm_shims_sha256_aarch64": "{\"lunatic\":\"8644aba14535f90c4d77ce9c3943f251195c23e9489f8626884834de0e9542e5\",\"slight\":\"0232ee4e011ecceda00c88a0d4f0be249c61ec2fcae39fb6f083724b97d640e2\",\"spin\":\"29d6363fdc864cf59ff164005acb7c3d39ff24761443fd5494948433b0d5f7c5\",\"wws\":\"8ffb2e015dd72029c0c4482ff5ce9eceeecba2e4c4e2e97bc09daffef564b51c\"}",
+  "containerd_wasm_shims_url": "https://github.com/deislabs/containerd-wasm-shims/releases/download/{{ user `containerd_wasm_shims_version` }}/containerd-wasm-shims-<RTVERSION>-<SHIM>-linux-<ARCH>.tar.gz",
   "containerd_wasm_shims_version": "v0.11.1"
 }

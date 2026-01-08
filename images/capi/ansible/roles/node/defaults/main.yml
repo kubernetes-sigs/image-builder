@@ -107,6 +107,11 @@ common_virt_debs:
   - linux-tools-virtual
   - open-vm-tools
 
+common_virt_azure_debs:
+  - linux-cloud-tools-azure
+  - linux-tools-azure
+  - open-vm-tools
+
 common_virt_photon_rpms:
   - open-vm-tools
 

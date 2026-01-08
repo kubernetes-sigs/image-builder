@@ -1,0 +1,16 @@
+{
+  "arch": "arm64",
+  "build_name": "ubuntu-2404-arm64-gen2",
+  "distribution": "ubuntu",
+  "distribution_release": "noble",
+  "distribution_version": "2404-arm64",
+  "goss_arch": "arm64",
+  "goss_inspect_mode": "true",
+  "image_offer": "ubuntu-24_04-lts",
+  "image_publisher": "Canonical",
+  "image_sku": "server-arm64",
+  "managed_image_name": "",
+  "managed_image_resource_group_name": "",
+  "managed_image_storage_account_type": "",
+  "vm_size": "Standard_D2ps_v6"
+}
