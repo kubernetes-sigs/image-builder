@@ -45,14 +45,30 @@
 
 - name: Download containerd-wasm-shims
   vars:
-    sha256sums: "{{ containerd_wasm_shims_sha256 | from_json }}"
+    sha256sums: "{{ containerd_wasm_shims_sha256_amd64 | from_json }}"
     runtime_versions: "{{ containerd_wasm_shims_runtime_versions | from_json }}"
   ansible.builtin.get_url:
-    url: "{{ containerd_wasm_shims_url | replace('<SHIM>', item) | replace('<RTVERSION>', runtime_versions[item]) }}"
+    url: "{{ containerd_wasm_shims_url | replace('<SHIM>', item) | replace('<RTVERSION>', runtime_versions[item]) | replace('<ARCH>', ansible_architecture) }}"
     checksum: sha256:{{ sha256sums[item] }}
     dest: /tmp/{{ item }}_wasm_shim.tar.gz
     mode: "0600"
-  when: containerd_wasm_shims_runtimes | length > 0
+  when: >-
+    containerd_wasm_shims_runtimes | length > 0
+    and ansible_architecture == 'x86_64'
+  loop: "{{ containerd_wasm_shims_runtimes | split(',') }}"
+
+- name: Download containerd-wasm-shims
+  vars:
+    sha256sums: "{{ containerd_wasm_shims_sha256_aarch64 | from_json }}"
+    runtime_versions: "{{ containerd_wasm_shims_runtime_versions | from_json }}"
+  ansible.builtin.get_url:
+    url: "{{ containerd_wasm_shims_url | replace('<SHIM>', item) | replace('<RTVERSION>', runtime_versions[item]) | replace('<ARCH>', ansible_architecture) }}"
+    checksum: sha256:{{ sha256sums[item] }}
+    dest: /tmp/{{ item }}_wasm_shim.tar.gz
+    mode: "0600"
+  when: >-
+    containerd_wasm_shims_runtimes | length > 0
+    and ansible_architecture == 'aarch64'
   loop: "{{ containerd_wasm_shims_runtimes | split(',') }}"
 
 - name: Create a directory if it does not exist
