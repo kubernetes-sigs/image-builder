@@ -3,6 +3,7 @@
   "debug_tools": "false",
   "disable_public_repos": "false",
   "extra_debs": "",
+  "extra_kernel_boot_params": "",
   "extra_repos": "",
   "extra_rpms": "",
   "firstboot_custom_roles_post": "",

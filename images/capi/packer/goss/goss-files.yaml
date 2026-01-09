@@ -25,3 +25,10 @@ file:
 {{end}}
 {{end}}
 {{end}}
+{{if .Vars.extra_kernel_boot_params }}
+  "/boot/grub/grub.cfg":
+    exists: true
+    filetype: file
+    contains:
+      - {{ .Vars.extra_kernel_boot_params }}
+{{end}}
