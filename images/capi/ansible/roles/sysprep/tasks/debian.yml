@@ -119,9 +119,9 @@
     path: /usr/sbin/update-grub
   register: _stat_update_grub
 
-- name: Configure grub for non graphical consoles
-  ansible.builtin.copy:
-    src: etc/default/grub.d/50-cloudimg-settings.cfg
+- name: Configure grub for non graphical consoles and add user extra kernel boot params
+  ansible.builtin.template:
+    src: templates/etc/default/grub.d/50-cloudimg-settings.cfg
     dest: /etc/default/grub.d/50-cloudimg-settings.cfg
     group: root
     owner: root
