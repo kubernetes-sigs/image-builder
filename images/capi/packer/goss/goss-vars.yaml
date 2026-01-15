@@ -496,7 +496,7 @@ ubuntu:
         enabled: true
         running: true
     package:
-      linux-cloud-tools-virtual:
+      #linux-cloud-tools-virtual:
       linux-tools-virtual:
       open-vm-tools:
       cloud-guest-utils:
