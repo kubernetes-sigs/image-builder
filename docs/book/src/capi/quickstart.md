@@ -4,7 +4,7 @@ In this tutorial we will cover the basics of how to download and execute the Ima
 
 ## Installation
 
-As a set of scripts and Makefiles that rely on Packer and Ansible, there is image builder binary/application to install. Rather we need to download the tooling from the GitHub repo and make sure that the Packer and Ansible are installed.
+As a set of scripts and Makefiles that rely on Packer and Ansible, there is no image builder binary/application to install. Rather we need to download the tooling from the GitHub repo and make sure that the Packer and Ansible are installed.
 
 To get the latest image-builder source on your machine, choose one of the following methods:
 
