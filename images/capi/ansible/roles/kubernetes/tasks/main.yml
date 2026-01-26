@@ -31,19 +31,6 @@
 # as the cri-containerd tarball also includes crictl.
 - ansible.builtin.import_tasks: crictl-url.yml
 
-- name: Symlink cri-tools
-  ansible.builtin.file:
-    src: /usr/local/bin/{{ item }}
-    dest: /usr/bin/{{ item }}
-    mode: "0755"
-    state: link
-    force: true
-  loop:
-    - ctr
-    - crictl
-    - critest
-  when: ansible_os_family != "Flatcar"
-
 - name: Create kubelet default config file
   ansible.builtin.template:
     src: etc/sysconfig/kubelet
