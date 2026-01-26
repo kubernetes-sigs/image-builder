@@ -35,6 +35,15 @@ jobs:
       fi
     displayName: Check for Windows kube-proxy image
     condition: and(eq(variables['PREFLIGHT_CHECKS'], 'true'), eq(variables['OS'], 'Windows'))
+  - script: |
+      set -euo pipefail
+      if ! command -v az &> /dev/null; then
+        sudo tdnf install -y azure-cli
+      fi
+      if ! pip3 show pywinrm >/dev/null 2>&1; then
+        sudo pip3 install --disable-pip-version-check pywinrm==0.5.0
+      fi
+    displayName: Install prereqs on Azure Linux 3
   - task: AzureCLI@2
     displayName: Build SIG Image
     inputs:
@@ -47,7 +56,7 @@ jobs:
         [[ -n ${DEBUG:-} ]] && set -o xtrace
 
         # Generate locales properly on Azure Linux or ansible will complain
-        sudo tdnf -y install glibc-i18n
+        sudo tdnf -y install glibc-i18n make unzip
         sudo locale-gen.sh
         export LC_ALL=en_US.UTF-8
 
