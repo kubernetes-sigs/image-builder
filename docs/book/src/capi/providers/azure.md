@@ -50,8 +50,8 @@ Confidential VMs require specific generation 2 OS images. The naming pattern of 
 # Ubuntu 24.04 LTS for Confidential VMs
 make build-azure-sig-ubuntu-2404-cvm
 
-# Windows 2019 with containerd for Confindential VMs
-make build-azure-sig-windows-2019-containerd-cvm
+# Windows 2022 with containerd for Confindential VMs
+make build-azure-sig-windows-2022-containerd-cvm
 ```
 
 ### Configuration
