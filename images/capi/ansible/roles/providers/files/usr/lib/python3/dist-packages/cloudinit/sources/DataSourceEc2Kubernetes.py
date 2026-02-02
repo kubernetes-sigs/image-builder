@@ -84,6 +84,15 @@ class DataSourceEc2Kubernetes(DataSourceEc2.DataSourceEc2):
         )
         LOG.info("User-data before update:[\n%s]", self.userdata_raw)
         secret_userdata = "/etc/secret-userdata.txt"
+        # Check if secret-userdata.txt exists (written by boothook for MachineDeployment/ControlPlane nodes)
+        # For MachinePool (ASG), this file won't exist as userdata is passed directly via EC2 metadata
+        if not os.path.exists(secret_userdata):
+            LOG.info(
+                "Secret userdata file %s not found. Something might have failed or this is a MachinePool/ASG node."
+                "Using original userdata from EC2 metadata.",
+                secret_userdata,
+            )
+            return True
         # Get the boothook output, save it as user-data
         # TODO: work with upstream to put this somewhere more sensible like:
         # /var/lib/cloud/instances/{{v1.instance_id}}/ec2-kubernetes-userdata.txt
