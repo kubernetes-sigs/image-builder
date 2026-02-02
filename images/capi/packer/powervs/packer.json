@@ -74,7 +74,7 @@
     "capture_cos_secret_key": "",
     "containerd_gvisor_runtime": "false",
     "containerd_gvisor_version": "latest",
-    "containerd_service_url": "null",
+    "containerd_service_url": "https://raw.githubusercontent.com/containerd/containerd/refs/tags/v{{user `containerd_version`}}/containerd.service",
     "containerd_version": null,
     "crictl_version": null,
     "dhcp_network": "false",
