@@ -1,0 +1,135 @@
+# GitHub Actions workflow for building and publishing Azure VHD images
+#
+# Required secrets:
+# - AZURE_CLIENT_ID - Azure service principal client ID (for OIDC authentication)
+# - AZURE_TENANT_ID - Azure tenant ID
+# - AZURE_SUBSCRIPTION_ID - Azure subscription ID
+#
+# Required inputs:
+# - kubernetes_version - version of Kubernetes to build the image with, e.g. `1.31.1`
+# - os - operating system distro, such as 'Ubuntu', 'AzureLinux', or 'Windows'
+# - os_version - version of distro, such as `24.04` or `2022-containerd`
+#
+# Optional inputs:
+# - resource_group - name of the Azure resource group to use for the compute galleries
+# - staging_gallery_name - name of the Azure compute gallery for initial image publishing
+# - gallery_name - name of the Azure community gallery for final image publishing
+# - packer_flags - additional flags to pass to packer
+# - tags - tags to apply to the image
+# - skip_test - skip the test stage
+# - skip_promote - skip the promote stage
+
+name: Build Azure SIG Image
+
+on:
+  workflow_dispatch:
+    inputs:
+      kubernetes_version:
+        description: 'Kubernetes version (e.g., 1.31.1)'
+        required: true
+        type: string
+      os:
+        description: 'Operating system (Ubuntu, AzureLinux, Windows)'
+        required: true
+        type: choice
+        options:
+          - Ubuntu
+          - AzureLinux
+          - Windows
+      os_version:
+        description: 'OS version (e.g., 24.04, 2022-containerd)'
+        required: true
+        type: string
+      resource_group:
+        description: 'Azure resource group name'
+        required: false
+        type: string
+        default: 'cluster-api-gallery'
+      staging_gallery_name:
+        description: 'Staging gallery name'
+        required: false
+        type: string
+        default: 'staging_gallery'
+      gallery_name:
+        description: 'Community gallery name'
+        required: false
+        type: string
+        default: 'community_gallery'
+      packer_flags:
+        description: 'Additional Packer flags'
+        required: false
+        type: string
+        default: ''
+      tags:
+        description: 'Tags to apply to the image'
+        required: false
+        type: string
+        default: ''
+      skip_test:
+        description: 'Skip the test stage'
+        required: false
+        type: boolean
+        default: true
+      skip_promote:
+        description: 'Skip the promote stage (requires manual approval)'
+        required: false
+        type: boolean
+        default: false
+
+env:
+  KUBERNETES_VERSION: ${{ inputs.kubernetes_version }}
+  OS: ${{ inputs.os }}
+  OS_VERSION: ${{ inputs.os_version }}
+  RESOURCE_GROUP: ${{ inputs.resource_group }}
+  STAGING_GALLERY_NAME: ${{ inputs.staging_gallery_name }}
+  GALLERY_NAME: ${{ inputs.gallery_name }}
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  build:
+    name: Build SIG Image
+    uses: ./.github/workflows/azure-sig-build.yaml
+    with:
+      kubernetes_version: ${{ inputs.kubernetes_version }}
+      os: ${{ inputs.os }}
+      os_version: ${{ inputs.os_version }}
+      resource_group: ${{ inputs.resource_group }}
+      staging_gallery_name: ${{ inputs.staging_gallery_name }}
+      packer_flags: ${{ inputs.packer_flags }}
+      tags: ${{ inputs.tags }}
+    secrets: inherit
+
+  test:
+    name: Test SIG Image
+    needs: build
+    if: ${{ !inputs.skip_test }}
+    uses: ./.github/workflows/azure-sig-test.yaml
+    with:
+      kubernetes_version: ${{ inputs.kubernetes_version }}
+      publishing_info: ${{ needs.build.outputs.publishing_info }}
+    secrets: inherit
+
+  promote:
+    name: Promote to Community Gallery
+    needs: [build, test]
+    if: ${{ always() && !inputs.skip_promote && needs.build.result == 'success' && (needs.test.result == 'success' || needs.test.result == 'skipped') }}
+    uses: ./.github/workflows/azure-sig-promote.yaml
+    with:
+      publishing_info: ${{ needs.build.outputs.publishing_info }}
+      resource_group: ${{ inputs.resource_group }}
+      gallery_name: ${{ inputs.gallery_name }}
+    secrets: inherit
+
+  clean:
+    name: Clean Staging Resources
+    needs: [build, test, promote]
+    if: ${{ always() && needs.build.result == 'success' }}
+    uses: ./.github/workflows/azure-sig-clean.yaml
+    with:
+      publishing_info: ${{ needs.build.outputs.publishing_info }}
+      resource_group: ${{ inputs.resource_group }}
+      staging_gallery_name: ${{ inputs.staging_gallery_name }}
+    secrets: inherit
