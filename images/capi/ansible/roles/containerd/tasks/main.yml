@@ -196,6 +196,19 @@
     enabled: true
     state: restarted
 
+- name: Symlink cri-tools
+  ansible.builtin.file:
+    src: /usr/local/bin/{{ item }}
+    dest: /usr/bin/{{ item }}
+    mode: "0755"
+    state: link
+    force: true
+  loop:
+    - ctr
+    - crictl
+    - critest
+  when: ansible_os_family != "Flatcar"
+
 - name: Delete containerd tarball
   ansible.builtin.file:
     path: /tmp/{{ containerd_filename }}
