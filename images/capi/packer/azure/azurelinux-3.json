@@ -5,5 +5,6 @@
   "distribution_version": "3",
   "image_offer": "azure-linux-3",
   "image_publisher": "MicrosoftCBLMariner",
-  "image_sku": "azure-linux-3"
+  "image_sku": "azure-linux-3",
+  "os_disk_size_gb": "20"
 }
