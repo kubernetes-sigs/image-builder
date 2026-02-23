@@ -43,10 +43,7 @@
 - name: Download Kubernetes binaries
   ansible.builtin.get_url:
     url: "{{ kubernetes_http_source }}/{{ kubernetes_semver }}/bin/linux/{{ kubernetes_resolved_arch }}/{{ item }}"
-    # TODO(akutz) Write a script to separately download the checksum
-    #             and verify the associated file using the correct
-    #             checksum file format
-    # checksum: "sha1:{{ kubernetes_http_source }}/bin/linux/amd64/{{ item }}.sha1"
+    checksum: "sha256:{{ kubernetes_http_source }}/{{ kubernetes_semver }}/bin/linux/{{ kubernetes_resolved_arch }}/{{ item }}.sha256"
     dest: "{{ sysusr_prefix }}/bin/{{ item }}"
     mode: "0755"
     owner: root
@@ -56,10 +53,7 @@
 - name: Download Kubernetes images
   ansible.builtin.get_url:
     url: "{{ kubernetes_http_source }}/{{ kubernetes_semver }}/bin/linux/{{ kubernetes_resolved_arch }}/{{ item }}"
-    # TODO(akutz) Write a script to separately download the checksum
-    #             and verify the associated file using the correct
-    #             checksum file format
-    # checksum: "sha1:{{ kubernetes_http_source }}/bin/linux/amd64/{{ item }}.sha1"
+    checksum: "sha256:{{ kubernetes_http_source }}/{{ kubernetes_semver }}/bin/linux/{{ kubernetes_resolved_arch }}/{{ item }}.sha256"
     dest: /tmp/{{ item }}
     mode: "0600"
   loop: "{{ kubernetes_imgs }}"
