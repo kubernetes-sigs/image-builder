@@ -5,6 +5,12 @@
 # - AZURE_TENANT_ID - Azure tenant ID
 # - AZURE_SUBSCRIPTION_ID - Azure subscription ID
 #
+# Required environment variables (set in GitHub repository or organization settings):
+# - EULA_LINK - the URL to the EULA for the image (for promote stage)
+# - PUBLISHER_EMAIL - the email for the image publisher (for promote stage)
+# - PUBLISHER_URI - the URI for the image publisher (for promote stage)
+# - SIG_PUBLISHER - the publisher for the image definition (for promote stage)
+#
 # Required inputs:
 # - kubernetes_version - version of Kubernetes to build the image with, e.g. `1.31.1`
 # - os - operating system distro, such as 'Ubuntu', 'AzureLinux', or 'Windows'
@@ -76,60 +82,529 @@ on:
         type: boolean
         default: false
 
-env:
-  KUBERNETES_VERSION: ${{ inputs.kubernetes_version }}
-  OS: ${{ inputs.os }}
-  OS_VERSION: ${{ inputs.os_version }}
-  RESOURCE_GROUP: ${{ inputs.resource_group }}
-  STAGING_GALLERY_NAME: ${{ inputs.staging_gallery_name }}
-  GALLERY_NAME: ${{ inputs.gallery_name }}
-
 permissions:
   id-token: write
   contents: read
 
 jobs:
+  # ---------------------------------------------------------------------------
+  # Build
+  # ---------------------------------------------------------------------------
   build:
     name: Build SIG Image
-    uses: ./.github/workflows/azure-sig-build.yaml
-    with:
-      kubernetes_version: ${{ inputs.kubernetes_version }}
-      os: ${{ inputs.os }}
-      os_version: ${{ inputs.os_version }}
-      resource_group: ${{ inputs.resource_group }}
-      staging_gallery_name: ${{ inputs.staging_gallery_name }}
-      packer_flags: ${{ inputs.packer_flags }}
-      tags: ${{ inputs.tags }}
-    secrets: inherit
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    outputs:
+      publishing_info: ${{ steps.publishing_info.outputs.info }}
+    env:
+      KUBERNETES_VERSION: ${{ inputs.kubernetes_version }}
+      OS: ${{ inputs.os }}
+      OS_VERSION: ${{ inputs.os_version }}
+      RESOURCE_GROUP: ${{ inputs.resource_group }}
+      STAGING_GALLERY_NAME: ${{ inputs.staging_gallery_name }}
+      PACKER_FLAGS: ${{ inputs.packer_flags }}
 
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure Kubernetes version
+        working-directory: images/capi/packer/config
+        run: |
+          KUBERNETES_RELEASE=$(echo ${KUBERNETES_VERSION} | cut -d "." -f -2)
+          sed -i "s/^  \"kubernetes_series\".*/  \"kubernetes_series\": \"v${KUBERNETES_RELEASE}\",/g" kubernetes.json
+          sed -i "s/^  \"kubernetes_semver\".*/  \"kubernetes_semver\": \"v${KUBERNETES_VERSION}\",/g" kubernetes.json
+          sed -i "s/^  \"kubernetes_rpm_version\".*/  \"kubernetes_rpm_version\": \"${KUBERNETES_VERSION}\",/g" kubernetes.json
+          sed -i "s/^  \"kubernetes_deb_version\".*/  \"kubernetes_deb_version\": \"${KUBERNETES_VERSION}-1.1\",/g" kubernetes.json
+          cat kubernetes.json
+
+      - name: Check for Windows kube-proxy image
+        if: inputs.os == 'Windows'
+        run: |
+          set -euo pipefail
+          kube_proxy_url="sigwindowstools/kube-proxy:v${KUBERNETES_VERSION/+/_}-calico-hostprocess"
+          echo "Checking for Windows kube-proxy image $kube_proxy_url"
+          if ! stderr="$(docker pull $kube_proxy_url 2>&1 > /dev/null)"; then
+            # It's a Windows image, so expect an error after pulling it on Linux
+            if [[ $stderr != *"cannot be used on this platform"* ]]; then
+              echo "Failed to pull kube-proxy image: $stderr"
+              exit 1
+            fi
+          fi
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        working-directory: images/capi
+        run: |
+          pip install ansible ansible-lint
+          make deps-azure
+
+      - name: Build SIG Image
+        id: build
+        working-directory: images/capi
+        run: |
+          set -euo pipefail
+
+          os=$(echo "${OS}" | tr '[:upper:]' '[:lower:]')
+          version=$(echo "${OS_VERSION}" | tr '[:upper:]' '[:lower:]' | tr -d .)
+
+          export RESOURCE_GROUP="${RESOURCE_GROUP:-cluster-api-gallery}"
+          export RESOURCE_GROUP_NAME="${RESOURCE_GROUP}"
+
+          # timestamp is in RFC-3339 format to match kubetest
+          export TIMESTAMP="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+          export JOB_NAME="${JOB_NAME:-"image-builder-sig-${os}-${version}"}"
+
+          if [[ -n "${{ inputs.tags }}" ]]; then
+            export TAGS="${{ inputs.tags }}"
+          else
+            export TAGS="creationTimestamp=${TIMESTAMP} jobName=${JOB_NAME} DO-NOT-DELETE=UpstreamInfra"
+          fi
+          printf "${TAGS}" | tee packer/azure/tags.out
+
+          export GALLERY_NAME="${STAGING_GALLERY_NAME:-staging_gallery}"
+          DISTRO="${os}-${version}"
+          echo "DISTRO=${DISTRO}" >> $GITHUB_ENV
+
+          export PACKER_FLAGS="${PACKER_FLAGS} --var sig_image_version=${KUBERNETES_VERSION}"
+          export PATH=$PATH:$HOME/.local/bin
+          export USE_AZURE_CLI_AUTH="True"
+
+          make build-azure-sig-${os}-${version} | tee packer/azure/packer.out
+
+      - name: Generate SIG publishing info
+        id: publishing_info
+        working-directory: images/capi
+        run: |
+          set -euo pipefail
+
+          PACKER_OUTPUT=packer/azure/packer.out
+          OS_TYPE=$(sed -n 's/^OSType: \(.*\)/\1/p' $PACKER_OUTPUT | tail -1)
+          MANAGED_IMAGE_RESOURCE_GROUP_NAME=$(sed -n "s/^ManagedImageResourceGroupName: \(.*\)/\1/p" $PACKER_OUTPUT | tail -1)
+          MANAGED_IMAGE_NAME=$(sed -n "s/^ManagedImageName: \(.*\)/\1/p" $PACKER_OUTPUT | tail -1)
+          MANAGED_IMAGE_ID=$(sed -n "s/^ManagedImageId: \(.*\)/\1/p" $PACKER_OUTPUT | tail -1)
+          MANAGED_IMAGE_LOCATION=$(sed -n "s/^ManagedImageLocation: \(.*\)/\1/p" $PACKER_OUTPUT | tail -1)
+          MANAGED_IMAGE_SHARED_IMAGE_GALLERY_ID=$(sed -n "s/^ManagedImageSharedImageGalleryId: \(.*\)/\1/p" $PACKER_OUTPUT | tail -1)
+          SHARED_IMAGE_GALLERY_RESOURCE_GROUP=$(sed -n "s/^SharedImageGalleryResourceGroup: \(.*\)/\1/p" $PACKER_OUTPUT | tail -1)
+          SHARED_IMAGE_GALLERY_NAME=$(sed -n "s/^SharedImageGalleryName: \(.*\)/\1/p" $PACKER_OUTPUT | tail -1)
+          SHARED_IMAGE_GALLERY_IMAGE_NAME=$(sed -n "s/^SharedImageGalleryImageName: \(.*\)/\1/p" $PACKER_OUTPUT | tail -1)
+          SHARED_IMAGE_GALLERY_IMAGE_VERSION=$(sed -n "s/^SharedImageGalleryImageVersion: \(.*\)/\1/p" $PACKER_OUTPUT | tail -1)
+          TAGS=$(cat packer/azure/tags.out)
+
+          if [[ ${SHARED_IMAGE_GALLERY_IMAGE_NAME} == *gen2 ]]; then
+            HYPERV_GEN="V2"
+          else
+            HYPERV_GEN="V1"
+          fi
+
+          # Create JSON and output it
+          PUBLISHING_INFO=$(cat <<EOF
+          {
+            "distro": "${DISTRO}",
+            "hyperv_gen": "${HYPERV_GEN}",
+            "os_type": "${OS_TYPE}",
+            "managed_image_resource_group_name": "${MANAGED_IMAGE_RESOURCE_GROUP_NAME}",
+            "managed_image_name": "${MANAGED_IMAGE_NAME}",
+            "managed_image_id": "${MANAGED_IMAGE_ID}",
+            "managed_image_location": "${MANAGED_IMAGE_LOCATION}",
+            "managed_image_shared_image_gallery_id": "${MANAGED_IMAGE_SHARED_IMAGE_GALLERY_ID}",
+            "shared_image_gallery_resource_group": "${SHARED_IMAGE_GALLERY_RESOURCE_GROUP}",
+            "shared_image_gallery_name": "${SHARED_IMAGE_GALLERY_NAME}",
+            "shared_image_gallery_image_name": "${SHARED_IMAGE_GALLERY_IMAGE_NAME}",
+            "shared_image_gallery_image_version": "${SHARED_IMAGE_GALLERY_IMAGE_VERSION}",
+            "tags": "${TAGS}"
+          }
+          EOF
+          )
+
+          # Compact JSON for output
+          echo "info=$(echo "${PUBLISHING_INFO}" | jq -c .)" >> $GITHUB_OUTPUT
+
+          # Save to file for artifact
+          echo "${PUBLISHING_INFO}" > packer/azure/sig-publishing-info.json
+
+      - name: Upload publishing info artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: publishing-info
+          path: images/capi/packer/azure/sig-publishing-info.json
+          retention-days: 7
+
+  # ---------------------------------------------------------------------------
+  # Test
+  # ---------------------------------------------------------------------------
   test:
     name: Test SIG Image
     needs: build
     if: ${{ !inputs.skip_test }}
-    uses: ./.github/workflows/azure-sig-test.yaml
-    with:
-      kubernetes_version: ${{ inputs.kubernetes_version }}
-      publishing_info: ${{ needs.build.outputs.publishing_info }}
-    secrets: inherit
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      KUBERNETES_VERSION: ${{ inputs.kubernetes_version }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download publishing info artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: publishing-info
+          path: images/capi/packer/azure/sig/
+
+      - name: Import variables from build
+        id: vars
+        run: |
+          set -euo pipefail
+
+          PUBLISHING_INFO='${{ needs.build.outputs.publishing_info }}'
+
+          echo "OS_TYPE=$(echo $PUBLISHING_INFO | jq -r .os_type)" >> $GITHUB_OUTPUT
+          echo "MANAGED_IMAGE_RESOURCE_GROUP_NAME=$(echo $PUBLISHING_INFO | jq -r .managed_image_resource_group_name)" >> $GITHUB_OUTPUT
+          echo "MANAGED_IMAGE_NAME=$(echo $PUBLISHING_INFO | jq -r .managed_image_name)" >> $GITHUB_OUTPUT
+          echo "MANAGED_IMAGE_ID=$(echo $PUBLISHING_INFO | jq -r .managed_image_id)" >> $GITHUB_OUTPUT
+          echo "MANAGED_IMAGE_LOCATION=$(echo $PUBLISHING_INFO | jq -r .managed_image_location)" >> $GITHUB_OUTPUT
+          echo "MANAGED_IMAGE_SHARED_IMAGE_GALLERY_ID=$(echo $PUBLISHING_INFO | jq -r .managed_image_shared_image_gallery_id)" >> $GITHUB_OUTPUT
+          echo "SHARED_IMAGE_GALLERY_RESOURCE_GROUP=$(echo $PUBLISHING_INFO | jq -r .shared_image_gallery_resource_group)" >> $GITHUB_OUTPUT
+          echo "SHARED_IMAGE_GALLERY_NAME=$(echo $PUBLISHING_INFO | jq -r .shared_image_gallery_name)" >> $GITHUB_OUTPUT
+          echo "SHARED_IMAGE_GALLERY_IMAGE_NAME=$(echo $PUBLISHING_INFO | jq -r .shared_image_gallery_image_name)" >> $GITHUB_OUTPUT
+          echo "SHARED_IMAGE_GALLERY_IMAGE_VERSION=$(echo $PUBLISHING_INFO | jq -r .shared_image_gallery_image_version)" >> $GITHUB_OUTPUT
+          echo "TAGS=$(echo $PUBLISHING_INFO | jq -r .tags)" >> $GITHUB_OUTPUT
+
+      - name: Configure Kubernetes version
+        working-directory: images/capi/packer/config
+        run: |
+          KUBERNETES_RELEASE=$(echo ${KUBERNETES_VERSION} | cut -d "." -f -2)
+          sed -i "s/^  \"kubernetes_series\".*/  \"kubernetes_series\": \"v${KUBERNETES_RELEASE}\",/g" kubernetes.json
+          sed -i "s/^  \"kubernetes_semver\".*/  \"kubernetes_semver\": \"v${KUBERNETES_VERSION}\",/g" kubernetes.json
+          sed -i "s/^  \"kubernetes_rpm_version\".*/  \"kubernetes_rpm_version\": \"${KUBERNETES_VERSION}\",/g" kubernetes.json
+          sed -i "s/^  \"kubernetes_deb_version\".*/  \"kubernetes_deb_version\": \"${KUBERNETES_VERSION}-1.1\",/g" kubernetes.json
+
+      - name: Setup kustomize
+        working-directory: images/capi
+        run: |
+          export PATH=${PATH}:.local/bin
+          ./packer/azure/scripts/ensure-kustomize.sh
+
+      - name: Generate cluster template
+        working-directory: images/capi
+        run: |
+          set -euo pipefail
+          export PATH=${PATH}:.local/bin
+
+          OS_TYPE="${{ steps.vars.outputs.OS_TYPE }}"
+
+          if [ "$OS_TYPE" == "Windows" ]; then
+            kustomize build --load-restrictor LoadRestrictionsNone packer/azure/scripts/test-templates/windows/ > packer/azure/scripts/test-templates/cluster-template.yaml
+          else
+            kustomize build --load-restrictor LoadRestrictionsNone packer/azure/scripts/test-templates/linux/ > packer/azure/scripts/test-templates/cluster-template.yaml
+          fi
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Install Azure CAPI extension
+        run: |
+          set -euo pipefail
+
+          # Install the Azure CLI Cluster API extension from the official release
+          az extension add --name capi --yes || az extension add --source "https://github.com/Azure/azure-capi-cli-extension/releases/latest/download/capi-0.0.vnext-py2.py3-none-any.whl" --yes
+
+          # Install required binaries
+          mkdir -p ~/test-binaries
+          export PATH=${PATH}:~/test-binaries
+          az capi install -a -ip ~/test-binaries
+
+      - name: Create test cluster
+        working-directory: images/capi
+        run: |
+          set -euo pipefail
+
+          OS_TYPE="${{ steps.vars.outputs.OS_TYPE }}"
+          MANAGED_IMAGE_RESOURCE_GROUP_NAME="${{ steps.vars.outputs.MANAGED_IMAGE_RESOURCE_GROUP_NAME }}"
+          MANAGED_IMAGE_LOCATION="${{ steps.vars.outputs.MANAGED_IMAGE_LOCATION }}"
+          TAGS="${{ steps.vars.outputs.TAGS }}"
+          TEST_TEMPLATE="packer/azure/scripts/test-templates/cluster-template.yaml"
+
+          export PATH=${PATH}:~/test-binaries
+
+          params=()
+          if [ "$OS_TYPE" == "Windows" ]; then
+            params+=(--windows)
+          fi
+
+          RESOURCE_GROUP=${MANAGED_IMAGE_RESOURCE_GROUP_NAME}
+          AZURE_LOCATION=${MANAGED_IMAGE_LOCATION}
+
+          # Create a cluster
+          az capi create \
+            --yes \
+            --debug \
+            --name testvm \
+            --kubernetes-version="${KUBERNETES_VERSION}" \
+            --location="${AZURE_LOCATION}" \
+            --resource-group="${RESOURCE_GROUP}" \
+            --management-cluster-resource-group-name="${RESOURCE_GROUP}" \
+            --control-plane-machine-count=1 \
+            --node-machine-count=1 \
+            --template="${TEST_TEMPLATE}" \
+            --tags="${TAGS}" \
+            --wait-for-nodes=2 \
+            "${params[@]}"
+
+          # Test if the VM's provisionState is "Succeeded" otherwise fail
+          timeout 60s bash -c "while ! az vm list -g ${RESOURCE_GROUP} | jq -e 'all(.provisioningState == \"Succeeded\")'; do sleep 1; done"
+
+      - name: Clean up test resource group
+        if: always()
+        run: |
+          set -euo pipefail
+
+          RESOURCE_GROUP="${{ steps.vars.outputs.MANAGED_IMAGE_RESOURCE_GROUP_NAME }}"
+          echo "Cleaning up resource group: ${RESOURCE_GROUP}"
+          az group delete -n "${RESOURCE_GROUP}" --yes --no-wait || true
+
+  # ---------------------------------------------------------------------------
+  # Promote
+  # ---------------------------------------------------------------------------
+  approve_promotion:
+    name: Approve Image Promotion
+    needs: [build, test]
+    if: ${{ always() && !inputs.skip_promote && needs.build.result == 'success' && (needs.test.result == 'success' || needs.test.result == 'skipped') }}
+    runs-on: ubuntu-latest
+    environment: image-promotion-approval
+    steps:
+      - name: Promotion Approved
+        run: echo "Image promotion approved"
 
   promote:
     name: Promote to Community Gallery
-    needs: [build, test]
-    if: ${{ always() && !inputs.skip_promote && needs.build.result == 'success' && (needs.test.result == 'success' || needs.test.result == 'skipped') }}
-    uses: ./.github/workflows/azure-sig-promote.yaml
-    with:
-      publishing_info: ${{ needs.build.outputs.publishing_info }}
-      resource_group: ${{ inputs.resource_group }}
-      gallery_name: ${{ inputs.gallery_name }}
-    secrets: inherit
+    needs: [build, approve_promotion]
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      RESOURCE_GROUP: ${{ inputs.resource_group }}
+      GALLERY_NAME: ${{ inputs.gallery_name }}
 
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download publishing info artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: publishing-info
+          path: images/capi/packer/azure/sig/
+
+      - name: Import variables from build
+        id: vars
+        run: |
+          set -euo pipefail
+
+          PUBLISHING_INFO='${{ needs.build.outputs.publishing_info }}'
+
+          echo "DISTRO=$(echo $PUBLISHING_INFO | jq -r .distro)" >> $GITHUB_OUTPUT
+          echo "HYPERV_GEN=$(echo $PUBLISHING_INFO | jq -r .hyperv_gen)" >> $GITHUB_OUTPUT
+          echo "OS_TYPE=$(echo $PUBLISHING_INFO | jq -r .os_type)" >> $GITHUB_OUTPUT
+          echo "MANAGED_IMAGE_RESOURCE_GROUP_NAME=$(echo $PUBLISHING_INFO | jq -r .managed_image_resource_group_name)" >> $GITHUB_OUTPUT
+          echo "MANAGED_IMAGE_NAME=$(echo $PUBLISHING_INFO | jq -r .managed_image_name)" >> $GITHUB_OUTPUT
+          echo "MANAGED_IMAGE_ID=$(echo $PUBLISHING_INFO | jq -r .managed_image_id)" >> $GITHUB_OUTPUT
+          echo "MANAGED_IMAGE_LOCATION=$(echo $PUBLISHING_INFO | jq -r .managed_image_location)" >> $GITHUB_OUTPUT
+          echo "MANAGED_IMAGE_SHARED_IMAGE_GALLERY_ID=$(echo $PUBLISHING_INFO | jq -r .managed_image_shared_image_gallery_id)" >> $GITHUB_OUTPUT
+          echo "SHARED_IMAGE_GALLERY_RESOURCE_GROUP=$(echo $PUBLISHING_INFO | jq -r .shared_image_gallery_resource_group)" >> $GITHUB_OUTPUT
+          echo "SHARED_IMAGE_GALLERY_NAME=$(echo $PUBLISHING_INFO | jq -r .shared_image_gallery_name)" >> $GITHUB_OUTPUT
+          echo "SHARED_IMAGE_GALLERY_IMAGE_NAME=$(echo $PUBLISHING_INFO | jq -r .shared_image_gallery_image_name)" >> $GITHUB_OUTPUT
+          echo "SHARED_IMAGE_GALLERY_IMAGE_VERSION=$(echo $PUBLISHING_INFO | jq -r .shared_image_gallery_image_version)" >> $GITHUB_OUTPUT
+          echo "TAGS=$(echo $PUBLISHING_INFO | jq -r .tags)" >> $GITHUB_OUTPUT
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Publish to community gallery
+        working-directory: images/capi
+        env:
+          DISTRO: ${{ steps.vars.outputs.DISTRO }}
+          HYPERV_GEN: ${{ steps.vars.outputs.HYPERV_GEN }}
+          OS_TYPE: ${{ steps.vars.outputs.OS_TYPE }}
+          MANAGED_IMAGE_ID: ${{ steps.vars.outputs.MANAGED_IMAGE_ID }}
+          MANAGED_IMAGE_LOCATION: ${{ steps.vars.outputs.MANAGED_IMAGE_LOCATION }}
+          SHARED_IMAGE_GALLERY_IMAGE_NAME: ${{ steps.vars.outputs.SHARED_IMAGE_GALLERY_IMAGE_NAME }}
+          SHARED_IMAGE_GALLERY_IMAGE_VERSION: ${{ steps.vars.outputs.SHARED_IMAGE_GALLERY_IMAGE_VERSION }}
+          TAGS: ${{ steps.vars.outputs.TAGS }}
+          EULA_LINK: ${{ vars.EULA_LINK }}
+          PUBLISHER_EMAIL: ${{ vars.PUBLISHER_EMAIL }}
+          PUBLISHER_URI: ${{ vars.PUBLISHER_URI }}
+          SIG_PUBLISHER: ${{ vars.SIG_PUBLISHER }}
+        run: |
+          set -euo pipefail
+
+          EOL_DATE=$(date --date='+6 months' +"%Y-%m-%dT00:00:00+00:00")
+          GALLERY_DESCRIPTION="Shared image gallery for Cluster API Provider Azure"
+          GALLERY_NAME="${{ inputs.gallery_name }}"
+          PUBLIC_NAME_PREFIX="ClusterAPI"
+          RESOURCE_GROUP="${{ inputs.resource_group }}"
+          SIG_OFFER="reference-images"
+
+          # Set replicated regions
+          REPLICATED_REGIONS="${MANAGED_IMAGE_LOCATION} australiaeast canadacentral eastus eastus2 eastus2euap francecentral germanywestcentral northeurope switzerlandnorth uksouth westeurope"
+
+          # Create the resource group if needed
+          if ! az group show -n ${RESOURCE_GROUP} -o none 2>/dev/null; then
+            az group create -n ${RESOURCE_GROUP} -l ${MANAGED_IMAGE_LOCATION} --tags ${TAGS:-}
+          fi
+
+          # Create the public community shared image gallery if it doesn't exist
+          if ! az sig show --gallery-name ${GALLERY_NAME} --resource-group ${RESOURCE_GROUP} -o none 2>/dev/null; then
+            az sig create \
+              --gallery-name ${GALLERY_NAME} \
+              --resource-group ${RESOURCE_GROUP} \
+              --description "${GALLERY_DESCRIPTION}" \
+              --eula "${EULA_LINK}" \
+              --location ${MANAGED_IMAGE_LOCATION} \
+              --public-name-prefix ${PUBLIC_NAME_PREFIX} \
+              --publisher-email "${PUBLISHER_EMAIL}" \
+              --publisher-uri "${PUBLISHER_URI}" \
+              --tags ${TAGS} \
+              --permissions Community
+          fi
+
+          # Translate prohibited words to alternatives in the image definition name
+          GALLERY_IMAGE_DEFINITION=${SHARED_IMAGE_GALLERY_IMAGE_NAME//ubuntu/ubun2}
+          GALLERY_IMAGE_DEFINITION=${GALLERY_IMAGE_DEFINITION//windows/win}
+
+          # Create image definition if it doesn't exist
+          if ! az sig image-definition show --gallery-name ${GALLERY_NAME} --gallery-image-definition ${GALLERY_IMAGE_DEFINITION} --resource-group ${RESOURCE_GROUP} -o none 2>/dev/null; then
+            az sig image-definition create \
+              --resource-group ${RESOURCE_GROUP} \
+              --gallery-name ${GALLERY_NAME} \
+              --gallery-image-definition ${GALLERY_IMAGE_DEFINITION} \
+              --publisher ${SIG_PUBLISHER} \
+              --offer ${SIG_OFFER} \
+              --sku ${DISTRO} \
+              --hyper-v-generation ${HYPERV_GEN} \
+              --os-type ${OS_TYPE} \
+              | tee -a sig-publishing.json
+          fi
+
+          # Delete the image version if it exists (always create a new image, overwriting if necessary)
+          if az sig image-version show --gallery-name ${GALLERY_NAME} --gallery-image-definition ${GALLERY_IMAGE_DEFINITION} --gallery-image-version ${SHARED_IMAGE_GALLERY_IMAGE_VERSION} --resource-group ${RESOURCE_GROUP} -o none 2>/dev/null; then
+            az sig image-version delete \
+              --resource-group ${RESOURCE_GROUP} \
+              --gallery-name ${GALLERY_NAME} \
+              --gallery-image-definition ${GALLERY_IMAGE_DEFINITION} \
+              --gallery-image-version ${SHARED_IMAGE_GALLERY_IMAGE_VERSION}
+          fi
+
+          # Copy the tags from the managed image to the image version
+          IMAGE_TAGS=$(az tag list --resource-id ${MANAGED_IMAGE_ID} | jq -r '.properties.tags | to_entries | map("\(.key)=\(.value)") | join(" ")')
+
+          # Create the image version
+          az sig image-version create \
+            --resource-group ${RESOURCE_GROUP} \
+            --gallery-name ${GALLERY_NAME} \
+            --gallery-image-definition ${GALLERY_IMAGE_DEFINITION} \
+            --gallery-image-version ${SHARED_IMAGE_GALLERY_IMAGE_VERSION} \
+            --target-regions ${REPLICATED_REGIONS} \
+            --managed-image "${MANAGED_IMAGE_ID}" \
+            --end-of-life-date ${EOL_DATE} \
+            --tags ${IMAGE_TAGS} \
+            | tee -a sig-publishing.json
+
+      - name: Upload publishing artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sig-publishing
+          path: images/capi/sig-publishing.json
+          retention-days: 30
+
+  # ---------------------------------------------------------------------------
+  # Clean
+  # ---------------------------------------------------------------------------
   clean:
     name: Clean Staging Resources
-    needs: [build, test, promote]
+    needs: [build, test, approve_promotion, promote]
     if: ${{ always() && needs.build.result == 'success' }}
-    uses: ./.github/workflows/azure-sig-clean.yaml
-    with:
-      publishing_info: ${{ needs.build.outputs.publishing_info }}
-      resource_group: ${{ inputs.resource_group }}
-      staging_gallery_name: ${{ inputs.staging_gallery_name }}
-    secrets: inherit
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      RESOURCE_GROUP: ${{ inputs.resource_group }}
+      STAGING_GALLERY_NAME: ${{ inputs.staging_gallery_name }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download publishing info artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: publishing-info
+          path: images/capi/packer/azure/sig/
+
+      - name: Import variables from build
+        id: vars
+        run: |
+          set -euo pipefail
+
+          PUBLISHING_INFO='${{ needs.build.outputs.publishing_info }}'
+
+          echo "MANAGED_IMAGE_ID=$(echo $PUBLISHING_INFO | jq -r .managed_image_id)" >> $GITHUB_OUTPUT
+          echo "SHARED_IMAGE_GALLERY_IMAGE_NAME=$(echo $PUBLISHING_INFO | jq -r .shared_image_gallery_image_name)" >> $GITHUB_OUTPUT
+          echo "SHARED_IMAGE_GALLERY_IMAGE_VERSION=$(echo $PUBLISHING_INFO | jq -r .shared_image_gallery_image_version)" >> $GITHUB_OUTPUT
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Clean up staging resources
+        working-directory: images/capi
+        env:
+          MANAGED_IMAGE_ID: ${{ steps.vars.outputs.MANAGED_IMAGE_ID }}
+          SHARED_IMAGE_GALLERY_IMAGE_NAME: ${{ steps.vars.outputs.SHARED_IMAGE_GALLERY_IMAGE_NAME }}
+          SHARED_IMAGE_GALLERY_IMAGE_VERSION: ${{ steps.vars.outputs.SHARED_IMAGE_GALLERY_IMAGE_VERSION }}
+        run: |
+          set -euo pipefail
+
+          GALLERY_NAME="${STAGING_GALLERY_NAME:-staging_gallery}"
+          RESOURCE_GROUP="${RESOURCE_GROUP:-cluster-api-gallery}"
+
+          # Delete the source managed image if it exists
+          if az image show --ids ${MANAGED_IMAGE_ID} -o none 2>/dev/null; then
+            echo "Deleting managed image: ${MANAGED_IMAGE_ID}"
+            az image delete --ids ${MANAGED_IMAGE_ID}
+          else
+            echo "Managed image not found, skipping deletion"
+          fi
+
+          # Delete the staging image version if it exists
+          if az sig image-version show --resource-group ${RESOURCE_GROUP} --gallery-name ${GALLERY_NAME} --gallery-image-definition ${SHARED_IMAGE_GALLERY_IMAGE_NAME} --gallery-image-version ${SHARED_IMAGE_GALLERY_IMAGE_VERSION} -o none 2>/dev/null; then
+            echo "Deleting staging image version: ${SHARED_IMAGE_GALLERY_IMAGE_VERSION}"
+            az sig image-version delete \
+              --resource-group ${RESOURCE_GROUP} \
+              --gallery-name ${GALLERY_NAME} \
+              --gallery-image-definition ${SHARED_IMAGE_GALLERY_IMAGE_NAME} \
+              --gallery-image-version ${SHARED_IMAGE_GALLERY_IMAGE_VERSION}
+          else
+            echo "Staging image version not found, skipping deletion"
+          fi
