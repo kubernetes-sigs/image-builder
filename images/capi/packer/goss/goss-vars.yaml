@@ -190,6 +190,8 @@ flatcar:
     command:
   hcloud:
     command:
+  openstack:
+    command:
 photon:
   common-service:
     apparmor:
