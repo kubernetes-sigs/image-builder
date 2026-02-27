@@ -2,15 +2,9 @@
 
 This directory contains GitHub Actions workflows for building and publishing Azure VHD images using the image-builder project. These workflows are the GitHub Actions equivalent of the Azure DevOps pipelines in `images/capi/packer/azure/.pipelines/`.
 
-## Workflows Overview
+## Workflow Overview
 
-| Workflow | File | Description |
-|----------|------|-------------|
-| Build Azure SIG Image | `build-azure-sig.yaml` | Main orchestrator workflow that coordinates all stages |
-| Build (reusable) | `azure-sig-build.yaml` | Builds the Kubernetes node image and publishes to staging gallery |
-| Test (reusable) | `azure-sig-test.yaml` | Tests the built image by creating a CAPI cluster |
-| Promote (reusable) | `azure-sig-promote.yaml` | Promotes the image to the community gallery |
-| Clean (reusable) | `azure-sig-clean.yaml` | Cleans up staging resources |
+The entire pipeline is defined in a single workflow file, `build-azure-sig.yaml`, which contains all stages as separate jobs:
 
 ## Pipeline Stages
 
@@ -131,7 +125,7 @@ The workflows produce the following artifacts:
 | Approvals | ADO Environments | GitHub Environments |
 | Artifacts | Pipeline Artifacts | GitHub Actions Artifacts |
 | Variables | Pipeline Variables | Workflow Inputs + Repository Variables |
-| Templates | YAML Templates | Reusable Workflows (`workflow_call`) |
+| Templates | YAML Templates | Jobs within a single workflow |
 
 ## Troubleshooting
 
