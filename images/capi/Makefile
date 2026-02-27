@@ -405,7 +405,8 @@ PROXMOX_BUILD_NAMES 		?= proxmox-ubuntu-2204 proxmox-ubuntu-2404 proxmox-ubuntu-
 
 VULTR_BUILD_NAMES 				?=	vultr-ubuntu-2204 vultr-ubuntu-2404
 
-MAAS_BUILD_NAMES 			?= maas-ubuntu-2204-efi maas-ubuntu-2404-efi
+MAAS_BUILD_NAMES         ?= maas-ubuntu-2204-efi maas-ubuntu-2404-efi
+MAAS_ARM64_BUILD_NAMES   ?= maas-ubuntu-2204-arm64 maas-ubuntu-2404-arm64
 
 SCALEWAY_BUILD_NAMES 				?=	scaleway-rockylinux-9 scaleway-ubuntu-2204 scaleway-ubuntu-2404
 
@@ -459,6 +460,8 @@ VULTR_BUILD_TARGETS 	:= $(addprefix build-,$(VULTR_BUILD_NAMES))
 VULTR_VALIDATE_TARGETS 	:= $(addprefix validate-,$(VULTR_BUILD_NAMES))
 MAAS_BUILD_TARGETS 	:= $(addprefix build-,$(MAAS_BUILD_NAMES))
 MAAS_VALIDATE_TARGETS 	:= $(addprefix validate-,$(MAAS_BUILD_NAMES))
+MAAS_ARM64_BUILD_TARGETS 	:= $(addprefix build-,$(MAAS_ARM64_BUILD_NAMES))
+MAAS_ARM64_VALIDATE_TARGETS 	:= $(addprefix validate-,$(MAAS_ARM64_BUILD_NAMES))
 SCALEWAY_BUILD_TARGETS		:= $(addprefix build-,$(SCALEWAY_BUILD_NAMES))
 SCALEWAY_VALIDATE_TARGETS	:= $(addprefix validate-,$(SCALEWAY_BUILD_NAMES))
 
@@ -664,6 +667,14 @@ $(MAAS_BUILD_TARGETS): deps-qemu set-ssh-password
 $(MAAS_VALIDATE_TARGETS): deps-qemu set-ssh-password
 	$(PACKER) validate $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/maas/$(subst validate-,,$@).json)" --var="ansible_user_vars=provider=maas" $(ABSOLUTE_PACKER_VAR_FILES) packer/maas/packer.json
 
+.PHONY: $(MAAS_ARM64_BUILD_TARGETS)
+$(MAAS_ARM64_BUILD_TARGETS): deps-qemu set-ssh-password
+	$(PACKER) build $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/maas/$(subst build-,,$@).json)" --var="ansible_user_vars=provider=maas" $(ABSOLUTE_PACKER_VAR_FILES) packer/maas/packer-arm64.json
+
+.PHONY: $(MAAS_ARM64_VALIDATE_TARGETS)
+$(MAAS_ARM64_VALIDATE_TARGETS): deps-qemu set-ssh-password
+	$(PACKER) validate $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/maas/$(subst validate-,,$@).json)" --var="ansible_user_vars=provider=maas" $(ABSOLUTE_PACKER_VAR_FILES) packer/maas/packer-arm64.json
+
 .PHONY: $(SCALEWAY_BUILD_TARGETS)
 $(SCALEWAY_BUILD_TARGETS): deps-scaleway
 	$(PACKER) build $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/scaleway/$(subst build-scaleway-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/scaleway/packer.json
@@ -831,6 +842,8 @@ build-qemu-all: $(QEMU_BUILD_TARGETS) ## Builds all Qemu images
 
 build-maas-ubuntu-2204-efi: ## Builds Ubuntu 22.04 MaaS image that EFI boots
 build-maas-ubuntu-2404-efi: ## Builds Ubuntu 24.04 MaaS image that EFI boots
+build-maas-ubuntu-2204-arm64: ## Builds Ubuntu 22.04 ARM64 MaaS image that EFI boots
+build-maas-ubuntu-2404-arm64: ## Builds Ubuntu 24.04 ARM64 MaaS image that EFI boots
 
 build-raw-flatcar: ## Builds Flatcar RAW image
 build-raw-ubuntu-2204: ## Builds Ubuntu 22.04 RAW image
