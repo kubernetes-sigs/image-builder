@@ -48,6 +48,7 @@
       "ssh_password": "{{user `ssh_password`}}",
       "ssh_timeout": "2h",
       "ssh_username": "{{user `ssh_username`}}",
+      "tags": "{{ user `kubernetes_semver` }}",
       "template_name": "{{ user `artifact_name` }}",
       "type": "proxmox-iso",
       "unmount_iso": "{{user `unmount_iso`}}",
