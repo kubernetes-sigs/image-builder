@@ -212,7 +212,7 @@ IMAGE_NAME ?= cluster-node-image-builder
 CONTROLLER_IMG ?= $(REGISTRY)/$(IMAGE_NAME)
 TAG ?= dev
 ARCH ?= amd64
-BASE_IMAGE ?= docker.io/library/ubuntu:jammy
+BASE_IMAGE ?= docker.io/library/ubuntu:24.04
 BUILDKIT_SYNTAX ?= docker/dockerfile:1.14
 
 ## --------------------------------------
@@ -1055,19 +1055,19 @@ validate-all: ## Validates the Packer config for all build targets
 lint: ## Runs linters on image-builder code
 sh_files = $(shell find . -type f -name "*.sh")
 lint: deps-lint
-	ansible-lint ansible/
+	ansible-lint --project-dir . ansible/
 # ignore error code since shellcheck exits with Error 1 if problems are found despite running properly
 	-@for f in $(sh_files); do (shellcheck -x $$f); done
 
 .PHONY: lint-fix
 lint-fix: ## Runs linters on image-builder code and fixes issues
 lint-fix: deps-lint
-	ansible-lint --fix=all ansible/
+	ansible-lint --fix=all --project-dir . ansible/
 
 .PHONY: lint-ignore
 lint-ignore: ## Runs linters on image-builder code and creates an "ignore" file
 lint-ignore: deps-lint
-	ansible-lint --generate-ignore ansible/
+	ansible-lint --generate-ignore --project-dir . ansible/
 
 ## --------------------------------------
 ## Clean targets
