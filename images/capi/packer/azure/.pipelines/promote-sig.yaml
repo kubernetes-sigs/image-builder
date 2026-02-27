@@ -68,6 +68,12 @@ jobs:
       echo "##vso[task.setvariable variable=SHARED_IMAGE_GALLERY_IMAGE_VERSION]$SHARED_IMAGE_GALLERY_IMAGE_VERSION"
       echo "##vso[task.setvariable variable=TAGS]$TAGS"
     displayName: Import variables from build SIG job
+  - script: |
+      set -euo pipefail
+      if ! command -v az &> /dev/null; then
+        sudo tdnf install -y azure-cli
+      fi
+    displayName: Install prereqs on Azure Linux 3
   - task: AzureCLI@2
     displayName: Publish to community gallery
     inputs:
