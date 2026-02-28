@@ -123,7 +123,7 @@ ensure_py3() {
 
 pip3_install() {
   ensure_py3
-  [ "py3_local_user_bin" ] && py3_pip_cmd="$HOME/.local/bin/pip3"
+  ( "$py3_local_user_bin" ) && py3_pip_cmd="$HOME/.local/bin/pip3"
   if output=$($py3_pip_cmd install --disable-pip-version-check --user "${@}" 2>&1); then
     echo "$output"
   elif [[ $output == *"error: externally-managed-environment"* ]]; then
