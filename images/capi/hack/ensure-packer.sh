@@ -22,6 +22,7 @@ set -o pipefail
 
 # **DO NOT** change the Packer version unless it is available under MPL v2.0.
 _version="1.9.5"
+_packer_dir="$HOME/.local/bin"
 
 # Change directories to the parent directory of the one in which this
 # script is located.
@@ -59,8 +60,8 @@ if (command -v packer) >/dev/null 2>&1; then
   fi
 fi
 
-echo "Installing packer v${_version} in .local/bin"
-mkdir -p .local/bin && cd .local/bin
+echo "Installing packer v${_version} in ${_packer_dir}"
+mkdir -p $_packer_dir 2>/dev/null && cd $_packer_dir
 
 SED="sed"
 if command -v gsed >/dev/null; then
@@ -81,4 +82,4 @@ ${SED} -i -n "/${HOSTOS}_${HOSTARCH}/p" "${_chkfile}"
 checksum_sha256 "${_chkfile}"
 unzip -o "${_zipfile}"
 rm -f "${_chkfile}" "${_zipfile}"
-echo "'packer' has been installed to $(pwd), make sure this directory is in your \$PATH"
+echo "'packer' has been installed to ${_packer_dir}, make sure this directory is in your \$PATH"

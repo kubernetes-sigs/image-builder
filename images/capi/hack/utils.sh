@@ -17,6 +17,12 @@
 # Note: ansible-core v2.16 supports Python 3.10-3.12.
 _version_ansible_core="2.16.16"
 
+# Flags for checking locally available Python commands installed via "pip3 install --user ..."
+py3_ansible_cmd="ansible"
+py3_ansible_galaxy_cmd="ansible-galaxy"
+py3_local_user_bin="false"
+py3_pip_cmd="pip3"
+
 case "${OSTYPE}" in
 linux*)
   HOSTOS=linux
@@ -80,11 +86,12 @@ get_shasum() {
 ensure_py3_bin() {
   # If given executable is not available, the user Python bin dir is not in path
   # This function assumes the executable to be checked was installed with
-  # pip3 install --user ...
-  if ! command -v "${1}" >/dev/null 2>&1; then
+  #     $ pip3 install --user ...
+  # Therefore it also checks binaries under $HOME/.local/bin
+  if ! PATH="$HOME/.local/bin:$PATH" command -v "${1}" >/dev/null 2>&1; then
     echo "User's Python3 binary directory must be in \$PATH" 1>&2
     echo "Location of package is:" 1>&2
-    pip3 show --disable-pip-version-check ${2:-$1} | grep "Location"
+    $py3_pip_cmd show --disable-pip-version-check ${2:-$1} | grep "Location"
     echo "\$PATH is currently: $PATH" 1>&2
     exit 1
   fi
@@ -95,21 +102,33 @@ ensure_py3() {
     echo "python3 binary must be in \$PATH" 1>&2
     exit 1
   fi
-  if ! command -v pip3 >/dev/null 2>&1; then
-    curl -SsL https://bootstrap.pypa.io/get-pip.py -o get-pip.py
-    python3 get-pip.py --user
-    rm -f get-pip.py
+  if ! command -v $py3_pip_cmd >/dev/null 2>&1; then
+    [ ! -f get-pip.py ] && curl -SsL https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+    if output=$(python3 get-pip.py --user 2>&1); then
+        echo $output
+    elif [[ $output == *"error: externally-managed-environment"* ]]; then
+	>&2 echo "warning: externally-managed-environment, retrying pip3 install with --break-system-packages if we are not running as root."
+	if [ "$(whoami)" != "root" ]; then
+	    output=$(python3 get-pip.py --user --break-system-packages 2>&1)
+	    >2& echo $output
+	fi
+    else
+	>&2 echo "$output"
+	exit 1
+    fi
+    [ -f "$HOME/.local/bin/pip3" ] && py3_pip_cmd="$HOME/.local/bin/pip3"
     ensure_py3_bin pip3
   fi
 }
 
 pip3_install() {
   ensure_py3
-  if output=$(pip3 install --disable-pip-version-check --user "${@}" 2>&1); then
+  ( "$py3_local_user_bin" ) && py3_pip_cmd="$HOME/.local/bin/pip3"
+  if output=$($py3_pip_cmd install --disable-pip-version-check --user "${@}" 2>&1); then
     echo "$output"
   elif [[ $output == *"error: externally-managed-environment"* ]]; then
     >&2 echo "warning: externally-managed-environment, retrying pip3 install with --break-system-packages"
-    pip3 install --disable-pip-version-check --user --break-system-packages "${@}"
+    $py3_pip_cmd install --disable-pip-version-check --user --break-system-packages "${@}"
   else
     >&2 echo "$output"
     exit 1

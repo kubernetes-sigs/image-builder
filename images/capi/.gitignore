@@ -8,6 +8,9 @@
 manifest.json
 **.DS_Store
 
+# Ignore script fetched to bootstrap pip3
+get-pip.py
+
 # Goss test droppings
 debug-goss-spec.yaml
 goss-spec.yaml
