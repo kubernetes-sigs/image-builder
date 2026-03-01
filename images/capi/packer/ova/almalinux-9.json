@@ -1,0 +1,21 @@
+{
+  "boot_command_prefix": "<wait><tab><bs><bs><bs><bs><bs><bs> inst.stage2=hd:LABEL=AlmaLinux-9-4-x86_64-dvd inst.repo=cdrom inst.text inst.ks=cdrom:/ks.cfg rd.multipath=0 rd.live.check",
+  "boot_command_suffix": "<wait><wait><enter>",
+  "build_name": "almalinux-9",
+  "cd_content_location": "./packer/ova/linux/{{user `distro_name`}}/http/{{user `distro_version`}}/*",
+  "cd_label": "cidata",
+  "distro_arch": "amd64",
+  "distro_name": "almalinux",
+  "distro_version": "9",
+  "epel_rpm_gpg_key": "https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-9",
+  "firmware": "bios",
+  "guest_os_type": "rhel9_64Guest",
+  "iso_checksum": "34c4285d524605da6dbd76b0b475338f6ea0a28bb88929bf14b04db68f1e1620",
+  "iso_checksum_type": "sha256",
+  "iso_url": "https://repo.almalinux.org/vault/9.4/isos/x86_64/AlmaLinux-9.4-x86_64-dvd.iso",
+  "os_display_name": "AlmaLinux 9",
+  "redhat_epel_rpm": "https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm",
+  "shutdown_command": "/sbin/halt -h -p",
+  "vmx_version": "18",
+  "vsphere_guest_os_type": "rhel9_64Guest"
+}
