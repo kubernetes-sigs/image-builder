@@ -5,6 +5,7 @@
 
 #RPM and DEB systems kubelet sysconfig PATH
 KUBELET_SYSCONFIG_FILES=( "/etc/sysconfig/kubelet" "/etc/default/kubelet" )
+KUBELET_CONFIG="/var/lib/kubelet/kubelet.conf.d/kubelet-resource-sizing.json"
 
 for KUBELET_SYSCONFIG in "${KUBELET_SYSCONFIG_FILES[@]}"
 do
@@ -13,7 +14,7 @@ do
     # shellcheck source=/dev/null
     . "${KUBELET_SYSCONFIG}"
     # If system-reserved is already set by user, ignore
-    if grep -q 'KUBELET_EXTRA_ARGS=.*--system-reserved' "${KUBELET_SYSCONFIG}"; then
+    if grep -q 'systemReserved' "${KUBELET_SYSCONFIG}"; then
       exit 0
     fi
   fi
@@ -113,13 +114,6 @@ cpu_milicores_to_reserve() {
   echo "$cpu_microcores_reserved" | awk '{result = $1 / 10; if (result != int(result)) result++; printf "%d\n", result}'
 }
 
-mkdir -p /run/kubelet
-# Check if system-reserved already exists
-if grep '.*--system-reserved' <<< "${KUBELET_EXTRA_ARGS}"; then
-  # If system-reserved is already set by a previous run, replace old value with new one and write to /run/kubelet/extra-args.env
-  system_reserved=$(sed -E "s|--system-reserved=cpu=[0-9]+m,memory=[0-9]+Mi|--system-reserved=cpu=$(cpu_milicores_to_reserve)m,memory=$(memory_reservation_mebibytes)Mi|" <<< "${KUBELET_EXTRA_ARGS}")
-  echo "KUBELET_EXTRA_ARGS=${system_reserved} >/run/kubelet/extra-args.env"
-else
-  # If not append system-reserved to KUBELET_EXTRA_ARGS and write to /run/kubelet/extra-args.env
-  echo "KUBELET_EXTRA_ARGS=${KUBELET_EXTRA_ARGS} --system-reserved=cpu=$(cpu_milicores_to_reserve)m,memory=$(memory_reservation_mebibytes)Mi" >/run/kubelet/extra-args.env
-fi
+mkdir -p /var/lib/kubelet/kubelet.conf.d
+echo "$(jq --arg mebibytes_to_reserve "${mebibytes_to_reserve}Mi" --arg cpu_millicores_to_reserve "${cpu_millicores_to_reserve}m" \
+    '. += {systemReserved: {"cpu": $cpu_millicores_to_reserve, "ephemeral-storage": "1Gi", "memory": $mebibytes_to_reserve}}' $KUBELET_CONFIG)" > $KUBELET_CONFIG
