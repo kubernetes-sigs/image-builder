@@ -9,7 +9,7 @@
   "distro_version": "9",
   "epel_rpm_gpg_key": "https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-9",
   "firmware": "bios",
-  "guest_os_type": "rhel9_64Guest",
+  "guest_os_type": "rhel9-64",
   "iso_checksum": "34c4285d524605da6dbd76b0b475338f6ea0a28bb88929bf14b04db68f1e1620",
   "iso_checksum_type": "sha256",
   "iso_url": "https://repo.almalinux.org/vault/9.4/isos/x86_64/AlmaLinux-9.4-x86_64-dvd.iso",
