@@ -171,6 +171,18 @@ centos:
       cloud-init:
       cloud-utils-growpart:
       python2-pip:
+almalinux:
+  common-package: *common_rpms
+  ova:
+    package:
+      open-vm-tools:
+    os_version:
+    - distro_version: "8"
+      package:
+        <<: *rh8_rpms
+    - distro_version: "9"
+      package:
+        <<: *rh9_rpms
 flatcar:
   common-service:
     systemd-timesyncd:
