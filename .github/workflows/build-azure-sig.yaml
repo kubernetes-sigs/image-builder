@@ -345,7 +345,7 @@ jobs:
           TEST_RESOURCE_GROUP="image-builder-test-${GITHUB_RUN_ID}"
           echo "TEST_RESOURCE_GROUP=${TEST_RESOURCE_GROUP}" >> $GITHUB_ENV
 
-          AZURE_LOCATION=${MANAGED_IMAGE_LOCATION}
+          AZURE_LOCATION="${MANAGED_IMAGE_LOCATION}"
           az group create -n "${TEST_RESOURCE_GROUP}" -l "${AZURE_LOCATION}" --tags ${TAGS:-}
 
           # Create a cluster
@@ -472,19 +472,19 @@ jobs:
           REPLICATED_REGIONS="${MANAGED_IMAGE_LOCATION} ${REPLICATED_REGIONS_INPUT}"
 
           # Create the resource group if needed
-          if ! az group show -n ${RESOURCE_GROUP} -o none 2>/dev/null; then
-            az group create -n ${RESOURCE_GROUP} -l ${MANAGED_IMAGE_LOCATION} --tags ${TAGS:-}
+          if ! az group show -n "${RESOURCE_GROUP}" -o none 2>/dev/null; then
+            az group create -n "${RESOURCE_GROUP}" -l "${MANAGED_IMAGE_LOCATION}" --tags ${TAGS:-}
           fi
 
           # Create the public community shared image gallery if it doesn't exist
-          if ! az sig show --gallery-name ${GALLERY_NAME} --resource-group ${RESOURCE_GROUP} -o none 2>/dev/null; then
+          if ! az sig show --gallery-name "${GALLERY_NAME}" --resource-group "${RESOURCE_GROUP}" -o none 2>/dev/null; then
             sig_create_args=(
-              --gallery-name ${GALLERY_NAME}
-              --resource-group ${RESOURCE_GROUP}
+              --gallery-name "${GALLERY_NAME}"
+              --resource-group "${RESOURCE_GROUP}"
               --description "${GALLERY_DESCRIPTION}"
               --eula "${EULA_LINK}"
-              --location ${MANAGED_IMAGE_LOCATION}
-              --public-name-prefix ${PUBLIC_NAME_PREFIX}
+              --location "${MANAGED_IMAGE_LOCATION}"
+              --public-name-prefix "${PUBLIC_NAME_PREFIX}"
               --publisher-email "${PUBLISHER_EMAIL}"
               --publisher-uri "${PUBLISHER_URI}"
               --permissions Community
@@ -500,40 +500,40 @@ jobs:
           GALLERY_IMAGE_DEFINITION=${GALLERY_IMAGE_DEFINITION//windows/win}
 
           # Create image definition if it doesn't exist
-          if ! az sig image-definition show --gallery-name ${GALLERY_NAME} --gallery-image-definition ${GALLERY_IMAGE_DEFINITION} --resource-group ${RESOURCE_GROUP} -o none 2>/dev/null; then
+          if ! az sig image-definition show --gallery-name "${GALLERY_NAME}" --gallery-image-definition "${GALLERY_IMAGE_DEFINITION}" --resource-group "${RESOURCE_GROUP}" -o none 2>/dev/null; then
             az sig image-definition create \
-              --resource-group ${RESOURCE_GROUP} \
-              --gallery-name ${GALLERY_NAME} \
-              --gallery-image-definition ${GALLERY_IMAGE_DEFINITION} \
-              --publisher ${SIG_PUBLISHER} \
-              --offer ${SIG_OFFER} \
-              --sku ${DISTRO} \
-              --hyper-v-generation ${HYPERV_GEN} \
-              --os-type ${OS_TYPE} \
+              --resource-group "${RESOURCE_GROUP}" \
+              --gallery-name "${GALLERY_NAME}" \
+              --gallery-image-definition "${GALLERY_IMAGE_DEFINITION}" \
+              --publisher "${SIG_PUBLISHER}" \
+              --offer "${SIG_OFFER}" \
+              --sku "${DISTRO}" \
+              --hyper-v-generation "${HYPERV_GEN}" \
+              --os-type "${OS_TYPE}" \
               | tee -a sig-publishing.json
           fi
 
           # Delete the image version if it exists (always create a new image, overwriting if necessary)
-          if az sig image-version show --gallery-name ${GALLERY_NAME} --gallery-image-definition ${GALLERY_IMAGE_DEFINITION} --gallery-image-version ${SHARED_IMAGE_GALLERY_IMAGE_VERSION} --resource-group ${RESOURCE_GROUP} -o none 2>/dev/null; then
+          if az sig image-version show --gallery-name "${GALLERY_NAME}" --gallery-image-definition "${GALLERY_IMAGE_DEFINITION}" --gallery-image-version "${SHARED_IMAGE_GALLERY_IMAGE_VERSION}" --resource-group "${RESOURCE_GROUP}" -o none 2>/dev/null; then
             az sig image-version delete \
-              --resource-group ${RESOURCE_GROUP} \
-              --gallery-name ${GALLERY_NAME} \
-              --gallery-image-definition ${GALLERY_IMAGE_DEFINITION} \
-              --gallery-image-version ${SHARED_IMAGE_GALLERY_IMAGE_VERSION}
+              --resource-group "${RESOURCE_GROUP}" \
+              --gallery-name "${GALLERY_NAME}" \
+              --gallery-image-definition "${GALLERY_IMAGE_DEFINITION}" \
+              --gallery-image-version "${SHARED_IMAGE_GALLERY_IMAGE_VERSION}"
           fi
 
           # Copy the tags from the managed image to the image version
-          IMAGE_TAGS=$(az tag list --resource-id ${MANAGED_IMAGE_ID} | jq -r '.properties.tags | to_entries | map("\(.key)=\(.value)") | join(" ")')
+          IMAGE_TAGS=$(az tag list --resource-id "${MANAGED_IMAGE_ID}" | jq -r '.properties.tags | to_entries | map("\(.key)=\(.value)") | join(" ")')
 
           # Create the image version
           az sig image-version create \
-            --resource-group ${RESOURCE_GROUP} \
-            --gallery-name ${GALLERY_NAME} \
-            --gallery-image-definition ${GALLERY_IMAGE_DEFINITION} \
-            --gallery-image-version ${SHARED_IMAGE_GALLERY_IMAGE_VERSION} \
+            --resource-group "${RESOURCE_GROUP}" \
+            --gallery-name "${GALLERY_NAME}" \
+            --gallery-image-definition "${GALLERY_IMAGE_DEFINITION}" \
+            --gallery-image-version "${SHARED_IMAGE_GALLERY_IMAGE_VERSION}" \
             --target-regions ${REPLICATED_REGIONS} \
             --managed-image "${MANAGED_IMAGE_ID}" \
-            --end-of-life-date ${EOL_DATE} \
+            --end-of-life-date "${EOL_DATE}" \
             --tags ${IMAGE_TAGS:-} \
             | tee sig-publishing.json
 
@@ -599,21 +599,21 @@ jobs:
           RESOURCE_GROUP="${RESOURCE_GROUP:-cluster-api-gallery}"
 
           # Delete the source managed image if it exists
-          if az image show --ids ${MANAGED_IMAGE_ID} -o none 2>/dev/null; then
+          if az image show --ids "${MANAGED_IMAGE_ID}" -o none 2>/dev/null; then
             echo "Deleting managed image: ${MANAGED_IMAGE_ID}"
-            az image delete --ids ${MANAGED_IMAGE_ID}
+            az image delete --ids "${MANAGED_IMAGE_ID}"
           else
             echo "Managed image not found, skipping deletion"
           fi
 
           # Delete the staging image version if it exists
-          if az sig image-version show --resource-group ${RESOURCE_GROUP} --gallery-name ${GALLERY_NAME} --gallery-image-definition ${SHARED_IMAGE_GALLERY_IMAGE_NAME} --gallery-image-version ${SHARED_IMAGE_GALLERY_IMAGE_VERSION} -o none 2>/dev/null; then
+          if az sig image-version show --resource-group "${RESOURCE_GROUP}" --gallery-name "${GALLERY_NAME}" --gallery-image-definition "${SHARED_IMAGE_GALLERY_IMAGE_NAME}" --gallery-image-version "${SHARED_IMAGE_GALLERY_IMAGE_VERSION}" -o none 2>/dev/null; then
             echo "Deleting staging image version: ${SHARED_IMAGE_GALLERY_IMAGE_VERSION}"
             az sig image-version delete \
-              --resource-group ${RESOURCE_GROUP} \
-              --gallery-name ${GALLERY_NAME} \
-              --gallery-image-definition ${SHARED_IMAGE_GALLERY_IMAGE_NAME} \
-              --gallery-image-version ${SHARED_IMAGE_GALLERY_IMAGE_VERSION}
+              --resource-group "${RESOURCE_GROUP}" \
+              --gallery-name "${GALLERY_NAME}" \
+              --gallery-image-definition "${SHARED_IMAGE_GALLERY_IMAGE_NAME}" \
+              --gallery-image-version "${SHARED_IMAGE_GALLERY_IMAGE_VERSION}"
           else
             echo "Staging image version not found, skipping deletion"
           fi
