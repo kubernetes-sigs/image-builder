@@ -122,15 +122,23 @@ jobs:
         if: inputs.os == 'Windows'
         run: |
           set -euo pipefail
-          kube_proxy_url="sigwindowstools/kube-proxy:v${KUBERNETES_VERSION/+/_}-calico-hostprocess"
-          echo "Checking for Windows kube-proxy image $kube_proxy_url"
-          if ! stderr="$(docker pull $kube_proxy_url 2>&1 > /dev/null)"; then
-            # It's a Windows image, so expect an error after pulling it on Linux
-            if [[ $stderr != *"cannot be used on this platform"* ]]; then
-              echo "Failed to pull kube-proxy image: $stderr"
-              exit 1
-            fi
+          IMAGE="sigwindowstools/kube-proxy"
+          TAG="v${KUBERNETES_VERSION/+/_}-calico-hostprocess"
+          echo "Checking for Windows kube-proxy image ${IMAGE}:${TAG}"
+
+          # Use the Docker Hub Registry v2 API to verify the tag exists.
+          TOKEN=$(curl -fsSL "https://auth.docker.io/token?service=registry.docker.io&scope=repository:${IMAGE}:pull" | jq -r .token)
+          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+            -H "Authorization: Bearer ${TOKEN}" \
+            -H "Accept: application/vnd.docker.distribution.manifest.v2+json" \
+            -H "Accept: application/vnd.docker.distribution.manifest.list.v2+json" \
+            "https://registry-1.docker.io/v2/${IMAGE}/manifests/${TAG}")
+
+          if [[ "${HTTP_STATUS}" != "200" ]]; then
+            echo "kube-proxy image ${IMAGE}:${TAG} not found (HTTP ${HTTP_STATUS})"
+            exit 1
           fi
+          echo "kube-proxy image ${IMAGE}:${TAG} exists"
 
       - name: Azure Login
         uses: azure/login@v2
