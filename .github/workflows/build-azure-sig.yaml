@@ -22,6 +22,7 @@
 # - gallery_name - name of the Azure community gallery for final image publishing
 # - packer_flags - additional flags to pass to packer
 # - tags - tags to apply to the image
+# - replicated_regions - space-separated list of Azure regions to replicate the image to
 # - skip_test - skip the test stage
 # - skip_promote - skip the promote stage
 
@@ -71,6 +72,11 @@ on:
         required: false
         type: string
         default: ''
+      replicated_regions:
+        description: 'Space-separated Azure regions to replicate the image to (image build region is always included)'
+        required: false
+        type: string
+        default: 'australiaeast canadacentral eastus eastus2 francecentral germanywestcentral northeurope switzerlandnorth uksouth westeurope'
       skip_test:
         description: 'Skip the test stage'
         required: false
@@ -409,6 +415,7 @@ jobs:
     env:
       RESOURCE_GROUP: ${{ inputs.resource_group }}
       GALLERY_NAME: ${{ inputs.gallery_name }}
+      REPLICATED_REGIONS_INPUT: ${{ inputs.replicated_regions }}
 
     steps:
       - name: Checkout repository
@@ -475,7 +482,7 @@ jobs:
           SIG_OFFER="reference-images"
 
           # Set replicated regions
-          REPLICATED_REGIONS="${MANAGED_IMAGE_LOCATION} australiaeast canadacentral eastus eastus2 francecentral germanywestcentral northeurope switzerlandnorth uksouth westeurope"
+          REPLICATED_REGIONS="${MANAGED_IMAGE_LOCATION} ${REPLICATED_REGIONS_INPUT}"
 
           # Create the resource group if needed
           if ! az group show -n ${RESOURCE_GROUP} -o none 2>/dev/null; then
