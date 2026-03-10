@@ -107,6 +107,9 @@ pip3_install() {
   ensure_py3
   if output=$(pip3 install --disable-pip-version-check --user "${@}" 2>&1); then
     echo "$output"
+  elif [[ $output == *"Can not perform a '--user' install"* ]]; then
+    >&2 echo "warning: '--user' install failed, retrying pip3 install without --user"
+    pip3 install --disable-pip-version-check "${@}"
   elif [[ $output == *"error: externally-managed-environment"* ]]; then
     >&2 echo "warning: externally-managed-environment, retrying pip3 install with --break-system-packages"
     pip3 install --disable-pip-version-check --user --break-system-packages "${@}"
