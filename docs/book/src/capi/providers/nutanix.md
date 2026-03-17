@@ -89,9 +89,7 @@ The `nutanix` sub-directory inside `images/capi/packer` stores JSON configuratio
 | File                | Description                                   |
 |---------------------|-----------------------------------------------|
 | `ubuntu-2204.json`  | Settings for Ubuntu 22.04 image               |
-| `rockylinux-8.json` | Settings for Rocky Linux 8 image (UEFI)       |
 | `rockylinux-9.json` | Settings for Rocky Linux 9 image              |
-| `rhel-8.json`       | Settings for RedHat Enterprise Linux 8 image  |
 | `rhel-9.json`       | Settings for RedHat Enterprise Linux 9 image  |
 | `flatcar.json`      | Settings for Flatcar Linux image (beta)       |
 | `windows-2022.json` | Settings for Windows Server 2022 image (beta) |

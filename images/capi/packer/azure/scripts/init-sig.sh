@@ -150,9 +150,6 @@ case ${SIG_TARGET} in
   azurelinux-3)
     create_image_definition ${SIG_TARGET} "azurelinux-3" "V1" "Linux"
   ;;
-  rhel-8)
-    create_image_definition "rhel-8" "rhel-8" "V1" "Linux"
-  ;;
   windows-2019-containerd)
     create_image_definition ${SIG_TARGET} "win-2019-containerd" "V1" "Windows"
   ;;

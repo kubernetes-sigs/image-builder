@@ -1,8 +1,0 @@
-{
-  "build_name": "oracle-linux-8",
-  "distribution": "Oracle Linux",
-  "operating_system": "Oracle Linux",
-  "operating_system_version": "8",
-  "redhat_epel_rpm": "oracle-epel-release-el8",
-  "ssh_username": "opc"
-}

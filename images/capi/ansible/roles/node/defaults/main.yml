@@ -45,7 +45,7 @@ azurelinux_rpms:
   - yum-utils
   - lsof
 
-# Used for RedHat based distributions =!  7 (ex. RHEL-8, RockyLinux-8, RockyLinux-9 etc.)
+# Used for RedHat based distributions != 7 (ex. RockyLinux-9 etc.)
 rh8_rpms:
   - curl
   - yum-utils
