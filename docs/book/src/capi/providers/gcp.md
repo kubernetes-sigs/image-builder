@@ -50,7 +50,6 @@ The `gce` sub-directory inside `images/capi/packer` stores JSON configuration fi
 | -------- | --------
 | `ubuntu-2204.json`     | Settings for Ubuntu 22.04 image     |
 | `ubuntu-2404.json`     | Settings for Ubuntu 24.04 image     |
-| `rhel-8.json`     | Settings for RHEL 8 image     |
 
 #### Common GCP options
 

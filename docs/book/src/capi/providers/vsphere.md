@@ -79,7 +79,6 @@ In addition to the configuration found in `images/capi/packer/config`, the `ova`
 |--------------------|--------------------------------------------------------------|
 | `flatcar.json`     | The settings for the Flatcar image                           |
 | `photon-4.json`    | The settings for the Photon 4 image                          |
-| `rhel-8.json`      | The settings for the RHEL 8 image                            |
 | `rhel-9.json`      | The settings for the RHEL 9 image                            |
 | `ubuntu-2204.json` | The settings for the Ubuntu 22.04 image                      |
 | `ubuntu-2204-efi.json` | The settings for the Ubuntu 22.04 EFI image                      |

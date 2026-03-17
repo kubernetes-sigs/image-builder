@@ -26,7 +26,6 @@ the different operating systems.
 |----------------------|------------------------------------------|
 | `flatcar.json`       | The settings for the Flatcar image       |
 | `flatcar-arm64.json` | The settings for the Flatcar arm64 image |
-| `rockylinux-8.json`  | The settings for the RockyLinux 8 image  |
 | `rockylinux-9.json`  | The settings for the RockyLinux 9 image  |
 | `ubuntu-2204.json`   | The settings for the Ubuntu 22.04 image  |
 | `ubuntu-2404.json`   | The settings for the Ubuntu 24.04 image  |
