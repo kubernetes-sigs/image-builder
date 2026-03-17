@@ -16,7 +16,25 @@
 # https://www.packer.io/docs/provisioners/ansible.html#winrm-communicator
 # https://www.packer.io/docs/builders/amazon/ebs#connecting-to-windows-instances-using-winrm
 
-Set-ExecutionPolicy Unrestricted -Scope LocalMachine -Force -ErrorAction Ignore
+# Log execution policies at all scopes for diagnostics
+Write-Output "Current execution policy settings:"
+Get-ExecutionPolicy -List | Format-Table -AutoSize | Out-String | Write-Output
+
+# Only set execution policy if the current effective policy is more restrictive
+# than what we need. Policies like Bypass or Unrestricted are already sufficient.
+$currentPolicy = Get-ExecutionPolicy
+$sufficientPolicies = @('Bypass', 'Unrestricted')
+if ($currentPolicy -notin $sufficientPolicies) {
+    Write-Output "Effective execution policy '$currentPolicy' is insufficient, setting to Unrestricted"
+    try {
+        Set-ExecutionPolicy Unrestricted -Scope LocalMachine -Force -ErrorAction Stop
+        Write-Output "Execution policy set to Unrestricted"
+    } catch {
+        Write-Output "Failed to set execution policy: $_"
+    }
+} else {
+    Write-Output "Effective execution policy '$currentPolicy' is sufficient, skipping Set-ExecutionPolicy"
+}
 
 # Don't set this before Set-ExecutionPolicy as it throws an error
 $ErrorActionPreference = "stop"
