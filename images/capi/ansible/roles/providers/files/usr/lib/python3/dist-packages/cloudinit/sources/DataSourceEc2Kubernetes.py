@@ -125,8 +125,17 @@ class DataSourceEc2Kubernetes(DataSourceEc2.DataSourceEc2):
 
 
 class DataSourceEc2KubernetesLocal(DataSourceEc2Kubernetes):
+    # init-local runs before networking is available. The parent
+    # DataSourceEc2._get_data() crawls the IMDS, which requires network.
+    # Without it the TCP connection retries for ~232s before timing out.
+    # Return False so cloud-init moves quickly to the init-network phase
+    # where DataSourceEc2Kubernetes runs with full network access.
     def _get_data(self):
-        return super(DataSourceEc2KubernetesLocal, self)._get_data()
+        LOG.debug(
+            "Skipping metadata crawl in init-local phase (no network). "
+            "DataSourceEc2Kubernetes will run in init-network phase."
+        )
+        return False
 
 
 # Used to match classes to dependencies
