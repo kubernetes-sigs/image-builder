@@ -32,7 +32,14 @@
     enabled: false
   when: ansible_os_family == "Debian"
 
-- name: Install networkd-dispatcher service (Run networkd-dispatcher)
+- name: Ensure networkd-dispatcher is installed
+  ansible.builtin.apt:
+    name: networkd-dispatcher
+    state: present
+    force_apt_get: true
+  when: ansible_os_family == "Debian"
+
+- name: Enable networkd-dispatcher service
   ansible.builtin.systemd:
     name: networkd-dispatcher
     state: started
