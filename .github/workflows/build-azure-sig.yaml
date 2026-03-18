@@ -25,6 +25,7 @@
 # - replicated_regions - space-separated list of Azure regions to replicate the image to
 # - skip_test - skip the test stage
 # - skip_promote - skip the promote stage
+# - packer_debug - enable Packer debug logging (sets PACKER_LOG=1)
 
 name: Build Azure SIG Image
 
@@ -87,6 +88,11 @@ on:
         required: false
         type: boolean
         default: false
+      packer_debug:
+        description: 'Enable Packer debug logging (PACKER_LOG=1)'
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   id-token: write
@@ -108,6 +114,7 @@ jobs:
       STAGING_GALLERY_NAME: ${{ inputs.staging_gallery_name }}
       PACKER_FLAGS: ${{ inputs.packer_flags }}
       TAGS_INPUT: ${{ inputs.tags }}
+      PACKER_LOG: ${{ inputs.packer_debug && '1' || '0' }}
 
     steps:
       - name: Checkout repository
