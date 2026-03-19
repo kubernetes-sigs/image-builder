@@ -58,71 +58,6 @@ SECURITY_TYPE_CVM_SUPPORTED_FEATURE="SecurityType=ConfidentialVmSupported"
 
 SIG_TARGET=$1
 
-# Accept Azure VM image terms if available and required
-accept_image_terms() {
-  # SIG_TARGET is expected to be a global variable
-  if [[ -z "$SIG_TARGET" ]]; then
-    echo "Error: SIG_TARGET is not set. Exiting."
-    exit 1
-  fi
-  # AZURE_LOCATION is expected to be a global variable
-  if [[ -z "$AZURE_LOCATION" ]]; then
-    echo "Error: AZURE_LOCATION is not set. Exiting."
-    exit 1
-  fi
-
-  # Resolve the JSON file path and extract necessary fields
-  target_json="$(realpath "packer/azure/${SIG_TARGET}.json")"
-  distribution=$(jq -r '.distribution' "$target_json")
-  distribution_version=$(jq -r '.distribution_version' "$target_json")
-
-  # Return early if not a Windows distribution
-  if [[ "$distribution" != "windows" ]]; then
-    return
-  fi
-
-  # Extract purchase plan details
-  plan_publisher=$(jq -r '.plan_image_publisher' "$target_json")
-  plan_offer=$(jq -r '.plan_image_offer' "$target_json")
-  plan_name=$(jq -r '.plan_image_sku' "$target_json")
-  plan_version=${PLAN_VERSION:-"latest"}
-
-  # Proceed only if all plan details are valid
-  if [[ "$plan_publisher" == "null" || "$plan_offer" == "null" || "$plan_name" == "null" ]]; then
-    echo "Purchase plan details are missing. Skipping terms acceptance."
-    return
-  fi
-
-  # Populate the global plan_args variable
-  PLAN_ARGS=(
-    --plan-name "${plan_name}"
-    --plan-product "${plan_offer}"
-    --plan-publisher "${plan_publisher}"
-  )
-
-  plan_urn="${plan_publisher}:${plan_offer}:${plan_name}:${plan_version}"
-
-  # Check if the image has terms to accept
-  if [[ "$(az vm image show --location "$AZURE_LOCATION" --urn "${plan_urn}" -o json | jq -r '.plan')" == "null" ]]; then
-    echo "Image '${plan_urn}' has no terms to accept."
-    return
-  fi
-
-  echo "Plan info: ${plan_urn}"
-
-  # Check acceptance status and accept terms if not already accepted
-  if [[ "$(az vm image terms show --urn "$plan_urn" -o json | jq -r '.accepted')" == "true" ]]; then
-    echo "Terms for image URN: ${plan_urn} are already accepted."
-    return
-  fi
-
-  echo "Accepting terms for image URN: ${plan_urn}"
-  az vm image terms accept --urn "$plan_urn"
-}
-
-PLAN_ARGS=()
-accept_image_terms
-
 # Create a shared image gallery image definition if it does not exist
 create_image_definition() {
   if ! az sig image-definition show --gallery-name ${GALLERY_NAME} --gallery-image-definition ${SIG_IMAGE_DEFINITION:-capi-${SIG_SKU:-$1}} --resource-group ${RESOURCE_GROUP_NAME} -o none 2>/dev/null; then
@@ -135,8 +70,7 @@ create_image_definition() {
       --sku ${SIG_SKU:-$2} \
       --hyper-v-generation ${3} \
       --os-type ${4} \
-      --features ${5:-''} \
-      "${plan_args[@]}" # TODO: Delete this line after the image is GA
+      --features ${5:-''}
   fi
 }
 
