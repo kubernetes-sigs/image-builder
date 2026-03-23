@@ -139,7 +139,7 @@
         "--extra-vars",
         "gmsa_keyvault_url={{user `gmsa_keyvault_url`}}"
       ],
-      "max_retries": 5,
+      "max_retries": 1,
       "pause_before": "15s",
       "playbook_file": "ansible/windows/node_windows.yml",
       "type": "ansible",
