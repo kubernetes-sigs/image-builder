@@ -12,6 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
+# Pin the Python interpreter to the versionless symlink so that it
+# survives tdnf distro-sync upgrading the Python version (e.g. 3.11→3.12),
+# which removes the old versioned binary that Ansible auto-discovered.
+- name: Pin ansible_python_interpreter to /usr/bin/python3
+  ansible.builtin.set_fact:
+    ansible_python_interpreter: /usr/bin/python3
+
 - name: Add bash_profile
   ansible.builtin.template:
     dest: /home/builder/.bash_profile
