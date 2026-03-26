@@ -198,25 +198,65 @@ command:
     - "{{.Vars.containerd_version}}"
     timeout: 30000
   {{ if (semverCompare ">=2.0.0" .Vars.containerd_version) }}
-  Correct Containerd config:
-    exec: "\"/Program Files/containerd/containerd.exe\" config dump"
+  Correct Containerd sandbox config:
+    exec: "powershell -command \"Get-Content 'C:\\Program Files\\containerd\\config.toml' | Select-String -SimpleMatch 'sandbox = \\\"{{.Vars.pause_image}}\\\"'\""
     exit-status: 0
     stdout:
     - "sandbox = \"{{.Vars.pause_image}}\""
+    timeout: 30000
+  Correct Containerd CNI conf_dir:
+    exec: "powershell -command \"Get-Content 'C:\\Program Files\\containerd\\config.toml' | Select-String -SimpleMatch 'conf_dir = \\\"C:/etc/cni/net.d\\\"'\""
+    exit-status: 0
+    stdout:
     - "conf_dir = \"C:/etc/cni/net.d\""
+    timeout: 30000
+  Correct Containerd CNI bin_dir:
+    exec: "powershell -command \"Get-Content 'C:\\Program Files\\containerd\\config.toml' | Select-String -SimpleMatch 'bin_dir = \\\"C:/opt/cni/bin\\\"'\""
+    exit-status: 0
+    stdout:
     - "bin_dir = \"C:/opt/cni/bin\""
+    timeout: 30000
+  Correct Containerd root:
+    exec: "powershell -command \"Get-Content 'C:\\Program Files\\containerd\\config.toml' | Select-String -SimpleMatch 'root = \\\"C:\\\\ProgramData\\\\containerd\\\\root\\\"'\""
+    exit-status: 0
+    stdout:
     - "root = \"C:\\\\ProgramData\\\\containerd\\\\root\""
+    timeout: 30000
+  Correct Containerd state:
+    exec: "powershell -command \"Get-Content 'C:\\Program Files\\containerd\\config.toml' | Select-String -SimpleMatch 'state = \\\"C:\\\\ProgramData\\\\containerd\\\\state\\\"'\""
+    exit-status: 0
+    stdout:
     - "state = \"C:\\\\ProgramData\\\\containerd\\\\state\""
     timeout: 30000
   {{ else }}
-  Correct Containerd config:
-    exec: "\"/Program Files/containerd/containerd.exe\" config dump"
+  Correct Containerd sandbox config:
+    exec: "powershell -command \"Get-Content 'C:\\Program Files\\containerd\\config.toml' | Select-String -SimpleMatch 'sandbox_image = \\\"{{.Vars.pause_image}}\\\"'\""
     exit-status: 0
     stdout:
     - "sandbox_image = \"{{.Vars.pause_image}}\""
+    timeout: 30000
+  Correct Containerd CNI conf_dir:
+    exec: "powershell -command \"Get-Content 'C:\\Program Files\\containerd\\config.toml' | Select-String -SimpleMatch 'conf_dir = \\\"C:/etc/cni/net.d\\\"'\""
+    exit-status: 0
+    stdout:
     - "conf_dir = \"C:/etc/cni/net.d\""
+    timeout: 30000
+  Correct Containerd CNI bin_dir:
+    exec: "powershell -command \"Get-Content 'C:\\Program Files\\containerd\\config.toml' | Select-String -SimpleMatch 'bin_dir = \\\"C:/opt/cni/bin\\\"'\""
+    exit-status: 0
+    stdout:
     - "bin_dir = \"C:/opt/cni/bin\""
+    timeout: 30000
+  Correct Containerd root:
+    exec: "powershell -command \"Get-Content 'C:\\Program Files\\containerd\\config.toml' | Select-String -SimpleMatch 'root = \\\"C:\\\\ProgramData\\\\containerd\\\\root\\\"'\""
+    exit-status: 0
+    stdout:
     - "root = \"C:\\\\ProgramData\\\\containerd\\\\root\""
+    timeout: 30000
+  Correct Containerd state:
+    exec: "powershell -command \"Get-Content 'C:\\Program Files\\containerd\\config.toml' | Select-String -SimpleMatch 'state = \\\"C:\\\\ProgramData\\\\containerd\\\\state\\\"'\""
+    exit-status: 0
+    stdout:
     - "state = \"C:\\\\ProgramData\\\\containerd\\\\state\""
     timeout: 30000
   {{ end }}
