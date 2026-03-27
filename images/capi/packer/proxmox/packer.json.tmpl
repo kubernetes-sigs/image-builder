@@ -18,7 +18,8 @@
           "format": "{{user `disk_format`}}",
           "storage_pool": "{{user `storage_pool`}}",
           "storage_pool_type": "{{user `storage_pool_type`}}",
-          "type": "scsi"
+          "type": "{{user `disk_type`}}",
+          "io_thread": "{{user `io_thread`}}"
         }
       ],
       "efi_config": {
@@ -28,6 +29,7 @@
       },
       "scsi_controller": "{{user `scsi_controller`}}",
       "http_directory": "{{user `http_directory`}}",
+      "http_interface" : "{{user `http_interface`}}",
       "insecure_skip_tls_verify": true,
       "iso_checksum": "{{user `iso_checksum_type`}}:{{user `iso_checksum`}}",
       "iso_file": "{{user `iso_file`}}",
@@ -37,6 +39,7 @@
       "name": "{{user `build_name`}}",
       "network_adapters": [
         {
+          "model" : "{{user `model`}}",
           "bridge": "{{user `bridge`}}",
           "mtu": "{{ user `mtu` }}",
           "vlan_tag": "{{user `vlan_tag`}}"
@@ -44,6 +47,7 @@
       ],
       "node": "{{ user `node` }}",
       "numa": "{{ user `numa` }}",
+      "pool": "{{ user `pool` }}",
       "sockets": "{{user `sockets`}}",
       "ssh_password": "{{user `ssh_password`}}",
       "ssh_timeout": "2h",
@@ -192,6 +196,7 @@
     "crictl_version": null,
     "disk_format": "qcow2",
     "disk_size": "20G",
+    "disk_type": "scsi",
     "existing_ansible_ssh_args": "{{env `ANSIBLE_SSH_ARGS`}}",
     "http_directory": "./packer/proxmox/linux/{{user `distro_name`}}/http/",
     "iso_storage_pool": "{{env `PROXMOX_ISO_POOL`}}",
