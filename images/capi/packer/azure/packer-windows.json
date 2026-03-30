@@ -139,7 +139,7 @@
         "--extra-vars",
         "gmsa_keyvault_url={{user `gmsa_keyvault_url`}}"
       ],
-      "max_retries": 5,
+      "max_retries": 1,
       "pause_before": "15s",
       "playbook_file": "ansible/windows/node_windows.yml",
       "type": "ansible",
@@ -226,7 +226,7 @@
     "image_publisher": "",
     "image_sku": "",
     "image_version": "latest",
-    "kubernetes_base_url": "https://kubernetesreleases.blob.core.windows.net/kubernetes/{{user `kubernetes_semver`}}/binaries/node/windows/{{user `kubernetes_goarch`}}",
+    "kubernetes_base_url": "https://kubernetesreleases.blob.core.windows.net/kubernetes/{{user `kubernetes_semver`}}/bin/windows/{{user `kubernetes_goarch`}}",
     "manifest_output": "manifest.json",
     "nssm_url": null,
     "os_disk_size_gb": "",

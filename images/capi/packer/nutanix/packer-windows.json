@@ -142,7 +142,7 @@
     "image_delete": "false",
     "image_export": "false",
     "image_name": "{{user `build_name`}}-kube-{{user `kubernetes_semver`}}",
-    "kubernetes_base_url": "https://kubernetesreleases.blob.core.windows.net/kubernetes/{{user `kubernetes_semver`}}/binaries/node/windows/{{user `kubernetes_goarch`}}",
+    "kubernetes_base_url": "https://kubernetesreleases.blob.core.windows.net/kubernetes/{{user `kubernetes_semver`}}/bin/windows/{{user `kubernetes_goarch`}}",
     "kubernetes_container_registry": null,
     "kubernetes_http_package_url": "",
     "kubernetes_http_source": null,
