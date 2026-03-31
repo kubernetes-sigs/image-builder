@@ -66,11 +66,20 @@ fi
 set -o nounset
 
 get_random_region() {
-    local REGIONS=("australiaeast" "canadacentral" "eastus" "eastus2" "northcentralus" "northeurope" "uksouth" "westeurope" "westus2")
+    # Regions appear more than once to represent the approximate relative amount
+    # of Standard BS v2 quota in each region.
+    local REGIONS=(
+      "australiaeast"
+      "canadacentral" "canadacentral" "canadacentral"
+      "francecentral"
+      "germanywestcentral"
+      "switzerlandnorth" "switzerlandnorth" "switzerlandnorth"
+      "uksouth"
+    )
     echo "${REGIONS[${RANDOM} % ${#REGIONS[@]}]}"
 }
 
-export VALID_CVM_LOCATIONS=("eastus" "northeurope" "westeurope" "westus")
+export VALID_CVM_LOCATIONS=("eastus" "germanywestcentral" "northeurope" "switzerlandnorth" "uksouth" "westeurope" "westus")
 get_random_cvm_region() {
     echo "${VALID_CVM_LOCATIONS[${RANDOM} % ${#VALID_CVM_LOCATIONS[@]}]}"
 }
