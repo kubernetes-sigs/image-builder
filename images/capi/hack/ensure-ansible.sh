@@ -35,8 +35,11 @@ if ! command -v ansible >/dev/null 2>&1; then
     ensure_py3_bin ansible-playbook
 fi
 
+[ -f "$HOME/.local/bin/ansible" ] && py3_ansible_cmd="$HOME/.local/bin/ansible"
+[ -f "$HOME/.local/bin/ansible-galaxy" ] && py3_ansible_galaxy_cmd="$HOME/.local/bin/ansible-galaxy"
+
 ansible_version=""
-IFS=" " read -ra ansible_version <<< "$(ansible --version)"
+IFS=" " read -ra ansible_version <<< "$($py3_ansible_cmd --version)"
 if [[ "${_version_ansible_core}" != $(echo -e "${_version_ansible_core}\n${ansible_version[2]}" | sort -s -t. -k 1,1 -k 2,2n -k 3,3n | head -n1) && "${ansible_version[2]}" != "devel" ]]; then
   cat <<EOF
 Detected ansible version: ${ansible_version[*]}.
@@ -48,7 +51,7 @@ fi
 
 echo ${ansible_version[*]}
 
-ansible-galaxy collection install \
+$py3_ansible_galaxy_cmd collection install \
   'community.general:<12.0.0' \
   ansible.posix \
   'ansible.windows:>=1.7.0' \
