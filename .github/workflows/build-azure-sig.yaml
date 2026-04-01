@@ -512,7 +512,12 @@ jobs:
             ${SSH_CMD} "sudo crictl images" || true
 
             echo "--- kubeadm init dry-run ---"
-            ${SSH_CMD} "sudo kubeadm init --dry-run --kubernetes-version '${EXPECTED_K8S}'" 2>&1 || true
+            if ${SSH_CMD} "sudo kubeadm init --dry-run --kubernetes-version '${EXPECTED_K8S}'" 2>&1; then
+              echo "✓ kubeadm init dry-run succeeded"
+            else
+              echo "::error::kubeadm init --dry-run failed"
+              FAILURES=$((FAILURES + 1))
+            fi
 
             echo "::endgroup::"
 
