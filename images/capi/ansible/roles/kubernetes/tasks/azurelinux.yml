@@ -21,7 +21,7 @@
     gpgkey: "{{ kubernetes_rpm_gpg_key }}"
 
 - name: Install Kubernetes
-  ansible.builtin.yum:
+  ansible.builtin.dnf:
     name: "{{ packages }}"
     allow_downgrade: true
     state: present

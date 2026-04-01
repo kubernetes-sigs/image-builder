@@ -13,7 +13,7 @@
 # limitations under the License.
 ---
 - name: Install cloud-init packages
-  ansible.builtin.yum:
+  ansible.builtin.dnf:
     name: "{{ packages }}"
     state: present
   vars:
@@ -22,7 +22,7 @@
       - cloud-utils-growpart
 
 - name: Install CAPX prerequisites
-  ansible.builtin.yum:
+  ansible.builtin.dnf:
     name: "{{ packages }}"
     state: present
   vars:

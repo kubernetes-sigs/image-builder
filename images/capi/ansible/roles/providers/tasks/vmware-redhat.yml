@@ -14,7 +14,7 @@
 
 ---
 - name: Install cloud-init packages
-  ansible.builtin.yum:
+  ansible.builtin.dnf:
     name: "{{ packages }}"
     state: present
   vars:
@@ -31,7 +31,7 @@
     cloud_init_version: "{{ ansible_facts.packages['cloud-init'][0].version }}"
 
 - name: Install python2 pip
-  ansible.builtin.yum:
+  ansible.builtin.dnf:
     name: "{{ packages }}"
     state: present
   vars:

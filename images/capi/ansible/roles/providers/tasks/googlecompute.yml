@@ -53,12 +53,12 @@
         gpgkey=https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
         EOM
     - name: Install google-cloud-cli package
-      ansible.builtin.yum:
+      ansible.builtin.dnf:
         name: google-cloud-cli
         state: present
 
 - name: Install cloud-init packages
-  ansible.builtin.yum:
+  ansible.builtin.dnf:
     name: "{{ packages }}"
     state: present
   vars:
