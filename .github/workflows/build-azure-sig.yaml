@@ -280,7 +280,7 @@ jobs:
     needs: build
     if: ${{ !inputs.skip_test }}
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 15
     env:
       KUBERNETES_VERSION: ${{ inputs.kubernetes_version }}
 
@@ -346,7 +346,9 @@ jobs:
           echo "VM_NAME=${VM_NAME}" >> $GITHUB_ENV
 
           # Generate SSH key for Linux VMs
-          ssh-keygen -t rsa -b 2048 -f /tmp/sshkey -N "" -q
+          TMPDIR=$(mktemp -d)
+          echo "TMPDIR=${TMPDIR}" >> $GITHUB_ENV
+          ssh-keygen -t rsa -b 2048 -f "${TMPDIR}/sshkey" -N "" -q
 
           create_args=(
             --resource-group "${TEST_RESOURCE_GROUP}"
@@ -365,7 +367,7 @@ jobs:
           else
             create_args+=(
               --admin-username "capi"
-              --ssh-key-values /tmp/sshkey.pub
+              --ssh-key-values "${TMPDIR}/sshkey.pub"
               --authentication-type ssh
             )
           fi
@@ -373,9 +375,9 @@ jobs:
           echo "Creating test VM '${VM_NAME}' from image …"
           az vm create "${create_args[@]}" \
             --public-ip-sku Standard \
-            --output json | tee /tmp/vm-create.json
+            --output json | tee "${TMPDIR}/vm-create.json"
 
-          PUBLIC_IP=$(jq -r '.publicIpAddress' /tmp/vm-create.json)
+          PUBLIC_IP=$(jq -r '.publicIpAddress' "${TMPDIR}/vm-create.json")
           echo "VM public IP: ${PUBLIC_IP}"
           echo "PUBLIC_IP=${PUBLIC_IP}" >> $GITHUB_ENV
 
@@ -400,7 +402,7 @@ jobs:
             echo "Waiting for SSH to become available …"
             timeout 300 bash -c "
               until ssh -o StrictHostKeyChecking=no -o ConnectTimeout=5 \
-                -i /tmp/sshkey capi@'${PUBLIC_IP}' 'echo ready' 2>/dev/null; do
+                -i "${TMPDIR}/sshkey" capi@'${PUBLIC_IP}' 'echo ready' 2>/dev/null; do
                 sleep 10
               done
             "
@@ -465,7 +467,7 @@ jobs:
             fi
 
           else
-            SSH_OPTS="-o StrictHostKeyChecking=no -o ConnectTimeout=10 -i /tmp/sshkey"
+            SSH_OPTS="-o StrictHostKeyChecking=no -o ConnectTimeout=10 -i ${TMPDIR}/sshkey"
             SSH_CMD="ssh ${SSH_OPTS} capi@${PUBLIC_IP}"
 
             echo "::group::Linux smoke tests — version checks"
@@ -575,7 +577,7 @@ jobs:
               --scripts 'Get-EventLog -LogName Application -Newest 50 | Format-Table -AutoSize' \
               --output json 2>&1 | tee "${ARTIFACTS}/windows-eventlog.json" || true
           else
-            SSH_OPTS="-o StrictHostKeyChecking=no -o ConnectTimeout=10 -i /tmp/sshkey"
+            SSH_OPTS="-o StrictHostKeyChecking=no -o ConnectTimeout=10 -i ${TMPDIR}/sshkey"
             SSH_CMD="ssh ${SSH_OPTS} capi@${PUBLIC_IP}"
 
             echo "--- journalctl kubelet ---"
