@@ -14,8 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Note: ansible-core v2.16 supports Python 3.10-3.12.
-_version_ansible_core="2.16.18"
+# Note: ansible-core v2.18 supports Python 3.11-3.13.
+_version_ansible_core="2.18.15"
 
 case "${OSTYPE}" in
 linux*)
