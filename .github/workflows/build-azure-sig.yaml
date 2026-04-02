@@ -707,8 +707,8 @@ jobs:
           RESOURCE_GROUP="${RESOURCE_GROUP}"
           SIG_OFFER="reference-images"
 
-          # Set replicated regions
-          REPLICATED_REGIONS="${MANAGED_IMAGE_LOCATION} ${REPLICATED_REGIONS_INPUT}"
+          # Set replicated regions (deduplicate in case build region is already in the list)
+          REPLICATED_REGIONS=$(echo "${MANAGED_IMAGE_LOCATION} ${REPLICATED_REGIONS_INPUT}" | tr ' ' '\n' | sort -u | tr '\n' ' ')
 
           # Create the resource group if needed
           if ! az group show -n "${RESOURCE_GROUP}" -o none 2>/dev/null; then
