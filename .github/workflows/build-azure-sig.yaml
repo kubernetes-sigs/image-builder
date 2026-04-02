@@ -74,17 +74,18 @@ on:
         type: string
         default: ''
       azure_location:
-        description: 'Azure region for image build (must have VM quota for testing)'
+        description: 'Azure region for image build (must match community gallery location and have VM quota for testing)'
         required: false
         type: choice
         options:
+          - northcentralus
           - canadacentral
           - switzerlandnorth
           - australiaeast
           - francecentral
           - germanywestcentral
           - uksouth
-        default: 'canadacentral'
+        default: 'northcentralus'
       replicated_regions:
         description: 'Space-separated Azure regions to replicate the image to (image build region is always included)'
         required: false
