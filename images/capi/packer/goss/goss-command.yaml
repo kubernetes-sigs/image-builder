@@ -1,6 +1,6 @@
 command:
 {{ if ne .Vars.OS "windows" }} # Linux Only
-  containerd --version | awk -F' ' '{print substr($3,2); }':
+  PATH=/opt/bin:/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin containerd --version | awk -F' ' '{print substr($3,2); }':
     exit-status: 0
     stdout:
     - "{{.Vars.containerd_version}}"
