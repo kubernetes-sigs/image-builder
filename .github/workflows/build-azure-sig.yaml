@@ -73,16 +73,29 @@ on:
         required: false
         type: string
         default: ''
+      azure_location:
+        description: 'Azure region for image build (must match community gallery location and have VM quota for testing)'
+        required: false
+        type: choice
+        options:
+          - northcentralus
+          - canadacentral
+          - switzerlandnorth
+          - australiaeast
+          - francecentral
+          - germanywestcentral
+          - uksouth
+        default: 'northcentralus'
       replicated_regions:
         description: 'Space-separated Azure regions to replicate the image to (image build region is always included)'
         required: false
         type: string
-        default: 'australiaeast canadacentral eastus eastus2 francecentral germanywestcentral northeurope switzerlandnorth uksouth westeurope'
+        default: 'australiaeast canadacentral eastus eastus2 francecentral germanywestcentral northcentralus northeurope switzerlandnorth uksouth westeurope'
       skip_test:
         description: 'Skip the test stage'
         required: false
         type: boolean
-        default: true
+        default: false
       skip_promote:
         description: 'Skip the promote stage (requires manual approval)'
         required: false
@@ -112,6 +125,7 @@ jobs:
       OS_VERSION: ${{ inputs.os_version }}
       RESOURCE_GROUP: ${{ inputs.resource_group }}
       STAGING_GALLERY_NAME: ${{ inputs.staging_gallery_name }}
+      AZURE_LOCATION: ${{ inputs.azure_location }}
       PACKER_FLAGS: ${{ inputs.packer_flags }}
       TAGS_INPUT: ${{ inputs.tags }}
       PACKER_LOG: ${{ inputs.packer_debug && '1' || '0' }}
@@ -257,12 +271,17 @@ jobs:
   # ---------------------------------------------------------------------------
   # Test
   # ---------------------------------------------------------------------------
+  # Boots a single VM from the image built in the previous stage and verifies
+  # that the key Kubernetes components (kubelet, kubeadm, containerd/dockerd)
+  # are present and report the expected version.  For Linux images, the VM is
+  # accessed via SSH; for Windows images, via az vm run-command.
+  # ---------------------------------------------------------------------------
   test:
     name: Test SIG Image
     needs: build
     if: ${{ !inputs.skip_test }}
     runs-on: ubuntu-latest
-    timeout-minutes: 120
+    timeout-minutes: 15
     env:
       KUBERNETES_VERSION: ${{ inputs.kubernetes_version }}
 
@@ -285,42 +304,14 @@ jobs:
           echo "PUBLISHING_INFO=${PUBLISHING_INFO}"
 
           echo "OS_TYPE=$(echo "$PUBLISHING_INFO" | jq -r .os_type)" >> $GITHUB_OUTPUT
-          echo "MANAGED_IMAGE_RESOURCE_GROUP_NAME=$(echo "$PUBLISHING_INFO" | jq -r .managed_image_resource_group_name)" >> $GITHUB_OUTPUT
-          echo "MANAGED_IMAGE_NAME=$(echo "$PUBLISHING_INFO" | jq -r .managed_image_name)" >> $GITHUB_OUTPUT
           echo "MANAGED_IMAGE_ID=$(echo "$PUBLISHING_INFO" | jq -r .managed_image_id)" >> $GITHUB_OUTPUT
           echo "MANAGED_IMAGE_LOCATION=$(echo "$PUBLISHING_INFO" | jq -r .managed_image_location)" >> $GITHUB_OUTPUT
-          echo "MANAGED_IMAGE_SHARED_IMAGE_GALLERY_ID=$(echo "$PUBLISHING_INFO" | jq -r .managed_image_shared_image_gallery_id)" >> $GITHUB_OUTPUT
-          echo "SHARED_IMAGE_GALLERY_RESOURCE_GROUP=$(echo "$PUBLISHING_INFO" | jq -r .shared_image_gallery_resource_group)" >> $GITHUB_OUTPUT
-          echo "SHARED_IMAGE_GALLERY_NAME=$(echo "$PUBLISHING_INFO" | jq -r .shared_image_gallery_name)" >> $GITHUB_OUTPUT
-          echo "SHARED_IMAGE_GALLERY_IMAGE_NAME=$(echo "$PUBLISHING_INFO" | jq -r .shared_image_gallery_image_name)" >> $GITHUB_OUTPUT
-          echo "SHARED_IMAGE_GALLERY_IMAGE_VERSION=$(echo "$PUBLISHING_INFO" | jq -r .shared_image_gallery_image_version)" >> $GITHUB_OUTPUT
           echo "TAGS=$(echo "$PUBLISHING_INFO" | jq -r .tags)" >> $GITHUB_OUTPUT
 
-      - name: Configure Kubernetes version
-        uses: ./.github/actions/configure-k8s-version
-        with:
-          kubernetes_version: ${{ inputs.kubernetes_version }}
-
-      - name: Setup kustomize
-        working-directory: images/capi
-        run: |
-          set -euo pipefail
-          export PATH=${PATH}:.local/bin
-          ./packer/azure/scripts/ensure-kustomize.sh
-
-      - name: Generate cluster template
-        working-directory: images/capi
-        env:
-          OS_TYPE: ${{ steps.vars.outputs.OS_TYPE }}
-        run: |
-          set -euo pipefail
-          export PATH=${PATH}:.local/bin
-
-          if [ "$OS_TYPE" == "Windows" ]; then
-            kustomize build --load-restrictor LoadRestrictionsNone packer/azure/scripts/test-templates/windows/ > packer/azure/scripts/test-templates/cluster-template.yaml
-          else
-            kustomize build --load-restrictor LoadRestrictionsNone packer/azure/scripts/test-templates/linux/ > packer/azure/scripts/test-templates/cluster-template.yaml
-          fi
+          # Read expected containerd version from the packer config
+          CONTAINERD_VERSION=$(jq -r .containerd_version images/capi/packer/config/containerd.json)
+          echo "CONTAINERD_VERSION=${CONTAINERD_VERSION}"
+          echo "CONTAINERD_VERSION=${CONTAINERD_VERSION}" >> $GITHUB_OUTPUT
 
       - name: Azure Login
         uses: azure/login@v2
@@ -329,61 +320,291 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Install Azure CAPI extension
-        run: |
-          set -euo pipefail
-
-          # Install the Azure CLI Cluster API extension from the official release
-          az extension add --name capi --yes || az extension add --source "https://github.com/Azure/azure-capi-cli-extension/releases/latest/download/capi-0.0.vnext-py2.py3-none-any.whl" --yes
-
-          # Install required binaries
-          mkdir -p ~/test-binaries
-          export PATH=${PATH}:~/test-binaries
-          az capi install -a -ip ~/test-binaries
-
-      - name: Create test cluster
-        working-directory: images/capi
+      - name: Create test resource group
         env:
-          OS_TYPE: ${{ steps.vars.outputs.OS_TYPE }}
           MANAGED_IMAGE_LOCATION: ${{ steps.vars.outputs.MANAGED_IMAGE_LOCATION }}
           TAGS: ${{ steps.vars.outputs.TAGS }}
         run: |
           set -euo pipefail
-          TEST_TEMPLATE="packer/azure/scripts/test-templates/cluster-template.yaml"
-
-          export PATH=${PATH}:~/test-binaries
-
-          params=()
-          if [ "$OS_TYPE" == "Windows" ]; then
-            params+=(--windows)
-          fi
-
-          # Create a dedicated test resource group (not the build resource group)
           TEST_RESOURCE_GROUP="image-builder-test-${GITHUB_RUN_ID}"
           echo "TEST_RESOURCE_GROUP=${TEST_RESOURCE_GROUP}" >> $GITHUB_ENV
+          az group create \
+            -n "${TEST_RESOURCE_GROUP}" \
+            -l "${MANAGED_IMAGE_LOCATION}" \
+            --tags ${TAGS:-}
 
-          AZURE_LOCATION="${MANAGED_IMAGE_LOCATION}"
-          az group create -n "${TEST_RESOURCE_GROUP}" -l "${AZURE_LOCATION}" --tags ${TAGS:-}
+      - name: Create test VM
+        id: vm
+        env:
+          MANAGED_IMAGE_ID: ${{ steps.vars.outputs.MANAGED_IMAGE_ID }}
+          MANAGED_IMAGE_LOCATION: ${{ steps.vars.outputs.MANAGED_IMAGE_LOCATION }}
+          OS_TYPE: ${{ steps.vars.outputs.OS_TYPE }}
+          TAGS: ${{ steps.vars.outputs.TAGS }}
+        run: |
+          set -euo pipefail
 
-          # Create a cluster
-          az capi create \
-            --yes \
-            --debug \
-            --name testvm \
-            --kubernetes-version="${KUBERNETES_VERSION}" \
-            --location="${AZURE_LOCATION}" \
-            --resource-group="${TEST_RESOURCE_GROUP}" \
-            --management-cluster-resource-group-name="${TEST_RESOURCE_GROUP}" \
-            --control-plane-machine-count=1 \
-            --node-machine-count=1 \
-            --template="${TEST_TEMPLATE}" \
-            --tags="${TAGS}" \
-            --wait-for-nodes=2 \
-            "${params[@]}"
+          VM_NAME="image-test-vm"
+          echo "VM_NAME=${VM_NAME}" >> $GITHUB_ENV
 
-          # Test if the VM's provisionState is "Succeeded" otherwise fail
-          timeout 60s bash -c 'set -o pipefail; while ! az vm list -g "$TEST_RESOURCE_GROUP" | jq -e "length > 0 and all(.provisioningState == \"Succeeded\")"; do sleep 1; done'
+          # Generate SSH key for Linux VMs
+          TMPDIR=$(mktemp -d)
+          echo "TMPDIR=${TMPDIR}" >> $GITHUB_ENV
+          ssh-keygen -t rsa -b 2048 -f "${TMPDIR}/sshkey" -N "" -q
 
+          create_args=(
+            --resource-group "${TEST_RESOURCE_GROUP}"
+            --name "${VM_NAME}"
+            --image "${MANAGED_IMAGE_ID}"
+            --size "Standard_D2s_v3"
+            --location "${MANAGED_IMAGE_LOCATION}"
+            --tags ${TAGS:-}
+          )
+
+          if [[ "${OS_TYPE}" == "Windows" ]]; then
+            create_args+=(
+              --admin-username "capi"
+              --admin-password "Capi\$Test$(date +%s | tail -c 6)!"
+            )
+          else
+            create_args+=(
+              --admin-username "capi"
+              --ssh-key-values "${TMPDIR}/sshkey.pub"
+              --authentication-type ssh
+            )
+          fi
+
+          echo "Creating test VM '${VM_NAME}' from image …"
+          az vm create "${create_args[@]}" \
+            --public-ip-sku Standard \
+            --output json | tee "${TMPDIR}/vm-create.json"
+
+          PUBLIC_IP=$(jq -r '.publicIpAddress' "${TMPDIR}/vm-create.json")
+          echo "VM public IP: ${PUBLIC_IP}"
+          echo "PUBLIC_IP=${PUBLIC_IP}" >> $GITHUB_ENV
+
+      - name: Wait for VM to be ready
+        env:
+          OS_TYPE: ${{ steps.vars.outputs.OS_TYPE }}
+        run: |
+          set -euo pipefail
+
+          if [[ "${OS_TYPE}" == "Windows" ]]; then
+            echo "Waiting for Windows VM agent to be ready …"
+            timeout 300 bash -c "
+              until az vm get-instance-view \
+                --resource-group '${TEST_RESOURCE_GROUP}' \
+                --name '${VM_NAME}' \
+                --query 'instanceView.vmAgent.statuses[0].displayStatus' \
+                -o tsv 2>/dev/null | grep -q 'Ready'; do
+                sleep 10
+              done
+            "
+          else
+            echo "Waiting for SSH to become available …"
+            timeout 300 bash -c "
+              until ssh -o StrictHostKeyChecking=no -o ConnectTimeout=5 \
+                -i "${TMPDIR}/sshkey" capi@'${PUBLIC_IP}' 'echo ready' 2>/dev/null; do
+                sleep 10
+              done
+            "
+          fi
+
+          echo "VM is ready"
+
+      - name: Run smoke tests
+        env:
+          OS_TYPE: ${{ steps.vars.outputs.OS_TYPE }}
+          CONTAINERD_VERSION: ${{ steps.vars.outputs.CONTAINERD_VERSION }}
+        run: |
+          set -euo pipefail
+
+          EXPECTED_K8S="v${KUBERNETES_VERSION}"
+          FAILURES=0
+
+          if [[ "${OS_TYPE}" == "Windows" ]]; then
+            echo "::group::Windows smoke tests"
+
+            az vm run-command invoke \
+              --resource-group "${TEST_RESOURCE_GROUP}" \
+              --name "${VM_NAME}" \
+              --command-id RunPowerShellScript \
+              --scripts '
+                $ErrorActionPreference = "Stop"
+                Write-Output "=== kubelet ==="
+                & "C:\k\kubelet.exe" --version
+                Write-Output "=== kubeadm ==="
+                & "C:\k\kubeadm.exe" version -o short
+                Write-Output "=== kubectl ==="
+                & "C:\k\kubectl.exe" version --client -o yaml
+                Write-Output "=== containerd ==="
+                & "C:\Program Files\containerd\containerd.exe" --version
+                Write-Output "=== crictl ==="
+                & "C:\k\crictl.exe" version
+                Write-Output "=== containerd service ==="
+                Get-Service containerd | Format-Table -AutoSize
+                Write-Output "=== System info ==="
+                Get-ComputerInfo | Select-Object WindowsProductName, OsVersion, OsArchitecture
+              ' --output json | tee /tmp/smoke-output.json
+
+            OUTPUT=$(jq -r '.value[0].message' /tmp/smoke-output.json)
+            echo "${OUTPUT}"
+
+            echo "::endgroup::"
+
+            # Verify Kubernetes version
+            if echo "${OUTPUT}" | grep -q "${EXPECTED_K8S}"; then
+              echo "✓ Kubernetes version ${EXPECTED_K8S} confirmed"
+            else
+              echo "::error::Expected Kubernetes version ${EXPECTED_K8S} not found in output"
+              FAILURES=$((FAILURES + 1))
+            fi
+
+            # Verify containerd version
+            if echo "${OUTPUT}" | grep -q "${CONTAINERD_VERSION}"; then
+              echo "✓ containerd version ${CONTAINERD_VERSION} confirmed"
+            else
+              echo "::error::Expected containerd version ${CONTAINERD_VERSION} not found in output"
+              FAILURES=$((FAILURES + 1))
+            fi
+
+          else
+            SSH_OPTS="-o StrictHostKeyChecking=no -o ConnectTimeout=10 -i ${TMPDIR}/sshkey"
+            SSH_CMD="ssh ${SSH_OPTS} capi@${PUBLIC_IP}"
+
+            echo "::group::Linux smoke tests — version checks"
+
+            echo "--- OS info ---"
+            ${SSH_CMD} 'cat /etc/os-release' || true
+
+            echo "--- kubelet version ---"
+            KUBELET_VERSION=$(${SSH_CMD} 'kubelet --version')
+            echo "${KUBELET_VERSION}"
+
+            echo "--- kubeadm version ---"
+            KUBEADM_VERSION=$(${SSH_CMD} 'kubeadm version -o short')
+            echo "${KUBEADM_VERSION}"
+
+            echo "--- kubectl version ---"
+            ${SSH_CMD} 'kubectl version --client -o yaml 2>/dev/null || kubectl version --client' || true
+
+            echo "--- containerd version ---"
+            ACTUAL_CONTAINERD=$(${SSH_CMD} 'containerd --version')
+            echo "${ACTUAL_CONTAINERD}"
+
+            echo "--- crictl version ---"
+            ${SSH_CMD} 'sudo crictl version' || true
+
+            echo "::endgroup::"
+
+            echo "::group::Linux smoke tests — post-boot validation"
+
+            echo "--- cloud-init status ---"
+            CLOUD_INIT_STATUS=$(${SSH_CMD} 'cloud-init status 2>/dev/null || echo "not available"')
+            echo "${CLOUD_INIT_STATUS}"
+
+            echo "--- systemd service states ---"
+            ${SSH_CMD} 'systemctl is-enabled kubelet containerd' || true
+            ${SSH_CMD} 'systemctl is-active containerd' || true
+
+            echo "--- containerd runtime ready (crictl info) ---"
+            ${SSH_CMD} 'sudo crictl info' || true
+
+            echo "--- pre-pulled container images ---"
+            ${SSH_CMD} "sudo crictl images" || true
+
+            echo "--- kubeadm init dry-run ---"
+            if ${SSH_CMD} "sudo kubeadm init --dry-run --kubernetes-version '${EXPECTED_K8S}'" 2>&1; then
+              echo "✓ kubeadm init dry-run succeeded"
+            else
+              echo "::error::kubeadm init --dry-run failed"
+              FAILURES=$((FAILURES + 1))
+            fi
+
+            echo "::endgroup::"
+
+            # Verify Kubernetes version
+            if echo "${KUBELET_VERSION}" | grep -q "${EXPECTED_K8S}"; then
+              echo "✓ Kubernetes version ${EXPECTED_K8S} confirmed (kubelet)"
+            else
+              echo "::error::Expected kubelet version ${EXPECTED_K8S} but got: ${KUBELET_VERSION}"
+              FAILURES=$((FAILURES + 1))
+            fi
+
+            if echo "${KUBEADM_VERSION}" | grep -q "${EXPECTED_K8S}"; then
+              echo "✓ Kubernetes version ${EXPECTED_K8S} confirmed (kubeadm)"
+            else
+              echo "::error::Expected kubeadm version ${EXPECTED_K8S} but got: ${KUBEADM_VERSION}"
+              FAILURES=$((FAILURES + 1))
+            fi
+
+            # Verify containerd version
+            if echo "${ACTUAL_CONTAINERD}" | grep -q "${CONTAINERD_VERSION}"; then
+              echo "✓ containerd version ${CONTAINERD_VERSION} confirmed"
+            else
+              echo "::error::Expected containerd version ${CONTAINERD_VERSION} but got: ${ACTUAL_CONTAINERD}"
+              FAILURES=$((FAILURES + 1))
+            fi
+
+            # Verify cloud-init completed (not applicable to all distros)
+            if echo "${CLOUD_INIT_STATUS}" | grep -q "done\|disabled\|not available"; then
+              echo "✓ cloud-init status OK"
+            else
+              echo "::warning::cloud-init status: ${CLOUD_INIT_STATUS}"
+            fi
+          fi
+
+          if [[ "${FAILURES}" -gt 0 ]]; then
+            echo "::error::${FAILURES} smoke test(s) failed"
+            exit 1
+          fi
+          echo "All smoke tests passed"
+
+      # -- Collect diagnostics on failure --------------------------------------
+      - name: Collect diagnostics
+        if: failure()
+        env:
+          OS_TYPE: ${{ steps.vars.outputs.OS_TYPE }}
+        run: |
+          set -euo pipefail
+          ARTIFACTS="${GITHUB_WORKSPACE}/_artifacts"
+          mkdir -p "${ARTIFACTS}"
+
+          echo "--- VM instance view ---"
+          az vm get-instance-view \
+            --resource-group "${TEST_RESOURCE_GROUP}" \
+            --name "${VM_NAME}" \
+            --output json 2>&1 | tee "${ARTIFACTS}/vm-instance-view.json" || true
+
+          if [[ "${OS_TYPE}" == "Windows" ]]; then
+            az vm run-command invoke \
+              --resource-group "${TEST_RESOURCE_GROUP}" \
+              --name "${VM_NAME}" \
+              --command-id RunPowerShellScript \
+              --scripts 'Get-EventLog -LogName Application -Newest 50 | Format-Table -AutoSize' \
+              --output json 2>&1 | tee "${ARTIFACTS}/windows-eventlog.json" || true
+          else
+            SSH_OPTS="-o StrictHostKeyChecking=no -o ConnectTimeout=10 -i ${TMPDIR}/sshkey"
+            SSH_CMD="ssh ${SSH_OPTS} capi@${PUBLIC_IP}"
+
+            echo "--- journalctl kubelet ---"
+            ${SSH_CMD} 'sudo journalctl -u kubelet --no-pager -n 100' 2>&1 | tee "${ARTIFACTS}/kubelet.log" || true
+            echo "--- journalctl containerd ---"
+            ${SSH_CMD} 'sudo journalctl -u containerd --no-pager -n 100' 2>&1 | tee "${ARTIFACTS}/containerd.log" || true
+            echo "--- cloud-init status ---"
+            ${SSH_CMD} 'cloud-init status --long' 2>&1 | tee "${ARTIFACTS}/cloud-init.log" || true
+            echo "--- dmesg tail ---"
+            ${SSH_CMD} 'dmesg | tail -50' 2>&1 | tee "${ARTIFACTS}/dmesg.log" || true
+          fi
+
+      - name: Upload diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-diagnostics
+          path: _artifacts/
+          retention-days: 7
+
+      # -- Cleanup (always runs) -----------------------------------------------
       - name: Clean up test resource group
         if: always()
         run: |
@@ -391,8 +612,10 @@ jobs:
 
           TEST_RESOURCE_GROUP="${TEST_RESOURCE_GROUP:-}"
           if [[ -n "${TEST_RESOURCE_GROUP}" ]]; then
-            echo "Cleaning up test resource group: ${TEST_RESOURCE_GROUP}"
-            az group delete -n "${TEST_RESOURCE_GROUP}" --yes --no-wait || true
+            echo "Deleting test resource group: ${TEST_RESOURCE_GROUP}"
+            az group delete -n "${TEST_RESOURCE_GROUP}" --yes --no-wait \
+              --force-deletion-types=Microsoft.Compute/virtualMachines \
+              || true
           else
             echo "No test resource group to clean up"
           fi
@@ -485,8 +708,8 @@ jobs:
           RESOURCE_GROUP="${RESOURCE_GROUP}"
           SIG_OFFER="reference-images"
 
-          # Set replicated regions
-          REPLICATED_REGIONS="${MANAGED_IMAGE_LOCATION} ${REPLICATED_REGIONS_INPUT}"
+          # Set replicated regions (deduplicate in case build region is already in the list)
+          REPLICATED_REGIONS=$(echo "${MANAGED_IMAGE_LOCATION} ${REPLICATED_REGIONS_INPUT}" | tr ' ' '\n' | sort -u | tr '\n' ' ')
 
           # Create the resource group if needed
           if ! az group show -n "${RESOURCE_GROUP}" -o none 2>/dev/null; then
