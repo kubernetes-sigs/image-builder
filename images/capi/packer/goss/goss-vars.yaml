@@ -694,3 +694,32 @@ windows:
         filetype: file
         contains:
         - "metadata_services=cloudbaseinit.metadata.services.base.EmptyMetadataService"
+
+  proxmox:
+    windows-service:
+
+    files:
+      'c:/program files/Cloudbase Solutions/Cloudbase-init/conf/cloudbase-init.conf':
+        exists: true
+        filetype: file
+        contains:
+        - "!/logging_serial_port=COM1,115200,N,8/"
+        - "metadata_services=cloudbaseinit.metadata.services.nocloudservice.NoCloudConfigDriveService"
+        - "cloudbaseinit.plugins.common.ephemeraldisk.EphemeralDiskPlugin"
+        - "cloudbaseinit.plugins.common.mtu.MTUPlugin"
+        - "cloudbaseinit.plugins.common.sethostname.SetHostNamePlugin"
+        - "cloudbaseinit.plugins.common.networkconfig.NetworkConfigPlugin"
+        - "cloudbaseinit.plugins.common.sshpublickeys.SetUserSSHPublicKeysPlugin"
+        - "cloudbaseinit.plugins.common.userdata.UserDataPlugin"
+        - "cloudbaseinit.plugins.common.localscripts.LocalScriptsPlugin"
+        - "cloudbaseinit.plugins.windows.createuser.CreateUserPlugin"
+        - "cloudbaseinit.plugins.windows.extendvolumes.ExtendVolumesPlugin"
+        - "[nocloud]"
+        - "metadata_file=META_DATA"
+        - "networkdata_file=NETWORK_CONFIG"
+        - "userdata_file=USER_DATA"
+      'c:/program files/Cloudbase Solutions/Cloudbase-init/localscripts/cloudbase_helper.py':
+        exists: true
+        filetype: file
+        contains:
+        - "Apply Proxmox NoCloud network data from a config-drive file."

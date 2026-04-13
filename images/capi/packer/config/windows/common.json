@@ -1,5 +1,8 @@
 {
   "additional_debug_files": "",
+  "cloudbase_nocloud_metadata_file": "",
+  "cloudbase_nocloud_networkdata_file": "",
+  "cloudbase_nocloud_userdata_file": "",
   "debug_tools": "true",
   "disable_hypervisor": "false",
   "http_proxy": "",

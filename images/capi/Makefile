@@ -173,6 +173,7 @@ deps-huaweicloud: deps-common
 .PHONY: deps-proxmox
 deps-proxmox: ## Installs/checks dependencies for Proxmox builds
 deps-proxmox: deps-common
+	hack/ensure-ansible-windows.sh
 	$(PACKER) init packer/config.pkr.hcl
 	$(PACKER) init packer/proxmox/config.pkr.hcl
 
@@ -403,7 +404,7 @@ NUTANIX_BUILD_NAMES ?= nutanix-ubuntu-2204 nutanix-ubuntu-2404 nutanix-rhel-9 nu
 
 HCLOUD_BUILD_NAMES ?= hcloud-ubuntu-2204 hcloud-ubuntu-2404 hcloud-rockylinux-9 hcloud-flatcar hcloud-flatcar-arm64
 
-PROXMOX_BUILD_NAMES 		?= proxmox-ubuntu-2204 proxmox-ubuntu-2404 proxmox-ubuntu-2404-efi proxmox-rockylinux-9 proxmox-flatcar
+PROXMOX_BUILD_NAMES 		?= proxmox-ubuntu-2204 proxmox-ubuntu-2404 proxmox-ubuntu-2404-efi proxmox-rockylinux-9 proxmox-flatcar proxmox-windows-2022
 
 VULTR_BUILD_NAMES 				?=	vultr-ubuntu-2204 vultr-ubuntu-2404
 
@@ -644,7 +645,11 @@ $(HCLOUD_VALIDATE_TARGETS): deps-hcloud
 
 .PHONY: $(PROXMOX_BUILD_TARGETS)
 $(PROXMOX_BUILD_TARGETS): deps-proxmox set-ssh-password
-	$(PACKER) build $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/proxmox/$(subst build-proxmox-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/proxmox/packer.json
+    # This uses a packer file builder to input unattend variables into a JSON file to be consumed by the python script before running the vsphere provisioner
+	$(if $(findstring windows,$@),$(PACKER) build $(PACKER_WINDOWS_NODE_FLAGS) -var-file="$(abspath packer/proxmox/$(subst build-proxmox-,,$@).json)" -var-file="$(abspath packer/proxmox/$(subst build-proxmox-,,$@).json)" -only=file $(ABSOLUTE_PACKER_VAR_FILES) packer/proxmox/packer-windows.json,)
+	$(if $(findstring windows,$@),hack/windows-unattend.py --unattend-file='./packer/proxmox/windows/$(subst build-proxmox-,,$@)/autounattend.xml',)
+	$(PACKER) build $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="$(abspath packer/proxmox/$(subst build-proxmox-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/proxmox/packer$(if $(findstring windows,$@),-windows,).json
+
 
 .PHONY: $(PROXMOX_VALIDATE_TARGETS)
 $(PROXMOX_VALIDATE_TARGETS): deps-proxmox set-ssh-password
@@ -859,6 +864,11 @@ build-proxmox-ubuntu-2404: ## Builds Ubuntu 24.04 Proxmox image
 build-proxmox-ubuntu-2404-efi: ## Builds Ubuntu 24.04 Proxmox image that EFI boots
 build-proxmox-rockylinux-9: ## Builds Rocky Linux 9 Proxmox image
 build-proxmox-flatcar: ## Builds Flatcar Proxmox image
+build-proxmox-ubuntu-2204: ## Builds the Proxmox ubuntu-2204 image
+build-proxmox-ubuntu-2404: ## Builds the Proxmox ubuntu-2404 image
+build-proxmox-ubuntu-2404-efi: ## Builds the Proxmox ubuntu-2404-efi image that EFI boots
+build-proxmox-rockylinux-9: ## Builds the Proxmox rockylinux-9 image
+build-proxmox-windows-2022: ## Builds the Proxmox Windows 2022 image
 build-proxmox-all: $(PROXMOX_BUILD_TARGETS) ## Builds all Proxmox images
 
 build-vultr-ubuntu-2204: ## Builds Ubuntu 22.04 Vultr Snapshot
