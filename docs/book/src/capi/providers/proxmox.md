@@ -13,7 +13,9 @@ The image build process expects a few things to be in place before the build pro
 1. DHCP must be available to assign the packer VM an IP
   * The packer proxmox integration currently does not support the ability to assign static IPs, thus DHCP is required.
   * Access to internet hosts is optional, but the VM will not be able to apply any current updates and will need to be manually rebooted to get a clean cloud-init status.
-2. The build VM must be accessible via SSH from the host running `make build-proxmox...`
+2. The build VM must be accessible via SSH or Winrm from the host running `make build-proxmox...`
+  * Linux builds use SSH.
+  * Windows builds use WinRM.
 3. The build VM must have DHCP, DNS, HTTP, HTTPS and NTP accessibility to successfully update the OS packages.
 
 ## Building Images
@@ -38,6 +40,7 @@ the different operating systems.
 |--------------------|-----------------------------------------|
 | `ubuntu-2204.json` | The settings for the Ubuntu 22.04 image |
 | `ubuntu-2404.json` | The settings for the Ubuntu 24.04 image |
+| `windows-2022.json` | The settings for the Windows Server 2022 image |
 
 The full list of available environment vars can be found in the `variables` section of `images/capi/packer/proxmox/packer.json`.
 
@@ -84,6 +87,45 @@ export PACKER_FLAGS="--var 'oem_id=qemu'"
 make build-proxmox-flatcar
 ```
 
+### Building images for Windows
+
+Windows builds require a Windows installation ISO and a Windows administrator
+password in addition to the standard Proxmox credentials.
+
+Set the following environment variables before running the build:
+
+```bash
+export PROXMOX_URL="https://pve.example.com:8006/api2/json"
+export PROXMOX_USERNAME=<USERNAME>
+export PROXMOX_TOKEN=<TOKEN_ID>
+export PROXMOX_NODE="pve"
+export PROXMOX_ISO_POOL="local"
+export PROXMOX_BRIDGE="vmbr0"
+export PROXMOX_STORAGE_POOL="local-lvm"
+export ISO_FILE="local:iso/en-us_windows_server_2022_x64.iso"
+export WINDOWS_ADMIN_PASSWORD='<PASSWORD>'
+```
+
+The Proxmox Windows build also expects a VirtIO driver ISO to be available in the
+selected ISO storage. By default the build uses:
+
+```bash
+local:iso/virtio-win-0.1.285.iso
+```
+
+If your environment uses a different VirtIO image name or location, override it
+with `PACKER_FLAGS`:
+
+```bash
+export PACKER_FLAGS="--var 'iso_virtio=local:iso/virtio-win-0.1.285.iso'"
+```
+
+Build the Windows Server 2022 template with:
+
+```bash
+make build-proxmox-windows-2022
+```
+
 ### Example
 
 Prior to building images you need to ensure you have set the required environment variables:
@@ -102,6 +144,12 @@ export PROXMOX_STORAGE_POOL="local-lvm"
 
 ```bash
 make build-proxmox-ubuntu-2204
+```
+
+- Build Windows Server 2022 template:
+
+```bash
+make build-proxmox-windows-2022
 ```
 
 ### Note on disk formats

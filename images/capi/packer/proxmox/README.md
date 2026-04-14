@@ -15,6 +15,30 @@ For example, to use a local ISO file, set the `ISO_FILE` environment variable li
 export ISO_FILE="local:iso/ubuntu-24.04.3-live-server-amd64.iso"
 ```
 
+## Windows for Proxmox
+
+To build the Windows Server 2022 image, set the Windows installation ISO and an
+administrator password in addition to the normal Proxmox environment variables.
+
+```shell
+export ISO_FILE="local:iso/en-us_windows_server_2022_x64.iso"
+export WINDOWS_ADMIN_PASSWORD='<PASSWORD>'
+make build-proxmox-windows-2022
+```
+
+The build expects a VirtIO driver ISO to be present in Proxmox ISO storage. The
+default value is:
+
+```shell
+local:iso/virtio-win-0.1.285.iso
+```
+
+If needed, override it with:
+
+```shell
+export PACKER_FLAGS="--var 'iso_virtio=local:iso/virtio-win-0.1.285.iso'"
+```
+
 ## Flatcar for Proxmox
 
 Proxmox support is available on Flatcar from version `4152`.

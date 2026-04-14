@@ -1,0 +1,194 @@
+{
+  "builders": [
+    {
+      "content": "{\n \"unattend_timezone\" : \"{{user `unattend_timezone`}}\"\n, \"admin_password\" : \"{{user `windows_admin_password`}}\"\n}",
+      "target": "./packer_cache/unattend.json",
+      "type": "file"
+    },
+    {
+      "type": "proxmox-iso",
+
+      "proxmox_url": "{{user `proxmox_url`}}",
+      "insecure_skip_tls_verify": true,
+      "username": "{{user `username`}}",
+      "token": "{{user `token`}}",
+      "node": "{{ user `node` }}",
+
+      "efi_config": {
+        "efi_storage_pool": "{{user `storage_pool`}}",
+        "pre_enrolled_keys": true,
+        "efi_type": "4m"
+      },
+
+      "boot_wait": "{{user `boot_wait`}}",
+      "boot_command": [
+      "<spacebar><spacebar><spacebar><spacebar>"
+      ],
+      "task_timeout": "10m",
+      "bios": "ovmf",
+      "machine": "q35",
+      "os": "win11",
+      "boot": "order=scsi0;scsi1;ide2",
+      "boot_iso": {
+          "iso_file": "{{user `iso_file`}}",
+          "iso_storage_pool": "{{user `iso_storage_pool`}}",
+          "iso_url": "{{user `iso_url`}}",
+          "iso_checksum": "none"
+      },
+     
+      
+      "additional_iso_files": [
+      {
+          "iso_file": "{{user `iso_virtio`}}", 
+          "iso_checksum": "none",     
+          "unmount":  "true"
+      },
+      {
+          "iso_storage_pool": "{{user `iso_storage_pool`}}",
+          "unmount": "true",
+          "cd_files": ["./packer/proxmox/windows/disable-network-discovery.cmd",
+                       "./packer/proxmox/windows/enable_winrm.ps1",
+                       "./packer/proxmox/windows/windows-2022/autounattend.xml",
+                       "./packer/proxmox/windows/Install_agent.ps1"
+                      ]
+      }
+      ],
+
+
+
+      "cores": "{{user `cores`}}",
+      "cpu_type": "{{user `cpu_type`}}",
+      "disks": [
+        {
+          "disk_size": "{{user `disk_size`}}",
+          "format": "{{user `disk_format`}}",
+          "storage_pool": "{{user `storage_pool`}}",
+          "storage_pool_type": "{{user `storage_pool_type`}}",
+          "type": "scsi",
+          "asyncio": "native",
+          "io_thread": "true"
+        }
+      ],
+
+      "scsi_controller": "{{user `scsi_controller`}}",
+      "memory": "{{user `memory`}}",
+      "ballooning_minimum": "0",
+      "name": "{{user `build_name`}}",
+      "network_adapters": [
+        {
+          "model": "virtio",
+          "bridge": "{{user `bridge`}}"
+        }
+      ],
+      
+      "sockets": "{{user `sockets`}}",
+      "template_name": "{{ user `artifact_name` }}",
+      "unmount_iso": "true",
+      "vm_id": "{{user `vmid`}}",
+
+
+      "communicator": "winrm",
+      "winrm_insecure": true,
+      "winrm_password": "{{user `windows_admin_password`}}",
+      "winrm_port": 5986,
+      "winrm_timeout": "4h",
+      "winrm_use_ssl": true,
+      "winrm_username": "Administrator"
+    }
+  ],
+
+  "provisioners": [
+    {
+      "except": "file",
+      "extra_arguments": [
+        "-e",
+        "ansible_winrm_server_cert_validation=ignore",
+        "--extra-vars",
+        "{{user `ansible_common_vars`}}",
+        "--extra-vars",
+        "{{user `ansible_extra_vars`}}",
+        "--extra-vars",
+        "{{user `ansible_user_vars`}}"
+      ],
+      "playbook_file": "ansible/windows/node_windows.yml",
+      "type": "ansible",
+      "use_proxy": false,
+      "user": "Administrator"
+    },
+    {
+      "except": "file",
+      "restart_check_command": "powershell -command \"& {if ((get-content C:\\ProgramData\\lastboot.txt) -eq (Get-WmiObject win32_operatingsystem).LastBootUpTime) {Write-Output 'Sleeping for 600 seconds to wait for reboot'; start-sleep 600} else {Write-Output 'Reboot complete'}}\"",
+      "restart_command": "powershell \"& {(Get-WmiObject win32_operatingsystem).LastBootUpTime > C:\\ProgramData\\lastboot.txt; Restart-Computer -force}\"",
+      "type": "windows-restart",
+      "restart_timeout": "20m"
+    },
+    {
+      "inline": [
+        "nssm stop kubelet",
+        "Remove-Item -Force -Recurse C:\\var\\log\\kubelet\\* -ErrorAction SilentlyContinue"
+      ],
+      "type": "powershell"
+    },
+    {
+      "elevated_password": "{{.WinRMPassword}}",
+      "elevated_user": "Administrator",
+      "script": "packer/proxmox/windows/sysprep.ps1",
+      "type": "powershell"
+    }
+  ],
+  "variables": {
+    "additional_debug_files": null,
+    "ansible_common_vars": "",
+    "ansible_extra_vars": "",
+    "ansible_user_vars": "",
+    "ansible_scp_extra_args": "",
+    "artifact_name": "{{user `build_name`}}-kube-{{user `kubernetes_semver`}}",
+    "boot_wait": "4s",
+    "bios": "ovmf",
+    "bridge": "{{env `PROXMOX_BRIDGE`}}",
+    "build_timestamp": "{{timestamp}}",
+    "cloudbase_init_url": "https://github.com/cloudbase/cloudbase-init/releases/download/{{user `cloudbase_init_version`}}/CloudbaseInitSetup_{{user `cloudbase_init_version` | replace_all `.` `_` }}_x64.msi",
+    "cloudbase_metadata_services": "cloudbaseinit.metadata.services.nocloudservice.NoCloudConfigDriveService",
+    "cloudbase_metadata_services_unattend": "cloudbaseinit.metadata.services.nocloudservice.NoCloudConfigDriveService",
+    "cloudbase_nocloud_metadata_file": "META_DATA",
+    "cloudbase_nocloud_networkdata_file": "NETWORK_CONFIG",
+    "cloudbase_nocloud_userdata_file": "USER_DATA",
+    "cloudbase_plugins": "cloudbaseinit.plugins.windows.createuser.CreateUserPlugin, cloudbaseinit.plugins.common.setuserpassword.SetUserPasswordPlugin, cloudbaseinit.plugins.common.mtu.MTUPlugin, cloudbaseinit.plugins.common.sethostname.SetHostNamePlugin, cloudbaseinit.plugins.common.localscripts.LocalScriptsPlugin, cloudbaseinit.plugins.common.networkconfig.NetworkConfigPlugin, cloudbaseinit.plugins.windows.extendvolumes.ExtendVolumesPlugin, cloudbaseinit.plugins.common.ephemeraldisk.EphemeralDiskPlugin, cloudbaseinit.plugins.common.sshpublickeys.SetUserSSHPublicKeysPlugin, cloudbaseinit.plugins.common.userdata.UserDataPlugin, cloudbaseinit.plugins.windows.createuser.CreateUserPlugin, cloudbaseinit.plugins.windows.extendvolumes.ExtendVolumesPlugin",
+    "cloudbase_plugins_unattend": "cloudbaseinit.plugins.common.mtu.MTUPlugin",
+    "cloudbase_real_time_clock_utc": "true",
+    "containerd_url": "",
+    "containerd_version": null,
+    "cores": "2",
+    "crictl_version": null,
+    "disk_format": "raw",
+    "disk_size": "60G",
+    "existing_ansible_ssh_args": "{{env `ANSIBLE_SSH_ARGS`}}",
+    "http_directory": "./packer/proxmox/windows/{{user `distro_name`}}/http/",
+    "iso_storage_pool": "{{env `PROXMOX_ISO_POOL`}}",
+    "kubernetes_base_url": "https://kubernetesreleases.blob.core.windows.net/kubernetes/{{user `kubernetes_semver`}}/binaries/node/windows/{{user `kubernetes_goarch`}}",
+    "kubernetes_container_registry": null,
+    "kubernetes_http_package_url": "",
+    "kubernetes_typed_version": "kube-{{user `kubernetes_semver`}}",
+    "memory": "2048",
+    "mtu": "{{env `PROXMOX_MTU`}}",
+    "node": "{{env `PROXMOX_NODE`}}",
+    "numa": "false",
+    "oem_id": "{{ user `oem_id` }}",
+    "proxmox_url": "{{env `PROXMOX_URL`}}",
+    "sockets": "2",
+    "storage_pool": "{{env `PROXMOX_STORAGE_POOL`}}",
+    "storage_pool_type": "lvm",
+    "token": "{{env `PROXMOX_TOKEN`}}",
+    "username": "{{env `PROXMOX_USERNAME`}}",
+    "vlan_tag": "{{env `PROXMOX_VLAN`}}",
+    "vmid": "",
+    "scsi_controller": "virtio-scsi-single",
+    "nssm_url": null,
+    "prepull": null,
+    "unattend_timezone": "Pacific Standard Time",
+    "windows_admin_password": "{{env `WINDOWS_ADMIN_PASSWORD`}}",
+    "windows_service_manager": null,
+    "windows_updates_categories": null,
+    "windows_updates_kbs": null
+  }
+}
