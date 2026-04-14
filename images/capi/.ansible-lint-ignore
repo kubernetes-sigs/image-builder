@@ -17,15 +17,12 @@ ansible/roles/gpu/tasks/nvidia.yml no-changed-when
 ansible/roles/kubernetes/defaults/main.yml var-naming[no-role-prefix]
 ansible/roles/kubernetes/defaults/main.yml yaml[line-length]
 ansible/roles/kubernetes/tasks/crictl-url.yml name[template]
-ansible/roles/kubernetes/tasks/debian.yml jinja[spacing]
 ansible/roles/kubernetes/tasks/ecrpull.yml command-instead-of-shell
 ansible/roles/kubernetes/tasks/ecrpull.yml no-changed-when
 ansible/roles/kubernetes/tasks/kubeadmpull.yml command-instead-of-shell
 ansible/roles/kubernetes/tasks/kubeadmpull.yml no-changed-when
 ansible/roles/kubernetes/tasks/main.yml name[missing]
-ansible/roles/kubernetes/tasks/photon.yml jinja[spacing]
 ansible/roles/kubernetes/tasks/photon.yml no-changed-when
-ansible/roles/kubernetes/tasks/redhat.yml jinja[spacing]
 ansible/roles/kubernetes/tasks/url.yml command-instead-of-shell
 ansible/roles/kubernetes/tasks/url.yml no-changed-when
 ansible/roles/load_additional_components/defaults/main.yml var-naming[no-role-prefix]
@@ -62,7 +59,6 @@ ansible/roles/python/defaults/main.yml var-naming[no-role-prefix]
 ansible/roles/python/tasks/flatcar.yml no-changed-when
 ansible/roles/python/tasks/main.yml name[missing]
 ansible/roles/python/tasks/main.yml no-changed-when
-ansible/roles/security/tasks/trivy.yml jinja[spacing]
 ansible/roles/setup/defaults/main.yml var-naming[no-role-prefix]
 ansible/roles/setup/tasks/azurelinux.yml name[missing]
 ansible/roles/setup/tasks/azurelinux.yml package-latest
