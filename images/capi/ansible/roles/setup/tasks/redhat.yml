@@ -51,7 +51,8 @@
     lock_timeout: 60
   when: redhat_epel_rpm != "" and not packer_builder_type.startswith('amazon') and not packer_builder_type.startswith('scaleway')
 
-- ansible.builtin.import_tasks: rpm_repos.yml
+- name: Import RPM repository tasks
+  ansible.builtin.import_tasks: rpm_repos.yml
 
 - name: Perform a yum update
   ansible.builtin.dnf:

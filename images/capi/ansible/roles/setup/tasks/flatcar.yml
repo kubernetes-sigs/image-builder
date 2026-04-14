@@ -12,7 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- ansible.builtin.include_tasks: bootstrap-flatcar.yml
+- name: Include Flatcar bootstrap tasks
+  ansible.builtin.include_tasks: bootstrap-flatcar.yml
 
 - name: Create system-environment-generators directory
   ansible.builtin.file:

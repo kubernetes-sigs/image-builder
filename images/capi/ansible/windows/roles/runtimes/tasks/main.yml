@@ -12,5 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- ansible.builtin.import_tasks: containerd.yml
+- name: Import containerd runtime tasks
+  ansible.builtin.import_tasks: containerd.yml
   when: runtime == "containerd"

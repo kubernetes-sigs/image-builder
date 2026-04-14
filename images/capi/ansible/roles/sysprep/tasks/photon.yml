@@ -41,7 +41,8 @@
     regexp: ^excludepkgs=
     line: excludepkgs={{ package_list }}
 
-- ansible.builtin.import_tasks: rpm_repos.yml
+- name: Import RPM repository tasks
+  ansible.builtin.import_tasks: rpm_repos.yml
 
 - name: Update the repos package to import the recent gpg keys
   ansible.builtin.command: tdnf update -y photon-repos --enablerepo=photon --refresh

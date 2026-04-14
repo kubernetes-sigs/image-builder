@@ -12,10 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- ansible.builtin.include_tasks: nutanix-redhat.yml
+- name: Include Nutanix RedHat tasks
+  ansible.builtin.include_tasks: nutanix-redhat.yml
   when: ansible_os_family == "RedHat"
 
-- ansible.builtin.include_tasks: nutanix-ubuntu.yml
+- name: Include Nutanix Ubuntu tasks
+  ansible.builtin.include_tasks: nutanix-ubuntu.yml
   when: ansible_os_family == "Debian"
 
 - name: Ensure ip_vs module is loaded

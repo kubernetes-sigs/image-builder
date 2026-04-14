@@ -12,7 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- ansible.builtin.include_tasks: awscliv2.yml
+- name: Include AWS CLI v2 tasks
+  ansible.builtin.include_tasks: awscliv2.yml
   when: ansible_distribution != "Amazon"
 
 # Remove after https://github.com/aws/amazon-ssm-agent/issues/235 is fixed.

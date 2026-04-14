@@ -28,22 +28,26 @@
       ansible.builtin.raw: test -e /usr/bin/apt && (apt-get update && apt-get install -y python3) || (yum install -y python3)
       when: python_installed.rc != 0
 
-- hosts: all
+- name: Run firstboot roles
+  hosts: all
   become: true
   vars:
     firstboot_custom_roles_pre: ""
     firstboot_custom_roles_post: ""
 
   tasks:
-    - ansible.builtin.include_role:
+    - name: Include pre-firstboot custom roles
+      ansible.builtin.include_role:
         name: "{{ role }}"
       loop: "{{ firstboot_custom_roles_pre.split() }}"
       loop_control:
         loop_var: role
       when: firstboot_custom_roles_pre != ""
-    - ansible.builtin.include_role:
+    - name: Include firstboot role
+      ansible.builtin.include_role:
         name: firstboot
-    - ansible.builtin.include_role:
+    - name: Include post-firstboot custom roles
+      ansible.builtin.include_role:
         name: "{{ role }}"
       loop: "{{ firstboot_custom_roles_post.split() }}"
       loop_control:
