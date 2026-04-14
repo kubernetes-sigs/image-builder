@@ -16,7 +16,7 @@
   when: ansible_os_family == "Flatcar"
 
 - name: Install AWS CLI prequisites
-  ansible.builtin.yum:
+  ansible.builtin.dnf:
     name:
       - gnupg
       - unzip

@@ -60,7 +60,7 @@
       ansible.builtin.command: subscription-manager clean
 
 - name: Remove yum package caches
-  ansible.builtin.yum:
+  ansible.builtin.dnf:
     autoremove: true
     lock_timeout: 60
 

@@ -26,7 +26,7 @@
   when: ansible_os_family == "Debian"
 
 - name: Install cloud-init packages
-  ansible.builtin.yum:
+  ansible.builtin.dnf:
     name: "{{ packages }}"
     state: present
   vars:

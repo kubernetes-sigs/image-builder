@@ -33,7 +33,7 @@
   when: packer_builder_type.startswith('amazon')
 
 - name: Install EPEL package
-  ansible.builtin.yum:
+  ansible.builtin.dnf:
     name: epel-release
     state: present
   when: packer_builder_type.startswith('amazon')
@@ -45,7 +45,7 @@
   when: epel_rpm_gpg_key != "" and not packer_builder_type.startswith('amazon') and not packer_builder_type.startswith('scaleway')
 
 - name: Add epel repo
-  ansible.builtin.yum:
+  ansible.builtin.dnf:
     name: "{{ redhat_epel_rpm }}"
     state: present
     lock_timeout: 60
@@ -54,19 +54,19 @@
 - ansible.builtin.import_tasks: rpm_repos.yml
 
 - name: Perform a yum update
-  ansible.builtin.yum:
+  ansible.builtin.dnf:
     name: "*"
     state: latest
     lock_timeout: 60
 
 - name: Install baseline dependencies
-  ansible.builtin.yum:
+  ansible.builtin.dnf:
     name: "{{ rpms }}"
     state: present
     lock_timeout: 60
 
 - name: Install extra rpms
-  ansible.builtin.yum:
+  ansible.builtin.dnf:
     name: "{{ extra_rpms.split() }}"
     state: present
     lock_timeout: 60
