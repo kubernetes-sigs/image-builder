@@ -9,8 +9,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- ansible.builtin.include_tasks: azure.yml
+- name: Include Azure provider tasks
+  ansible.builtin.include_tasks: azure.yml
   when: packer_builder_type.startswith('azure')
 
-- ansible.builtin.include_tasks: vmware.yml
+- name: Include VMware provider tasks
+  ansible.builtin.include_tasks: vmware.yml
   when: packer_builder_type is search('vmware') or packer_builder_type is search('vsphere')

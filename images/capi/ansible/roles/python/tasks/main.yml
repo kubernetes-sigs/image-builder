@@ -16,7 +16,8 @@
   ansible.builtin.raw: grep DISTRIB_ID /etc/lsb-release || echo '/etc/lsb-release not found'
   register: distrib_id
 
-- ansible.builtin.include_tasks: flatcar.yml
+- name: Include Flatcar Python tasks
+  ansible.builtin.include_tasks: flatcar.yml
   # We can't use ansible_os_family fact here for consistency, as facts gathering
   # is disabled in the playbook which includes this role. See playbook for more details.
   when: distrib_id.stdout_lines[0] is search("Flatcar")

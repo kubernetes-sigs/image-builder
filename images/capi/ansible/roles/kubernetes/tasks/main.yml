@@ -12,24 +12,30 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- ansible.builtin.import_tasks: debian.yml
+- name: Import Debian Kubernetes tasks
+  ansible.builtin.import_tasks: debian.yml
   when: kubernetes_source_type == "pkg" and ansible_os_family == "Debian"
 
-- ansible.builtin.import_tasks: azurelinux.yml
+- name: Import Azure Linux Kubernetes tasks
+  ansible.builtin.import_tasks: azurelinux.yml
   when: kubernetes_source_type == "pkg" and ansible_os_family in ["Common Base Linux Mariner", "Microsoft Azure Linux"]
 
-- ansible.builtin.import_tasks: redhat.yml
+- name: Import RedHat Kubernetes tasks
+  ansible.builtin.import_tasks: redhat.yml
   when: kubernetes_source_type == "pkg" and ansible_os_family == "RedHat"
 
-- ansible.builtin.import_tasks: photon.yml
+- name: Import Photon Kubernetes tasks
+  ansible.builtin.import_tasks: photon.yml
   when: kubernetes_source_type == "pkg" and ansible_os_family == "VMware Photon OS"
 
-- ansible.builtin.import_tasks: url.yml
+- name: Import URL Kubernetes tasks
+  ansible.builtin.import_tasks: url.yml
   when: kubernetes_source_type == "http" and kubernetes_cni_source_type == "http"
 
 # must include crictl-url.yml after installing containerd,
 # as the cri-containerd tarball also includes crictl.
-- ansible.builtin.import_tasks: crictl-url.yml
+- name: Import crictl URL tasks
+  ansible.builtin.import_tasks: crictl-url.yml
 
 - name: Create kubelet default config file
   ansible.builtin.template:
@@ -109,8 +115,10 @@
   ansible.builtin.set_fact:
     ecr: '{{ kubernetes_container_registry is regex("^[0-9]{12}.dkr.ecr.[^.]+.amazonaws.com$") }}'
 
-- ansible.builtin.import_tasks: kubeadmpull.yml
+- name: Import kubeadm pull tasks
+  ansible.builtin.import_tasks: kubeadmpull.yml
   when: (kubernetes_source_type == "pkg" and not ecr) or ansible_os_family == "Flatcar"
 
-- ansible.builtin.import_tasks: ecrpull.yml
+- name: Import ECR pull tasks
+  ansible.builtin.import_tasks: ecrpull.yml
   when: kubernetes_source_type != "http" and ecr

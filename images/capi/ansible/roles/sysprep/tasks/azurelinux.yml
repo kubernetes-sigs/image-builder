@@ -24,7 +24,8 @@
   ansible.builtin.set_fact:
     package_list: "{{ ansible_facts.packages.keys() | join(' ') }}"
 
-- ansible.builtin.import_tasks: rpm_repos.yml
+- name: Import RPM repository tasks
+  ansible.builtin.import_tasks: rpm_repos.yml
 
 - name: Ensure nftables config ends with a newline
   ansible.builtin.shell: /bin/echo "" >> /etc/sysconfig/nftables.conf

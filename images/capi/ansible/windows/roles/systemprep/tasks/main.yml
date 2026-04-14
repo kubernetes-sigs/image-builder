@@ -97,10 +97,12 @@
     reboot: true
   when: windows_updates_category_names|length > 0
 
-- ansible.builtin.import_tasks: ssh-feature.yml
+- name: Import SSH feature tasks
+  ansible.builtin.import_tasks: ssh-feature.yml
   when: ssh_source_url == ""
 
-- ansible.builtin.import_tasks: ssh-archive.yml
+- name: Import SSH archive tasks
+  ansible.builtin.import_tasks: ssh-archive.yml
   when: ssh_source_url != ""
 
 - name: Set default SSH shell to Powershell

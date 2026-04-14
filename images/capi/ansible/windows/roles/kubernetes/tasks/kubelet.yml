@@ -28,10 +28,12 @@
   ansible.windows.win_shell: New-Item -path $env:SystemDrive\var\lib\kubelet\etc\kubernetes\pki -type SymbolicLink -value  $env:SystemDrive\etc\kubernetes\pki\ -Force
   when: kubernetes_semver is version('v1.23.0', '<')
 
-- ansible.builtin.import_tasks: nssm.yml
+- name: Import NSSM kubelet tasks
+  ansible.builtin.import_tasks: nssm.yml
   when: windows_service_manager == "nssm"
 
-- ansible.builtin.import_tasks: sc.yml
+- name: Import Windows service kubelet tasks
+  ansible.builtin.import_tasks: sc.yml
   when: windows_service_manager == "windows_service"
 
 # Dependency selection: https://www.reddit.com/r/ansible/comments/imfdgn/setting_a_variable_conditionally/g41anaf/?utm_source=reddit&utm_medium=web2x&context=3

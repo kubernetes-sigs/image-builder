@@ -12,13 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- ansible.builtin.import_tasks: debian.yml
+- name: Import Debian containerd tasks
+  ansible.builtin.import_tasks: debian.yml
   when: ansible_os_family == "Debian"
 
-- ansible.builtin.import_tasks: redhat.yml
+- name: Import RedHat containerd tasks
+  ansible.builtin.import_tasks: redhat.yml
   when: ansible_os_family in ["Common Base Linux Mariner", "Microsoft Azure Linux", "RedHat"]
 
-- ansible.builtin.import_tasks: photon.yml
+- name: Import Photon containerd tasks
+  ansible.builtin.import_tasks: photon.yml
   when: ansible_os_family == "VMware Photon OS"
 
 # TODO(vincepri): Use deb/rpm packages once available.

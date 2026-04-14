@@ -13,8 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-- ansible.builtin.include_tasks: photon.yml
+- name: Include Photon firstboot tasks
+  ansible.builtin.include_tasks: photon.yml
   when: ansible_os_family == "VMware Photon OS"
 
-- ansible.builtin.include_tasks: qemu.yml
+- name: Include QEMU firstboot tasks
+  ansible.builtin.include_tasks: qemu.yml
   when: packer_builder_type is search('qemu')

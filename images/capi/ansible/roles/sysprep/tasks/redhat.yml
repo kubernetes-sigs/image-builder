@@ -38,7 +38,8 @@
     line: excludepkgs={{ package_list }}
   when: ansible_distribution == "Amazon" and ansible_distribution_version == "2023"
 
-- ansible.builtin.import_tasks: rpm_repos.yml
+- name: Import RPM repository tasks
+  ansible.builtin.import_tasks: rpm_repos.yml
 
 
 - name: Remove RHEL subscription

@@ -20,7 +20,8 @@
   become: true
 
   tasks:
-    - ansible.builtin.include_role:
+    - name: Include python role
+      ansible.builtin.include_role:
         name: python
 
   environment:

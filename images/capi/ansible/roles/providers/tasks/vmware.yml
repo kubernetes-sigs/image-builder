@@ -12,13 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- ansible.builtin.include_tasks: vmware-photon.yml
+- name: Include VMware Photon tasks
+  ansible.builtin.include_tasks: vmware-photon.yml
   when: ansible_os_family == "VMware Photon OS"
 
-- ansible.builtin.include_tasks: vmware-ubuntu.yml
+- name: Include VMware Ubuntu tasks
+  ansible.builtin.include_tasks: vmware-ubuntu.yml
   when: ansible_os_family == "Debian"
 
-- ansible.builtin.include_tasks: vmware-redhat.yml
+- name: Include VMware RedHat tasks
+  ansible.builtin.include_tasks: vmware-redhat.yml
   when: ansible_os_family == "RedHat"
 
 - name: Create provider vmtools config drop-in file

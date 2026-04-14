@@ -24,35 +24,45 @@
     arch: "{{ {'x86_64': 'amd64', 'amd64': 'amd64', 'aarch64': 'arm64', 'arm64': 'arm64', 'ppc64le': 'ppc64le'}.get(arch_uname, 'unsupported') }}"
 
   tasks:
-    - ansible.builtin.include_role:
+    - name: Include pre-node custom roles
+      ansible.builtin.include_role:
         name: "{{ role }}"
       loop: "{{ node_custom_roles_pre.split() }}"
       loop_control:
         loop_var: role
       when: node_custom_roles_pre != ""
-    - ansible.builtin.include_role:
+    - name: Include node role
+      ansible.builtin.include_role:
         name: node
-    - ansible.builtin.include_role:
+    - name: Include providers role
+      ansible.builtin.include_role:
         name: providers
-    - ansible.builtin.include_role:
+    - name: Include containerd role
+      ansible.builtin.include_role:
         name: containerd
-    - ansible.builtin.include_role:
+    - name: Include kubernetes role
+      ansible.builtin.include_role:
         name: kubernetes
-    - ansible.builtin.include_role:
+    - name: Include load_additional_components role
+      ansible.builtin.include_role:
         name: load_additional_components
       when: load_additional_components | bool
-    - ansible.builtin.include_role:
+    - name: Include ecr_credential_provider role
+      ansible.builtin.include_role:
         name: ecr_credential_provider
       when: ecr_credential_provider | bool
-    - ansible.builtin.include_role:
+    - name: Include post-node custom roles
+      ansible.builtin.include_role:
         name: "{{ role }}"
       loop: "{{ custom_role_names.split() + node_custom_roles_post.split() }}"
       loop_control:
         loop_var: role
       when: custom_role_names != "" or node_custom_roles_post != ""
-    - ansible.builtin.include_role:
+    - name: Include sysprep role
+      ansible.builtin.include_role:
         name: sysprep
-    - ansible.builtin.include_role:
+    - name: Include post-sysprep custom roles
+      ansible.builtin.include_role:
         name: "{{ role }}"
       loop: "{{ node_custom_roles_post_sysprep.split() }}"
       loop_control:

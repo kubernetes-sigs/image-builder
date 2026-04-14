@@ -17,7 +17,8 @@
     path: "{{ kubernetes_install_path }}"
     state: directory
 
-- ansible.builtin.import_tasks: url.yml
+- name: Import Kubernetes URL tasks
+  ansible.builtin.import_tasks: url.yml
 
 - name: Add kubernetes folder to path
   ansible.windows.win_path:
@@ -25,4 +26,5 @@
       - "{{ kubernetes_install_path }}"
     scope: Machine
 
-- ansible.builtin.import_tasks: kubelet.yml
+- name: Import kubelet tasks
+  ansible.builtin.import_tasks: kubelet.yml

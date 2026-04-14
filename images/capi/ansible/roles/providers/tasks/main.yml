@@ -12,52 +12,68 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- ansible.builtin.include_tasks: aws.yml
+- name: Include AWS provider tasks
+  ansible.builtin.include_tasks: aws.yml
   when: packer_builder_type.startswith('amazon')
 
-- ansible.builtin.include_tasks: azure.yml
+- name: Include Azure provider tasks
+  ansible.builtin.include_tasks: azure.yml
   when: packer_builder_type.startswith('azure')
 
-- ansible.builtin.include_tasks: outscale.yml
+- name: Include Outscale provider tasks
+  ansible.builtin.include_tasks: outscale.yml
   when: packer_builder_type.startswith('outscale')
 
-- ansible.builtin.include_tasks: vmware.yml
+- name: Include VMware provider tasks
+  ansible.builtin.include_tasks: vmware.yml
   when: packer_builder_type is search('vmware') or packer_builder_type is search('vsphere')
 
-- ansible.builtin.include_tasks: googlecompute.yml
+- name: Include Google Compute provider tasks
+  ansible.builtin.include_tasks: googlecompute.yml
   when: packer_builder_type.startswith('googlecompute')
 
-- ansible.builtin.include_tasks: openstack.yml
+- name: Include OpenStack provider tasks
+  ansible.builtin.include_tasks: openstack.yml
   when: packer_builder_type.startswith('openstack')
 
-- ansible.builtin.include_tasks: oci.yml
+- name: Include OCI provider tasks
+  ansible.builtin.include_tasks: oci.yml
   when: packer_builder_type.startswith('oracle-oci')
 
-- ansible.builtin.include_tasks: proxmox.yml
+- name: Include Proxmox provider tasks
+  ansible.builtin.include_tasks: proxmox.yml
   when: packer_builder_type.startswith('proxmox')
 
-- ansible.builtin.include_tasks: qemu.yml
+- name: Include QEMU provider tasks
+  ansible.builtin.include_tasks: qemu.yml
   when: packer_builder_type is search('qemu') and build_target is not search('raw')
 
-- ansible.builtin.include_tasks: cloudstack.yml
+- name: Include CloudStack provider tasks
+  ansible.builtin.include_tasks: cloudstack.yml
   when: packer_builder_type is search('qemu') and provider is defined and provider is search('cloudstack')
 
-- ansible.builtin.include_tasks: raw.yml
+- name: Include raw provider tasks
+  ansible.builtin.include_tasks: raw.yml
   when: packer_builder_type is search('qemu') and build_target is search('raw')
 
-- ansible.builtin.include_tasks: nutanix.yml
+- name: Include Nutanix provider tasks
+  ansible.builtin.include_tasks: nutanix.yml
   when: packer_builder_type is search('nutanix')
 
-- ansible.builtin.include_tasks: hcloud.yml
+- name: Include Hetzner Cloud provider tasks
+  ansible.builtin.include_tasks: hcloud.yml
   when: packer_builder_type is search('hcloud')
 
-- ansible.builtin.include_tasks: huaweicloud.yml
+- name: Include Huawei Cloud provider tasks
+  ansible.builtin.include_tasks: huaweicloud.yml
   when: packer_builder_type.startswith('huaweicloud')
 
-- ansible.builtin.include_tasks: scaleway.yml
+- name: Include Scaleway provider tasks
+  ansible.builtin.include_tasks: scaleway.yml
   when: packer_builder_type.startswith('scaleway')
 
-- ansible.builtin.include_tasks: maas.yml
+- name: Include MAAS provider tasks
+  ansible.builtin.include_tasks: maas.yml
   when: packer_builder_type is search('qemu') and provider is defined and provider is search('maas')
 
 # Create a boot order configuration

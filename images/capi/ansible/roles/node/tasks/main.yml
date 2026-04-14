@@ -12,10 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- ansible.builtin.import_tasks: photon.yml
+- name: Import Photon node tasks
+  ansible.builtin.import_tasks: photon.yml
   when: ansible_os_family == "VMware Photon OS"
 
-- ansible.builtin.import_tasks: amazonLinux.yml
+- name: Import Amazon Linux node tasks
+  ansible.builtin.import_tasks: amazonLinux.yml
   when: ansible_distribution == "Amazon"
 
 # This is required until https://github.com/ansible/ansible/issues/77537 is fixed and used.
@@ -26,7 +28,8 @@
   tags:
     - facts
 
-- ansible.builtin.import_tasks: flatcar.yml
+- name: Import Flatcar node tasks
+  ansible.builtin.import_tasks: flatcar.yml
   when: ansible_os_family == "Flatcar"
 
 - name: Ensure overlay module is present
