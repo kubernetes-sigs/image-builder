@@ -22,7 +22,6 @@ ansible/roles/node/tasks/main.yml no-changed-when
 ansible/roles/providers/defaults/main.yml var-naming[no-role-prefix]
 ansible/roles/providers/tasks/aws.yml no-changed-when
 ansible/roles/providers/tasks/awscliv2.yml no-changed-when
-ansible/roles/providers/tasks/awscliv2.yml package-latest
 ansible/roles/providers/tasks/cloudstack.yml no-changed-when
 ansible/roles/providers/tasks/googlecompute.yml no-changed-when
 ansible/roles/providers/tasks/raw.yml no-changed-when
@@ -32,14 +31,11 @@ ansible/roles/python/defaults/main.yml var-naming[no-role-prefix]
 ansible/roles/python/tasks/flatcar.yml no-changed-when
 ansible/roles/python/tasks/main.yml no-changed-when
 ansible/roles/setup/defaults/main.yml var-naming[no-role-prefix]
-ansible/roles/setup/tasks/azurelinux.yml package-latest
 ansible/roles/setup/tasks/debian.yml command-instead-of-module
 ansible/roles/setup/tasks/debian.yml no-changed-when
-ansible/roles/setup/tasks/debian.yml package-latest
 ansible/roles/setup/tasks/photon.yml no-changed-when
 ansible/roles/setup/tasks/redhat.yml command-instead-of-module
 ansible/roles/setup/tasks/redhat.yml no-changed-when
-ansible/roles/setup/tasks/redhat.yml package-latest
 ansible/roles/setup/tasks/rpm_repos.yml no-changed-when
 ansible/roles/sysprep/defaults/main.yml var-naming[no-role-prefix]
 ansible/roles/sysprep/tasks/debian.yml no-changed-when

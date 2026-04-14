@@ -1,5 +1,5 @@
 ---
-- name: Upgrade pip to latest
+- name: Upgrade pip to latest  # noqa: package-latest
   ansible.builtin.pip:
     name: pip
     executable: pip3

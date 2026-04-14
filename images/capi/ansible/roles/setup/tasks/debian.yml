@@ -93,7 +93,7 @@
   retries: 5
   delay: 10
 
-- name: Install baseline dependencies
+- name: Install baseline dependencies  # noqa: package-latest
   ansible.builtin.apt:
     force_apt_get: true
     update_cache: true
@@ -104,7 +104,7 @@
   retries: 5
   delay: 10
 
-- name: Install extra debs
+- name: Install extra debs  # noqa: package-latest
   ansible.builtin.apt:
     force_apt_get: true
     name: "{{ extra_debs.split() }}"
