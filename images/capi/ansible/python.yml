@@ -12,7 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- hosts: all
+- name: Install Python
+  hosts: all
   # Gathering facts requires Python to be available, so it's a chicken and egg
   # problem since this playbook installs Python.
   gather_facts: false

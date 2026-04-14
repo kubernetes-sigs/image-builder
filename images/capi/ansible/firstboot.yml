@@ -28,7 +28,8 @@
       ansible.builtin.raw: test -e /usr/bin/apt && (apt-get update && apt-get install -y python3) || (yum install -y python3)
       when: python_installed.rc != 0
 
-- hosts: all
+- name: Run firstboot roles
+  hosts: all
   become: true
   vars:
     firstboot_custom_roles_pre: ""
