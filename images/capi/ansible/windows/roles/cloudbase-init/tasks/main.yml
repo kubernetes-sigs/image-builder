@@ -49,5 +49,5 @@
     Remove-Item -Force {{ systemdrive.stdout | trim }}\Windows\Setup\Scripts\SetupComplete.cmd
     & "{{ programfiles.stdout | trim }}\Cloudbase Solutions\Cloudbase-Init\bin\SetSetupComplete.cmd"
   become: true
-  become_method: runas
+  become_method: ansible.builtin.runas
   become_user: System

@@ -44,15 +44,12 @@ ansible/roles/sysprep/tasks/redhat.yml command-instead-of-module
 ansible/roles/sysprep/tasks/redhat.yml no-changed-when
 ansible/roles/sysprep/tasks/rpm_repos.yml no-changed-when
 ansible/windows/example.vars.yml yaml[line-length]
-ansible/windows/roles/cloudbase-init/tasks/main.yml schema[tasks]
 ansible/windows/roles/debug/defaults/main.yml var-naming[no-role-prefix]
 ansible/windows/roles/kubernetes/tasks/kubelet.yml yaml[line-length]
 ansible/windows/roles/kubernetes/tasks/sc.yml yaml[line-length]
 ansible/windows/roles/load_additional_components/defaults/main.yml var-naming[no-role-prefix]
 ansible/windows/roles/providers/defaults/main.yml var-naming[no-role-prefix]
-ansible/windows/roles/providers/tasks/azure.yml schema[tasks]
 ansible/windows/roles/providers/tasks/azure.yml yaml[line-length]
 ansible/windows/roles/runtimes/defaults/main.yml var-naming[no-role-prefix]
 ansible/windows/roles/systemprep/defaults/main.yml var-naming[no-role-prefix]
 ansible/windows/roles/systemprep/tasks/main.yml ignore-errors
-ansible/windows/roles/systemprep/tasks/ssh-feature.yml schema[tasks]
