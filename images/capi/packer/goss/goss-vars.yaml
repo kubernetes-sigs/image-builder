@@ -461,7 +461,8 @@ ubuntu:
       snap.amazon-ssm-agent.amazon-ssm-agent.service:
         enabled: true
         running: true
-    package:
+    package: {}
+    package-x86:
       linux-cloud-tools-virtual:
       linux-tools-virtual:
     command:

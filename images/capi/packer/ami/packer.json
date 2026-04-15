@@ -125,7 +125,7 @@
       "use_sudo": true,
       "vars_file": "{{user `goss_vars_file`}}",
       "vars_inline": {
-        "ARCH": "amd64",
+        "ARCH": "{{user `arch`}}",
         "OS": "{{user `distribution` | lower}}",
         "OS_VERSION": "{{user `distribution_version` | lower}}",
         "PROVIDER": "amazon",
