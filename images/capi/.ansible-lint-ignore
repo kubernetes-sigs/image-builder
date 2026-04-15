@@ -7,7 +7,6 @@ ansible/roles/gpu/tasks/amd.yml no-changed-when
 ansible/roles/gpu/tasks/nvidia.yml no-changed-when
 ansible/roles/kubernetes/defaults/main.yml var-naming[no-role-prefix]
 ansible/roles/kubernetes/defaults/main.yml yaml[line-length]
-ansible/roles/kubernetes/tasks/crictl-url.yml name[template]
 ansible/roles/kubernetes/tasks/ecrpull.yml no-changed-when
 ansible/roles/kubernetes/tasks/kubeadmpull.yml no-changed-when
 ansible/roles/kubernetes/tasks/photon.yml no-changed-when

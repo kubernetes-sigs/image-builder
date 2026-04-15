@@ -19,7 +19,7 @@
     dest: /tmp/{{ crictl_filename }}
     mode: "0600"
 
-- name: Create "{{ sysusrlocal_prefix }}/bin" directory
+- name: Create crictl bin directory
   ansible.builtin.file:
     state: directory
     path: "{{ sysusrlocal_prefix }}/bin"
