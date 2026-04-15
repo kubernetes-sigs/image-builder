@@ -80,7 +80,10 @@
   when: packer_build_name is search('cvm')
 
 - name: Add '--no-tpm --no-efivars' to nullboot post install script
-  ansible.builtin.command: sed -i 's/nullbootctl/nullbootctl --no-tpm --no-efivars/' /var/lib/dpkg/info/nullboot.postinst
+  ansible.builtin.replace:
+    path: /var/lib/dpkg/info/nullboot.postinst
+    regexp: nullbootctl
+    replace: nullbootctl --no-tpm --no-efivars
   when: packer_build_name is search('cvm')
 
 - name: Perform a dist-upgrade
@@ -126,5 +129,8 @@
   delay: 10
 
 - name: Remove '--no-tpm --no-efivars' from nullboot post install script
-  ansible.builtin.command: sed -i 's/nullbootctl --no-tpm --no-efivars/nullbootctl/' /var/lib/dpkg/info/nullboot.postinst
+  ansible.builtin.replace:
+    path: /var/lib/dpkg/info/nullboot.postinst
+    regexp: nullbootctl --no-tpm --no-efivars
+    replace: nullbootctl
   when: packer_build_name is search('cvm')

@@ -31,7 +31,6 @@ ansible/roles/python/defaults/main.yml var-naming[no-role-prefix]
 ansible/roles/python/tasks/flatcar.yml no-changed-when
 ansible/roles/python/tasks/main.yml no-changed-when
 ansible/roles/setup/defaults/main.yml var-naming[no-role-prefix]
-ansible/roles/setup/tasks/debian.yml command-instead-of-module
 ansible/roles/setup/tasks/debian.yml no-changed-when
 ansible/roles/setup/tasks/photon.yml no-changed-when
 ansible/roles/setup/tasks/redhat.yml command-instead-of-module
