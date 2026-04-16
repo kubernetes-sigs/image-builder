@@ -30,7 +30,7 @@
     $r = New-NetFirewallRule -DisplayName 'Block-Outbound-168.63.129.16-port-80-for-cve-2021-27075' -Direction Outbound -RemoteAddress '168.63.129.16' -RemotePort '80' -Protocol TCP -Action Block
     $r | Get-NetFirewallSecurityFilter | Set-NetFirewallSecurityFilter -LocalUser "O:LSD:(D;;CC;;;S-1-5-18)(D;;CC;;;$($wsg.SID.Value))(A;;CC;;;S-1-1-0)"
   become: true
-  become_method: runas
+  become_method: ansible.builtin.runas
   become_user: SYSTEM
 
 - name: Add users to WireServerAccessGroup
