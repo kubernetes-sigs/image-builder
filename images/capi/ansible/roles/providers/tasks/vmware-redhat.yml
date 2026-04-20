@@ -37,7 +37,7 @@
   vars:
     packages:
       - python2-pip
-  when: ansible_distribution_major_version|int <= 8
+  when: ansible_facts['distribution_major_version']|int <= 8
 
 # pip on CentOS needs to be upgraded, but since it's still
 # Python 2.7, need < 21.0
@@ -45,7 +45,7 @@
   ansible.builtin.pip:
     name: pip<21.0
     state: forcereinstall
-  when: ansible_distribution_major_version == '7'
+  when: ansible_facts['distribution_major_version'] == '7'
 
 # Directly installing Guestinfo datasource is needed so long as
 # cloud-init is < 21.3

@@ -14,10 +14,10 @@
   ansible.builtin.apt:
     name: cloud-initramfs-dyn-netconf
     state: present
-  when: ansible_distribution == 'Debian'
+  when: ansible_facts['distribution'] == 'Debian'
 
 - name: Install Ubuntu specific packages
   ansible.builtin.apt:
     name: cloud-initramfs-copymods
     state: present
-  when: ansible_distribution == 'Ubuntu'
+  when: ansible_facts['distribution'] == 'Ubuntu'

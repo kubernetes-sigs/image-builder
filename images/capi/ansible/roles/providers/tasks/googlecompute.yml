@@ -13,7 +13,7 @@
 # limitations under the License.
 ---
 - name: Install gcloud SDK
-  when: ansible_os_family != "RedHat"
+  when: ansible_facts['os_family'] != "RedHat"
   block:
     - name: Download gcloud SDK
       ansible.builtin.get_url:
@@ -39,7 +39,7 @@
       with_items: "{{ find.files }}"
 
 - name: Install gcloud SDK
-  when: ansible_os_family == "RedHat"
+  when: ansible_facts['os_family'] == "RedHat"
   block:
     - name: Add gcloud repository info
       ansible.builtin.shell: |
@@ -65,11 +65,11 @@
     packages:
       - cloud-init
       - cloud-utils-growpart
-  when: ansible_os_family == "RedHat"
+  when: ansible_facts['os_family'] == "RedHat"
 
 - name: Disable Hyper-V KVP protocol daemon on Ubuntu
   ansible.builtin.systemd:
     name: hv-kvp-daemon
     state: stopped
     enabled: false
-  when: ansible_os_family == "Debian"
+  when: ansible_facts['os_family'] == "Debian"

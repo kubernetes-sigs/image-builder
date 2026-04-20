@@ -14,19 +14,19 @@
 ---
 - name: Import Debian Kubernetes tasks
   ansible.builtin.import_tasks: debian.yml
-  when: kubernetes_source_type == "pkg" and ansible_os_family == "Debian"
+  when: kubernetes_source_type == "pkg" and ansible_facts['os_family'] == "Debian"
 
 - name: Import Azure Linux Kubernetes tasks
   ansible.builtin.import_tasks: azurelinux.yml
-  when: kubernetes_source_type == "pkg" and ansible_os_family in ["Common Base Linux Mariner", "Microsoft Azure Linux"]
+  when: kubernetes_source_type == "pkg" and ansible_facts['os_family'] in ["Common Base Linux Mariner", "Microsoft Azure Linux"]
 
 - name: Import RedHat Kubernetes tasks
   ansible.builtin.import_tasks: redhat.yml
-  when: kubernetes_source_type == "pkg" and ansible_os_family == "RedHat"
+  when: kubernetes_source_type == "pkg" and ansible_facts['os_family'] == "RedHat"
 
 - name: Import Photon Kubernetes tasks
   ansible.builtin.import_tasks: photon.yml
-  when: kubernetes_source_type == "pkg" and ansible_os_family == "VMware Photon OS"
+  when: kubernetes_source_type == "pkg" and ansible_facts['os_family'] == "VMware Photon OS"
 
 - name: Import URL Kubernetes tasks
   ansible.builtin.import_tasks: url.yml
@@ -40,7 +40,7 @@
 - name: Create kubelet default config file
   ansible.builtin.template:
     src: etc/sysconfig/kubelet
-    dest: "{{ '/etc/default/kubelet' if ansible_os_family == 'Debian' else '/etc/sysconfig/kubelet' }}"
+    dest: "{{ '/etc/default/kubelet' if ansible_facts['os_family'] == 'Debian' else '/etc/sysconfig/kubelet' }}"
     owner: root
     group: root
     mode: "0644"
@@ -88,19 +88,19 @@
   ansible.builtin.shell:
     cmd: "{{ sysusr_prefix }}/bin/kubectl completion bash > {{ sysusr_prefix }}/share/bash-completion/completions/kubectl"
     creates: "{{ sysusr_prefix }}/share/bash-completion/completions/kubectl"
-  when: ansible_os_family != "Flatcar"
+  when: ansible_facts['os_family'] != "Flatcar"
 
 - name: Generate kubeadm bash completion
   ansible.builtin.shell:
     cmd: "{{ sysusr_prefix }}/bin/kubeadm completion bash > {{ sysusr_prefix }}/share/bash-completion/completions/kubeadm"
     creates: "{{ sysusr_prefix }}/share/bash-completion/completions/kubeadm"
-  when: ansible_os_family != "Flatcar"
+  when: ansible_facts['os_family'] != "Flatcar"
 
 - name: Generate crictl bash completion
   ansible.builtin.shell:
     cmd: "{{ sysusr_prefix }}/bin/crictl completion bash > {{ sysusr_prefix }}/share/bash-completion/completions/crictl"
     creates: "{{ sysusr_prefix }}/share/bash-completion/completions/crictl"
-  when: ansible_os_family != "Flatcar"
+  when: ansible_facts['os_family'] != "Flatcar"
 
 - name: Set KUBECONFIG variable and alias
   ansible.builtin.copy:
@@ -117,7 +117,7 @@
 
 - name: Import kubeadm pull tasks
   ansible.builtin.import_tasks: kubeadmpull.yml
-  when: (kubernetes_source_type == "pkg" and not ecr) or ansible_os_family == "Flatcar"
+  when: (kubernetes_source_type == "pkg" and not ecr) or ansible_facts['os_family'] == "Flatcar"
 
 - name: Import ECR pull tasks
   ansible.builtin.import_tasks: ecrpull.yml

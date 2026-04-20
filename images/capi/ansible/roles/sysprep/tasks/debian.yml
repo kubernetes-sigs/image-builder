@@ -136,28 +136,28 @@
   ansible.builtin.file:
     path: /etc/cloud/cloud.cfg.d/subiquity-disable-cloudinit-networking.cfg
     state: absent
-  when: ansible_distribution_version is version('22.04', '>=')
+  when: ansible_facts['distribution_version'] is version('22.04', '>=')
 
 - name: Removing 99-installer.cfg which sets the cloud-init datasource to None
   ansible.builtin.file:
     path: /etc/cloud/cloud.cfg.d/99-installer.cfg
     state: absent
-  when: ansible_distribution_version is version('22.04', '>=')
+  when: ansible_facts['distribution_version'] is version('22.04', '>=')
 
 - name: Removing subiquity curtin preserve sources config
   ansible.builtin.file:
     path: /etc/cloud/cloud.cfg.d/curtin-preserve-sources.cfg
     state: absent
-  when: ansible_distribution_version is version('22.04', '>=')
+  when: ansible_facts['distribution_version'] is version('22.04', '>=')
 
 - name: Removing cloud-init ds identify config
   ansible.builtin.file:
     path: /etc/cloud/ds-identify.cfg
     state: absent
-  when: ansible_distribution_version is version('22.04', '>=')
+  when: ansible_facts['distribution_version'] is version('22.04', '>=')
 
 - name: Removing 90-installer-network.cfg installer network configuration
   ansible.builtin.file:
     path: /etc/cloud/cloud.cfg.d/90-installer-network.cfg
     state: absent
-  when: ansible_distribution_version is version('22.04', '>=')
+  when: ansible_facts['distribution_version'] is version('22.04', '>=')

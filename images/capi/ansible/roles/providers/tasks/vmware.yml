@@ -14,15 +14,15 @@
 ---
 - name: Include VMware Photon tasks
   ansible.builtin.include_tasks: vmware-photon.yml
-  when: ansible_os_family == "VMware Photon OS"
+  when: ansible_facts['os_family'] == "VMware Photon OS"
 
 - name: Include VMware Ubuntu tasks
   ansible.builtin.include_tasks: vmware-ubuntu.yml
-  when: ansible_os_family == "Debian"
+  when: ansible_facts['os_family'] == "Debian"
 
 - name: Include VMware RedHat tasks
   ansible.builtin.include_tasks: vmware-redhat.yml
-  when: ansible_os_family == "RedHat"
+  when: ansible_facts['os_family'] == "RedHat"
 
 - name: Create provider vmtools config drop-in file
   ansible.builtin.copy:
@@ -31,7 +31,7 @@
     owner: root
     group: root
     mode: "0644"
-  when: ansible_os_family != "Flatcar"
+  when: ansible_facts['os_family'] != "Flatcar"
 
 - name: Create service to modify cloud-init config
   ansible.builtin.copy:
@@ -40,7 +40,7 @@
     owner: root
     group: root
     mode: "0644"
-  when: ansible_os_family != "Flatcar"
+  when: ansible_facts['os_family'] != "Flatcar"
 
 - name: Copy cloud-init modification script
   ansible.builtin.copy:
@@ -49,7 +49,7 @@
     owner: root
     group: root
     mode: "0755"
-  when: ansible_os_family != "Flatcar"
+  when: ansible_facts['os_family'] != "Flatcar"
 
 - name: Enable modify-cloud-init-cfg.service
   ansible.builtin.systemd:
@@ -57,4 +57,4 @@
     daemon_reload: true
     enabled: true
     state: stopped
-  when: ansible_os_family != "Flatcar"
+  when: ansible_facts['os_family'] != "Flatcar"

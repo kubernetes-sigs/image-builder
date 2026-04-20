@@ -14,11 +14,11 @@
 ---
 - name: Include Nutanix RedHat tasks
   ansible.builtin.include_tasks: nutanix-redhat.yml
-  when: ansible_os_family == "RedHat"
+  when: ansible_facts['os_family'] == "RedHat"
 
 - name: Include Nutanix Ubuntu tasks
   ansible.builtin.include_tasks: nutanix-ubuntu.yml
-  when: ansible_os_family == "Debian"
+  when: ansible_facts['os_family'] == "Debian"
 
 - name: Ensure ip_vs module is loaded
   ansible.builtin.lineinfile:

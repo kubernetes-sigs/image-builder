@@ -16,5 +16,5 @@
 gpu_amd_usecase: dkms
 gpu_block_nouveau_loading: false
 gpu_systemd_networkd_update_initramfs: >-
-  {%- if ansible_os_family == 'VMware Photon OS' -%} dracut -f{%- elif ansible_os_family == 'Debian' -%} update-initramfs -u{%- endif -%}
+  {%- if ansible_facts['os_family'] == 'VMware Photon OS' -%} dracut -f{%- elif ansible_facts['os_family'] == 'Debian' -%} update-initramfs -u{%- endif -%}
 gpu_nvidia_ceph: false

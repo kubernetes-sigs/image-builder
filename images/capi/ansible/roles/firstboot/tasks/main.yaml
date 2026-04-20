@@ -15,7 +15,7 @@
 
 - name: Include Photon firstboot tasks
   ansible.builtin.include_tasks: photon.yml
-  when: ansible_os_family == "VMware Photon OS"
+  when: ansible_facts['os_family'] == "VMware Photon OS"
 
 - name: Include QEMU firstboot tasks
   ansible.builtin.include_tasks: qemu.yml

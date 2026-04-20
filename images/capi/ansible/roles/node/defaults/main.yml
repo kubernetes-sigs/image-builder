@@ -119,7 +119,7 @@ common_raw_photon_rpms: []
 # photon and flatcar do not have backward compatibility for legacy distro behavior for sysctl.conf by default
 # as it uses systemd-sysctl. set this var so we can use for sysctl conf file value.
 sysctl_conf_file: >-
-  {{ '/etc/sysctl.d/99-sysctl.conf' if ansible_os_family in ['Common Base Linux Mariner', 'Flatcar', 'Microsoft Azure Linux', 'VMware Photon OS']
+  {{ '/etc/sysctl.d/99-sysctl.conf' if ansible_facts['os_family'] in ['Common Base Linux Mariner', 'Flatcar', 'Microsoft Azure Linux', 'VMware Photon OS']
     else '/etc/sysctl.conf' }}
 
 pause_image: registry.k8s.io/pause:3.10
@@ -127,7 +127,7 @@ containerd_additional_settings:
 leak_local_mdns_to_dns: false
 build_target: virt
 cloud_cfg_file: /etc/cloud/cloud.cfg
-external_binary_path: "{{ '/opt/bin' if ansible_os_family == 'Flatcar' else '/usr/local/bin' }}"
+external_binary_path: "{{ '/opt/bin' if ansible_facts['os_family'] == 'Flatcar' else '/usr/local/bin' }}"
 
 # Enable containerd trace audit in auditd, default: false.
 enable_containerd_audit: false

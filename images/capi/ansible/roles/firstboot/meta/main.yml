@@ -17,7 +17,7 @@ dependencies:
     vars:
       rpms: ""
       debs: ""
-    when: ansible_os_family == "VMware Photon OS"
+    when: ansible_facts['os_family'] == "VMware Photon OS"
 
   - role: setup
     vars:

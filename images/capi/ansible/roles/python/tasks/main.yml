@@ -18,6 +18,6 @@
 
 - name: Include Flatcar Python tasks
   ansible.builtin.include_tasks: flatcar.yml
-  # We can't use ansible_os_family fact here for consistency, as facts gathering
+  # We can't use ansible_facts['os_family'] fact here for consistency, as facts gathering
   # is disabled in the playbook which includes this role. See playbook for more details.
   when: distrib_id.stdout_lines[0] is search("Flatcar")

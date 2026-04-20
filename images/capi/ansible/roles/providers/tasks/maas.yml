@@ -3,4 +3,4 @@
 
 - name: Include MaaS Specific configs for Ubuntu Distro
   ansible.builtin.include_tasks: maas-ubuntu.yml
-  when: ansible_os_family == "Debian"
+  when: ansible_facts['os_family'] == "Debian"

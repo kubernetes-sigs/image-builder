@@ -23,6 +23,6 @@
 - name: Override Flatcar's OS family
   ansible.builtin.set_fact:
     ansible_os_family: Flatcar
-  when: ansible_os_family == "Flatcar Container Linux by Kinvolk"
+  when: ansible_facts['os_family'] == "Flatcar Container Linux by Kinvolk"
   tags:
     - facts

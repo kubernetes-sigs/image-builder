@@ -18,12 +18,12 @@
     name: root
     groups: render,video
     append: true
-  when: ansible_os_family == "Debian"
+  when: ansible_facts['os_family'] == "Debian"
 
 - name: Install the .deb for AMDGPU-Install
   ansible.builtin.apt:
     deb: https://repo.radeon.com/amdgpu-install/{{ amd_version }}/ubuntu/jammy/amdgpu-install_{{ amd_deb_version }}_all.deb
-  when: ansible_os_family == "Debian"
+  when: ansible_facts['os_family'] == "Debian"
 
 - name: Perform a cache update
   ansible.builtin.apt:
@@ -33,19 +33,19 @@
   until: apt_lock_status is not failed
   retries: 5
   delay: 10
-  when: ansible_os_family == "Debian"
+  when: ansible_facts['os_family'] == "Debian"
 
 - name: Install packages required for AMD driver installation
   become: true
   ansible.builtin.apt:
     pkg:
-      - linux-headers-{{ ansible_kernel }}
-      - linux-modules-extra-{{ ansible_kernel }}
+      - linux-headers-{{ ansible_facts['kernel'] }}
+      - linux-modules-extra-{{ ansible_facts['kernel'] }}
       - build-essential
       - dkms
       - rocminfo
       - clinfo
-  when: ansible_os_family == "Debian"
+  when: ansible_facts['os_family'] == "Debian"
 
 - name: Run AMDGPU_Install binary with use-cases
   ansible.builtin.command:
