@@ -71,7 +71,7 @@
   ansible.builtin.service:
     name: rsyslog
     state: stopped
-  when: "'rsyslog' in services"
+  when: "'rsyslog' in ansible_facts.services"
 
 - name: Remove apt package caches
   ansible.builtin.apt:
