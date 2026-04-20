@@ -90,7 +90,7 @@ on:
         description: 'Space-separated Azure regions to replicate the image to (image build region is always included)'
         required: false
         type: string
-        default: 'australiaeast canadacentral eastus eastus2 francecentral germanywestcentral northcentralus northeurope switzerlandnorth uksouth westeurope'
+        default: 'australiaeast canadacentral eastus eastus2 francecentral germanywestcentral northcentralus northeurope switzerlandnorth uksouth westeurope westus2'
       skip_test:
         description: 'Skip the test stage'
         required: false
