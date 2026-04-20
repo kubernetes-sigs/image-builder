@@ -72,7 +72,9 @@
 - name: Set hostname
   ansible.builtin.hostname:
     name: localhost.local
-  when: ansible_facts['os_family'] not in ["Common Base Linux Mariner", "Flatcar", "Microsoft Azure Linux", "VMware Photon OS"] and packer_build_name != "nutanix"
+  when: >
+    ansible_facts['os_family'] not in ["Common Base Linux Mariner", "Flatcar", "Microsoft Azure Linux", "VMware Photon OS"]
+    and packer_build_name != "nutanix"
 
 - name: Reset hosts file
   ansible.builtin.copy:

@@ -241,7 +241,8 @@
     mode: "0755"
     owner: root
     group: root
-    checksum: sha512:https://storage.googleapis.com/gvisor/releases/release/{{ containerd_gvisor_version }}/{{ ansible_facts['architecture'] }}/{{ item }}.sha512
+    checksum: >-
+      sha512:https://storage.googleapis.com/gvisor/releases/release/{{ containerd_gvisor_version }}/{{ ansible_facts['architecture'] }}/{{ item }}.sha512
   loop:
     - runsc
     - containerd-shim-runsc-v1
