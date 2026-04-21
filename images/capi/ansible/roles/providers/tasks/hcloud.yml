@@ -23,7 +23,7 @@
       - cloud-guest-utils
       - cloud-initramfs-copymods
       - cloud-initramfs-dyn-netconf
-  when: ansible_os_family == "Debian"
+  when: ansible_facts['os_family'] == "Debian"
 
 - name: Install cloud-tools and tools packages
   ansible.builtin.apt:
@@ -34,7 +34,7 @@
     packages:
       - linux-cloud-tools-generic
       - linux-tools-generic
-  when: ansible_os_family == "Debian"
+  when: ansible_facts['os_family'] == "Debian"
 
 - name: Install cloud-init packages
   ansible.builtin.dnf:
@@ -44,7 +44,7 @@
     packages:
       - cloud-init
       - cloud-utils-growpart
-  when: ansible_os_family == "RedHat"
+  when: ansible_facts['os_family'] == "RedHat"
 
 - name: Install CSI prerequisites on Ubuntu
   ansible.builtin.apt:
@@ -57,7 +57,7 @@
       - open-iscsi
       - lvm2
       - xfsprogs
-  when: ansible_os_family == "Debian"
+  when: ansible_facts['os_family'] == "Debian"
 
 - name: Install CSI prerequisites on RedHat
   ansible.builtin.dnf:
@@ -69,18 +69,18 @@
       - nfs-utils
       - lvm2
       - xfsprogs
-  when: ansible_os_family == "RedHat"
+  when: ansible_facts['os_family'] == "RedHat"
 
 - name: Enable iSCSI initiator daemon on Ubuntu or RedHat
   ansible.builtin.systemd:
     name: iscsid
     state: started
     enabled: true
-  when: ansible_os_family in ["Debian", "Redhat"]
+  when: ansible_facts['os_family'] in ["Debian", "Redhat"]
 
 - name: Disable Hyper-V KVP protocol daemon on Ubuntu
   ansible.builtin.systemd:
     name: hv-kvp-daemon
     state: stopped
     enabled: false
-  when: ansible_os_family == "Debian"
+  when: ansible_facts['os_family'] == "Debian"

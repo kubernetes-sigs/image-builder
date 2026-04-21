@@ -29,14 +29,14 @@
     path: /etc/yum.conf
     regexp: ^exclude=
     line: exclude={{ package_list }}
-  when: ansible_distribution != "Amazon" or ansible_distribution_version != "2023"
+  when: ansible_facts['distribution'] != "Amazon" or ansible_facts['distribution_version'] != "2023"
 
 - name: Exclude packages from upgrade
   ansible.builtin.lineinfile:
     path: /etc/dnf/dnf.conf
     regexp: ^excludepkgs=
     line: excludepkgs={{ package_list }}
-  when: ansible_distribution == "Amazon" and ansible_distribution_version == "2023"
+  when: ansible_facts['distribution'] == "Amazon" and ansible_facts['distribution_version'] == "2023"
 
 - name: Import RPM repository tasks
   ansible.builtin.import_tasks: rpm_repos.yml
@@ -44,7 +44,7 @@
 
 - name: Remove RHEL subscription
   when:
-    - ansible_distribution == "RedHat"
+    - ansible_facts['distribution'] == "RedHat"
     - lookup('env', 'RHSM_USER') | length > 0
     - lookup('env', 'RHSM_PASS') | length > 0
   block:
@@ -72,15 +72,15 @@
   ansible.builtin.shell: |
     set -o pipefail
     sed -i '/^\(HWADDR\|UUID\)=/d' /etc/sysconfig/network-scripts/ifcfg-*
-  when: packer_builder_type != "googlecompute" and ansible_distribution_major_version|int != 9
+  when: packer_builder_type != "googlecompute" and ansible_facts['distribution_major_version']|int != 9
 
 - name: Migrate interface configuration files to NetworkManager keyfiles
   ansible.builtin.command: nmcli connection migrate
-  when: packer_builder_type != "googlecompute" and ansible_distribution_major_version|int == 9
+  when: packer_builder_type != "googlecompute" and ansible_facts['distribution_major_version']|int == 9
 
 - name: Reset network interface IDs
   ansible.builtin.shell: sed -i '/^\(uuid\)=/d' /etc/NetworkManager/system-connections/*.nmconnection
-  when: packer_builder_type != "googlecompute" and ansible_distribution_major_version|int == 9
+  when: packer_builder_type != "googlecompute" and ansible_facts['distribution_major_version']|int == 9
 
 - name: Remove the kickstart log
   ansible.builtin.file:

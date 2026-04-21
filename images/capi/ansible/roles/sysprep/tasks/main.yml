@@ -14,23 +14,23 @@
 ---
 - name: Import Debian sysprep tasks
   ansible.builtin.import_tasks: debian.yml
-  when: ansible_os_family == "Debian"
+  when: ansible_facts['os_family'] == "Debian"
 
 - name: Import Flatcar sysprep tasks
   ansible.builtin.import_tasks: flatcar.yml
-  when: ansible_os_family == "Flatcar"
+  when: ansible_facts['os_family'] == "Flatcar"
 
 - name: Import RedHat sysprep tasks
   ansible.builtin.import_tasks: redhat.yml
-  when: ansible_os_family == "RedHat"
+  when: ansible_facts['os_family'] == "RedHat"
 
 - name: Import Azure Linux sysprep tasks
   ansible.builtin.import_tasks: azurelinux.yml
-  when: ansible_os_family in ["Common Base Linux Mariner", "Microsoft Azure Linux"]
+  when: ansible_facts['os_family'] in ["Common Base Linux Mariner", "Microsoft Azure Linux"]
 
 - name: Import Photon sysprep tasks
   ansible.builtin.import_tasks: photon.yml
-  when: ansible_os_family == "VMware Photon OS"
+  when: ansible_facts['os_family'] == "VMware Photon OS"
 
 - name: Remove containerd http proxy conf file if needed
   ansible.builtin.file:
@@ -56,7 +56,7 @@
   loop:
     - { path: /etc/machine-id, state: absent, mode: "{{ machine_id_mode }}" }
     - { path: /etc/machine-id, state: touch, mode: "{{ machine_id_mode }}" }
-  when: ansible_os_family not in ["Common Base Linux Mariner", "Flatcar", "Microsoft Azure Linuz"]
+  when: ansible_facts['os_family'] not in ["Common Base Linux Mariner", "Flatcar", "Microsoft Azure Linuz"]
 
 - name: Truncate hostname file
   ansible.builtin.file:
@@ -72,7 +72,9 @@
 - name: Set hostname
   ansible.builtin.hostname:
     name: localhost.local
-  when: ansible_os_family not in ["Common Base Linux Mariner", "Flatcar", "Microsoft Azure Linux", "VMware Photon OS"] and packer_build_name != "nutanix"
+  when: >
+    ansible_facts['os_family'] not in ["Common Base Linux Mariner", "Flatcar", "Microsoft Azure Linux", "VMware Photon OS"]
+    and packer_build_name != "nutanix"
 
 - name: Reset hosts file
   ansible.builtin.copy:
@@ -109,13 +111,13 @@
   ansible.builtin.shell:
     cmd: |
       cloud-init clean --machine-id
-  when: ansible_os_family == "Debian"
+  when: ansible_facts['os_family'] == "Debian"
 
 - name: Reset cloud-init
   ansible.builtin.shell:
     cmd: |
       cloud-init clean
-  when: ansible_os_family == "RedHat"
+  when: ansible_facts['os_family'] == "RedHat"
 
 - name: Remove cloud-init.disabled
   ansible.builtin.file:
@@ -169,7 +171,7 @@
     src: files/etc/netplan/51-kubevirt-netplan.yaml
     dest: /etc/netplan/51-kubevirt-netplan.yaml
     mode: "0644"
-  when: ansible_os_family == "Debian" and kubevirt == "true"
+  when: ansible_facts['os_family'] == "Debian" and kubevirt == "true"
 
 - name: Find SSH host keys
   ansible.builtin.find:
@@ -189,8 +191,8 @@
     path: "{{ item.path }}"
   loop:
     - { path: /root/.ssh/authorized_keys }
-    - { path: "/home/{{ ansible_env.SUDO_USER | default(ansible_user_id) }}/.ssh/authorized_keys" }
-  when: ansible_os_family != "Flatcar"
+    - { path: "/home/{{ ansible_facts['env'].SUDO_USER | default(ansible_facts['user_id']) }}/.ssh/authorized_keys" }
+  when: ansible_facts['os_family'] != "Flatcar"
 
 - name: Remove SSH authorized users for Flatcar
   ansible.builtin.file:
@@ -198,7 +200,7 @@
     path: "{{ item.path }}"
   loop:
     - { path: /root/.ssh/authorized_keys }
-  when: ansible_os_family == "Flatcar"
+  when: ansible_facts['os_family'] == "Flatcar"
 
 - name: Truncate all remaining log files in /var/log
   ansible.builtin.shell: |
@@ -207,13 +209,13 @@
   args:
     executable: /bin/bash
 
-  when: ansible_os_family != "Flatcar"
+  when: ansible_facts['os_family'] != "Flatcar"
 
 - name: Delete all logrotated logs
   ansible.builtin.shell:
     cmd: |
       find /var/log -type f -regex '.*[0-9z]$' -exec rm {} +
-  when: ansible_os_family != "Flatcar"
+  when: ansible_facts['os_family'] != "Flatcar"
 
 - name: Remove swapfile
   ansible.builtin.file:
@@ -223,7 +225,7 @@
     - /swap.img
     - /swapfile
     - /mnt/resource/swapfile
-  when: ansible_memory_mb.swap.total != 0
+  when: ansible_facts['memory_mb'].swap.total != 0
 
 - name: Truncate shell history
   ansible.builtin.file:
@@ -231,13 +233,13 @@
     path: "{{ item.path }}"
   loop:
     - { path: /root/.bash_history }
-    - { path: "/home/{{ ansible_env.SUDO_USER | default(ansible_user_id) }}/.bash_history" }
+    - { path: "/home/{{ ansible_facts['env'].SUDO_USER | default(ansible_facts['user_id']) }}/.bash_history" }
 
 - name: Rotate journalctl to archive logs
   ansible.builtin.shell:
     cmd: |
       journalctl --rotate
-  when: not ( ansible_os_family == "RedHat" and ansible_distribution_major_version|int <= 7 )
+  when: not ( ansible_facts['os_family'] == "RedHat" and ansible_facts['distribution_major_version']|int <= 7 )
 
 - name: Remove archived journalctl logs
   ansible.builtin.shell:
@@ -251,22 +253,22 @@
     owner: root
     group: root
     mode: "0644"
-  when: ansible_os_family == "Flatcar"
+  when: ansible_facts['os_family'] == "Flatcar"
 
 - name: Remove any default Ignition files used by Packer
   ansible.builtin.file:
     state: absent
     path: /usr/share/oem/config.ign
-  when: ansible_os_family == "Flatcar"
+  when: ansible_facts['os_family'] == "Flatcar"
 
 - name: Start fstrim
   ansible.builtin.systemd:
     name: fstrim.service
     state: started
-  when: ansible_os_family == "Debian"
+  when: ansible_facts['os_family'] == "Debian"
 
 - name: Start ssh
   ansible.builtin.systemd:
     name: ssh
     enabled: true
-  when: ansible_os_family == "Debian"
+  when: ansible_facts['os_family'] == "Debian"

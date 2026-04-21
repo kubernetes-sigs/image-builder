@@ -14,15 +14,15 @@
 ---
 - name: Import Debian containerd tasks
   ansible.builtin.import_tasks: debian.yml
-  when: ansible_os_family == "Debian"
+  when: ansible_facts['os_family'] == "Debian"
 
 - name: Import RedHat containerd tasks
   ansible.builtin.import_tasks: redhat.yml
-  when: ansible_os_family in ["Common Base Linux Mariner", "Microsoft Azure Linux", "RedHat"]
+  when: ansible_facts['os_family'] in ["Common Base Linux Mariner", "Microsoft Azure Linux", "RedHat"]
 
 - name: Import Photon containerd tasks
   ansible.builtin.import_tasks: photon.yml
-  when: ansible_os_family == "VMware Photon OS"
+  when: ansible_facts['os_family'] == "VMware Photon OS"
 
 # TODO(vincepri): Use deb/rpm packages once available.
 # See https://github.com/containerd/containerd/issues/1508 for context.
@@ -73,7 +73,7 @@
     dest: "{{ containerd_prefix | default('/usr/local') }}"
     extra_opts:
       - --no-overwrite-dir
-  when: ansible_os_family != "Flatcar"
+  when: ansible_facts['os_family'] != "Flatcar"
 
 - name: Copy containerd.service to /etc/systemd/system
   ansible.builtin.copy:
@@ -88,7 +88,7 @@
     src: /tmp/runc
     dest: /usr/local/sbin/runc
     mode: "0755"
-  when: ansible_os_family != "Flatcar"
+  when: ansible_facts['os_family'] != "Flatcar"
 
 # Install containerd Wasm shims specified in a comma-separated string. Known runtimes are 'lunatic', 'slight', 'spin', and 'wws'.
 - name: Unpack containerd-wasm-shims
@@ -98,7 +98,7 @@
     dest: "{{ sysusr_prefix }}/bin"
     extra_opts:
       - --no-overwrite-dir
-  when: ansible_os_family != "Flatcar" and (containerd_wasm_shims_runtimes | length > 0)
+  when: ansible_facts['os_family'] != "Flatcar" and (containerd_wasm_shims_runtimes | length > 0)
   loop: "{{ containerd_wasm_shims_runtimes | split(',') }}"
 
 - name: Unpack containerd for Flatcar to /opt/bin
@@ -106,7 +106,7 @@
     remote_src: true
     src: /tmp/{{ containerd_filename }}
     dest: "{{ containerd_prefix | default('/opt') }}"
-  when: ansible_os_family == "Flatcar"
+  when: ansible_facts['os_family'] == "Flatcar"
 
 - name: Copy runc to /opt/bin
   ansible.builtin.copy:
@@ -114,7 +114,7 @@
     src: /tmp/runc
     dest: /opt/bin/runc
     mode: "0755"
-  when: ansible_os_family == "Flatcar"
+  when: ansible_facts['os_family'] == "Flatcar"
 
 # Install containerd Wasm shims specified in a comma-separated string. Known runtimes are 'lunatic', 'slight', 'spin', and 'wws'.
 - name: Unpack containerd-wasm-shims for Flatcar to /opt/bin
@@ -124,7 +124,7 @@
     dest: "{{ sysusr_prefix }}/bin"
     extra_opts:
       - --no-overwrite-dir
-  when: ansible_os_family == "Flatcar" and (containerd_wasm_shims_runtimes | length > 0)
+  when: ansible_facts['os_family'] == "Flatcar" and (containerd_wasm_shims_runtimes | length > 0)
   loop: "{{ containerd_wasm_shims_runtimes | split(',') }}"
 
 - name: Create unit file directory
@@ -138,7 +138,7 @@
     dest: /etc/systemd/system/containerd.service.d/10-opt-bin-custom.conf
     src: etc/systemd/system/containerd-flatcar.conf
     mode: "0600"
-  when: ansible_os_family == "Flatcar"
+  when: ansible_facts['os_family'] == "Flatcar"
 
 - name: Create containerd memory pressure drop-in file
   ansible.builtin.template:
@@ -157,7 +157,7 @@
     dest: /etc/systemd/system/containerd.service.d/limit-nofile.conf
     src: etc/systemd/system/containerd.service.d/limit-nofile.conf
     mode: "0644"
-  when: ansible_os_family in ["Common Base Linux Mariner", "Flatcar", "Microsoft Azure Linux"]
+  when: ansible_facts['os_family'] in ["Common Base Linux Mariner", "Flatcar", "Microsoft Azure Linux"]
 
 - name: Create containerd http proxy conf file if needed
   ansible.builtin.template:
@@ -210,7 +210,7 @@
     - ctr
     - crictl
     - critest
-  when: ansible_os_family != "Flatcar"
+  when: ansible_facts['os_family'] != "Flatcar"
 
 - name: Delete containerd tarball
   ansible.builtin.file:
@@ -237,11 +237,12 @@
 - name: Download runsc for gvisor
   ansible.builtin.get_url:
     dest: "{{ sysusr_prefix }}/bin/{{ item }}"
-    url: https://storage.googleapis.com/gvisor/releases/release/{{ containerd_gvisor_version }}/{{ ansible_architecture }}/{{ item }}
+    url: https://storage.googleapis.com/gvisor/releases/release/{{ containerd_gvisor_version }}/{{ ansible_facts['architecture'] }}/{{ item }}
     mode: "0755"
     owner: root
     group: root
-    checksum: sha512:https://storage.googleapis.com/gvisor/releases/release/{{ containerd_gvisor_version }}/{{ ansible_architecture }}/{{ item }}.sha512
+    checksum: >-
+      sha512:https://storage.googleapis.com/gvisor/releases/release/{{ containerd_gvisor_version }}/{{ ansible_facts['architecture'] }}/{{ item }}.sha512
   loop:
     - runsc
     - containerd-shim-runsc-v1

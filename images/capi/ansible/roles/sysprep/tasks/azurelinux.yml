@@ -37,7 +37,7 @@
     name: swap.target
     enabled: false
     masked: true
-  when: ansible_memory_mb.swap.total != 0
+  when: ansible_facts['memory_mb'].swap.total != 0
 
 - name: Remove the kickstart log
   ansible.builtin.file:

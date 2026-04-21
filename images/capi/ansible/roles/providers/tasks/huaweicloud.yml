@@ -17,21 +17,21 @@
     name: pip
     executable: pip3
     state: latest
-  when: ansible_os_family == "Debian"
+  when: ansible_facts['os_family'] == "Debian"
 
 - name: Uninstall cloud-init pip package
   ansible.builtin.pip:
     name: "cloud-init"
     executable: pip3
     state: absent
-  when: ansible_os_family == "Debian"
+  when: ansible_facts['os_family'] == "Debian"
 
 - name: Create dns default conf directory
   ansible.builtin.file:
     path: /etc/systemd/resolved.conf.d
     state: directory
     mode: "0755"
-  when: ansible_os_family == "Debian"
+  when: ansible_facts['os_family'] == "Debian"
 
 - name: Add default dns
   ansible.builtin.copy:
@@ -42,4 +42,4 @@
     owner: root
     group: root
     mode: "0644"
-  when: ansible_os_family == "Debian"
+  when: ansible_facts['os_family'] == "Debian"

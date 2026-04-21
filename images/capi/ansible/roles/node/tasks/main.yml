@@ -14,23 +14,23 @@
 ---
 - name: Import Photon node tasks
   ansible.builtin.import_tasks: photon.yml
-  when: ansible_os_family == "VMware Photon OS"
+  when: ansible_facts['os_family'] == "VMware Photon OS"
 
 - name: Import Amazon Linux node tasks
   ansible.builtin.import_tasks: amazonLinux.yml
-  when: ansible_distribution == "Amazon"
+  when: ansible_facts['distribution'] == "Amazon"
 
 # This is required until https://github.com/ansible/ansible/issues/77537 is fixed and used.
 - name: Override Flatcar's OS family
   ansible.builtin.set_fact:
     ansible_os_family: Flatcar
-  when: ansible_os_family == "Flatcar Container Linux by Kinvolk"
+  when: ansible_facts['os_family'] == "Flatcar Container Linux by Kinvolk"
   tags:
     - facts
 
 - name: Import Flatcar node tasks
   ansible.builtin.import_tasks: flatcar.yml
-  when: ansible_os_family == "Flatcar"
+  when: ansible_facts['os_family'] == "Flatcar"
 
 - name: Ensure overlay module is present
   community.general.modprobe:
@@ -74,18 +74,18 @@
 - name: Disable swap memory
   ansible.builtin.shell: |
     swapoff -a
-  when: ansible_memory_mb.swap.total != 0
+  when: ansible_facts['memory_mb'].swap.total != 0
 
 - name: Edit fstab file to disable swap
   ansible.builtin.shell: sed -ri '/\sswap\s/s/^#?/#/' /etc/fstab
-  when: ansible_memory_mb.swap.total != 0
+  when: ansible_facts['memory_mb'].swap.total != 0
 
 - name: Disable conntrackd service
   ansible.builtin.systemd:
     name: conntrackd
     state: stopped
     enabled: false
-  when: ansible_os_family not in ["Common Base Linux Mariner", "Debian", "Flatcar", "Microsoft Azure Linux"]
+  when: ansible_facts['os_family'] not in ["Common Base Linux Mariner", "Debian", "Flatcar", "Microsoft Azure Linux"]
 
 - name: Ensure auditd is running and comes on at reboot
   ansible.builtin.service:
@@ -95,7 +95,7 @@
 
 - name: Configure auditd rules for containerd
   ansible.builtin.copy:
-    src: "etc/audit/rules.d/containerd.rules{{ '-flatcar' if ansible_os_family == 'Flatcar' else '' }}"
+    src: "etc/audit/rules.d/containerd.rules{{ '-flatcar' if ansible_facts['os_family'] == 'Flatcar' else '' }}"
     dest: /etc/audit/rules.d/containerd.rules
     owner: root
     group: root
@@ -109,7 +109,7 @@
     state: present
     sysctl_set: true
     reload: true
-  when: ansible_distribution == "Ubuntu"
+  when: ansible_facts['distribution'] == "Ubuntu"
 
 - name: Set transparent huge pages to madvise
   ansible.builtin.lineinfile:
@@ -117,7 +117,7 @@
     backrefs: true
     regexp: ^(?!.*transparent_hugepage=madvise)(GRUB_CMDLINE_LINUX=.*)("$)
     line: \1 transparent_hugepage=madvise"
-  when: ansible_os_family == "RedHat"
+  when: ansible_facts['os_family'] == "RedHat"
 
 - name: Copy udev etcd network tuning rules
   ansible.builtin.template:

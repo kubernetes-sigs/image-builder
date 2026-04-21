@@ -21,7 +21,10 @@
   # from this repo leads to build failures(especially in Arm), hence ignoring the step.
   # Ubuntu 24.04 has changed to deb822 source management
   # As a result the there is change in format source configurations and location
-  when: (packer_builder_type != "oracle-oci") and ((ansible_distribution == "Ubuntu") and (ansible_distribution_major_version is version('24', '<')))
+  when: >
+    (packer_builder_type != "oracle-oci") and
+    ((ansible_facts['distribution'] == "Ubuntu") and
+    (ansible_facts['distribution_major_version'] is version('24', '<')))
 
 - name: Put templated ubuntu.sources in place
   ansible.builtin.template:
@@ -30,7 +33,7 @@
     mode: "0644"
   # Ubuntu 24.04 has changed to deb822 source management
   # As a result the there is change in format source configurations and location
-  when: (ansible_distribution == "Ubuntu") and (ansible_distribution_major_version is version('24', '>='))
+  when: (ansible_facts['distribution'] == "Ubuntu") and (ansible_facts['distribution_major_version'] is version('24', '>='))
 
 - name: Put templated apt.conf.d/90proxy in place when defined
   ansible.builtin.template:

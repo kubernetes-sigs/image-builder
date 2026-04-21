@@ -17,26 +17,26 @@ dependencies:
     vars:
       rpms: "{{ common_rpms + al2_rpms + lookup('vars', 'common_' + build_target + '_rpms') }}"
       debs: "{{ common_debs }}"
-    when: ansible_distribution == "Amazon" and ansible_distribution_version == "2"
+    when: ansible_facts['distribution'] == "Amazon" and ansible_facts['distribution_version'] == "2"
 
   - role: setup
     vars:
       rpms: "{{ common_rpms + al2023_rpms + lookup('vars', 'common_' + build_target + '_rpms') }}"
       debs: "{{ common_debs }}"
-    when: ansible_distribution == "Amazon" and ansible_distribution_version == "2023"
+    when: ansible_facts['distribution'] == "Amazon" and ansible_facts['distribution_version'] == "2023"
 
   - role: setup
     vars:
       rpms: "{{ common_rpms }}"
       debs: "{{ common_debs }}"
-    when: packer_builder_type == "oracle-oci" and ansible_architecture == "aarch64"
+    when: packer_builder_type == "oracle-oci" and ansible_facts['architecture'] == "aarch64"
 
   - role: setup
     vars:
       rpms: >-
-        {{ (common_photon_rpms + lookup('vars', 'photon_' + ansible_distribution_major_version + '_rpms' )
+        {{ (common_photon_rpms + lookup('vars', 'photon_' + ansible_facts['distribution_major_version'] + '_rpms' )
           + lookup('vars', 'common_' + build_target + '_photon_rpms')) }}
-    when: ansible_distribution == "VMware Photon OS"
+    when: ansible_facts['distribution'] == "VMware Photon OS"
 
   - role: setup
     vars:
@@ -44,11 +44,11 @@ dependencies:
         {{ ( common_rpms + rh8_rpms + lookup('vars', 'common_' + build_target + '_rpms') ) }}
       debs: "{{ common_debs +  lookup('vars', 'common_' + build_target + '_debs') }}"
     when: >
-      ansible_distribution not in ["VMware Photon OS", "Amazon"]
-        and not (packer_builder_type == "oracle-oci" and ansible_architecture == "aarch64")
+      ansible_facts['distribution'] not in ["VMware Photon OS", "Amazon"]
+        and not (packer_builder_type == "oracle-oci" and ansible_facts['architecture'] == "aarch64")
         and not packer_builder_type is search('qemu')
 
   - role: setup
     vars:
       rpms: "{{ common_rpms + azurelinux_rpms + lookup('vars', 'common_' + build_target + '_rpms') }}"
-    when: ansible_distribution in ["Common Base Linux Mariner", "Microsoft Azure Linux"]
+    when: ansible_facts['distribution'] in ["Common Base Linux Mariner", "Microsoft Azure Linux"]

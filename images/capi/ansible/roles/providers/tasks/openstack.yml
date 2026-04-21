@@ -23,35 +23,35 @@
       - cloud-guest-utils
       - cloud-initramfs-copymods
       - cloud-initramfs-dyn-netconf
-  when: ansible_os_family == "Debian"
+  when: ansible_facts['os_family'] == "Debian"
 
 - name: Disable Hyper-V KVP protocol daemon on Ubuntu
   ansible.builtin.systemd:
     name: hv-kvp-daemon
     state: stopped
     enabled: false
-  when: ansible_os_family == "Debian"
+  when: ansible_facts['os_family'] == "Debian"
 
 - name: Ensure networkd-dispatcher is installed
   ansible.builtin.apt:
     name: networkd-dispatcher
     state: present
     force_apt_get: true
-  when: ansible_os_family == "Debian"
+  when: ansible_facts['os_family'] == "Debian"
 
 - name: Enable networkd-dispatcher service
   ansible.builtin.systemd:
     name: networkd-dispatcher
     state: started
     enabled: true
-  when: ansible_os_family == "Debian"
+  when: ansible_facts['os_family'] == "Debian"
 
 - name: Create directory for DHCP chrony server files
   ansible.builtin.file:
     path: /var/lib/dhcp
     state: directory
     mode: '0755'
-  when: ansible_os_family == "Debian"
+  when: ansible_facts['os_family'] == "Debian"
 
 - name: Copy networkd-dispatcher scripts to add DHCP provided NTP servers
   ansible.builtin.template:
@@ -65,4 +65,4 @@
     - { src: files/etc/networkd-dispatcher/routable.d/20-chrony.j2, dest: /etc/networkd-dispatcher/routable.d/20-chrony }
     - { src: files/etc/networkd-dispatcher/off.d/20-chrony.j2, dest: /etc/networkd-dispatcher/off.d/20-chrony }
     - { src: files/etc/networkd-dispatcher/no-carrier.d/20-chrony.j2, dest: /etc/networkd-dispatcher/no-carrier.d/20-chrony }
-  when: ansible_os_family == "Debian"
+  when: ansible_facts['os_family'] == "Debian"

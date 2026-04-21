@@ -55,7 +55,7 @@
     mode: a+x
   vars:
     server_dir: /var/lib/dhcp
-    chrony_helper_dir: "{{ '/usr/libexec/chrony' if ansible_distribution_version is version('22.04', '>=') else '/usr/lib/chrony' }}"
+    chrony_helper_dir: "{{ '/usr/libexec/chrony' if ansible_facts['distribution_version'] is version('22.04', '>=') else '/usr/lib/chrony' }}"
   loop:
     - { src: files/etc/networkd-dispatcher/routable.d/20-chrony.j2, dest: /etc/networkd-dispatcher/routable.d/20-chrony }
     - { src: files/etc/networkd-dispatcher/off.d/20-chrony.j2, dest: /etc/networkd-dispatcher/off.d/20-chrony }
@@ -68,4 +68,4 @@
     content: |
       datasource: VMware
     mode: "0644"
-  when: ansible_distribution_version is version('22.04', '>=')
+  when: ansible_facts['distribution_version'] is version('22.04', '>=')

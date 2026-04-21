@@ -18,7 +18,7 @@
     pkg:
       - python3-boto3
       - python3-botocore
-  when: ansible_os_family == "Debian"
+  when: ansible_facts['os_family'] == "Debian"
 
 # TODO: We should probably think of an approach to allow a loop here to prevent multiple calls
 # and as such, multiple installs/removals of the boto packages.
@@ -43,4 +43,4 @@
     pkg:
       - python3-boto3
       - python3-botocore
-  when: ansible_os_family == "Debian"
+  when: ansible_facts['os_family'] == "Debian"

@@ -23,7 +23,10 @@
     line: refclock PHC /dev/ptp0 poll 3 dpoll -2 offset 0
     mode: "0644"
   # Flatcar now includes this by default as of 3975.2.0 which causes this task to fail
-  when: ansible_os_family != "Flatcar" or (ansible_os_family == "Flatcar" and  ansible_distribution_version is version('3975.2.0', '<'))
+  when: >
+    ansible_facts['os_family'] != "Flatcar" or
+    (ansible_facts['os_family'] == "Flatcar" and
+    ansible_facts['distribution_version'] is version('3975.2.0', '<'))
 
 - name: Ensure makestep parameter set as per Azure recommendation
   ansible.builtin.lineinfile:
@@ -31,7 +34,10 @@
     regexp: ^makestep
     line: makestep 1.0 -1
   # Flatcar now includes this by default as of 3975.2.0 which causes this task to fail
-  when: ansible_os_family != "Flatcar" or (ansible_os_family == "Flatcar" and  ansible_distribution_version is version('3975.2.0', '<'))
+  when: >
+    ansible_facts['os_family'] != "Flatcar" or
+    (ansible_facts['os_family'] == "Flatcar" and
+    ansible_facts['distribution_version'] is version('3975.2.0', '<'))
 
 - name: Install iptables persistence
   ansible.builtin.apt:
@@ -41,7 +47,7 @@
   vars:
     packages:
       - iptables-persistent
-  when: ansible_os_family == "Debian"
+  when: ansible_facts['os_family'] == "Debian"
 
 - name: Block traffic to 168.63.129.16 port 80 for cve-2021-27075
   ansible.builtin.copy:
@@ -50,13 +56,13 @@
     owner: root
     group: root
     mode: "0644"
-  when: ansible_os_family == "Debian"
+  when: ansible_facts['os_family'] == "Debian"
 
 - name: Load iptable rules from file
   community.general.iptables_state:
     state: restored
     path: /etc/iptables/rules.v4
-  when: ansible_os_family == "Debian"
+  when: ansible_facts['os_family'] == "Debian"
 
 - name: Install netbase and nfs-common
   ansible.builtin.apt:
@@ -67,7 +73,7 @@
     packages:
       - netbase
       - nfs-common
-  when: ansible_os_family == "Debian"
+  when: ansible_facts['os_family'] == "Debian"
 
 ## refer to ../files/etc/cloud/cloud.cfg.d/15_azure-vnet.cfg
 ## for more context on below file addition
@@ -78,7 +84,7 @@
     owner: root
     group: root
     mode: "0644"
-  when: ansible_os_family == "Debian"
+  when: ansible_facts['os_family'] == "Debian"
 
 - name: Create the credential provider path
   ansible.builtin.file:
