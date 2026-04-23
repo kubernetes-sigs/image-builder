@@ -61,3 +61,8 @@
   ansible.builtin.shell: |
     echo 'set oem_id="{{ oem_id }}"' >> /usr/share/oem/grub.cfg
   when: (oem_id is defined) and (oem_id != "")
+
+- name: Set ignition config URL in grub for metal platform
+  ansible.builtin.shell: |
+    echo 'set linux_append="$linux_append ignition.config.url={{ ignition_config_url }}"' >> /usr/share/oem/grub.cfg
+  when: (ignition_config_url is defined) and (ignition_config_url != "")

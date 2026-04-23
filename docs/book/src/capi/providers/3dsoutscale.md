@@ -28,6 +28,7 @@ the different operating systems.
 |------|-------------|
 | `ubuntu-2204.json` | The settings for the Ubuntu 22.04 image |
 | `ubuntu-2404.json` | The settings for the Ubuntu 24.04 image |
+| `flatcar.json` | The settings for the Flatcar image |
 
 You must have your [Access Keys](https://docs.outscale.com/en/userguide/About-Access-Keys.html).
 You must have your [Account Id](https://docs.outscale.com/en/userguide/Getting-Information-About-Your-Account-and-Quotas.html).
@@ -37,4 +38,21 @@ OSC_SECRET_KEY: Outscale Secret Key
 OSC_REGION: Outscale Region
 OSC_ACCESS_KEY: Outscale Access Key Id
 OSC_ACCOUNT_ID: Outscale Account Id
+```
+
+### Flatcar
+
+Since Outscale does not provide a Flatcar OMI, the Flatcar build uses an Ubuntu OMI as a
+bootstrap environment. The build process installs Flatcar to disk using `flatcar-install`,
+reboots into Flatcar, and then provisions it with Ansible.
+
+The following additional environment variables are required for Flatcar builds:
+```
+FLATCAR_CHANNEL: Flatcar release channel (stable, beta, alpha). Defaults to stable.
+FLATCAR_VERSION: Flatcar version. Defaults to current (latest).
+```
+
+Example:
+```bash
+FLATCAR_CHANNEL=stable FLATCAR_VERSION=current make build-osc-flatcar
 ```
