@@ -18,3 +18,6 @@ gpu_block_nouveau_loading: false
 gpu_systemd_networkd_update_initramfs: >-
   {%- if ansible_os_family == 'VMware Photon OS' -%} dracut -f{%- elif ansible_os_family == 'Debian' -%} update-initramfs -u{%- endif -%}
 gpu_nvidia_ceph: false
+gpu_flatcar_nvidia_sysext_name: "nvidia-drivers-570"
+gpu_flatcar_nvidia_runtime_url: ""
+gpu_flatcar_nvidia_runtime_filename: ""

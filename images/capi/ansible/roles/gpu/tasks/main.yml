@@ -18,17 +18,22 @@
     src: "etc/modprobe.d/blocklist-nouveau.conf"
     dest: "/etc/modprobe.d/blocklist-nouveau.conf"
     mode: "0644"
+  when: ansible_os_family != "Flatcar"
 
 - name: Update initramfs
   ansible.builtin.command: "{{ gpu_systemd_networkd_update_initramfs }}"
   register: update_initramfs_output
-  when: (gpu_systemd_networkd_update_initramfs is defined) and (gpu_systemd_networkd_update_initramfs | length > 0)
+  when: (ansible_os_family != "Flatcar") and (gpu_systemd_networkd_update_initramfs is defined) and (gpu_systemd_networkd_update_initramfs | length > 0)
   changed_when: update_initramfs_output.rc == 0
 
 - name: Include AMD
   ansible.builtin.include_tasks: amd.yml
   when: gpu_vendor == "amd"
 
+- name: Include NVIDIA for Flatcar (sysext)
+  ansible.builtin.include_tasks: flatcar-nvidia.yml
+  when: gpu_vendor == "nvidia" and ansible_os_family == "Flatcar"
+
 - name: Include NVIDIA
   ansible.builtin.include_tasks: nvidia.yml
-  when: gpu_vendor == "nvidia"
+  when: gpu_vendor == "nvidia" and ansible_os_family != "Flatcar"
