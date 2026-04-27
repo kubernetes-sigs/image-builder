@@ -57,7 +57,7 @@ package:
   {{end}}
 {{end}}
 # x86-only provider packages (hypervisor tools not available on arm64)
-{{if ne .Vars.ARCH "arm64"}}
+{{if ne .Vars.arch "arm64"}}
 {{range $name, $vers := index .Vars .Vars.OS .Vars.PROVIDER "package-x86"}}
   {{$name}}:
     installed: true
