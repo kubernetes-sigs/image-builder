@@ -15,5 +15,6 @@
   "sysusr_prefix": "/opt",
   "sysusrlocal_prefix": "/opt",
   "user_data": "",
-  "user_data_file": "packer/files/flatcar/ignition/bootstrap-cloud.json"
+  "user_data_file": "packer/files/flatcar/ignition/bootstrap-cloud.json",
+  "volume_size": "15"
 }
