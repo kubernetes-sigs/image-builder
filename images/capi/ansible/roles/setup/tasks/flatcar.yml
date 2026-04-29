@@ -21,6 +21,16 @@
     state: directory
     mode: "0755"
 
+# Flatcar Stable 4593.2.0+ ships without /etc/sysctl.d/ pre-created. The
+# node role's sysctl tasks write to /etc/sysctl.d/99-sysctl.conf via the
+# ansible.posix.sysctl module, which uses mkstemp in the parent directory
+# and fails with FileNotFoundError when the directory is missing.
+- name: Create /etc/sysctl.d directory
+  ansible.builtin.file:
+    path: /etc/sysctl.d
+    state: directory
+    mode: "0755"
+
 - name: Add env generator that includes system PATH on service path
   ansible.builtin.copy:
     src: etc/systemd/system-environment-generators/10-flatcar-path
