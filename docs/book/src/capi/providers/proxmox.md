@@ -38,6 +38,7 @@ the different operating systems.
 |--------------------|-----------------------------------------|
 | `ubuntu-2204.json` | The settings for the Ubuntu 22.04 image |
 | `ubuntu-2404.json` | The settings for the Ubuntu 24.04 image |
+| `ubuntu-2604.json` | The settings for the Ubuntu 26.04 image |
 
 The full list of available environment vars can be found in the `variables` section of `images/capi/packer/proxmox/packer.json`.
 

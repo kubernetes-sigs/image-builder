@@ -27,3 +27,4 @@ the different operating systems.
 | `rockylinux-9.json` | The settings for the Rocky Linux 9 image |
 | `ubuntu-2204.json`  | The settings for the Ubuntu 22.04 image  |
 | `ubuntu-2404.json`  | The settings for the Ubuntu 24.04 image  |
+| `ubuntu-2604.json`  | The settings for the Ubuntu 26.04 image  |

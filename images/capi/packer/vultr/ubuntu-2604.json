@@ -1,0 +1,6 @@
+{
+  "build_name": "ubuntu-2604",
+  "os": "2260",
+  "snapshot_name_suffix": "on Ubuntu 26.04",
+  "source_image": "ubuntu-26-04-x64"
+}

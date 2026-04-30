@@ -28,6 +28,7 @@ the different operating systems.
 |------|-------------|
 | `ubuntu-2204.json` | The settings for the Ubuntu 22.04 image |
 | `ubuntu-2404.json` | The settings for the Ubuntu 24.04 image |
+| `ubuntu-2604.json` | The settings for the Ubuntu 26.04 image |
 
 You must have your [Access Keys](https://docs.outscale.com/en/userguide/About-Access-Keys.html).
 You must have your [Account Id](https://docs.outscale.com/en/userguide/Getting-Information-About-Your-Account-and-Quotas.html).

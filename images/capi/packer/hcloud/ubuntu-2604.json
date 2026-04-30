@@ -1,0 +1,8 @@
+{
+  "build_name": "ubuntu-2604",
+  "distribution": "ubuntu",
+  "distribution_release": "resolute",
+  "distribution_version": "2604",
+  "image": "ubuntu-26.04",
+  "ssh_username": "root"
+}

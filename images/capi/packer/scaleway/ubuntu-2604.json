@@ -1,0 +1,6 @@
+{
+  "build_name": "ubuntu-2604",
+  "distribution": "ubuntu",
+  "distribution_version": "2604",
+  "image": "ubuntu_resolute"
+}

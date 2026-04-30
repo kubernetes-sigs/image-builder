@@ -15,10 +15,24 @@
 - name: Install Azure CLI
   when: ansible_facts['os_family'] == "Debian"
   block:
-    - name: Add Microsoft Package Repository Key
-      ansible.builtin.apt_key:
+    - name: Ensure /etc/apt/keyrings directory exists
+      ansible.builtin.file:
+        path: /etc/apt/keyrings
+        state: directory
+        mode: "0755"
+
+    - name: Download Microsoft Package Repository Key (armored)
+      ansible.builtin.get_url:
         url: https://packages.microsoft.com/keys/microsoft.asc
-        state: present
+        dest: /etc/apt/keyrings/microsoft.asc
+        mode: "0644"
+
+    - name: Dearmor Microsoft Package Repository Key
+      ansible.builtin.shell: >
+        gpg --dearmor < /etc/apt/keyrings/microsoft.asc
+        > /etc/apt/keyrings/microsoft.gpg
+      args:
+        creates: /etc/apt/keyrings/microsoft.gpg
 
     - name: Find Ubuntu Version
       ansible.builtin.command:
@@ -32,9 +46,16 @@
       register: host_arch
       changed_when: false
 
+    - name: Map unsupported codenames to nearest supported codename
+      ansible.builtin.set_fact:
+        azure_cli_codename: "{{ 'noble' if ubuntu_version.stdout == 'resolute' else ubuntu_version.stdout }}"
+
     - name: Add Microsoft Package Repository
       ansible.builtin.apt_repository:
-        repo: 'deb [arch={{ host_arch.stdout }}] https://packages.microsoft.com/repos/azure-cli/ {{ ubuntu_version.stdout }} main'
+        repo: >-
+          deb [arch={{ host_arch.stdout }} signed-by=/etc/apt/keyrings/microsoft.gpg]
+          https://packages.microsoft.com/repos/azure-cli/
+          {{ azure_cli_codename }} main
         state: present
         update_cache: true
 
