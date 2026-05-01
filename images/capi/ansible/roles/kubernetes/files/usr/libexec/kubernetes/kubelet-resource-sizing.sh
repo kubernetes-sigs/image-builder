@@ -99,7 +99,7 @@ CPU_CORE_RESERVATION_MICROCORES=(
 )
 
 # Calculate the CPU reservation
-cpu_milicores_to_reserve() {
+cpu_millicores_to_reserve() {
   local cpu_microcores_reserved=0
 
   for ((i = 0; i < schedulable_cores_no; i++)); do
@@ -115,5 +115,15 @@ cpu_milicores_to_reserve() {
 }
 
 mkdir -p /var/lib/kubelet/kubelet.conf.d
-echo "$(jq --arg mebibytes_to_reserve "${mebibytes_to_reserve}Mi" --arg cpu_millicores_to_reserve "${cpu_millicores_to_reserve}m" \
-    '. += {systemReserved: {"cpu": $cpu_millicores_to_reserve, "ephemeral-storage": "1Gi", "memory": $mebibytes_to_reserve}}' $KUBELET_CONFIG)" > $KUBELET_CONFIG
+
+# Initialize config file if it doesn't exist
+if [ ! -f "$KUBELET_CONFIG" ]; then
+  echo "{}" > "$KUBELET_CONFIG"
+fi
+
+# Get the computed values from the functions
+memory_reservation_mebibytes=$(memory_reservation_mebibytes)
+cpu_millicores_to_reserve=$(cpu_millicores_to_reserve)
+
+echo "$(jq --arg memory_reservation_mebibytes "${memory_reservation_mebibytes}Mi" --arg cpu_millicores_to_reserve "${cpu_millicores_to_reserve}m" \
+    '. += {"apiVersion": "kubelet.config.k8s.io/v1beta1","kind": "KubeletConfiguration", "systemReserved": {"cpu": $cpu_millicores_to_reserve, "ephemeral-storage": "1Gi", "memory": $memory_reservation_mebibytes}}' "$KUBELET_CONFIG")" > "$KUBELET_CONFIG"

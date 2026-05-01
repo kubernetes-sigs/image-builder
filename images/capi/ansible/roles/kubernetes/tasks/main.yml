@@ -89,13 +89,13 @@
     path: "{{ systemd_prefix }}/system/kubelet.service.d/10-kubeadm.conf"
     regexp: '^Environment="KUBELET_CONFIG_ARGS='
     line: Environment="KUBELET_CONFIG_ARGS=--config=/var/lib/kubelet/config.yaml --config-dir /var/lib/kubelet/kubelet.conf.d"
-  when: kubernetes_enable_automatic_resource_sizing | bool
+  when: kubernetes_semver is version('v1.28.0', '>=') and kubernetes_enable_automatic_resource_sizing | bool
 
 - name: Add KUBELET_CONFIG_DROPIN_DIR_ALPHA environment variable for Kubernetes v1.29 and below
   ansible.builtin.lineinfile:
     path: "{{ systemd_prefix }}/system/kubelet.service.d/10-kubeadm.conf"
     line: Environment="KUBELET_CONFIG_DROPIN_DIR_ALPHA"
-  when: kubernetes_semver is version('v1.29.0', '<=') and kubernetes_enable_automatic_resource_sizing | bool
+  when: kubernetes_semver is version('v1.28.0', '>=') and kubernetes_semver is version('v1.29.0', '<') and kubernetes_enable_automatic_resource_sizing | bool
 
 - name: Generate kubectl bash completion
   ansible.builtin.shell:
