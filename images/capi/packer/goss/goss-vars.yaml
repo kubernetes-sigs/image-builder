@@ -91,6 +91,7 @@ photon_5_rpms: &photon_5_rpms
 arch: "amd64"
 containerd_gvisor_runtime: ""
 containerd_gvisor_version: ""
+containerd_image_pull_progress_timeout: ""
 containerd_version: ""
 containerd_wasm_shims_runtimes: ""
 extra_kernel_boot_params: ""

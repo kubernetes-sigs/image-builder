@@ -126,6 +126,7 @@
       "vars_inline": {
         "OS": "{{user `distribution` | lower}}",
         "PROVIDER": "amazon",
+        "containerd_image_pull_progress_timeout": "{{user `containerd_image_pull_progress_timeout`}}",
         "containerd_version": "{{user `containerd_version`}}",
         "distribution_version": "{{user `distribution_version`}}",
         "kubernetes_version": "{{user `kubernetes_semver`}}",
@@ -177,6 +178,7 @@
     "cloudbase_metadata_services_unattend": "cloudbaseinit.metadata.services.base.EmptyMetadataService",
     "cloudbase_plugins": "cloudbaseinit.plugins.windows.createuser.CreateUserPlugin, cloudbaseinit.plugins.common.setuserpassword.SetUserPasswordPlugin, cloudbaseinit.plugins.windows.extendvolumes.ExtendVolumesPlugin, cloudbaseinit.plugins.common.userdata.UserDataPlugin, cloudbaseinit.plugins.common.ephemeraldisk.EphemeralDiskPlugin, cloudbaseinit.plugins.common.mtu.MTUPlugin, cloudbaseinit.plugins.common.sethostname.SetHostNamePlugin, cloudbaseinit.plugins.common.sshpublickeys.SetUserSSHPublicKeysPlugin",
     "cloudbase_plugins_unattend": "cloudbaseinit.plugins.common.mtu.MTUPlugin",
+    "containerd_image_pull_progress_timeout": null,
     "containerd_version": null,
     "encrypted": "false",
     "iam_instance_profile": "",
