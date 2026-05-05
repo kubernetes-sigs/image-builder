@@ -106,6 +106,7 @@
       "vars_inline": {
         "OS": "{{user `distro_name` | lower}}",
         "PROVIDER": "nutanix",
+        "containerd_image_pull_progress_timeout": "{{user `containerd_image_pull_progress_timeout`}}",
         "containerd_version": "{{user `containerd_version`}}",
         "distribution_version": "{{user `distro_version`}}",
         "kubernetes_version": "{{user `kubernetes_semver`}}",

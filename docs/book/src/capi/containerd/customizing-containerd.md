@@ -73,3 +73,14 @@ root@sandboxed-container:/# dmesg
 ```
 
 You are running a sandboxed container.
+
+## Additional Customizations
+
+Containerd can be further customized in a couple of ways. One option that is directly inserted into the containerd
+[`config.toml`](https://github.com/kubernetes-sigs/image-builder/blob/main/images/capi/ansible/roles/containerd/templates/etc/containerd/config.toml#L14)
+is to override the image pull progress timeout. This can be done using `containerd_image_pull_progress_timeout`.
+
+You can also add further configuration by adding values for `containerd_additional_settings`. This is rendered at the
+end of the
+[`config.toml`](https://github.com/kubernetes-sigs/image-builder/blob/main/images/capi/ansible/roles/containerd/templates/etc/containerd/config.toml#L86)
+default template. 

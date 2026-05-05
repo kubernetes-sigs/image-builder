@@ -1,4 +1,5 @@
 {
   "containerd_additional_settings": null,
+  "containerd_image_pull_progress_timeout": null,
   "containerd_url": "https://github.com/containerd/containerd/releases/download/v{{user `containerd_version`}}/containerd-{{user `containerd_version`}}-windows-amd64.tar.gz"
 }

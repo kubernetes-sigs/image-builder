@@ -10,6 +10,10 @@ imports = ["/etc/containerd/conf.d/*.toml"]
 
 [plugins]
 {% if containerd_version is version('2.0.0', '>=') %}
+{% if containerd_image_pull_progress_timeout | default('') | length > 0 %}
+  [plugins.'io.containerd.cri.v1.images']
+    image_pull_progress_timeout = "{{ containerd_image_pull_progress_timeout }}"
+{% endif %}
   [plugins.'io.containerd.cri.v1.images'.pinned_images]
     sandbox = "{{ pause_image }}"
   [plugins.'io.containerd.cri.v1.images'.registry]
