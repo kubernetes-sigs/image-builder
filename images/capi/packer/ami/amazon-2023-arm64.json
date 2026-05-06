@@ -1,0 +1,19 @@
+{
+  "amazon_ssm_agent_rpm": "https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_arm64/amazon-ssm-agent.rpm",
+  "ami_filter_arch": "arm64",
+  "ami_filter_name": "al2023-ami-minimal-2023.*-kernel-6.1*",
+  "ami_filter_owners": "amazon",
+  "arch": "arm64",
+  "build_name": "amazon-2023-arm64",
+  "builder_instance_type": "t4g.small",
+  "distribution": "Amazon Linux",
+  "distribution_release": "Amazon Linux 2023",
+  "distribution_version": "2023",
+  "distro_version": "2023",
+  "epel_rpm_gpg_key": "",
+  "goss_arch": "arm64",
+  "redhat_epel_rpm": "",
+  "root_device_name": "/dev/xvda",
+  "source_ami": "",
+  "ssh_username": "ec2-user"
+}

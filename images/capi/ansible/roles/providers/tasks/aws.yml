@@ -51,6 +51,11 @@
     name: hv-kvp-daemon
     state: stopped
     enabled: false
+  register: disable_hypervisor
+  ignore_errors: true
+  failed_when:
+    - disable_hypervisor.failed
+    - '"Could not find" not in (disable_hypervisor.msg | default(""))'
   when: ansible_facts['os_family'] == "Debian"
 
 - name: Create cloud-init custom data source list

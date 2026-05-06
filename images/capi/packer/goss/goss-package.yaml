@@ -56,6 +56,16 @@ package:
     {{$key}}: {{$val}}
   {{end}}
 {{end}}
+# x86-only provider packages (hypervisor tools not available on arm64)
+{{if ne .Vars.arch "arm64"}}
+{{range $name, $vers := index .Vars .Vars.OS .Vars.PROVIDER "package-x86"}}
+  {{$name}}:
+    installed: true
+  {{range $key, $val := $vers}}
+    {{$key}}: {{$val}}
+  {{end}}
+{{end}}
+{{end}}
 
 # Iterate thru different OS Versions like RHEL7/8, Photon 3/4(future) etc.
 {{$distro_version := .Vars.OS_VERSION}}
