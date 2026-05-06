@@ -5,6 +5,7 @@ The current release of Image Builder is [v0.1.50][] (April 1, 2026). The corresp
 ## Release Process
 
 Releasing image-builder is a simple process: project maintainers should be able to follow the steps below in order to create a new release.
+Before proceeding, make sure the current SHA being used in [`cloudbuild.yaml`](../../../../cloudbuild.yaml) is [still valid](https://console.cloud.google.com/artifacts/docker/k8s-staging-test-infra/us/gcr.io/gcb-docker-gcloud). If it is not, then the job that runs on tag will fail. 
 
 ### Create a tag
 
