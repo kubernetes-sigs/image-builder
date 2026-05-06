@@ -13,6 +13,11 @@
 # limitations under the License.
 
 ---
+- name: Replace chkconfig with alternatives to satisfy iptables dependency
+  ansible.builtin.command: tdnf install -y alternatives --allowerasing
+  register: install_alternatives
+  changed_when: '"Nothing to do" not in install_alternatives.stderr'
+
 - name: Install cloud-init and tools for VMware Photon OS
   ansible.builtin.command: tdnf install {{ packages }} -y
   vars:

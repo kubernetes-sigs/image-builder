@@ -36,6 +36,11 @@
   changed_when: '"Nothing to do" not in distro.stderr'
   when: not disable_public_repos|default(false)|bool
 
+- name: Replace chkconfig with alternatives to satisfy iptables dependency
+  ansible.builtin.command: tdnf install -y alternatives --allowerasing
+  register: install_alternatives
+  changed_when: '"Nothing to do" not in install_alternatives.stderr'
+
 - name: Perform a tdnf distro-sync
   ansible.builtin.command: tdnf distro-sync -y --refresh
   register: distro
