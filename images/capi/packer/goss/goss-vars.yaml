@@ -205,6 +205,8 @@ flatcar:
     command:
   openstack:
     command:
+  outscale:
+    command:
 photon:
   common-service:
     apparmor:

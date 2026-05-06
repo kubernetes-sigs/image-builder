@@ -389,7 +389,7 @@ DO_BUILD_NAMES 				?=	do-ubuntu-2204 do-ubuntu-2404
 
 OPENSTACK_BUILD_NAMES		?=	openstack-ubuntu-2204 openstack-ubuntu-2404 openstack-flatcar openstack-rockylinux-9
 
-OSC_BUILD_NAMES 			?=	osc-ubuntu-2204 osc-ubuntu-2404
+OSC_BUILD_NAMES 			?=	osc-ubuntu-2204 osc-ubuntu-2404 osc-flatcar
 
 QEMU_BUILD_NAMES			?=	qemu-ubuntu-2204 qemu-ubuntu-2204-cloudimg qemu-ubuntu-2404 qemu-ubuntu-2404-efi qemu-ubuntu-2204-efi qemu-centos-9 qemu-rhel-9 qemu-rockylinux-9 qemu-rockylinux-9-cloudimg qemu-flatcar
 
@@ -606,11 +606,11 @@ $(OCI_VALIDATE_TARGETS): deps-oci
 
 .PHONY: $(OSC_BUILD_TARGETS)
 $(OSC_BUILD_TARGETS): deps-osc
-	$(PACKER) build $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/outscale/$(subst build-osc-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/outscale/packer.json
+	$(PACKER) build $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/outscale/$(subst build-osc-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/outscale/packer$(if $(findstring flatcar,$@),-flatcar,).json
 
 .PHONY: $(OSC_VALIDATE_TARGETS)
 $(OSC_VALIDATE_TARGETS): deps-osc
-	$(PACKER) validate $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/outscale/$(subst validate-osc-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/outscale/packer.json
+	$(PACKER) validate $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/outscale/$(subst validate-osc-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/outscale/packer$(if $(findstring flatcar,$@),-flatcar,).json
 
 .PHONY: $(POWERVS_BUILD_TARGETS)
 $(POWERVS_BUILD_TARGETS): deps-powervs
@@ -837,6 +837,7 @@ build-oci-all: $(OCI_BUILD_TARGETS) ## Builds all OCI image
 
 build-osc-ubuntu-2204: ## Builds Ubuntu 22.04 Outscale Snapshot
 build-osc-ubuntu-2404: ## Builds Ubuntu 24.04 Outscale Snapshot
+build-osc-flatcar: ## Builds Flatcar Outscale Snapshot
 build-osc-all: $(OSC_BUILD_TARGETS) ## Builds all Outscale Snapshot
 
 build-nutanix-ubuntu-2204: ## Builds Ubuntu 22.04 Nutanix image
@@ -974,6 +975,7 @@ validate-oci-all: $(OCI_VALIDATE_TARGETS) ## Validates all OCI image packer conf
 
 validate-osc-ubuntu-2204: ## Validates Ubuntu 22.04 Outscale Snapshot Packer config
 validate-osc-ubuntu-2404: ## Validates Ubuntu 24.04 Outscale Snapshot Packer config
+validate-osc-flatcar: ## Validates Flatcar Outscale Snapshot Packer config
 validate-osc-all: $(OSC_VALIDATE_TARGETS) ## Validates all Outscale Snapshot Packer config
 
 validate-powervs-centos-9: ## Validates the PowerVS CentOS 9 image packer config
