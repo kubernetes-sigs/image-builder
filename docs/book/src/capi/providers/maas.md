@@ -19,7 +19,7 @@ From the `image-builder` directory, run:
 make build-maas-ubuntu-xxxx-efi
 ```
 
-The image will be located in `images/capi/output/BUILD_NAME+kube-KUBERNETES_VERSION`. Replace `xxxx` with `2204` or `2404`, depending on the Ubuntu version.
+The image will be located in `images/capi/output/BUILD_NAME+kube-KUBERNETES_VERSION`. Replace `xxxx` with `2204`, `2404` or `2604`, depending on the Ubuntu version.
 
 To build a Ubuntu 22.04-based CAPI image:
 
@@ -73,7 +73,7 @@ Use the **.tar.gz** file for the upload:
 maas admin boot-resources create name=custom/your-image architecture=amd64/generic title=your-image subarches=generic base_image=ubuntu/jammy content@=./ubuntu-2204-efi-kube-v1.30.5.tar.gz
 ```
 
-**Note:** Set `base_image=ubuntu/jammy` for Ubuntu 22.04 or `ubuntu/noble` for 24.04.
+**Note:** Set `base_image=ubuntu/jammy` for Ubuntu 22.04, `ubuntu/noble` for 24.04, or `ubuntu/resolute` for 26.04.
 
 ## Custom Curtin Scripts
 If you need to override the default MaaS curtin scripts, create a custom role containing the curtin hooks. The files must be copied to the `/curtin` directory

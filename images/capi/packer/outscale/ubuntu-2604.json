@@ -1,0 +1,7 @@
+{
+  "build_name": "ubuntu-2604",
+  "distribution": "ubuntu",
+  "distribution_release": "ubuntu",
+  "distribution_version": "2604",
+  "image_name": "Ubuntu-26.04-2026-04-22"
+}

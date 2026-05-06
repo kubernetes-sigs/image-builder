@@ -17,14 +17,28 @@
 - name: Install Trivy on Debian based systems
   when: ansible_facts['os_family'] == "Debian"
   block:
-    - name: Add Trivy package signing key
-      ansible.builtin.apt_key:
+    - name: Ensure /etc/apt/keyrings directory exists
+      ansible.builtin.file:
+        path: /etc/apt/keyrings
+        state: directory
+        mode: "0755"
+
+    - name: Download Trivy package signing key (armored)
+      ansible.builtin.get_url:
         url: https://aquasecurity.github.io/trivy-repo/deb/public.key
-        state: present
+        dest: /etc/apt/keyrings/trivy.asc
+        mode: "0644"
+
+    - name: Dearmor Trivy package signing key
+      ansible.builtin.shell: >
+        gpg --dearmor < /etc/apt/keyrings/trivy.asc
+        > /etc/apt/keyrings/trivy.gpg
+      args:
+        creates: /etc/apt/keyrings/trivy.gpg
 
     - name: Add Trivy apt repo
       ansible.builtin.apt_repository:
-        repo: "deb https://aquasecurity.github.io/trivy-repo/deb {{ ansible_facts['distribution_release'] }} main"
+        repo: "deb [signed-by=/etc/apt/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb {{ ansible_facts['distribution_release'] }} main"
         state: present
         filename: trivy
 

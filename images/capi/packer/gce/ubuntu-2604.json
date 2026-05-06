@@ -1,0 +1,9 @@
+{
+  "build_name": "ubuntu-2604",
+  "distribution": "ubuntu",
+  "distribution_release": "resolute",
+  "distribution_version": "2604",
+  "source_image_family": "ubuntu-2604-lts-amd64",
+  "ssh_username": "ubuntu",
+  "zone": "us-central1-a"
+}

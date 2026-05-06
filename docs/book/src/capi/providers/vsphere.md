@@ -84,6 +84,8 @@ In addition to the configuration found in `images/capi/packer/config`, the `ova`
 | `ubuntu-2204-efi.json` | The settings for the Ubuntu 22.04 EFI image                      |
 | `ubuntu-2404.json` | The settings for the Ubuntu 24.04 image                      |
 | `ubuntu-2404-efi.json` | The settings for the Ubuntu 24.04 EFI image                      |
+| `ubuntu-2604.json` | The settings for the Ubuntu 26.04 image                      |
+| `ubuntu-2604-efi.json` | The settings for the Ubuntu 26.04 EFI image                      |
 | `vsphere.json`     | Additional settings needed when building on a remote vSphere |
 
 ### Photon specific options
