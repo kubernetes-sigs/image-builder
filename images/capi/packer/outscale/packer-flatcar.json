@@ -5,6 +5,14 @@
       "force_delete_snapshot": "{{user `overwrite_existing`}}",
       "force_deregister": "{{user `overwrite_existing`}}",
       "global_permission": "{{ user `global_permission` }}",
+      "launch_block_device_mappings": [
+        {
+          "delete_on_vm_deletion": true,
+          "device_name": "/dev/xvdb",
+          "volume_size": 15,
+          "volume_type": "standard"
+        }
+      ],
       "omi_account_ids": [
         "{{ user `account_id` }}"
       ],
@@ -24,14 +32,6 @@
           "{{ user `owner` }}"
         ]
       },
-      "launch_block_device_mappings": [
-        {
-          "delete_on_vm_deletion": true,
-          "device_name": "/dev/xvdb",
-          "volume_size": 15,
-          "volume_type": "standard"
-        }
-      ],
       "ssh_interface": "public_ip",
       "ssh_username": "outscale",
       "tags": {
@@ -145,6 +145,7 @@
     "containerd_service_url": "https://raw.githubusercontent.com/containerd/containerd/refs/tags/v{{user `containerd_version`}}/containerd.service",
     "containerd_version": null,
     "crictl_version": null,
+    "debug_ssh_public_key": "",
     "distribution": null,
     "distribution_release": null,
     "distribution_version": null,
@@ -176,7 +177,6 @@
     "region": "{{env `OSC_REGION`}}",
     "runc_version": null,
     "secret_key": "{{env `OSC_SECRET_KEY`}}",
-    "debug_ssh_public_key": "",
     "ssh_source_cidr": "0.0.0.0/0",
     "vm_type": "tinav6.c2r4p2"
   }
