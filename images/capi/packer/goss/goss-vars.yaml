@@ -156,7 +156,6 @@ centos:
       open-vm-tools:
   ova:
     package:
-      python2-pip:
       open-vm-tools:
   qemu:
     package:
@@ -171,7 +170,6 @@ centos:
     package:
       cloud-init:
       cloud-utils-growpart:
-      python2-pip:
 almalinux:
   common-package: *common_rpms
   ova:
@@ -278,7 +276,6 @@ rockylinux:
     os_version:
     - distro_version: "8"
       package:
-        python2-pip:
         <<: *rh8_rpms
     - distro_version: "9"
       package:
@@ -379,7 +376,6 @@ rhel:
     os_version:
     - distro_version: "8"
       package:
-        python2-pip:
         <<: *rh8_rpms
     - distro_version: "9"
       package:
