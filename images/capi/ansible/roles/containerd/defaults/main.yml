@@ -13,6 +13,7 @@
 # limitations under the License.
 ---
 containerd_config_file: etc/containerd/config.toml
+containerd_enable_limit_no_file: false
 containerd_gvisor_runtime: false
 containerd_gvisor_version: latest
 containerd_baseurl: https://github.com/containerd/containerd/releases/download/v{{ containerd_version }}
