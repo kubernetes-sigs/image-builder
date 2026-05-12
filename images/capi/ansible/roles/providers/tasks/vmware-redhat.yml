@@ -30,23 +30,6 @@
   ansible.builtin.set_fact:
     cloud_init_version: "{{ ansible_facts.packages['cloud-init'][0].version }}"
 
-- name: Install python2 pip
-  ansible.builtin.dnf:
-    name: "{{ packages }}"
-    state: present
-  vars:
-    packages:
-      - python2-pip
-  when: ansible_facts['distribution_major_version']|int <= 8
-
-# pip on CentOS needs to be upgraded, but since it's still
-# Python 2.7, need < 21.0
-- name: Upgrade pip
-  ansible.builtin.pip:
-    name: pip<21.0
-    state: forcereinstall
-  when: ansible_facts['distribution_major_version'] == '7'
-
 # Directly installing Guestinfo datasource is needed so long as
 # cloud-init is < 21.3
 - name: Directly install Guestinfo
