@@ -96,11 +96,16 @@ if systemctl list-unit-files kubelet.service >/dev/null 2>&1; then
   sudo systemctl stop kubelet || true
 fi
 
-# Detect the system container runtime endpoint.
+# Detect the system container runtime endpoint and its systemd cgroup path.
 RUNTIME_ENDPOINT=""
+RUNTIME_CGROUP=""
 for sock in /run/containerd/containerd.sock /var/run/containerd/containerd.sock /var/run/crio/crio.sock; do
   if [[ -S "${sock}" ]]; then
     RUNTIME_ENDPOINT="unix://${sock}"
+    case "${sock}" in
+      */crio.sock)       RUNTIME_CGROUP="/system.slice/crio.service" ;;
+      */containerd.sock) RUNTIME_CGROUP="/system.slice/containerd.service" ;;
+    esac
     break
   fi
 done
@@ -109,6 +114,7 @@ if [[ -z "${RUNTIME_ENDPOINT}" ]]; then
   exit 1
 fi
 echo "==> Using container runtime endpoint: ${RUNTIME_ENDPOINT}"
+echo "==> Using runtime cgroup: ${RUNTIME_CGROUP}"
 
 # Locate the kubelet binary that was baked into the image; the test framework
 # will exec it.
@@ -131,7 +137,7 @@ set +e
 sudo -E "${E2E_NODE_TEST}" \
   --node-name="${NODE_NAME}" \
   --standalone-mode=true \
-  --kubelet-flags="--kubelet-cgroups=/kubelet.slice --cgroup-driver=systemd --container-runtime-endpoint=${RUNTIME_ENDPOINT} --runtime-cgroups=/system.slice/containerd.service" \
+  --kubelet-flags="--kubelet-cgroups=/kubelet.slice --cgroup-driver=systemd --container-runtime-endpoint=${RUNTIME_ENDPOINT} --runtime-cgroups=${RUNTIME_CGROUP}" \
   --container-runtime-endpoint="${RUNTIME_ENDPOINT}" \
   --ginkgo.focus="${GINKGO_FOCUS}" \
   --ginkgo.skip="${GINKGO_SKIP}" \
