@@ -566,10 +566,13 @@ jobs:
           echo "All smoke tests passed"
 
       # -- Node conformance tests (opt-in, Linux only, non-blocking) -----------
+      # Conformance test failures are tolerated (the suite is informational
+      # while we iterate). SSH/SCP transport failures are NOT tolerated — they
+      # indicate infra/auth/network problems that would otherwise be masked as
+      # ordinary conformance failures.
       - name: Run node conformance tests
         id: node_conformance
         if: ${{ inputs.run_node_conformance && steps.vars.outputs.OS_TYPE != 'Windows' }}
-        continue-on-error: true
         env:
           OS_TYPE: ${{ steps.vars.outputs.OS_TYPE }}
         run: |
@@ -580,24 +583,42 @@ jobs:
           SSH_CMD="ssh ${SSH_OPTS} capi@${PUBLIC_IP}"
 
           echo "::group::Copy node-conformance helper to VM"
-          ${SCP_CMD} images/capi/hack/node-conformance.sh "capi@${PUBLIC_IP}:/tmp/node-conformance.sh"
-          ${SSH_CMD} 'chmod +x /tmp/node-conformance.sh'
+          if ! ${SCP_CMD} images/capi/hack/node-conformance.sh "capi@${PUBLIC_IP}:/tmp/node-conformance.sh"; then
+            echo "::error::Failed to scp node-conformance.sh to VM (transport failure)"
+            exit 1
+          fi
+          if ! ${SSH_CMD} 'chmod +x /tmp/node-conformance.sh'; then
+            echo "::error::Failed to chmod helper script on VM (transport failure)"
+            exit 1
+          fi
           echo "::endgroup::"
 
           echo "::group::Run node conformance"
-          # Run the suite; tolerate non-zero exit so we can still pull artifacts.
+          # ssh exits 255 only on its own transport/auth errors; any other
+          # non-zero exit comes from the remote command (the conformance run
+          # itself).  Distinguish the two so transport problems don't get
+          # silently classified as test failures.
           set +e
           ${SSH_CMD} "KUBERNETES_VERSION='${KUBERNETES_VERSION}' /tmp/node-conformance.sh"
           NC_EXIT=$?
           set -e
-          echo "node-conformance exited with ${NC_EXIT}"
+
+          if [[ "${NC_EXIT}" -eq 255 ]]; then
+            echo "::error::SSH transport failure while running node conformance (exit 255); no conformance result available"
+            exit 1
+          fi
+          echo "node-conformance remote exit code: ${NC_EXIT}"
           echo "exit_code=${NC_EXIT}" >> "${GITHUB_OUTPUT}"
           echo "::endgroup::"
 
           echo "::group::Collect node-conformance results"
           ARTIFACTS="${GITHUB_WORKSPACE}/_artifacts/node-conformance"
           mkdir -p "${ARTIFACTS}"
-          ${SCP_CMD} -r "capi@${PUBLIC_IP}:/tmp/node-conformance-results/." "${ARTIFACTS}/" || true
+          # A failure here is also transport-level, but we already have a
+          # conformance verdict — warn but don't fail the job over missing logs.
+          if ! ${SCP_CMD} -r "capi@${PUBLIC_IP}:/tmp/node-conformance-results/." "${ARTIFACTS}/"; then
+            echo "::warning::Failed to scp node-conformance results back from VM"
+          fi
           ls -la "${ARTIFACTS}" || true
           echo "::endgroup::"
 
