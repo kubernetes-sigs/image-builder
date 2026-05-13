@@ -18,6 +18,9 @@
 #   GINKGO_SKIP          Optional. Default '\[Flaky\]|\[Serial\]|\[Slow\]|\[Alpha\]'
 #   RESULTS_DIR          Optional. Default /tmp/node-conformance-results
 #   TARBALL_URL          Optional. Override the test tarball URL.
+#   TARBALL_SHA256_URL   Optional. Override the checksum URL. Defaults to
+#                        "${TARBALL_URL}.sha256". The remote file is expected
+#                        to contain just the hex digest (as dl.k8s.io serves).
 #
 # Exit code is the exit code of e2e_node.test (non-zero on any failed spec).
 
@@ -38,6 +41,7 @@ case "${ARCH}" in
 esac
 
 TARBALL_URL="${TARBALL_URL:-https://dl.k8s.io/v${KUBERNETES_VERSION}/kubernetes-test-linux-${GO_ARCH}.tar.gz}"
+TARBALL_SHA256_URL="${TARBALL_SHA256_URL:-${TARBALL_URL}.sha256}"
 
 WORKDIR="$(mktemp -d)"
 trap 'rm -rf "${WORKDIR}"' EXIT
@@ -54,6 +58,28 @@ sudo chown "$(id -u):$(id -g)" "${RESULTS_DIR}"
 echo "==> Downloading test tarball"
 curl --fail --silent --show-error --location \
   --output "${WORKDIR}/test.tar.gz" "${TARBALL_URL}"
+
+echo "==> Downloading tarball SHA-256 checksum"
+curl --fail --silent --show-error --location \
+  --output "${WORKDIR}/test.tar.gz.sha256" "${TARBALL_SHA256_URL}"
+
+echo "==> Verifying tarball checksum"
+# dl.k8s.io publishes the bare hex digest (no filename); build a sha256sum
+# compatible line so we can use the standard verifier.
+EXPECTED_SHA256="$(tr -d '[:space:]' < "${WORKDIR}/test.tar.gz.sha256")"
+if [[ -z "${EXPECTED_SHA256}" ]]; then
+  echo "ERROR: empty checksum retrieved from ${TARBALL_SHA256_URL}" >&2
+  exit 1
+fi
+echo "${EXPECTED_SHA256}  test.tar.gz" > "${WORKDIR}/test.tar.gz.sha256sum"
+( cd "${WORKDIR}" && sha256sum --check --strict --status test.tar.gz.sha256sum ) || {
+  ACTUAL_SHA256="$(sha256sum "${WORKDIR}/test.tar.gz" | awk '{print $1}')"
+  echo "ERROR: SHA-256 mismatch for ${TARBALL_URL}" >&2
+  echo "  expected: ${EXPECTED_SHA256}" >&2
+  echo "  actual:   ${ACTUAL_SHA256}" >&2
+  exit 1
+}
+echo "    OK (${EXPECTED_SHA256})"
 
 echo "==> Extracting e2e_node.test and ginkgo"
 tar -xzf "${WORKDIR}/test.tar.gz" -C "${WORKDIR}" \
