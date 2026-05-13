@@ -44,7 +44,21 @@ TARBALL_URL="${TARBALL_URL:-https://dl.k8s.io/v${KUBERNETES_VERSION}/kubernetes-
 TARBALL_SHA256_URL="${TARBALL_SHA256_URL:-${TARBALL_URL}.sha256}"
 
 WORKDIR="$(mktemp -d)"
-trap 'rm -rf "${WORKDIR}"' EXIT
+
+# klog.Fatalf inside e2e_node.test exits with 255 — the same code ssh uses
+# for its own transport/auth errors. Translate 255 -> 254 on the way out so
+# the calling workflow can tell the two apart.
+# shellcheck disable=SC2329  # invoked via trap
+cleanup() {
+  local rc=$?
+  rm -rf "${WORKDIR}"
+  if [[ "${rc}" -eq 255 ]]; then
+    echo "==> Translating exit 255 -> 254 to disambiguate from SSH transport failure" >&2
+    exit 254
+  fi
+  exit "${rc}"
+}
+trap cleanup EXIT
 
 echo "==> Node conformance: kubernetes v${KUBERNETES_VERSION} (${GO_ARCH})"
 echo "    focus:   ${GINKGO_FOCUS}"
@@ -133,10 +147,16 @@ echo "==> Using kubelet binary: ${KUBELET_BIN}"
 NODE_NAME="$(hostname)"
 
 echo "==> Running e2e_node.test"
+# --k8s-bin-dir tells the test framework where to find the kubelet binary
+# it will exec under test (the version-matched binary already baked into
+# the image).  Without it the framework falls back to looking for a
+# kubernetes source checkout at _output/local/go/bin/kubelet.
+KUBELET_BIN_DIR="$(dirname "${KUBELET_BIN}")"
 set +e
 sudo -E "${E2E_NODE_TEST}" \
   --node-name="${NODE_NAME}" \
   --standalone-mode=true \
+  --k8s-bin-dir="${KUBELET_BIN_DIR}" \
   --kubelet-flags="--cgroup-driver=systemd --container-runtime-endpoint=${RUNTIME_ENDPOINT} --runtime-cgroups=${RUNTIME_CGROUP}" \
   --container-runtime-endpoint="${RUNTIME_ENDPOINT}" \
   --ginkgo.focus="${GINKGO_FOCUS}" \

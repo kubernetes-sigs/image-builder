@@ -594,33 +594,33 @@ jobs:
           echo "::endgroup::"
 
           echo "::group::Run node conformance"
-          # ssh exits 255 only on its own transport/auth errors; any other
-          # non-zero exit comes from the remote command (the conformance run
-          # itself).  Distinguish the two so transport problems don't get
-          # silently classified as test failures.
+          # ssh exits 255 only on its own transport/auth errors; the remote
+          # script translates klog.Fatalf's exit 255 to 254 so we can tell the
+          # two apart.
           set +e
           ${SSH_CMD} "KUBERNETES_VERSION='${KUBERNETES_VERSION}' /tmp/node-conformance.sh"
           NC_EXIT=$?
           set -e
-
-          if [[ "${NC_EXIT}" -eq 255 ]]; then
-            echo "::error::SSH transport failure while running node conformance (exit 255); no conformance result available"
-            exit 1
-          fi
           echo "node-conformance remote exit code: ${NC_EXIT}"
           echo "exit_code=${NC_EXIT}" >> "${GITHUB_OUTPUT}"
           echo "::endgroup::"
 
+          # Always try to pull whatever results exist BEFORE deciding whether
+          # to fail the step — partial results are valuable for triage even on
+          # a hard failure (e.g. the framework dying early).
           echo "::group::Collect node-conformance results"
           ARTIFACTS="${GITHUB_WORKSPACE}/_artifacts/node-conformance"
           mkdir -p "${ARTIFACTS}"
-          # A failure here is also transport-level, but we already have a
-          # conformance verdict — warn but don't fail the job over missing logs.
           if ! ${SCP_CMD} -r "capi@${PUBLIC_IP}:/tmp/node-conformance-results/." "${ARTIFACTS}/"; then
             echo "::warning::Failed to scp node-conformance results back from VM"
           fi
           ls -la "${ARTIFACTS}" || true
           echo "::endgroup::"
+
+          if [[ "${NC_EXIT}" -eq 255 ]]; then
+            echo "::error::SSH transport failure while running node conformance (exit 255); no conformance result available"
+            exit 1
+          fi
 
           if [[ "${NC_EXIT}" -ne 0 ]]; then
             echo "::warning::node conformance tests reported failures (exit ${NC_EXIT}); not blocking the workflow"
