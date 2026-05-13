@@ -12,23 +12,27 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-# Install kubelet as a windows service
-# Requires --windows-service flag: https://github.com/kubernetes/kubernetes/blob/7f23a743e8c23ac6489340bbb34fa6f1d392db9d/cmd/kubelet/app/options/osflags_windows.go#L26
-# Does not support kubeadm KUBELET_KUBEADM_ARGS which is used by Cluster API to pass extra user args
+# Install kubelet as a windows service.
+# The service is launched through a PowerShell wrapper (StartKubelet.ps1)
+# that reads /var/lib/kubelet/kubeadm-flags.env at startup so that
+# KUBELET_KUBEADM_ARGS (set by `kubeadm join`, used by Cluster API to pass
+# user-supplied kubeletExtraArgs) are appended to the kubelet command line.
+# This matches the behavior of the nssm-based install and the Linux systemd
+# unit, which both source kubeadm-flags.env.
+- name: Create kubelet start file
+  ansible.windows.win_template:
+    src: templates/StartKubelet.ps1
+    dest: "{{ kubernetes_install_path }}\\StartKubelet.ps1"
+
 - name: Install kubelet as service
   ansible.windows.win_service:
     name: kubelet
     start_mode: auto
     path: >-
-      "{{ kubernetes_install_path }}\kube-log-runner.exe" --log-file={{ systemdrive.stdout | trim }}/var/log/kubelet/kubelet.log
-      {{ kubernetes_install_path }}\kubelet.exe --windows-service
-      --cert-dir={{ systemdrive.stdout | trim }}/var/lib/kubelet/pki
-      --config={{ systemdrive.stdout | trim }}/var/lib/kubelet/config.yaml
-      --bootstrap-kubeconfig={{ systemdrive.stdout | trim }}/etc/kubernetes/bootstrap-kubelet.conf
-      --kubeconfig={{ systemdrive.stdout | trim }}/etc/kubernetes/kubelet.conf
-      --enable-debugging-handlers --cgroups-per-qos=false --enforce-node-allocatable=""
-      --container-runtime-endpoint="npipe:////./pipe/containerd-containerd"
-      --resolv-conf=""
+      "{{ kubernetes_install_path }}\kube-log-runner.exe"
+      --log-file={{ systemdrive.stdout | trim }}/var/log/kubelet/kubelet.log
+      powershell.exe -ExecutionPolicy Bypass -NoProfile -NonInteractive
+      -File "{{ kubernetes_install_path }}\StartKubelet.ps1"
 
 - name: Create file to restart kubelet as a windows service
   ansible.windows.win_template:
