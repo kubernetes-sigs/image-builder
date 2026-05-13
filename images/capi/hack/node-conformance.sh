@@ -137,7 +137,7 @@ set +e
 sudo -E "${E2E_NODE_TEST}" \
   --node-name="${NODE_NAME}" \
   --standalone-mode=true \
-  --kubelet-flags="--kubelet-cgroups=/kubelet.slice --cgroup-driver=systemd --container-runtime-endpoint=${RUNTIME_ENDPOINT} --runtime-cgroups=${RUNTIME_CGROUP}" \
+  --kubelet-flags="--cgroup-driver=systemd --container-runtime-endpoint=${RUNTIME_ENDPOINT} --runtime-cgroups=${RUNTIME_CGROUP}" \
   --container-runtime-endpoint="${RUNTIME_ENDPOINT}" \
   --ginkgo.focus="${GINKGO_FOCUS}" \
   --ginkgo.skip="${GINKGO_SKIP}" \
