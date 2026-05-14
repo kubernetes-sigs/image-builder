@@ -59,6 +59,7 @@
     name: "*"
     state: latest
     lock_timeout: 60
+    exclude: "{{ 'lsvpd*' if ansible_facts['distribution_major_version']|int == 10 else omit }}"
 
 - name: Install baseline dependencies
   ansible.builtin.dnf:

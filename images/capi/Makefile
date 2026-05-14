@@ -397,7 +397,7 @@ QEMU_KUBEVIRT_BUILD_NAMES	:= $(addprefix kubevirt-,$(QEMU_BUILD_NAMES))
 
 RAW_BUILD_NAMES				?=	raw-ubuntu-2204 raw-ubuntu-2204-efi raw-ubuntu-2404 raw-ubuntu-2404-efi raw-flatcar raw-rhel-9 raw-rhel-9-efi
 
-POWERVS_BUILD_NAMES         ?= powervs-centos-9
+POWERVS_BUILD_NAMES         ?= powervs-centos-9 powervs-centos-10
 
 NUTANIX_BUILD_NAMES ?= nutanix-ubuntu-2204 nutanix-ubuntu-2404 nutanix-rhel-9 nutanix-rockylinux-9 nutanix-flatcar nutanix-windows-2022
 
@@ -982,6 +982,7 @@ validate-osc-ubuntu-2404: ## Validates Ubuntu 24.04 Outscale Snapshot Packer con
 validate-osc-all: $(OSC_VALIDATE_TARGETS) ## Validates all Outscale Snapshot Packer config
 
 validate-powervs-centos-9: ## Validates the PowerVS CentOS 9 image packer config
+validate-powervs-centos-10: ## Validates the PowerVS CentOS 10 image packer config
 validate-powervs-all: $(POWERVS_VALIDATE_TARGETS) ## Validates all PowerVS Packer config
 
 validate-nutanix-ubuntu-2204: ## Validates Ubuntu 22.04 Nutanix Packer config
