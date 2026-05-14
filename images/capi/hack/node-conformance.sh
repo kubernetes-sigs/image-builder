@@ -130,6 +130,55 @@ fi
 echo "==> Using container runtime endpoint: ${RUNTIME_ENDPOINT}"
 echo "==> Using runtime cgroup: ${RUNTIME_CGROUP}"
 
+# The test kubelet won't mark the node Ready without a CNI plugin
+# configured (NetworkReady=false -> no pods schedule -> every networking
+# test times out). On CAPI images the plugin binaries live under
+# /opt/cni/bin but no CNI config is written until a CNI provider joins
+# the node to a cluster. For standalone node-conformance, install a
+# minimal bridge + loopback configuration. Leave any existing config
+# alone so we don't fight a real CNI install.
+echo "==> Ensuring minimal CNI configuration"
+sudo mkdir -p /etc/cni/net.d /opt/cni/bin
+if compgen -G "/etc/cni/net.d/*.conf*" >/dev/null; then
+  echo "    existing CNI config present, leaving as-is"
+else
+  echo "    no CNI config found; writing minimal bridge + loopback configs"
+  sudo tee /etc/cni/net.d/10-node-conformance.conflist >/dev/null <<'JSON'
+{
+  "cniVersion": "1.0.0",
+  "name": "node-conformance",
+  "plugins": [
+    {
+      "type": "bridge",
+      "bridge": "cni0",
+      "isGateway": true,
+      "ipMasq": true,
+      "promiscMode": true,
+      "ipam": {
+        "type": "host-local",
+        "ranges": [[{"subnet": "10.88.0.0/16"}]],
+        "routes": [{"dst": "0.0.0.0/0"}]
+      }
+    },
+    { "type": "portmap", "capabilities": {"portMappings": true} }
+  ]
+}
+JSON
+  sudo tee /etc/cni/net.d/99-loopback.conf >/dev/null <<'JSON'
+{ "cniVersion": "1.0.0", "name": "lo", "type": "loopback" }
+JSON
+fi
+
+# Download CNI plugin binaries only if the image is missing them.
+if [[ ! -x /opt/cni/bin/bridge ]] || [[ ! -x /opt/cni/bin/loopback ]] || [[ ! -x /opt/cni/bin/portmap ]] || [[ ! -x /opt/cni/bin/host-local ]]; then
+  CNI_VERSION="${CNI_VERSION:-v1.5.1}"
+  echo "    CNI plugin binaries missing; downloading ${CNI_VERSION}"
+  curl --fail --silent --show-error --location \
+    -o "${WORKDIR}/cni.tgz" \
+    "https://github.com/containernetworking/plugins/releases/download/${CNI_VERSION}/cni-plugins-linux-${GO_ARCH}-${CNI_VERSION}.tgz"
+  sudo tar -xzf "${WORKDIR}/cni.tgz" -C /opt/cni/bin/
+fi
+
 # Locate the kubelet binary that was baked into the image; the test framework
 # will exec it.
 KUBELET_BIN="$(command -v kubelet || true)"
