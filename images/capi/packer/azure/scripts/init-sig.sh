@@ -132,6 +132,9 @@ case ${SIG_TARGET} in
   azurelinux-3-gen2)
     create_image_definition ${SIG_TARGET} "azurelinux-3-gen2" "V2" "Linux"
   ;;
+  azurelinux-4-gen2)
+    create_image_definition ${SIG_TARGET} "azurelinux-4-gen2" "V2" "Linux"
+  ;;
   flatcar-gen2)
     SKU="flatcar-${FLATCAR_CHANNEL}-${FLATCAR_VERSION}-gen2"
     create_image_definition "${SKU}" "${SKU}" "V2" "Linux"
