@@ -142,6 +142,7 @@
     - cloud-config
     - cloud-init
     - cloud-init-local
+  failed_when: false
   when:
     - ansible_facts['os_family'] != "Flatcar"
     - "'cloud-init-network.service' not in ansible_facts.services"
