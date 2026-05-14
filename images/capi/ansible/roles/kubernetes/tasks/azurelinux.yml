@@ -48,6 +48,12 @@
     state: present
     comment: Kubernetes API server
 
+- name: Ensure iptables persistence directory exists
+  ansible.builtin.file:
+    path: /etc/systemd/scripts
+    state: directory
+    mode: "0755"
+
 - name: Persist iptables configuration
   ansible.builtin.shell: iptables-save -t filter > /etc/systemd/scripts/ip4save
   register: iptables_output
