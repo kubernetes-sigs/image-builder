@@ -113,6 +113,8 @@
 
 # Some OS might disable cloud-final service on boot (rhel 7).
 # Enable all cloud-init services on boot.
+# cloud-init 24.x+ merges the cloud-init service into cloud-init-local,
+# so ignore errors for missing services.
 - name: Make sure all cloud init services are enabled
   ansible.builtin.service:
     name: "{{ item }}"
@@ -122,6 +124,7 @@
     - cloud-config
     - cloud-init
     - cloud-init-local
+  failed_when: false
   when: ansible_facts['os_family'] != "Flatcar"
 
 - name: Create cloud-init config file
