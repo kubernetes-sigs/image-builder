@@ -52,5 +52,10 @@ dependencies:
 
   - role: setup
     vars:
+      rpms: "{{ common_rpms + azurelinux4_rpms + lookup('vars', 'common_' + build_target + '_rpms') }}"
+    when: ansible_facts['distribution'] == "Azure Linux"
+
+  - role: setup
+    vars:
       rpms: "{{ common_rpms + azurelinux_rpms + lookup('vars', 'common_' + build_target + '_rpms') }}"
     when: ansible_facts['distribution'] in ["Common Base Linux Mariner", "Microsoft Azure Linux"]
