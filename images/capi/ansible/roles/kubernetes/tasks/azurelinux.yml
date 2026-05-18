@@ -39,6 +39,13 @@
       - kubectl-{{ kubernetes_rpm_version }}
       - kubernetes-cni{{ '-' + kubernetes_cni_rpm_version if kubernetes_cni_rpm_version else '' }}
 
+- name: Disable firewalld service
+  ansible.builtin.systemd:
+    name: firewalld
+    enabled: false
+    state: stopped
+  failed_when: false
+
 - name: Allow Kubernetes API server through iptables
   ansible.builtin.iptables:
     chain: INPUT
