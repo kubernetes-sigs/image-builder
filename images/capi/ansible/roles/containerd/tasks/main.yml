@@ -18,7 +18,7 @@
 
 - name: Import RedHat containerd tasks
   ansible.builtin.import_tasks: redhat.yml
-  when: ansible_facts['os_family'] in ["Azure Linux", "Common Base Linux Mariner", "Microsoft Azure Linux", "RedHat"]
+  when: ansible_facts['os_family'] in ["Azure Linux", "Microsoft Azure Linux", "RedHat"]
 
 - name: Import Photon containerd tasks
   ansible.builtin.import_tasks: photon.yml
@@ -157,7 +157,7 @@
     dest: /etc/systemd/system/containerd.service.d/limit-nofile.conf
     src: etc/systemd/system/containerd.service.d/limit-nofile.conf
     mode: "0644"
-  when: ansible_facts['os_family'] in ["Azure Linux", "Common Base Linux Mariner", "Flatcar", "Microsoft Azure Linux"] or containerd_enable_limit_no_file | bool
+  when: ansible_facts['os_family'] in ["Azure Linux", "Flatcar", "Microsoft Azure Linux"] or containerd_enable_limit_no_file | bool
 
 - name: Create containerd http proxy conf file if needed
   ansible.builtin.template:
