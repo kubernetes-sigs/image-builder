@@ -85,7 +85,7 @@
     name: conntrackd
     state: stopped
     enabled: false
-  when: ansible_facts['os_family'] not in ["Azure Linux", "Common Base Linux Mariner", "Debian", "Flatcar", "Microsoft Azure Linux"]
+  when: ansible_facts['os_family'] not in ["Azure Linux", "Debian", "Flatcar", "Microsoft Azure Linux"]
 
 - name: Ensure auditd is running and comes on at reboot
   ansible.builtin.service:
