@@ -89,6 +89,7 @@ photon_5_rpms: &photon_5_rpms
   logrotate:
 
 arch: "amd64"
+containerd_enable_limit_no_file: ""
 containerd_gvisor_runtime: ""
 containerd_gvisor_version: ""
 containerd_image_pull_progress_timeout: ""

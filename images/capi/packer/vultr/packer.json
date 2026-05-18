@@ -37,6 +37,7 @@
     "ansible_scp_extra_args": "",
     "api_key": "{{env `VULTR_API_KEY`}}",
     "build_timestamp": "{{timestamp}}",
+    "containerd_enable_limit_no_file": "false",
     "containerd_gvisor_runtime": "false",
     "containerd_gvisor_version": "latest",
     "containerd_image_pull_progress_timeout": null,

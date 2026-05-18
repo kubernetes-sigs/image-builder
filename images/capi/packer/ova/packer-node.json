@@ -461,6 +461,7 @@
         "OS_VERSION": "{{user `distro_version` | lower}}",
         "PROVIDER": "ova",
         "block_nouveau_loading": "{{user `block_nouveau_loading`}}",
+        "containerd_enable_limit_no_file": "{{user `containerd_enable_limit_no_file`}}",
         "containerd_gvisor_runtime": "{{user `containerd_gvisor_runtime`}}",
         "containerd_gvisor_version": "{{user `containerd_gvisor_version`}}",
         "containerd_image_pull_progress_timeout": "{{user `containerd_image_pull_progress_timeout`}}",

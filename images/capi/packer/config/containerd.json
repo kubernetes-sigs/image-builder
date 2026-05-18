@@ -1,6 +1,7 @@
 {
   "containerd_additional_settings": null,
   "containerd_cri_socket": "/var/run/containerd/containerd.sock",
+  "containerd_enable_limit_no_file": "false",
   "containerd_gvisor_runtime": "false",
   "containerd_gvisor_version": "latest",
   "containerd_image_pull_progress_timeout": null,

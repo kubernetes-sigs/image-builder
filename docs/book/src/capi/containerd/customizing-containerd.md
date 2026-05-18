@@ -84,3 +84,11 @@ You can also add further configuration by adding values for `containerd_addition
 end of the
 [`config.toml`](https://github.com/kubernetes-sigs/image-builder/blob/main/images/capi/ansible/roles/containerd/templates/etc/containerd/config.toml#L86)
 default template. 
+
+## Overriding `LimitNOFILE`
+
+By default a `LimitNOFILE` systemd drop-in (capping the value at `1048576`) is only deployed on
+Common Base Linux Mariner, Flatcar, and Microsoft Azure Linux, where the upstream `infinity` value
+has been known to cause issues with some containerized software. To opt-in to deploying the same
+drop-in on other operating systems, set `containerd_enable_limit_no_file` to `true`. It defaults to
+`false`.
