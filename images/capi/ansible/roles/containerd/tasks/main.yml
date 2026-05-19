@@ -172,6 +172,12 @@
     state: directory
     mode: "0755"
 
+- name: Creates containerd extra config directory
+  ansible.builtin.file:
+    path: /etc/containerd/conf.d
+    state: directory
+    mode: "0755"
+
 - name: Creates containerd certificates directory
   ansible.builtin.file:
     path: /etc/containerd/certs.d
