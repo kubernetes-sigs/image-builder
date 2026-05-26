@@ -24,6 +24,7 @@ for the different operating systems.
 
 | File | Description |
 |------|-------------|
+| `flatcar-stable.json` | The settings for the Flatcar Stable image |
 | `ubuntu-2204.json` | The settings for the Ubuntu 22.04 image |
 | `ubuntu-2404.json` | The settings for the Ubuntu 24.04 image |
 | `ubuntu-2604.json` | The settings for the Ubuntu 26.04 image |

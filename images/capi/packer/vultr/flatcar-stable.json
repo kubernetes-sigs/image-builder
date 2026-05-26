@@ -1,0 +1,16 @@
+{
+  "ansible_extra_vars": "ansible_python_interpreter=/opt/bin/python",
+  "ansible_user": "core",
+  "build_name": "flatcar-stable",
+  "kubernetes_cni_source_type": "http",
+  "kubernetes_source_type": "http",
+  "os": "2077",
+  "python_path": "/opt/bin/builder-env/site-packages",
+  "snapshot_name_suffix": "on Flatcar Stable",
+  "source_image": "flatcar-stable-x64",
+  "ssh_username": "core",
+  "systemd_prefix": "/etc/systemd",
+  "sysusr_prefix": "/opt",
+  "sysusrlocal_prefix": "/opt",
+  "userdata_file": "packer/files/flatcar/ignition/bootstrap-cloud.json"
+}
