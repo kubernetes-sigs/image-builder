@@ -3,20 +3,23 @@
 # This script is used to calculate the resource sizing for the kubelet based on values used by GKE and repeated
 # in https://github.com/awslabs/amazon-eks-ami/pull/367/files
 
-#RPM and DEB systems kubelet sysconfig PATH
-KUBELET_SYSCONFIG_FILES=( "/etc/sysconfig/kubelet" "/etc/default/kubelet" )
-KUBELET_CONFIG="/var/lib/kubelet/kubelet.conf.d/kubelet-resource-sizing.json"
 
-for KUBELET_SYSCONFIG in "${KUBELET_SYSCONFIG_FILES[@]}"
-do
-  # Check if the file exists
-  if [ -f "${KUBELET_SYSCONFIG}" ]; then
-    # shellcheck source=/dev/null
-    . "${KUBELET_SYSCONFIG}"
-    # If system-reserved is already set by user, ignore
-    if grep -q 'systemReserved' "${KUBELET_SYSCONFIG}"; then
-      exit 0
-    fi
+# If the user has already configured systemReserved (in the main kubelet
+# config or any other drop-in), don't overwrite their value.
+KUBELET_CONFIG="/var/lib/kubelet/kubelet.conf.d/kubelet-resource-sizing.json"
+USER_KUBELET_CONFIGS=( "/var/lib/kubelet/config.yaml" )
+if [ -d /var/lib/kubelet/kubelet.conf.d ]; then
+  while IFS= read -r -d '' f; do
+    [ "$f" = "$KUBELET_CONFIG" ] && continue
+    USER_KUBELET_CONFIGS+=( "$f" )
+  done < <(find /var/lib/kubelet/kubelet.conf.d -maxdepth 1 -type f -print0)
+fi
+
+for cfg in "${USER_KUBELET_CONFIGS[@]}"; do
+  [ -f "$cfg" ] || continue
+  if grep -Eq '^[[:space:]]*systemReserved[[:space:]]*:' "$cfg" \
+    || grep -q '"systemReserved"' "$cfg"; then
+    exit 0
   fi
 done
 
