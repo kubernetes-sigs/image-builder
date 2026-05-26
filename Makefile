@@ -34,4 +34,6 @@ update-release-docs: ## Updates the docs with reference to the latest release ve
 	images/capi/scripts/release-update-docs.sh
 
 .DEFAULT:
-	$(MAKE) -C images/capi $@
+	@$(if $(or $(findstring ',$@),$(findstring \,$@)),$(error Invalid target name: $@))
+	@case '$@' in *[!a-zA-Z0-9_./-]*) echo 'Invalid target name' >&2; exit 1 ;; esac
+	@$(MAKE) -C images/capi '$@'
