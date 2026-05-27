@@ -6,7 +6,7 @@
 
 # If the user has already configured systemReserved (in the main kubelet
 # config or any other drop-in), don't overwrite their value.
-KUBELET_CONFIG="/var/lib/kubelet/kubelet.conf.d/kubelet-resource-sizing.json"
+KUBELET_CONFIG="/var/lib/kubelet/kubelet.conf.d/kubelet-resource-sizing.conf"
 USER_KUBELET_CONFIGS=( "/var/lib/kubelet/config.yaml" )
 if [ -d /var/lib/kubelet/kubelet.conf.d ]; then
   while IFS= read -r -d '' f; do
@@ -128,5 +128,8 @@ fi
 memory_reservation_mebibytes=$(memory_reservation_mebibytes)
 cpu_millicores_to_reserve=$(cpu_millicores_to_reserve)
 
-echo "$(jq --arg memory_reservation_mebibytes "${memory_reservation_mebibytes}Mi" --arg cpu_millicores_to_reserve "${cpu_millicores_to_reserve}m" \
-    '. += {"apiVersion": "kubelet.config.k8s.io/v1beta1","kind": "KubeletConfiguration", "systemReserved": {"cpu": $cpu_millicores_to_reserve, "ephemeral-storage": "1Gi", "memory": $memory_reservation_mebibytes}}' "$KUBELET_CONFIG")" > "$KUBELET_CONFIG"
+tmp=$(mktemp) && \
+echo $tmp && \
+jq --arg memory_reservation_mebibytes "${memory_reservation_mebibytes}Mi" --arg cpu_millicores_to_reserve "${cpu_millicores_to_reserve}m" \
+    '. += {"apiVersion": "kubelet.config.k8s.io/v1beta1","kind": "KubeletConfiguration", "systemReserved": {"cpu": $cpu_millicores_to_reserve, "ephemeral-storage": "1Gi", "memory": $memory_reservation_mebibytes}}' "$KUBELET_CONFIG" > "$tmp" && \
+mv "$tmp" "$KUBELET_CONFIG"
