@@ -29,16 +29,10 @@ CAPI_ROOT=$(dirname "${BASH_SOURCE[0]}")/..
 cd "${CAPI_ROOT}" || exit 1
 
 export ARTIFACTS="${ARTIFACTS:-${PWD}/_artifacts}"
-mkdir -p "${ARTIFACTS}/azure-sigs" "${ARTIFACTS}/azure-vhds"
+mkdir -p "${ARTIFACTS}/azure-sigs"
 
 # Dynamically gets all targets and filters out the following:
 # - Any RHEL targets (because of subscription requirements)
-VHD_CI_TARGETS=( $(make build-azure-vhds --recon -d | grep "Must remake" | \
-  grep -v build-azure-vhds | grep -v deps- | \
-  grep -v gen2 | grep -v cvm | \
-  grep -E -v 'rhel' | \
-  grep -E -o 'build-azure-vhd-[a-zA-Z0-9\-]+' | \
-  sed -E 's/build-azure-vhd-([0-9a-z\-]*)/\1/' ) )
 SIG_CI_TARGETS=( $(make build-azure-sigs --recon -d | grep "Must remake" | \
   grep -v build-azure-sigs | grep -v deps- | \
   grep -v cvm | \
@@ -124,34 +118,26 @@ export FLATCAR_VERSION="$(get_flatcar_version)"
 export PACKER_VAR_FILES="packer/azure/scripts/disable-windows-prepull.json scripts/ci-disable-goss-inspect.json"
 
 declare -A PIDS
-if [[ "${AZURE_BUILD_FORMAT:-vhd}" == "sig" ]]; then
-    for target in ${SIG_CI_TARGETS[@]};
-    do
-        login
-        make build-azure-sig-${target} > ${ARTIFACTS}/azure-sigs/${target}.log 2>&1 &
-        PIDS["sig-${target}"]=$!
-    done
+for target in ${SIG_CI_TARGETS[@]};
+do
+    login
+    make build-azure-sig-${target} > ${ARTIFACTS}/azure-sigs/${target}.log 2>&1 &
+    PIDS["sig-${target}"]=$!
+done
 
-    SELECTED_LOCATION="${AZURE_LOCATION}"
-    if [[ ! " ${VALID_CVM_LOCATIONS[*]} " =~ " ${SELECTED_LOCATION} " ]]; then
-        SELECTED_LOCATION="$(get_random_cvm_region)"
-        echo "AZURE_LOCATION=${AZURE_LOCATION} is invalid for Confidential VM targets. Valid CVM locations: ${VALID_CVM_LOCATIONS[*]}."
-        echo "Selected location is ${SELECTED_LOCATION}."
-    fi
-
-    for target in ${SIG_CVM_CI_TARGETS[@]};
-    do
-        login
-        AZURE_LOCATION="${SELECTED_LOCATION}" make build-azure-sig-${target} > ${ARTIFACTS}/azure-sigs/${target}.log 2>&1 &
-        PIDS["sig-${target}"]=$!
-    done
-else
-    for target in ${VHD_CI_TARGETS[@]};
-    do
-        make build-azure-vhd-${target} > ${ARTIFACTS}/azure-vhds/${target}.log 2>&1 &
-        PIDS["vhd-${target}"]=$!
-    done
+SELECTED_LOCATION="${AZURE_LOCATION}"
+if [[ ! " ${VALID_CVM_LOCATIONS[*]} " =~ " ${SELECTED_LOCATION} " ]]; then
+    SELECTED_LOCATION="$(get_random_cvm_region)"
+    echo "AZURE_LOCATION=${AZURE_LOCATION} is invalid for Confidential VM targets. Valid CVM locations: ${VALID_CVM_LOCATIONS[*]}."
+    echo "Selected location is ${SELECTED_LOCATION}."
 fi
+
+for target in ${SIG_CVM_CI_TARGETS[@]};
+do
+    login
+    AZURE_LOCATION="${SELECTED_LOCATION}" make build-azure-sig-${target} > ${ARTIFACTS}/azure-sigs/${target}.log 2>&1 &
+    PIDS["sig-${target}"]=$!
+done
 
 # need to unset errexit so that failed child tasks don't cause script to exit
 set +o errexit
