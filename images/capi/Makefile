@@ -389,7 +389,7 @@ OPENSTACK_BUILD_NAMES		?=	openstack-ubuntu-2204 openstack-ubuntu-2404 openstack-
 
 OSC_BUILD_NAMES 			?=	osc-ubuntu-2204 osc-ubuntu-2404
 
-QEMU_BUILD_NAMES			?=	qemu-ubuntu-2204 qemu-ubuntu-2204-cloudimg qemu-ubuntu-2404 qemu-ubuntu-2404-efi qemu-ubuntu-2204-efi qemu-centos-9 qemu-rhel-9 qemu-rockylinux-9 qemu-rockylinux-9-cloudimg qemu-flatcar
+QEMU_BUILD_NAMES			?=	qemu-ubuntu-2204 qemu-ubuntu-2204-cloudimg qemu-ubuntu-2404 qemu-ubuntu-2404-efi qemu-ubuntu-2204-efi qemu-centos-9 qemu-centos-10 qemu-rhel-9 qemu-rockylinux-9 qemu-rockylinux-9-cloudimg qemu-flatcar
 
 QEMU_KUBEVIRT_BUILD_NAMES	:= $(addprefix kubevirt-,$(QEMU_BUILD_NAMES))
 
@@ -808,6 +808,7 @@ build-qemu-ubuntu-2204-efi: ## Builds Ubuntu 22.04 QEMU image that EFI boots
 build-qemu-ubuntu-2404: ## Builds Ubuntu 24.04 QEMU image
 build-qemu-ubuntu-2404-efi: ## Builds Ubuntu 24.04 QEMU image that EFI boots
 build-qemu-centos-9: ## Builds CentOS 9 Stream QEMU image
+build-qemu-centos-10: ## Builds CentOS 10 Stream QEMU image
 build-qemu-rhel-9: ## Builds RHEL 9 QEMU image
 build-qemu-rockylinux-9: ## Builds Rocky 9 QEMU image
 build-qemu-rockylinux-9-cloudimg: ## Builds Rocky 9 QEMU image using cloud image
@@ -1136,6 +1137,7 @@ gen-ignition: deps-ignition ## Generates Ignition files from CLC
 update-all-iso-checksums: update-ubuntu-iso-checksums \
 	update-rockylinux-iso-checksums \
 	update-centos-9-iso-checksums \
+	update-centos-10-iso-checksums \
 	update-photon-iso-checksums \
 
 update-all-iso-checksums: ## Updates checksums for all ISOs
@@ -1153,6 +1155,11 @@ update-rockylinux-iso-checksums: ## Updates checksums for Rocky Linux ISOs
 .PHONY: update-centos-9-iso-checksums
 update-centos-9-iso-checksums: ## Updates checksums for Centos 9 ISOs
 	hack/update-iso-checksums.sh centos-9 false SHA256SUM "SHA256 (iso_file_name)" 4
+	$(MAKE) json-sort
+
+.PHONY: update-centos-10-iso-checksums
+update-centos-10-iso-checksums: ## Updates checksums for Centos 10 ISOs
+	hack/update-iso-checksums.sh centos-10 false SHA256SUM "SHA256 (iso_file_name)" 4
 	$(MAKE) json-sort
 
 .PHONY: update-photon-iso-checksums
