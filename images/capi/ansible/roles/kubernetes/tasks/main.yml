@@ -95,7 +95,7 @@
   ansible.builtin.lineinfile:
     path: "{{ systemd_prefix }}/system/kubelet.service.d/10-kubeadm.conf"
     line: Environment="KUBELET_CONFIG_DROPIN_DIR_ALPHA"
-  when: kubernetes_semver is version('v1.28.0', '>=') and kubernetes_semver is version('v1.29.0', '<') and kubernetes_enable_automatic_resource_sizing | bool
+  when: kubernetes_semver is version('v1.28.0', '>=') and kubernetes_semver is version('v1.30.0', '<') and kubernetes_enable_automatic_resource_sizing | bool
 
 - name: Generate kubectl bash completion
   ansible.builtin.shell:

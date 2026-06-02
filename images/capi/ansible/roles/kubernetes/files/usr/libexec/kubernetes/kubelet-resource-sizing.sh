@@ -129,7 +129,6 @@ memory_reservation_mebibytes=$(memory_reservation_mebibytes)
 cpu_millicores_to_reserve=$(cpu_millicores_to_reserve)
 
 tmp=$(mktemp) && \
-echo $tmp && \
 jq --arg memory_reservation_mebibytes "${memory_reservation_mebibytes}Mi" --arg cpu_millicores_to_reserve "${cpu_millicores_to_reserve}m" \
-    '. += {"apiVersion": "kubelet.config.k8s.io/v1beta1","kind": "KubeletConfiguration", "systemReserved": {"cpu": $cpu_millicores_to_reserve, "ephemeral-storage": "1Gi", "memory": $memory_reservation_mebibytes}}' "$KUBELET_CONFIG" > "$tmp" && \
+    '. += {"apiVersion": "kubelet.config.k8s.io/v1beta1","kind": "KubeletConfiguration", "systemReserved": {"cpu": $cpu_millicores_to_reserve, "memory": $memory_reservation_mebibytes}}' "$KUBELET_CONFIG" > "$tmp" && \
 mv "$tmp" "$KUBELET_CONFIG"
