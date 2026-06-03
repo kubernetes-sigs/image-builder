@@ -1,6 +1,9 @@
 #!/bin/bash
 set -euo pipefail
 
+FLATCAR_CHANNEL="${FLATCAR_CHANNEL:-stable}"
+FLATCAR_VERSION="${FLATCAR_VERSION:-current}"
+
 # Re-execute from tmpfs so bash can keep reading after /dev/vda is overwritten
 if [[ "${BASH_SOURCE[0]}" != /dev/shm/* ]]; then
   cp "${BASH_SOURCE[0]}" /dev/shm/install-flatcar.sh
