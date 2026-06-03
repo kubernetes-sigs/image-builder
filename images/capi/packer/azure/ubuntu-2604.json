@@ -1,0 +1,9 @@
+{
+  "build_name": "ubuntu-2604",
+  "distribution": "ubuntu",
+  "distribution_release": "resolute",
+  "distribution_version": "2604",
+  "image_offer": "ubuntu-26_04-lts",
+  "image_publisher": "Canonical",
+  "image_sku": "server-gen1"
+}

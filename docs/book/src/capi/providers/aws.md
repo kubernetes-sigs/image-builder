@@ -46,6 +46,7 @@ the different operating systems.
 | `rockylinux.json`    | The settings for the Rocky Linux image    |
 | `ubuntu-2204.json`   | The settings for the Ubuntu 22.04 image   |
 | `ubuntu-2404.json`   | The settings for the Ubuntu 24.04 image   |
+| `ubuntu-2604.json`   | The settings for the Ubuntu 26.04 image   |
 | `windows-2019.json`  | The settings for the Windows 2019 image   |
 
 
