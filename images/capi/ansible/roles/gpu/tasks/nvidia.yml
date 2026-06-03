@@ -13,9 +13,26 @@
 # limitations under the License.
 
 ---
-- name: Add NVIDIA package signing key
-  ansible.builtin.apt_key:
+- name: Ensure /etc/apt/keyrings directory exists
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: "0755"
+  when: ansible_facts['os_family'] == "Debian"
+
+- name: Download NVIDIA package signing key (armored)
+  ansible.builtin.get_url:
     url: https://nvidia.github.io/libnvidia-container/gpgkey
+    dest: /etc/apt/keyrings/nvidia.asc
+    mode: "0644"
+  when: ansible_facts['os_family'] == "Debian"
+
+- name: Dearmor NVIDIA package signing key
+  ansible.builtin.shell: >
+    gpg --dearmor < /etc/apt/keyrings/nvidia.asc
+    > /etc/apt/keyrings/nvidia.gpg
+  args:
+    creates: /etc/apt/keyrings/nvidia.gpg
   when: ansible_facts['os_family'] == "Debian"
 
 - name: Perform a cache update

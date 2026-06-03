@@ -113,7 +113,27 @@
 
 # Some OS might disable cloud-final service on boot (rhel 7).
 # Enable all cloud-init services on boot.
-- name: Make sure all cloud init services are enabled
+# Since cloud-init 24.3, cloud-init.service was renamed to cloud-init-network.service
+# https://discourse.ubuntu.com/t/upstream-release-of-cloud-init-24-3/48004
+# (Single Process Optimization). Ubuntu 26.04+ ships with this change.
+- name: Gather service facts to detect cloud-init service names
+  ansible.builtin.service_facts:
+  when: ansible_facts['os_family'] != "Flatcar"
+
+- name: Make sure all cloud init services are enabled (cloud-init >= 24.3)
+  ansible.builtin.service:
+    name: "{{ item }}"
+    enabled: true
+  with_items:
+    - cloud-final
+    - cloud-config
+    - cloud-init-network
+    - cloud-init-local
+  when:
+    - ansible_facts['os_family'] != "Flatcar"
+    - "'cloud-init-network.service' in ansible_facts.services"
+
+- name: Make sure all cloud init services are enabled (cloud-init < 24.3)
   ansible.builtin.service:
     name: "{{ item }}"
     enabled: true
@@ -122,7 +142,9 @@
     - cloud-config
     - cloud-init
     - cloud-init-local
-  when: ansible_facts['os_family'] != "Flatcar"
+  when:
+    - ansible_facts['os_family'] != "Flatcar"
+    - "'cloud-init-network.service' not in ansible_facts.services"
 
 - name: Create cloud-init config file
   ansible.builtin.copy:
