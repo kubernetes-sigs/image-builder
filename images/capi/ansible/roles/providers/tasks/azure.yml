@@ -12,6 +12,33 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
+# Canonical's Ubuntu Azure marketplace images ship a preconfigured
+# packages.microsoft.com "prod" apt source. On the Ubuntu 26.04 (Resolute)
+# image this entry still points at the EOL Ubuntu 18.04 (bionic) prod repo,
+# whose signing key is not present on the image. That makes every subsequent
+# `apt-get update` fail with NO_PUBKEY / "repository is not signed", breaking
+# the containerd and kubernetes package installs. image-builder configures the
+# Microsoft repos it actually needs itself (see azurecli.yml), so remove the
+# stale baked-in source before any apt update runs.
+- name: Find stale preinstalled packages.microsoft.com 18.04 prod apt sources
+  ansible.builtin.find:
+    paths: /etc/apt/sources.list.d
+    patterns:
+      - "*.list"
+      - "*.sources"
+    contains: '.*https?://packages\.microsoft\.com/ubuntu/18\.04/prod/?'
+  register: stale_msft_prod_sources
+  when: ansible_facts['os_family'] == "Debian"
+
+- name: Remove stale preinstalled packages.microsoft.com 18.04 prod apt sources
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: absent
+  loop: "{{ stale_msft_prod_sources.files | default([]) }}"
+  loop_control:
+    label: "{{ item.path }}"
+  when: ansible_facts['os_family'] == "Debian"
+
 - name: Import Azure CLI tasks
   ansible.builtin.import_tasks: azurecli.yml
   when: debug_tools | bool
