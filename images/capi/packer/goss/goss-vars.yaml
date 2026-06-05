@@ -541,6 +541,10 @@ ubuntu:
     service:
     package:
     command:
+  oxide:
+    service:
+    package:
+    command:
 
 oracle linux:
   common-kernel-param:

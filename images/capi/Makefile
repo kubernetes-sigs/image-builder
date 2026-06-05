@@ -59,7 +59,7 @@ GET_UBUNTU_DOTTED_SEMVER=$(strip \
 
 .PHONY: deps
 deps: ## Installs/checks all dependencies
-deps: deps-ami deps-azure deps-do deps-gce deps-ova deps-openstack deps-qemu deps-raw deps-oci deps-osc deps-powervs deps-nutanix deps-hcloud
+deps: deps-ami deps-azure deps-do deps-gce deps-ova deps-openstack deps-qemu deps-raw deps-oci deps-osc deps-powervs deps-nutanix deps-hcloud deps-oxide
 
 .PHONY: deps-common
 deps-common: ## Installs/checks dependencies common to most builds
@@ -170,6 +170,12 @@ deps-huaweicloud: ## Installs/checks dependencies for HuaweiCloud builds
 deps-huaweicloud: deps-common
 	$(PACKER) init packer/config.pkr.hcl
 	$(PACKER) init packer/huaweicloud/config.pkr.hcl
+
+.PHONY: deps-oxide
+deps-oxide: ## Installs/checks dependencies for Oxide builds
+deps-oxide: deps-common
+	$(PACKER) init packer/config.pkr.hcl
+	$(PACKER) init packer/oxide/config.pkr.hcl
 
 .PHONY: deps-proxmox
 deps-proxmox: ## Installs/checks dependencies for Proxmox builds
@@ -386,6 +392,8 @@ OCI_BUILD_NAMES				?= oci-ubuntu-2204 oci-oracle-linux-9 oci-windows-2019 oci-wi
 
 DO_BUILD_NAMES 				?=	do-ubuntu-2204 do-ubuntu-2404 do-ubuntu-2604
 
+OXIDE_BUILD_NAMES 			?=	oxide-ubuntu-2404
+
 OPENSTACK_BUILD_NAMES		?=	openstack-ubuntu-2204 openstack-ubuntu-2404 openstack-ubuntu-2604 openstack-flatcar openstack-rockylinux-9
 
 OSC_BUILD_NAMES 			?=	osc-ubuntu-2204 osc-ubuntu-2404 osc-ubuntu-2604
@@ -433,6 +441,8 @@ AZURE_VALIDATE_SIG_GEN2_TARGETS	:= $(addprefix validate-,$(AZURE_BUILD_SIG_GEN2_
 AZURE_VALIDATE_SIG_CVM_TARGETS	:= $(addprefix validate-,$(AZURE_BUILD_SIG_CVM_NAMES))
 DO_BUILD_TARGETS 	:= $(addprefix build-,$(DO_BUILD_NAMES))
 DO_VALIDATE_TARGETS 	:= $(addprefix validate-,$(DO_BUILD_NAMES))
+OXIDE_BUILD_TARGETS 	:= $(addprefix build-,$(OXIDE_BUILD_NAMES))
+OXIDE_VALIDATE_TARGETS 	:= $(addprefix validate-,$(OXIDE_BUILD_NAMES))
 OPENSTACK_BUILD_TARGETS	:= $(addprefix build-,$(OPENSTACK_BUILD_NAMES))
 HUAWEICLOUD_BUILD_TARGETS 	:= $(addprefix build-,$(HUAWEICLOUD_BUILD_NAMES))
 HUAWEICLOUD_VALIDATE_TARGETS	:= $(addprefix validate-,$(HUAWEICLOUD_BUILD_NAMES))
@@ -546,6 +556,10 @@ $(DO_BUILD_TARGETS): deps-do
 $(DO_VALIDATE_TARGETS): deps-do
 	$(PACKER) validate $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/digitalocean/$(subst validate-do-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/digitalocean/packer.json
 
+.PHONY: $(OXIDE_BUILD_TARGETS)
+$(OXIDE_BUILD_TARGETS): deps-oxide
+	$(PACKER) build $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/oxide/$(subst build-oxide-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/oxide/packer.json
+
 .PHONY: $(HUAWEICLOUD_BUILD_TARGETS)
 $(HUAWEICLOUD_BUILD_TARGETS): deps-huaweicloud
 	$(PACKER) build $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/huaweicloud/$(subst build-huaweicloud-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/huaweicloud/packer.json
@@ -561,6 +575,10 @@ $(OPENSTACK_BUILD_TARGETS): deps-openstack
 .PHONY: $(OPENSTACK_VALIDATE_TARGETS)
 $(OPENSTACK_VALIDATE_TARGETS): deps-openstack
 	packer validate $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/openstack/$(subst validate-openstack-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/openstack/packer.json
+
+.PHONY: $(OXIDE_VALIDATE_TARGETS)
+$(OXIDE_VALIDATE_TARGETS): deps-oxide
+	$(PACKER) validate $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/oxide/$(subst validate-oxide-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/oxide/packer.json
 
 .PHONY: $(QEMU_BUILD_TARGETS)
 $(QEMU_BUILD_TARGETS): deps-qemu set-ssh-password
@@ -942,6 +960,9 @@ validate-openstack-rocky-9: ## Validates Rocky 9 Openstack Image Packer config
 validate-openstack-flatcar: ## Validates Flatcar Openstack Image Packer config
 validate-openstack-all: $(OPENSTACK_VALIDATE_TARGETS) ## Validates all Openstack Glance Image Packer config
 
+validate-oxide-ubuntu-2404: ## Validates Ubuntu 24.04 Oxide Snapshot Packer config
+validate-oxide-all: $(OXIDE_VALIDATE_TARGETS) ## Validates all Oxide Snapshot Packer config
+
 validate-gce-ubuntu-2204: ## Validates Ubuntu 22.04 GCE Snapshot Packer config
 validate-gce-ubuntu-2404: ## Validates Ubuntu 24.04 GCE Snapshot Packer config
 validate-gce-ubuntu-2604: ## Validates Ubuntu 26.04 GCE Snapshot Packer config
@@ -1062,6 +1083,7 @@ validate-all: validate-ami-all \
 	validate-raw-all \
 	validate-oci-all \
 	validate-osc-all \
+	validate-oxide-all \
 	validate-nutanix-all \
 	validate-hcloud-all \
 	validate-scaleway-all \
