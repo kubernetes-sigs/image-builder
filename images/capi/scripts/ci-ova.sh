@@ -29,10 +29,12 @@ export ARTIFACTS="${ARTIFACTS:-${PWD}/_artifacts}"
 # The following are currently having issues running in the
 # test environment so are specifically excluded for now
 # - Photon-4
+# - Ubuntu 26.04 (autoinstall never completes, hanging the job; see #2035)
 TARGETS=( $(make build-node-ova-vsphere-all --recon -d | grep "Must remake" | \
   grep -v build-node-ova-vsphere-all | \
   grep -E -v 'rhel|windows|efi' | \
   grep -v build-node-ova-vsphere-photon-4 | \
+  grep -v build-node-ova-vsphere-ubuntu-2604 | \
   grep -E -o 'build-node-ova-vsphere-[a-zA-Z0-9\-]+' ) )
 
 export BOSKOS_RESOURCE_OWNER=image-builder
