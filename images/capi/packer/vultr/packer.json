@@ -6,12 +6,21 @@
       "plan_id": "{{ user `plan` }}",
       "region_id": "{{ user `region` }}",
       "snapshot_description": "Cluster API Kubernetes {{ user `kubernetes_semver` }} {{ user `snapshot_name_suffix` }}",
-      "ssh_username": "root",
+      "ssh_username": "{{user `ssh_username`}}",
       "tag": "cluster-api-{{ user `build_name` }}:{{ user `kubernetes_semver` | replace_all `.` `-` }}",
-      "type": "vultr"
+      "type": "vultr",
+      "userdata": "{{ user `userdata_base64` }}"
     }
   ],
   "provisioners": [
+    {
+      "environment_vars": [
+        "PYPY_HTTP_SOURCE={{user `pypy_http_source`}}"
+      ],
+      "execute_command": "BUILD_NAME={{user `build_name`}}; if [[ \"${BUILD_NAME}\" == *\"flatcar\"* ]]; then sudo {{.Vars}} -S -E bash '{{.Path}}'; fi",
+      "script": "./packer/files/flatcar/scripts/bootstrap-flatcar.sh",
+      "type": "shell"
+    },
     {
       "ansible_env_vars": [
         "ANSIBLE_SSH_ARGS='{{user `existing_ansible_ssh_args`}} {{user `ansible_common_ssh_args`}}'"
@@ -28,13 +37,14 @@
       ],
       "playbook_file": "./ansible/node.yml",
       "type": "ansible",
-      "user": "packer"
+      "user": "{{user `ansible_user`}}"
     }
   ],
   "variables": {
     "ansible_common_vars": "",
     "ansible_extra_vars": "",
     "ansible_scp_extra_args": "",
+    "ansible_user": "packer",
     "api_key": "{{env `VULTR_API_KEY`}}",
     "build_timestamp": "{{timestamp}}",
     "containerd_enable_limit_no_file": "false",
@@ -66,6 +76,9 @@
     "os": "{{ user `os` }}",
     "plan": "vc2-1c-1gb",
     "region": "ewr",
-    "runc_version": null
+    "runc_version": null,
+    "ssh_username": "root",
+    "userdata_base64": "",
+    "userdata_file": ""
   }
 }

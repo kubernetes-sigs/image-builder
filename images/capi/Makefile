@@ -193,6 +193,7 @@ deps-lint: deps-common
 .PHONY: deps-vultr
 deps-vultr: ## Installs/checks dependencies for Vultr builds
 deps-vultr: deps-common
+	hack/ensure-jq.sh
 	$(PACKER) init packer/config.pkr.hcl
 	$(PACKER) init packer/vultr/config.pkr.hcl
 
@@ -412,7 +413,7 @@ HCLOUD_BUILD_NAMES ?= hcloud-ubuntu-2204 hcloud-ubuntu-2404 hcloud-ubuntu-2604 h
 
 PROXMOX_BUILD_NAMES 		?= proxmox-ubuntu-2204 proxmox-ubuntu-2404 proxmox-ubuntu-2404-efi proxmox-ubuntu-2604 proxmox-ubuntu-2604-efi proxmox-rockylinux-9 proxmox-flatcar
 
-VULTR_BUILD_NAMES 				?=	vultr-ubuntu-2204 vultr-ubuntu-2404 vultr-ubuntu-2604
+VULTR_BUILD_NAMES 				?=	vultr-ubuntu-2204 vultr-ubuntu-2404 vultr-ubuntu-2604 vultr-flatcar-stable
 
 MAAS_BUILD_NAMES         ?= maas-ubuntu-2204-efi maas-ubuntu-2404-efi maas-ubuntu-2604-efi
 MAAS_ARM64_BUILD_NAMES   ?= maas-ubuntu-2204-arm64 maas-ubuntu-2404-arm64
@@ -662,7 +663,22 @@ $(PROXMOX_VALIDATE_TARGETS): deps-proxmox set-ssh-password
 
 .PHONY: $(VULTR_BUILD_TARGETS)
 $(VULTR_BUILD_TARGETS): deps-vultr
-	$(PACKER) build $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/vultr/$(subst build-vultr-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/vultr/packer.json
+	@set -eu; \
+	VULTR_VAR_FILE="$(abspath packer/vultr/$(subst build-vultr-,,$@).json)"; \
+	VULTR_USERDATA_FILE="$$(jq -r '.userdata_file // empty' "$${VULTR_VAR_FILE}")"; \
+	PACKER_USERDATA_ARGS=(); \
+	VULTR_USERDATA_BASE64=""; \
+	if [[ -n "$${VULTR_USERDATA_FILE}" ]]; then \
+		if [[ ! -f "$${VULTR_USERDATA_FILE}" ]]; then \
+			echo "Vultr userdata_file not found: $${VULTR_USERDATA_FILE}" >&2; \
+			exit 1; \
+		fi; \
+		jq -e . "$${VULTR_USERDATA_FILE}" >/dev/null; \
+		VULTR_USERDATA_BASE64="$$( { base64 -w0 || base64; } 2>/dev/null < "$${VULTR_USERDATA_FILE}" | tr -d '\n' )"; \
+		echo "Vultr userdata preprocess: file=$${VULTR_USERDATA_FILE} bytes=$$(wc -c < "$${VULTR_USERDATA_FILE}") b64_len=$${#VULTR_USERDATA_BASE64}" >&2; \
+		PACKER_USERDATA_ARGS=(-var "userdata_base64=$${VULTR_USERDATA_BASE64}"); \
+	fi; \
+	$(PACKER) build $(PACKER_NODE_FLAGS) -var-file="$${VULTR_VAR_FILE}" $(ABSOLUTE_PACKER_VAR_FILES) "$${PACKER_USERDATA_ARGS[@]}" packer/vultr/packer.json
 
 .PHONY: $(VULTR_VALIDATE_TARGETS)
 $(VULTR_VALIDATE_TARGETS): deps-vultr
@@ -904,6 +920,7 @@ build-proxmox-all: $(PROXMOX_BUILD_TARGETS) ## Builds all Proxmox images
 build-vultr-ubuntu-2204: ## Builds Ubuntu 22.04 Vultr Snapshot
 build-vultr-ubuntu-2404: ## Builds Ubuntu 24.04 Vultr Snapshot
 build-vultr-ubuntu-2604: ## Builds Ubuntu 26.04 Vultr Snapshot
+build-vultr-flatcar-stable: ## Builds Flatcar Stable Vultr Snapshot
 build-vultr-all: $(VULTR_BUILD_TARGETS) ## Builds all Vultr Snapshots
 
 build-scaleway-rockylinux-9: ## Builds Rocky Linux 9 Scaleway image
@@ -1066,6 +1083,7 @@ validate-proxmox-all: $(PROXMOX_VALIDATE_TARGETS) ## Validates all Proxmox Packe
 validate-vultr-ubuntu-2204: ## Validates Ubuntu 22.04 Vultr Snapshot Packer config
 validate-vultr-ubuntu-2404: ## Validates Ubuntu 24.04 Vultr Snapshot Packer config
 validate-vultr-ubuntu-2604: ## Validates Ubuntu 26.04 Vultr Snapshot Packer config
+validate-vultr-flatcar-stable: ## Validates Flatcar Stable Vultr Snapshot Packer config
 validate-vultr-all: $(VULTR_VALIDATE_TARGETS) ## Validates all Vultr Snapshot Packer config
 
 validate-scaleway-rockylinux-9: ## Validates Rocky Linux 9 Scaleway image Packer config
