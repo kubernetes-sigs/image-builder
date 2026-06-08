@@ -390,7 +390,7 @@ OPENSTACK_BUILD_NAMES		?=	openstack-ubuntu-2204 openstack-ubuntu-2404 openstack-
 
 OSC_BUILD_NAMES 			?=	osc-ubuntu-2204 osc-ubuntu-2404 osc-ubuntu-2604
 
-QEMU_BUILD_NAMES			?=	qemu-ubuntu-2204 qemu-ubuntu-2204-cloudimg qemu-ubuntu-2404 qemu-ubuntu-2404-efi qemu-ubuntu-2604 qemu-ubuntu-2604-efi qemu-ubuntu-2204-efi qemu-centos-9 qemu-rhel-9 qemu-rockylinux-9 qemu-rockylinux-9-cloudimg qemu-flatcar
+QEMU_BUILD_NAMES			?=	qemu-ubuntu-2204 qemu-ubuntu-2204-cloudimg qemu-ubuntu-2404 qemu-ubuntu-2404-cloudimg qemu-ubuntu-2404-efi qemu-ubuntu-2604 qemu-ubuntu-2604-efi qemu-ubuntu-2204-efi qemu-centos-9 qemu-rhel-9 qemu-rockylinux-9 qemu-rockylinux-9-cloudimg qemu-flatcar
 
 QEMU_KUBEVIRT_BUILD_NAMES	:= $(addprefix kubevirt-,$(QEMU_BUILD_NAMES))
 
@@ -820,6 +820,7 @@ build-qemu-ubuntu-2204: ## Builds Ubuntu 22.04 QEMU image
 build-qemu-ubuntu-2204-cloudimg: ## Builds Ubuntu 22.04 QEMU image using cloud image
 build-qemu-ubuntu-2204-efi: ## Builds Ubuntu 22.04 QEMU image that EFI boots
 build-qemu-ubuntu-2404: ## Builds Ubuntu 24.04 QEMU image
+build-qemu-ubuntu-2404-cloudimg: ## Builds Ubuntu 24.04 QEMU image using cloud image
 build-qemu-ubuntu-2404-efi: ## Builds Ubuntu 24.04 QEMU image that EFI boots
 build-qemu-ubuntu-2604: ## Builds Ubuntu 26.04 QEMU image
 build-qemu-ubuntu-2604-efi: ## Builds Ubuntu 26.04 QEMU image that EFI boots
@@ -983,6 +984,7 @@ validate-qemu-ubuntu-2204: ## Validates Ubuntu 22.04 QEMU image packer config
 validate-qemu-ubuntu-2204-cloudimg: ## Validates Ubuntu 22.04 QEMU image packer config using cloud image
 validate-qemu-ubuntu-2204-efi: ## Validates Ubuntu 22.04 QEMU EFI image packer config
 validate-qemu-ubuntu-2404: ## Validates Ubuntu 24.04 QEMU image packer config
+validate-qemu-ubuntu-2404-cloudimg: ## Validates Ubuntu 24.04 QEMU image packer config using cloud image
 validate-qemu-ubuntu-2404-efi: ## Validates Ubuntu 24.04 QEMU EFI image packer config
 validate-qemu-ubuntu-2604: ## Validates Ubuntu 26.04 QEMU image packer config
 validate-qemu-ubuntu-2604-efi: ## Validates Ubuntu 26.04 QEMU EFI image packer config
