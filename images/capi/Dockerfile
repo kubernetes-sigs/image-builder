@@ -45,6 +45,13 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
 ARG ARCH
 ARG PASSED_IB_VERSION
 
+# Bring-your-own Packer build args. Defaults match hack/ensure-packer.sh,
+# which pins Packer to the last MPL-2.0 release. Set PACKER_VERSION to
+# install a different version, or PACKER_BIN at runtime to use an
+# already-installed binary. See docs/book/src/capi/packer.md.
+ARG PACKER_VERSION=1.9.5
+ARG IB_ALLOW_ANY_PACKER=0
+
 USER imagebuilder
 WORKDIR /home/imagebuilder/
 
@@ -59,6 +66,8 @@ COPY --chown=imagebuilder:imagebuilder azure_targets.sh azure_targets.sh
 ENV PATH="/home/imagebuilder/.local/bin:${PATH}"
 ENV PACKER_ARGS=''
 ENV PACKER_VAR_FILES=''
+ENV PACKER_VERSION="${PACKER_VERSION}"
+ENV IB_ALLOW_ANY_PACKER="${IB_ALLOW_ANY_PACKER}"
 ENV IB_VERSION="${PASSED_IB_VERSION}"
 
 RUN make deps
