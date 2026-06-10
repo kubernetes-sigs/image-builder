@@ -133,6 +133,10 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          # Fetch full history and tags so `git describe` can compute IB_VERSION
+          # (used to stamp image-builder provenance onto the built image).
+          fetch-depth: 0
 
       - name: Configure Kubernetes version
         uses: ./.github/actions/configure-k8s-version
@@ -189,6 +193,13 @@ jobs:
 
           os=$(echo "${OS}" | tr '[:upper:]' '[:lower:]')
           version=$(echo "${OS_VERSION}" | tr '[:upper:]' '[:lower:]' | tr -d .)
+
+          # Provenance: stamp the image-builder source revision onto the image.
+          # IB_VERSION (git describe) is baked into /etc/image-builder-release and
+          # applied as an Azure tag; IB_COMMIT records the exact full commit SHA.
+          export IB_COMMIT="${GITHUB_SHA}"
+          export IB_VERSION="$(git describe --dirty 2>/dev/null || echo "${GITHUB_SHA}")"
+          echo "Building from image-builder ${IB_VERSION} (${IB_COMMIT})"
 
           export RESOURCE_GROUP="${RESOURCE_GROUP:-cluster-api-gallery}"
           export RESOURCE_GROUP_NAME="${RESOURCE_GROUP}"

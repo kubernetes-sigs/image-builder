@@ -13,6 +13,15 @@
 # limitations under the License.
 ---
 # This file was adapted from https://github.com/Azure/aks-engine/blob/master/vhd/packer/configure-windows-vhd.ps1 for ansible
+- name: Write image-builder provenance file
+  ansible.windows.win_copy:
+    dest: C:\image-builder-release.txt
+    content: |
+      IMAGE_BUILDER_VERSION={{ image_builder_version | default('') }}
+      IMAGE_BUILDER_COMMIT={{ image_builder_commit | default('') }}
+      KUBERNETES_VERSION={{ kubernetes_semver | default('') }}
+  when: (image_builder_version | default('')) | length > 0 or (image_builder_commit | default('')) | length > 0
+
 - name: Remove Windows updates default registry settings
   ansible.windows.win_regedit:
     path: HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\
