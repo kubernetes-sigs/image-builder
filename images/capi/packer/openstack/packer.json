@@ -125,6 +125,7 @@
     "crictl_version": null,
     "existing_ansible_ssh_args": "{{env `ANSIBLE_SSH_ARGS`}}",
     "floating_ip_network": "public",
+    "ib_version": "{{env `IB_VERSION`}}",
     "image_disk_format": "qcow2",
     "image_name": "{{user `build_name`}}-kube-{{user `kubernetes_semver`}}",
     "image_tags": "k8s,capi",

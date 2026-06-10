@@ -8,6 +8,7 @@
         "distribution": "{{user `distribution`}}",
         "distribution_release": "{{user `distribution_release`}}",
         "distribution_version": "{{user `distribution_version`}}",
+        "image_builder_commit": "{{user `ib_commit`}}",
         "image_builder_version": "{{user `ib_version`}}",
         "kubernetes_version": "{{user `kubernetes_semver`}}"
       },
@@ -113,6 +114,8 @@
         "{{user `ansible_extra_vars`}}",
         "--extra-vars",
         "{{user `ansible_user_vars`}}",
+        "--extra-vars",
+        "image_builder_commit={{user `ib_commit`}}",
         "--scp-extra-args",
         "{{user `ansible_scp_extra_args`}}"
       ],
@@ -200,6 +203,7 @@
     "distribution_version": null,
     "exclude_from_latest": "false",
     "existing_ansible_ssh_args": "{{env `ANSIBLE_SSH_ARGS`}}",
+    "ib_commit": "{{env `IB_COMMIT`}}",
     "ib_version": "{{env `IB_VERSION`}}",
     "image_offer": "",
     "image_publisher": "",

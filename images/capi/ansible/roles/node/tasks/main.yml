@@ -134,3 +134,16 @@
     src: usr/local/bin/etcd-network-tuning.sh
     dest: "{{ external_binary_path }}/etcd-network-tuning.sh"
     mode: "0755"
+
+- name: Write image-builder provenance file
+  ansible.builtin.copy:
+    dest: /etc/image-builder-release
+    owner: root
+    group: root
+    mode: "0644"
+    content: |
+      IMAGE_BUILDER_VERSION={{ image_builder_version | default('') }}
+      IMAGE_BUILDER_COMMIT={{ image_builder_commit | default('') }}
+      KUBERNETES_VERSION={{ kubernetes_semver | default('') }}
+      BUILD_DATE={{ ansible_date_time.iso8601 }}
+  when: (image_builder_version | default('')) | length > 0 or (image_builder_commit | default('')) | length > 0
