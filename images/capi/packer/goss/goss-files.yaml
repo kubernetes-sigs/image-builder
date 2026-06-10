@@ -39,3 +39,10 @@ file:
     contains:
       - "LimitNOFILE=1048576"
 {{end}}
+{{if .Vars.image_builder_version }}
+  "/etc/image-builder-release":
+    exists: true
+    filetype: file
+    contains:
+      - "IMAGE_BUILDER_VERSION={{ .Vars.image_builder_version }}"
+{{end}}
