@@ -145,5 +145,5 @@
       IMAGE_BUILDER_VERSION={{ image_builder_version | default('') }}
       IMAGE_BUILDER_COMMIT={{ image_builder_commit | default('') }}
       KUBERNETES_VERSION={{ kubernetes_semver | default('') }}
-      BUILD_DATE={{ ansible_date_time.iso8601 }}
+      BUILD_DATE={{ now(utc=true, fmt='%Y-%m-%dT%H:%M:%SZ') }}
   when: (image_builder_version | default('')) | length > 0 or (image_builder_commit | default('')) | length > 0
