@@ -57,3 +57,26 @@ first to ensure you supply the correct one.**_
 
 _**For example, using the `rocm` use case will install +24GB of libraries as
 well as the driver so your disk size will need to compensate for this.**_
+
+# Flatcar NVIDIA (sysext)
+
+On Flatcar, NVIDIA drivers are installed via the [systemd-sysext](https://www.flatcar.org/docs/latest/setup/customization/using-nvidia/#prebuilt-sysext-method) mechanism instead of DKMS.
+Pre-built driver sysext images are built with every Flatcar release and contain signed kernel modules.
+The nvidia-runtime sysext provides container runtime integration.
+
+The following variables are available:
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `gpu_flatcar_nvidia_sysext_name` | `nvidia-drivers-570` | Driver sysext identifier written to `/etc/flatcar/enabled-sysext.conf` |
+| `gpu_flatcar_nvidia_runtime_url` | _(empty)_ | URL to download the nvidia-runtime `.raw` sysext image |
+| `gpu_flatcar_nvidia_runtime_filename` | _(empty)_ | Filename of the nvidia-runtime `.raw` image |
+
+Example packer configuration:
+
+```json
+{
+  "ansible_user_vars": "gpu_vendor=nvidia gpu_flatcar_nvidia_sysext_name=nvidia-drivers-570 gpu_flatcar_nvidia_runtime_url=https://extensions.flatcar.org/extensions/nvidia-runtime-v1.17.9-x86-64.raw gpu_flatcar_nvidia_runtime_filename=nvidia-runtime-v1.17.9-x86-64.raw",
+  "node_custom_roles_pre": "gpu"
+}
+```
