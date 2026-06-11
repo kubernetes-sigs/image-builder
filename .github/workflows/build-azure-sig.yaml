@@ -178,7 +178,8 @@ jobs:
         env:
           PACKER_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          pip install ansible ansible-lint
+          source hack/utils.sh
+          pip install "ansible-core==${_version_ansible_core}"
           make deps-azure
 
       - name: Build SIG Image
