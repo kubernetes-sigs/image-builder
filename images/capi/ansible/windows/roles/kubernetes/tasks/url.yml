@@ -12,12 +12,38 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- name: Download kubernetes binaries
+- name: Set kubernetes package version
+  ansible.builtin.set_fact:
+    kubernetes_package_version: "{{ kubernetes_semver | regex_replace('^v', '') }}"
+
+- name: Create temporary directory for kubernetes packages
+  ansible.windows.win_tempfile:
+    state: directory
+  register: kubernetes_package_dir
+
+- name: Download kubernetes binary packages
+  vars:
+    ver: "{{ kubernetes_package_version }}"
+    arch: "{{ kubernetes_goarch }}"
+    rev: "{{ kubernetes_package_revision }}"
   ansible.windows.win_get_url:
-    url: "{{ kubernetes_base_url }}/{{ item }}.exe"
-    dest: "{{ kubernetes_install_path }}\\"
+    url: "{{ kubernetes_package_base_url }}/{{ item }}/{{ ver }}/windows/{{ arch }}/{{ item }}_{{ ver }}-{{ rev }}_{{ arch }}.zip"
+    dest: "{{ kubernetes_package_dir.path }}\\{{ item }}.zip"
   loop: "{{ kubernetes_bins }}"
   retries: 5
   delay: 3
   register: kubernetes_download
   until: kubernetes_download is not failed
+
+- name: Extract kubernetes binaries
+  community.windows.win_unzip:
+    src: "{{ kubernetes_package_dir.path }}\\{{ item }}.zip"
+    dest: "{{ kubernetes_install_path }}"
+    recurse: false
+    delete_archive: true
+  loop: "{{ kubernetes_bins }}"
+
+- name: Remove temporary kubernetes package directory
+  ansible.windows.win_file:
+    path: "{{ kubernetes_package_dir.path }}"
+    state: absent

@@ -190,7 +190,7 @@
     "image_publisher": "",
     "image_sku": "",
     "image_version": "latest",
-    "kubernetes_base_url": "https://kubernetesreleases.blob.core.windows.net/kubernetes/{{user `kubernetes_semver`}}/bin/windows/{{user `kubernetes_goarch`}}",
+    "kubernetes_package_revision": "1",
     "manifest_output": "manifest.json",
     "nssm_url": null,
     "os_disk_size_gb": "",
