@@ -17,3 +17,10 @@ kubernetes_bins:
   - kubectl
   - kubelet
   - kube-log-runner
+
+# Windows Kubernetes binaries are consumed as DALEC-built ZIP packages
+# published to the AKS package CDN. Each archive contains a single
+# <binary>.exe at its root.
+kubernetes_package_base_url: https://packages.aks.azure.com/dalec-packages
+kubernetes_package_revision: "1"
+kubernetes_goarch: amd64
