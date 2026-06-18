@@ -10,7 +10,7 @@
   "prepull": "true",
   "runtime": "containerd",
   "ssh_source_url": "",
-  "windows_service_manager": "nssm",
+  "windows_service_manager": "windows_service",
   "windows_updates_categories": "",
   "windows_updates_kbs": ""
 }
