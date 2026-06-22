@@ -81,6 +81,7 @@
     "crictl_version": null,
     "dhcp_network": "false",
     "existing_ansible_ssh_args": "{{env `ANSIBLE_SSH_ARGS`}}",
+    "ib_version": "{{env `IB_VERSION`}}",
     "key_pair_name": "",
     "kubernetes_cni_deb_version": null,
     "kubernetes_cni_http_source": null,

@@ -140,6 +140,7 @@
     "disk_size_gb": "40",
     "existing_ansible_ssh_args": "{{env `ANSIBLE_SSH_ARGS`}}",
     "force_deregister": "true",
+    "ib_version": "{{env `IB_VERSION`}}",
     "image_delete": "false",
     "image_export": "false",
     "image_name": "{{user `build_name`}}-kube-{{user `kubernetes_semver`}}",
