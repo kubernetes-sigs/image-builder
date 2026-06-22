@@ -1,5 +1,4 @@
 packer.json
-packer-arm64.json
 ks.cfg
 preseed.cfg
 preseed-efi.cfg

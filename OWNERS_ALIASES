@@ -24,7 +24,8 @@ aliases:
     - yadvr
   image-builder-scaleway-reviewers:
     - Tomy2e
-    - pablo-ruth
+    - Mia-Cross
+    - remyleone
   image-builder-raw-maintainers:
     - detiber
     - thebsdbox

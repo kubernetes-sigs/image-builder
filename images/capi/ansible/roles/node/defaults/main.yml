@@ -102,10 +102,6 @@ photon_5_rpms:
 common_virt_rpms:
   - open-vm-tools
 
-common_virt_debs_arm64:
-  - linux-tools-virtual
-  - open-vm-tools
-
 common_virt_debs:
   - linux-cloud-tools-virtual
   - linux-tools-virtual
@@ -124,7 +120,6 @@ common_raw_photon_rpms: []
 # as it uses systemd-sysctl. set this var so we can use for sysctl conf file value.
 sysctl_conf_file: >-
   {{ '/etc/sysctl.d/99-sysctl.conf' if ansible_facts['os_family'] in ['Common Base Linux Mariner', 'Flatcar', 'Microsoft Azure Linux', 'VMware Photon OS']
-    or (ansible_facts['distribution'] == 'Ubuntu' and (ansible_facts['distribution_major_version'] | int) >= 26)
     else '/etc/sysctl.conf' }}
 
 pause_image: registry.k8s.io/pause:3.10.2

@@ -4,7 +4,7 @@
   "build_name": "windows-2022-containerd",
   "distribution": "windows",
   "distribution_version": "2022",
-  "image_offer": "windowsserver2022",
+  "image_offer": "WindowsServer",
   "image_publisher": "MicrosoftWindowsServer",
   "image_sku": "2022-Datacenter-Core-smalldisk",
   "image_version": "latest",

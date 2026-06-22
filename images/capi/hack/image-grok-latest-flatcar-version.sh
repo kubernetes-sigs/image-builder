@@ -5,6 +5,8 @@
 channel="$1"
 
 curl -L -s \
-     "https://$channel.release.flatcar-linux.net/amd64-usr/current/version.txt" \
-    | grep '^FLATCAR_VERSION=' \
-    | cut -d= -f2
+     "https://www.flatcar.org/releases-json/releases-$channel.json" \
+    | jq -r 'to_entries[] | "\(.key)"' \
+    | grep -v "current" \
+    | sort --version-sort \
+    | tail -n1

@@ -459,29 +459,6 @@ ubuntu:
       cloud-guest-utils:
       cloud-initramfs-copymods:
       cloud-initramfs-dyn-netconf:
-  maas:
-    service:
-      networkd-dispatcher:
-        enabled: true
-        running: true
-    package:
-      linux-cloud-tools-virtual:
-      linux-tools-virtual:
-      open-vm-tools:
-      cloud-guest-utils:
-      cloud-initramfs-copymods:
-      cloud-initramfs-dyn-netconf:
-  maas-arm64:
-    service:
-      networkd-dispatcher:
-        enabled: true
-        running: true
-    package:
-      linux-tools-virtual:
-      open-vm-tools:
-      cloud-guest-utils:
-      cloud-initramfs-copymods:
-      cloud-initramfs-dyn-netconf:
   qemu:
     service:
       networkd-dispatcher:
@@ -538,10 +515,6 @@ ubuntu:
       cloud-initramfs-copymods:
       cloud-initramfs-dyn-netconf:
   scaleway:
-    service:
-    package:
-    command:
-  oxide:
     service:
     package:
     command:

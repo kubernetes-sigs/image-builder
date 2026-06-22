@@ -16,7 +16,6 @@
   - [OpenStack](./capi/providers/openstack.md)
   - [OpenStack remote image building](./capi/providers/openstack-remote.md)
   - [OCI](./capi/providers/oci.md)
-  - [Oxide](./capi/providers/oxide.md)
   - [raw](./capi/providers/raw.md)
   - [Scaleway](./capi/providers/scaleway.md)
   - [vSphere](./capi/providers/vsphere.md)
