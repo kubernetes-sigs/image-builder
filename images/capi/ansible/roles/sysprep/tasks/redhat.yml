@@ -72,7 +72,7 @@
   ansible.builtin.shell: |
     set -o pipefail
     sed -i '/^\(HWADDR\|UUID\)=/d' /etc/sysconfig/network-scripts/ifcfg-*
-  when: packer_builder_type != "googlecompute" and ansible_facts['distribution_major_version']|int not in [9, 10]
+  when: packer_builder_type != "googlecompute" and ansible_facts['distribution_major_version']|int != 9
 
 - name: Migrate interface configuration files to NetworkManager keyfiles
   ansible.builtin.command: nmcli connection migrate
@@ -80,7 +80,7 @@
 
 - name: Reset network interface IDs
   ansible.builtin.shell: sed -i '/^\(uuid\)=/d' /etc/NetworkManager/system-connections/*.nmconnection
-  when: packer_builder_type != "googlecompute" and ansible_facts['distribution_major_version']|int in [9, 10]
+  when: packer_builder_type != "googlecompute" and ansible_facts['distribution_major_version']|int == 9
 
 - name: Remove the kickstart log
   ansible.builtin.file:

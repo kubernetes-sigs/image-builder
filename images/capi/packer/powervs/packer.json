@@ -72,7 +72,6 @@
     "capture_cos_bucket": "",
     "capture_cos_region": "",
     "capture_cos_secret_key": "",
-    "containerd_enable_limit_no_file": "false",
     "containerd_gvisor_runtime": "false",
     "containerd_gvisor_version": "latest",
     "containerd_image_pull_progress_timeout": null,
