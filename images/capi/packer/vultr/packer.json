@@ -7,7 +7,7 @@
       "region_id": "{{ user `region` }}",
       "snapshot_description": "Cluster API Kubernetes {{ user `kubernetes_semver` }} {{ user `snapshot_name_suffix` }}",
       "ssh_username": "root",
-      "tag": "cluster-api-{{ user `build_name` }}:{{ user `kubernetes_semver` | replace_all `.` `-` }}",
+      "tags": "cluster-api-{{ user `build_name` }}:{{ user `kubernetes_semver` | replace_all `.` `-` }}",
       "type": "vultr"
     }
   ],
@@ -37,6 +37,7 @@
     "ansible_scp_extra_args": "",
     "api_key": "{{env `VULTR_API_KEY`}}",
     "build_timestamp": "{{timestamp}}",
+    "containerd_enable_limit_no_file": "false",
     "containerd_gvisor_runtime": "false",
     "containerd_gvisor_version": "latest",
     "containerd_image_pull_progress_timeout": null,

@@ -49,6 +49,7 @@
   "post-processors": [
     {
       "custom_data": {
+        "containerd_enable_limit_no_file": "{{user `containerd_enable_limit_no_file`}}",
         "containerd_gvisor_runtime": "{{user `containerd_gvisor_runtime`}}",
         "containerd_gvisor_version": "{{user `containerd_gvisor_version`}}",
         "containerd_version": "{{user `containerd_version`}}",
@@ -99,6 +100,7 @@
         "OS": "{{user `distribution` | lower}}",
         "OS_VERSION": "{{user `distribution_version` | lower}}",
         "PROVIDER": "huaweicloud",
+        "containerd_enable_limit_no_file": "{{user `containerd_enable_limit_no_file`}}",
         "containerd_gvisor_runtime": "{{user `containerd_gvisor_runtime`}}",
         "containerd_gvisor_version": "{{user `containerd_gvisor_version`}}",
         "containerd_image_pull_progress_timeout": "{{user `containerd_image_pull_progress_timeout`}}",
@@ -124,6 +126,7 @@
     "associate_public_ip_address": "true",
     "availability_zone": "ap-southeast-1g",
     "build_timestamp": "{{timestamp}}",
+    "containerd_enable_limit_no_file": "false",
     "containerd_gvisor_runtime": "false",
     "containerd_gvisor_version": "latest",
     "containerd_image_pull_progress_timeout": null,

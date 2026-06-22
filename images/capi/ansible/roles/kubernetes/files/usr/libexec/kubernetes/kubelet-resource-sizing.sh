@@ -3,19 +3,23 @@
 # This script is used to calculate the resource sizing for the kubelet based on values used by GKE and repeated
 # in https://github.com/awslabs/amazon-eks-ami/pull/367/files
 
-#RPM and DEB systems kubelet sysconfig PATH
-KUBELET_SYSCONFIG_FILES=( "/etc/sysconfig/kubelet" "/etc/default/kubelet" )
 
-for KUBELET_SYSCONFIG in "${KUBELET_SYSCONFIG_FILES[@]}"
-do
-  # Check if the file exists
-  if [ -f "${KUBELET_SYSCONFIG}" ]; then
-    # shellcheck source=/dev/null
-    . "${KUBELET_SYSCONFIG}"
-    # If system-reserved is already set by user, ignore
-    if grep -q 'KUBELET_EXTRA_ARGS=.*--system-reserved' "${KUBELET_SYSCONFIG}"; then
-      exit 0
-    fi
+# If the user has already configured systemReserved (in the main kubelet
+# config or any other drop-in), don't overwrite their value.
+KUBELET_CONFIG="/var/lib/kubelet/kubelet.conf.d/kubelet-resource-sizing.conf"
+USER_KUBELET_CONFIGS=( "/var/lib/kubelet/config.yaml" )
+if [ -d /var/lib/kubelet/kubelet.conf.d ]; then
+  while IFS= read -r -d '' f; do
+    [ "$f" = "$KUBELET_CONFIG" ] && continue
+    USER_KUBELET_CONFIGS+=( "$f" )
+  done < <(find /var/lib/kubelet/kubelet.conf.d -maxdepth 1 -type f -print0)
+fi
+
+for cfg in "${USER_KUBELET_CONFIGS[@]}"; do
+  [ -f "$cfg" ] || continue
+  if grep -Eq '^[[:space:]]*systemReserved[[:space:]]*:' "$cfg" \
+    || grep -q '"systemReserved"' "$cfg"; then
+    exit 0
   fi
 done
 
@@ -98,7 +102,7 @@ CPU_CORE_RESERVATION_MICROCORES=(
 )
 
 # Calculate the CPU reservation
-cpu_milicores_to_reserve() {
+cpu_millicores_to_reserve() {
   local cpu_microcores_reserved=0
 
   for ((i = 0; i < schedulable_cores_no; i++)); do
@@ -113,13 +117,18 @@ cpu_milicores_to_reserve() {
   echo "$cpu_microcores_reserved" | awk '{result = $1 / 10; if (result != int(result)) result++; printf "%d\n", result}'
 }
 
-mkdir -p /run/kubelet
-# Check if system-reserved already exists
-if grep '.*--system-reserved' <<< "${KUBELET_EXTRA_ARGS}"; then
-  # If system-reserved is already set by a previous run, replace old value with new one and write to /run/kubelet/extra-args.env
-  system_reserved=$(sed -E "s|--system-reserved=cpu=[0-9]+m,memory=[0-9]+Mi|--system-reserved=cpu=$(cpu_milicores_to_reserve)m,memory=$(memory_reservation_mebibytes)Mi|" <<< "${KUBELET_EXTRA_ARGS}")
-  echo "KUBELET_EXTRA_ARGS=${system_reserved} >/run/kubelet/extra-args.env"
-else
-  # If not append system-reserved to KUBELET_EXTRA_ARGS and write to /run/kubelet/extra-args.env
-  echo "KUBELET_EXTRA_ARGS=${KUBELET_EXTRA_ARGS} --system-reserved=cpu=$(cpu_milicores_to_reserve)m,memory=$(memory_reservation_mebibytes)Mi" >/run/kubelet/extra-args.env
+mkdir -p /var/lib/kubelet/kubelet.conf.d
+
+# Initialize config file if it doesn't exist
+if [ ! -f "$KUBELET_CONFIG" ]; then
+  echo "{}" > "$KUBELET_CONFIG"
 fi
+
+# Get the computed values from the functions
+memory_reservation_mebibytes=$(memory_reservation_mebibytes)
+cpu_millicores_to_reserve=$(cpu_millicores_to_reserve)
+
+tmp=$(mktemp) && \
+jq --arg memory_reservation_mebibytes "${memory_reservation_mebibytes}Mi" --arg cpu_millicores_to_reserve "${cpu_millicores_to_reserve}m" \
+    '. += {"apiVersion": "kubelet.config.k8s.io/v1beta1","kind": "KubeletConfiguration", "systemReserved": {"cpu": $cpu_millicores_to_reserve, "memory": $memory_reservation_mebibytes}}' "$KUBELET_CONFIG" > "$tmp" && \
+mv "$tmp" "$KUBELET_CONFIG"

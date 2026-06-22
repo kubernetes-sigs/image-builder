@@ -12,14 +12,29 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- name: Add the Kubernetes repo key
-  ansible.builtin.apt_key:
+# apt-key was removed in Ubuntu 26.04+. Use signed-by keyring instead.
+- name: Ensure /etc/apt/keyrings directory exists
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: "0755"
+
+- name: Download the Kubernetes repo GPG key (armored)
+  ansible.builtin.get_url:
     url: "{{ kubernetes_deb_gpg_key }}"
-    state: present
+    dest: /etc/apt/keyrings/kubernetes-apt-keyring.gpg.asc
+    mode: "0644"
+
+- name: Dearmor the Kubernetes repo GPG key
+  ansible.builtin.shell: >
+    gpg --dearmor < /etc/apt/keyrings/kubernetes-apt-keyring.gpg.asc
+    > /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+  args:
+    creates: /etc/apt/keyrings/kubernetes-apt-keyring.gpg
 
 - name: Add the Kubernetes repo
   ansible.builtin.apt_repository:
-    repo: deb {{ kubernetes_deb_repo }} /
+    repo: deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] {{ kubernetes_deb_repo }} /
     update_cache: true
     state: present
     mode: "0644"

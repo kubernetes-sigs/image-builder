@@ -32,3 +32,10 @@ file:
     contains:
       - {{ .Vars.extra_kernel_boot_params }}
 {{end}}
+{{if eq .Vars.containerd_enable_limit_no_file "true"}}
+  "/etc/systemd/system/containerd.service.d/limit-nofile.conf":
+    exists: true
+    filetype: file
+    contains:
+      - "LimitNOFILE=1048576"
+{{end}}

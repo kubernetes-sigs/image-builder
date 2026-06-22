@@ -20,6 +20,10 @@
   ansible.builtin.import_tasks: amazonLinux.yml
   when: ansible_facts['distribution'] == "Amazon"
 
+- name: Import Debian node tasks
+  ansible.builtin.import_tasks: debian.yml
+  when: ansible_facts['os_family'] == "Debian"
+
 # This is required until https://github.com/ansible/ansible/issues/77537 is fixed and used.
 - name: Override Flatcar's OS family
   ansible.builtin.set_fact:

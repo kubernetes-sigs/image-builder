@@ -71,7 +71,7 @@ The WinRM connection plugin for Ansible on macOS causes connection issues which 
 To fix the issue on macOS is to set the no_proxy environment variable. Example:
 
 ```
-'no_proxy=* make build-azure-vhd-windows-2019'
+'no_proxy=* make build-azure-sig-windows-2022-containerd'
 ```
 
 ## Annual Channel

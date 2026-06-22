@@ -13,11 +13,12 @@
 # limitations under the License.
 ---
 containerd_config_file: etc/containerd/config.toml
+containerd_enable_limit_no_file: false
 containerd_gvisor_runtime: false
 containerd_gvisor_version: latest
 containerd_baseurl: https://github.com/containerd/containerd/releases/download/v{{ containerd_version }}
 containerd_filename: "containerd-{{ containerd_version }}-{{ system }}-{{ arch }}.tar.gz"
 containerd_url: "{{ containerd_baseurl }}/{{ containerd_filename }}"
 containerd_runc_url: "https://github.com/opencontainers/runc/releases/download/v{{ runc_version }}/runc.{{ arch }}"
-runc_version: "1.3.4"
+runc_version: "1.4.2"
 containerd_runc_checksum_url: "https://github.com/opencontainers/runc/releases/download/v{{ runc_version }}/runc.sha256sum"

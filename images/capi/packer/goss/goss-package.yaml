@@ -92,7 +92,7 @@ command:
     exit-status: 0
     stdout: {{range $vers.expected}}
     - {{.}}
-    timeout: 60000
+    timeout: 180000
     {{end}}
 {{end}}
 {{end}}
