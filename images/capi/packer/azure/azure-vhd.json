@@ -1,0 +1,5 @@
+{
+  "capture_container_name": "cluster-api-vhds",
+  "resource_group_name": "{{env `RESOURCE_GROUP_NAME`}}",
+  "storage_account_name": "{{env `STORAGE_ACCOUNT_NAME`}}"
+}

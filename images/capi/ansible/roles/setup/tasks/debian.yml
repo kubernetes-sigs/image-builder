@@ -59,9 +59,7 @@
     paths:
       - /etc/apt
       - /etc/apt/sources.list.d
-    patterns:
-      - "*.list"
-      - "*.sources"
+    patterns: "*.list"
   register: repo_files
   when: disable_public_repos|bool
 

@@ -239,6 +239,7 @@
   ansible.builtin.shell:
     cmd: |
       journalctl --rotate
+  when: not ( ansible_facts['os_family'] == "RedHat" and ansible_facts['distribution_major_version']|int <= 7 )
 
 - name: Remove archived journalctl logs
   ansible.builtin.shell:
