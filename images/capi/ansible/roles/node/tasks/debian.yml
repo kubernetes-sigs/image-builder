@@ -12,6 +12,52 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
+# needrestart runs as an apt post-invocation hook on Ubuntu 22.04+ and, in its
+# default non-interactive mode, automatically restarts services whose libraries
+# were updated. When a package install during the build pulls in an updated
+# libc/libssl/libpam, needrestart restarts sshd, which drops the Ansible SSH
+# connection mid-task and fails the build (EOF -> privilege escalation timeout).
+# Switch it to list-only mode before any package installs so it never restarts
+# services. This is safe because the VM is captured and recreated afterwards.
+- name: Check whether needrestart is installed
+  ansible.builtin.stat:
+    path: /etc/needrestart/needrestart.conf
+  register: node_needrestart_conf
+
+- name: Prevent needrestart from auto-restarting services during the build
+  ansible.builtin.copy:
+    dest: /etc/needrestart/conf.d/zz-image-builder-no-restart.conf
+    content: |
+      # Managed by image-builder: do not auto-restart services (notably sshd)
+      # during provisioning, which would drop the Ansible connection.
+      $nrconf{restart} = 'l';
+    owner: root
+    group: root
+    mode: "0644"
+  when: node_needrestart_conf.stat.exists
+
+# Keep long-running provisioning SSH sessions alive and tolerate transient
+# slowness, reducing mid-build disconnects. Use a drop-in and reload (not
+# restart) so existing sessions are not dropped when applying it.
+- name: Harden sshd to keep build connections alive
+  ansible.builtin.copy:
+    dest: /etc/ssh/sshd_config.d/99-image-builder-keepalive.conf
+    content: |
+      # Managed by image-builder: keep provisioning SSH sessions alive.
+      ClientAliveInterval 30
+      ClientAliveCountMax 20
+      TCPKeepAlive yes
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Reload sshd to apply keepalive settings (reload preserves sessions)
+  ansible.builtin.systemd:
+    name: ssh
+    state: reloaded
+  changed_when: false
+  failed_when: false
+
 # The apt-daily and unattended-upgrades systemd timers fire shortly after first
 # boot and intermittently hold the dpkg/apt frontend lock while later roles
 # (containerd, kubernetes, sysprep) install packages, causing flaky build
