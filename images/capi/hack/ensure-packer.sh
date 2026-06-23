@@ -91,7 +91,24 @@ if (command -v packer) >/dev/null 2>&1; then
 fi
 
 echo "Installing packer v${_version} in .local/bin"
-mkdir -p .local/bin && cd .local/bin
+mkdir -p .local/bin
+
+# CI runs many `make build-*` targets in parallel, and they all invoke this
+# script at once. Serialize the install with an advisory lock so concurrent
+# runs don't clobber each other's downloads in .local/bin. flock isn't
+# available everywhere (notably macOS), so fall back to running without it;
+# the atomic install below still prevents a half-written binary from being
+# observed by a sibling.
+if command -v flock >/dev/null 2>&1; then
+  exec 9>".local/bin/.packer-install.lock"
+  flock 9
+  # A sibling may have finished the install while we waited for the lock.
+  if [ -x .local/bin/packer ] \
+     && [ "$(.local/bin/packer version 2>/dev/null | head -1 | cut -d 'v' -f 2)" = "${_version}" ]; then
+    echo "Packer v${_version} was installed by a concurrent run; nothing to do"
+    exit 0
+  fi
+fi
 
 SED="sed"
 if command -v gsed >/dev/null; then
@@ -102,14 +119,25 @@ if ! (${SED} --version 2>&1 | grep -q GNU); then
   exit 1
 fi
 
+# Download and unpack in a private temp directory on the same filesystem as
+# .local/bin, then atomically rename the finished binary into place. This
+# guarantees a concurrent run never reads or executes a partially written
+# packer binary (or a clobbered .zip / SHA256SUMS file).
+_workdir="$(mktemp -d "${PWD}/.local/bin/.packer-install.XXXXXX")"
+trap 'rm -rf "${_workdir}"' EXIT
+
 _chkfile="packer_${_version}_SHA256SUMS"
 _chk_url="https://releases.hashicorp.com/packer/${_version}/${_chkfile}"
 _zipfile="packer_${_version}_${HOSTOS}_${HOSTARCH}.zip"
 _zip_url="https://releases.hashicorp.com/packer/${_version}/${_zipfile}"
-curl -SsLO "${_chk_url}"
-curl -SsLO "${_zip_url}"
-${SED} -i -n "/${HOSTOS}_${HOSTARCH}/p" "${_chkfile}"
-checksum_sha256 "${_chkfile}"
-unzip -o "${_zipfile}"
-rm -f "${_chkfile}" "${_zipfile}"
-echo "'packer' has been installed to $(pwd), make sure this directory is in your \$PATH"
+(
+  cd "${_workdir}"
+  curl -SsLO "${_chk_url}"
+  curl -SsLO "${_zip_url}"
+  ${SED} -i -n "/${HOSTOS}_${HOSTARCH}/p" "${_chkfile}"
+  checksum_sha256 "${_chkfile}"
+  unzip -o "${_zipfile}"
+)
+chmod +x "${_workdir}/packer"
+mv -f "${_workdir}/packer" .local/bin/packer
+echo "'packer' has been installed to ${PWD}/.local/bin, make sure this directory is in your \$PATH"
