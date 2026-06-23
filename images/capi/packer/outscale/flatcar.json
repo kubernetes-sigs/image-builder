@@ -1,0 +1,16 @@
+{
+  "ansible_extra_vars": "ansible_python_interpreter=/opt/bin/python oem_id=metal ignition_config_url=http://169.254.169.254/latest/user-data",
+  "build_name": "flatcar",
+  "distribution": "flatcar",
+  "distribution_release": "{{env `FLATCAR_CHANNEL`}}",
+  "distribution_version": "{{env `FLATCAR_CHANNEL`}}-{{env `FLATCAR_VERSION`}}",
+  "image_name": "Ubuntu-24.04-2026-01-12",
+  "kubernetes_cni_source_type": "http",
+  "kubernetes_source_type": "http",
+  "python_path": "/opt/pypy/site-packages",
+  "root_device_name": "/dev/vda",
+  "ssh_username": "outscale",
+  "systemd_prefix": "/etc/systemd",
+  "sysusr_prefix": "/opt",
+  "sysusrlocal_prefix": "/opt"
+}
