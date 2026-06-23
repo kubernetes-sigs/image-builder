@@ -206,6 +206,7 @@
     mode: "0755"
     state: link
     force: true
+    follow: false
   loop:
     - ctr
     - crictl
