@@ -18,12 +18,12 @@
     paths: /etc/yum.repos.d
     patterns: "*.repo"
   register: repo_files
-  when: disable_public_repos|bool
+  when: disable_public_repos | default(false, true) | bool
 
 - name: Disable repos
   ansible.builtin.command: mv {{ item.path }} {{ item.path }}.disabled
   loop: "{{ repo_files.files }}"
-  when: disable_public_repos|bool
+  when: disable_public_repos | default(false, true) | bool
 
 - name: Install extra repos
   ansible.builtin.copy:
