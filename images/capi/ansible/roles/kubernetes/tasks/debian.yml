@@ -32,6 +32,7 @@
 - name: Install Kubernetes
   ansible.builtin.apt:
     name: "{{ packages }}"
+    allow_downgrade: true
   vars:
     packages:
       - kubelet={{ kubernetes_deb_version }}
