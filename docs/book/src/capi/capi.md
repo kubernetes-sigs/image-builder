@@ -6,7 +6,7 @@ The Image Builder can be used to build images intended for use with Kubernetes [
 
 [Packer](https://www.packer.io) and [Ansible](https://github.com/ansible/ansible) are used for building these images. This tooling has been forked and extended from the [Wardroom](https://github.com/heptiolabs/wardroom) project.
 
-- [Packer](https://www.packer.io/intro/getting-started/install.html) version >= 1.6.0
+- [Packer](https://www.packer.io/intro/getting-started/install.html) version `1.9.5` (the default pinned by `hack/ensure-packer.sh`; see [Packer version and Bring Your Own Packer](./packer.md) to use a different version)
 - [Goss plugin for Packer](https://github.com/YaleUniversity/packer-provisioner-goss) version >= 1.2.0
 - [Ansible](http://docs.ansible.com/ansible/latest/intro_installation.html) version >= 2.10.0
 

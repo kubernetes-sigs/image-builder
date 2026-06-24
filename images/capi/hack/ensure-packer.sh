@@ -20,14 +20,36 @@ set -o pipefail
 
 [[ -n ${DEBUG:-} ]] && set -o xtrace
 
-# **DO NOT** change the Packer version unless it is available under MPL v2.0.
-_version="1.9.5"
+# **DO NOT** change the default Packer version unless it is available under
+# MPL v2.0. HashiCorp relicensed Packer under the BUSL starting with v1.10.0,
+# so 1.9.5 is the last MPL-2.0 release.
+#
+# Users who want to "bring their own Packer" can either:
+#   * set PACKER_BIN=/path/to/packer to point at an existing binary, in which
+#     case this script will leave it alone, or
+#   * set PACKER_VERSION=x.y.z to download a different version into .local/bin
+#     (combine with IB_ALLOW_ANY_PACKER=1 to accept a non-default Packer
+#     already on PATH instead of "downgrading" it to the pinned version).
+_default_version="1.9.5"
+_version="${PACKER_VERSION:-${_default_version}}"
+_allow_any="${IB_ALLOW_ANY_PACKER:-0}"
 
 # Change directories to the parent directory of the one in which this
 # script is located.
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
 
 source hack/utils.sh
+
+# If the user has explicitly pointed us at a Packer binary, trust it.
+if [ -n "${PACKER_BIN:-}" ]; then
+  if [ ! -x "${PACKER_BIN}" ]; then
+    echo "PACKER_BIN=${PACKER_BIN} is not an executable file" >&2
+    exit 1
+  fi
+  echo "Using user-provided Packer at ${PACKER_BIN}"
+  "${PACKER_BIN}" version || true
+  exit 0
+fi
 
 # Some Linux distributions such as Fedora, RHEL, CentOS have a tool
 # called packer installed by default at /usr/sbin, which will pass the
@@ -41,21 +63,30 @@ source hack/utils.sh
 
 if (command -v packer) >/dev/null 2>&1; then
   echo "Packer is already installed, checking version..."
-  # if it's not the hashicorp packer, return "unexpected packer found"
-  if !(timeout 10 packer version) >/dev/null 2>&1; then
-    echo "unexpected packer found";
-    echo "downloading hashicorp packer version v1.9.5"
-  fi
-  existing_packer_version=$(packer version | head -1 | cut -d 'v' -f 2; exit 0)
-  echo "existing packer version: $existing_packer_version"
-  if [ "$existing_packer_version" != "$_version" ]; then
-    echo "unsupported packer version ($existing_packer_version) found"
-    echo "current packer version: $existing_packer_version is not supported"
-    echo "Downgrading packer to ${_version}"
+  # if it's not the hashicorp packer, fall through to install the pinned version
+  if ! (timeout 10 packer version) >/dev/null 2>&1; then
+    echo "unexpected packer found (no usable 'packer version' output)"
+    echo "downloading hashicorp packer version v${_version}"
   else
-    echo "Packer version is as expected"
-    echo "Packer version $existing_packer_version is already installed"
-    exit 0
+    existing_packer_version=$(packer version | head -1 | cut -d 'v' -f 2; exit 0)
+    echo "existing packer version: $existing_packer_version"
+    if [ "$existing_packer_version" = "$_version" ]; then
+      echo "Packer version $existing_packer_version is already installed"
+      exit 0
+    fi
+    if [ "$_allow_any" = "1" ]; then
+      echo "IB_ALLOW_ANY_PACKER=1 set; accepting existing packer ${existing_packer_version} (expected ${_version})"
+      # Warn loudly if the user has opted into a post-MPL release.
+      if [ "$(printf '%s\n1.10.0\n' "$existing_packer_version" | sort -V | head -n1)" != "$existing_packer_version" ] \
+         || [ "$existing_packer_version" = "1.10.0" ]; then
+        echo "WARNING: Packer >= 1.10.0 is licensed under the BUSL, not MPL-2.0."
+        echo "         You are responsible for ensuring your use complies with that license."
+      fi
+      exit 0
+    fi
+    echo "unsupported packer version ($existing_packer_version) found"
+    echo "current packer version: $existing_packer_version is not ${_version}"
+    echo "Installing packer ${_version} into .local/bin (set IB_ALLOW_ANY_PACKER=1 to keep the existing one)"
   fi
 fi
 

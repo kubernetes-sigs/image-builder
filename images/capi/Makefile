@@ -25,7 +25,22 @@ export DOCKER_CLI_EXPERIMENTAL := enabled
 export PATH := $(PATH):$(CURDIR)/.local/bin
 # Defining the canonical location of the Packer binary which will be used for
 # `packer init`, `packer build` and `packer validate` commands.
-PACKER=$(shell if [ $$(command -v packer | grep -v sbin) ]; then echo $$(command -v packer); else echo $(CURDIR)/.local/bin/packer; fi)
+#
+# Resolution order:
+#   1. $PACKER_BIN (explicit user override for "bring your own Packer")
+#   2. $(CURDIR)/.local/bin/packer if present (installed by hack/ensure-packer.sh)
+#   3. `packer` on PATH (excluding the unrelated cracklib /usr/sbin/packer)
+#   4. $(CURDIR)/.local/bin/packer fallback (will be created by `make deps-*`)
+PACKER ?= $(shell \
+	if [ -n "$$PACKER_BIN" ]; then \
+		echo "$$PACKER_BIN"; \
+	elif [ -x "$(CURDIR)/.local/bin/packer" ]; then \
+		echo "$(CURDIR)/.local/bin/packer"; \
+	elif [ -n "$$(command -v packer | grep -v sbin)" ]; then \
+		command -v packer | grep -v sbin; \
+	else \
+		echo "$(CURDIR)/.local/bin/packer"; \
+	fi)
 
 export IB_VERSION ?= $(shell git describe --dirty)
 
