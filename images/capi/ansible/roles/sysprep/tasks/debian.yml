@@ -81,12 +81,12 @@
       - /etc/apt/sources.list.d
     patterns: "*.list.disabled"
   register: repo_files
-  when: disable_public_repos|default(false)|bool and reenable_public_repos|default(true)|bool
+  when: (disable_public_repos | default(false, true) | bool) and (reenable_public_repos | default(true, true) | bool)
 
 - name: Enable repos
   ansible.builtin.command: mv {{ item.path }} {{ item.path | regex_replace('.disabled') }}
   loop: "{{ repo_files.files }}"
-  when: disable_public_repos|default(false)|bool and reenable_public_repos|default(true)|bool
+  when: (disable_public_repos | default(false, true) | bool) and (reenable_public_repos | default(true, true) | bool)
 
 - name: Remove templated apt.conf.d/90proxy used for http(s)_proxy support
   ansible.builtin.file:
