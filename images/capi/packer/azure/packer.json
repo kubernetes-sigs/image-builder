@@ -88,7 +88,7 @@
   "provisioners": [
     {
       "ansible_env_vars": [
-        "ANSIBLE_SSH_ARGS={{user `existing_ansible_ssh_args`}} {{user `ansible_common_ssh_args`}} -o ServerAliveInterval=20 -o ServerAliveCountMax=3 -o ConnectTimeout=30 -o ConnectionAttempts=5 -o TCPKeepAlive=yes"
+        "ANSIBLE_SSH_ARGS={{user `existing_ansible_ssh_args`}} {{user `ansible_common_ssh_args`}} -o ControlMaster=auto -o ControlPersist=600s -o ServerAliveInterval=20 -o ServerAliveCountMax=3 -o ConnectTimeout=30 -o ConnectionAttempts=5 -o TCPKeepAlive=yes"
       ],
       "extra_arguments": [
         "--extra-vars",
@@ -107,7 +107,7 @@
     },
     {
       "ansible_env_vars": [
-        "ANSIBLE_SSH_ARGS={{user `existing_ansible_ssh_args`}} {{user `ansible_common_ssh_args`}} -o ServerAliveInterval=20 -o ServerAliveCountMax=3 -o ConnectTimeout=30 -o ConnectionAttempts=5 -o TCPKeepAlive=yes"
+        "ANSIBLE_SSH_ARGS={{user `existing_ansible_ssh_args`}} {{user `ansible_common_ssh_args`}} -o ControlMaster=auto -o ControlPersist=600s -o ServerAliveInterval=20 -o ServerAliveCountMax=3 -o ConnectTimeout=30 -o ConnectionAttempts=5 -o TCPKeepAlive=yes"
       ],
       "extra_arguments": [
         "--extra-vars",
