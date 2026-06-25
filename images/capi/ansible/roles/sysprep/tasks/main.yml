@@ -127,8 +127,9 @@
 # A shallow search in /tmp and /var/tmp is used to declare which files or
 # directories will be removed as part of resetting temp space. The reason
 # a state absent->directory task isn't used is because Ansible's own data
-# directory on the remote host(s) is /tmp/.ansible. Thus, by removing /tmp,
-# Ansible can no longer access the remote host.
+# directory on the remote host(s) is /tmp/.ansible, and module payloads may
+# use temporary paths such as /tmp/ansible_*. Thus, by removing /tmp, Ansible
+# can no longer access the remote host.
 - name: Find temp files
   ansible.builtin.find:
     depth: 1
@@ -137,6 +138,11 @@
       - /tmp
       - /var/tmp
     pattern: "*"
+    excludes:
+      - .ansible
+      - .ansible_*
+      - ansible_*
+      - ansible-*
   register: temp_files
 
 - name: Reset temp space
