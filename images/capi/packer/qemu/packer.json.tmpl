@@ -92,6 +92,7 @@
         "--scp-extra-args",
         "{{user `ansible_scp_extra_args`}}"
       ],
+      "max_retries": 5,
       "playbook_file": "./ansible/firstboot.yml",
       "type": "ansible",
       "user": "builder"
@@ -120,6 +121,7 @@
         "--scp-extra-args",
         "{{user `ansible_scp_extra_args`}}"
       ],
+      "max_retries": 5,
       "playbook_file": "./ansible/node.yml",
       "type": "ansible",
       "user": "builder"
