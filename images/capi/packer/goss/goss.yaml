@@ -4,3 +4,4 @@ gossfile:
   goss-service.yaml: {}
   goss-package.yaml: {}
   goss-files.yaml: {}
+  goss-image-hygiene.yaml: {}
