@@ -178,29 +178,38 @@
     path: /etc/ssh
     pattern: ssh_host_*
   register: ssh_host_keys
+  when: not (defer_ssh_cleanup_to_packer | bool)
 
 - name: Remove SSH host keys
   ansible.builtin.file:
     state: absent
     path: "{{ item.path }}"
-  loop: "{{ ssh_host_keys.files }}"
+  loop: "{{ ssh_host_keys.files | default([]) }}"
+  when: not (defer_ssh_cleanup_to_packer | bool)
 
 - name: Remove SSH authorized users
   ansible.builtin.file:
     state: absent
     path: "{{ item.path }}"
   loop:
-    - { path: /root/.ssh/authorized_keys }
-    - { path: "/home/{{ ansible_facts['env'].SUDO_USER | default(ansible_facts['user_id']) }}/.ssh/authorized_keys" }
-  when: ansible_facts['os_family'] != "Flatcar"
+    - path: /root/.ssh/authorized_keys
+    - path: >-
+        /home/{{
+        ansible_facts['env'].SUDO_USER | default(ansible_facts['user_id'])
+        }}/.ssh/authorized_keys
+  when:
+    - ansible_facts['os_family'] != "Flatcar"
+    - not (defer_ssh_cleanup_to_packer | bool)
 
 - name: Remove SSH authorized users for Flatcar
   ansible.builtin.file:
     state: absent
     path: "{{ item.path }}"
   loop:
-    - { path: /root/.ssh/authorized_keys }
-  when: ansible_facts['os_family'] == "Flatcar"
+    - path: /root/.ssh/authorized_keys
+  when:
+    - ansible_facts['os_family'] == "Flatcar"
+    - not (defer_ssh_cleanup_to_packer | bool)
 
 - name: Truncate all remaining log files in /var/log
   ansible.builtin.shell: |
