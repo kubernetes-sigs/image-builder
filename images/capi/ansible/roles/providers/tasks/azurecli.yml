@@ -34,6 +34,21 @@
       args:
         creates: /etc/apt/keyrings/microsoft.gpg
 
+    - name: Check for legacy Microsoft apt source
+      ansible.builtin.find:
+        paths: /etc/apt/sources.list.d
+        patterns: "*.list"
+        contains: ".*packages\\.microsoft\\.com.*"
+      register: providers_ms_legacy_source
+
+    - name: Trust Microsoft key for legacy Microsoft apt repositories
+      ansible.builtin.copy:
+        src: /etc/apt/keyrings/microsoft.gpg
+        dest: /etc/apt/trusted.gpg.d/microsoft.gpg
+        remote_src: true
+        mode: "0644"
+      when: providers_ms_legacy_source.matched > 0
+
     - name: Find Ubuntu Version
       ansible.builtin.command:
         cmd: lsb_release -cs
