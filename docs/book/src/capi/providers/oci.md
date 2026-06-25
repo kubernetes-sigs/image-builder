@@ -45,6 +45,7 @@ list, and greater explanation can be found in the
 | `subnet_ocid` |  The OCID of the subnet within which a new instance is launched and provisioned. |  | Yes |
 | `availability_domain` | The name of the Availability Domain within which a new instance is launched and provisioned. The names of the Availability Domains have a prefix that is specific to your tenancy. |  | Yes |
 | `shape` | An OCI region. Overrides value provided by the OCI config file if present. This cannot be used along with the use_instance_principals key. | `VM.Standard.E4.Flex` | No |
+| `instance_options_are_legacy_imds_endpoints_disabled` | Whether to disable legacy IMDS endpoints on launched build instances. | `true` | No |
 
 #### Steps to create Packer VAR file
 

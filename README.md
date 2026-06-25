@@ -21,13 +21,13 @@ The table below shows the currently provided operating systems for each provider
 - ❌: Image is not available for the provider
 
 | OS                | ami | azure | digitalocean | gce | hcloud | huaweicloud | maas | nutanix | oci | openstack | outscale | ova | oxide | powervs | proxmox | qemu | raw | scaleway | vultr |
-|-------------------|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|
+|-------------------|----|----|----|----|----|----|----|----|----|----|---|----|----|----|----|----|----|----|----|
 | AlmaLinux 9       | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | Amazon Linux 2    | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | Amazon Linux 2023 | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | Azure Linux 3     | ❌ | 💙 | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | CentOS 9          | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ | ❌ | ✅ | ❌ | ❌ | ❌ |
-| Flatcar           | ✅ | 💙 | ❌ | ❌ | ✅ | ❌ | ❌ | ✅ | ❌ | ✅ | ❌ | 💙 | ❌ | ❌ | ✅ | ✅ | ✅ | ❌ | ❌ |
+| Flatcar           | ✅ | 💙 | ❌ | ❌ | ✅ | ❌ | ❌ | ✅ | ❌ | ✅ | ✅ | 💙 | ❌ | ❌ | ✅ | ✅ | ✅ | ❌ | ❌ |
 | Oracle Linux 9    | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | Photon 4          | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | Photon 5          | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | 💙 | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |

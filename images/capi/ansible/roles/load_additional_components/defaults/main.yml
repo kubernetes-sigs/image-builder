@@ -13,15 +13,15 @@
 # limitations under the License.
 ---
 
-additional_registry_images: ""
+additional_registry_images: false
 additional_registry_images_list: ""
-additional_url_images: ""
+additional_url_images: false
 additional_url_images_list: ""
-additional_executables: ""
+additional_executables: false
 additional_executables_list: ""
 additional_executables_destination_path: ""
 
-additional_s3: ""
+additional_s3: false
 additional_s3_endpoint: ""
 additional_s3_access: ""
 additional_s3_secret: ""
