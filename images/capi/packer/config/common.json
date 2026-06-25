@@ -12,6 +12,7 @@
   "https_proxy": "",
   "netplan_removal_excludes": "",
   "no_proxy": "",
+  "node_ansible_tmpdir": "",
   "node_custom_roles_post": "",
   "node_custom_roles_post_sysprep": "",
   "node_custom_roles_pre": "",

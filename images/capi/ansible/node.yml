@@ -19,9 +19,20 @@
     node_custom_roles_pre: ""
     node_custom_roles_post: ""
     custom_role_names: ""
+    node_ansible_tmpdir: ""
     system: linux
     arch_uname: "{{ ansible_facts['architecture'] }}"
     arch: "{{ {'x86_64': 'amd64', 'amd64': 'amd64', 'aarch64': 'arm64', 'arm64': 'arm64', 'ppc64le': 'ppc64le'}.get(arch_uname, 'unsupported') }}"
+    node_environment:
+      http_proxy: "{{ http_proxy | default('') }}"
+      https_proxy: "{{ https_proxy | default('') }}"
+      no_proxy: "{{ no_proxy | default('') }}"
+      HTTP_PROXY: "{{ http_proxy | default('') }}"
+      HTTPS_PROXY: "{{ https_proxy | default('') }}"
+      NO_PROXY: "{{ no_proxy | default('') }}"
+      PYTHONPATH: "{{ python_path }}"
+    node_tmpdir_environment:
+      TMPDIR: "{{ node_ansible_tmpdir }}"
 
   tasks:
     - name: Include pre-node custom roles
@@ -77,11 +88,9 @@
         loop_var: role
       when: node_custom_roles_post_sysprep != ""
 
-  environment:
-    http_proxy: "{{ http_proxy | default('') }}"
-    https_proxy: "{{ https_proxy | default('') }}"
-    no_proxy: "{{ no_proxy | default('') }}"
-    HTTP_PROXY: "{{ http_proxy | default('') }}"
-    HTTPS_PROXY: "{{ https_proxy | default('') }}"
-    NO_PROXY: "{{ no_proxy | default('') }}"
-    PYTHONPATH: "{{ python_path }}"
+  environment: >-
+    {{
+      node_environment | combine(node_tmpdir_environment)
+      if node_ansible_tmpdir | length > 0
+      else node_environment
+    }}
