@@ -55,7 +55,8 @@
     },
     {
       "ansible_env_vars": [
-        "ANSIBLE_SSH_ARGS='{{user `existing_ansible_ssh_args`}} {{user `ansible_common_ssh_args`}}'"
+        "ANSIBLE_SSH_ARGS='{{user `existing_ansible_ssh_args`}} {{user `ansible_common_ssh_args`}}'",
+        "ANSIBLE_TIMEOUT={{user `ansible_timeout`}}"
       ],
       "extra_arguments": [
         "--scp-extra-args",
@@ -67,6 +68,7 @@
         "--extra-vars",
         "{{user `ansible_user_vars`}}"
       ],
+      "max_retries": 5,
       "playbook_file": "./ansible/node.yml",
       "type": "ansible",
       "user": "core"
@@ -113,6 +115,7 @@
   "variables": {
     "ansible_common_vars": "ansible_python_interpreter=/usr/bin/python3",
     "ansible_extra_vars": "",
+    "ansible_timeout": "60",
     "ansible_user_vars": "",
     "attach_config_drive": "false",
     "build_timestamp": "{{timestamp}}",
