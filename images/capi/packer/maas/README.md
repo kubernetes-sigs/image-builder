@@ -41,6 +41,12 @@ ARCH=arm64 PACKER_FLAGS="--var 'kubernetes_rpm_version=1.30.5' --var 'kubernetes
 P.S: In order to change disk size(defaults to 20GB as of 31.10.22) you can update PACKER_FLAGS with:
 --var 'disk_size=<disk size in mb>'
 
+Ubuntu autoinstall builds use the `ubuntu_repo` and `ubuntu_security_repo` Packer variables while rendering the installer user-data. For example:
+
+```
+PACKER_FLAGS="--var 'ubuntu_repo=http://mirror.example.com/ubuntu' --var 'ubuntu_security_repo=http://security.example.com/ubuntu'" make build-maas-ubuntu-2404-efi
+```
+
 # Uploading to MaaS
 
 To upload the generates images to MaaS, run the following command.
