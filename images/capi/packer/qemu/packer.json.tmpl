@@ -80,6 +80,8 @@
     {
       "ansible_env_vars": [
         "ANSIBLE_SSH_ARGS='{{user `existing_ansible_ssh_args`}} {{user `ansible_common_ssh_args`}}'",
+        "{{if user `ansible_collections_path`}}ANSIBLE_COLLECTIONS_PATH={{user `ansible_collections_path`}}{{end}}",
+        "{{if user `ansible_collections_path`}}ANSIBLE_COLLECTIONS_PATHS={{user `ansible_collections_path`}}{{end}}",
         "KUBEVIRT={{user `kubevirt`}}"
       ],
       "extra_arguments": [
@@ -109,6 +111,8 @@
       "pause_before": "30s",
       "ansible_env_vars": [
         "ANSIBLE_SSH_ARGS='{{user `existing_ansible_ssh_args`}} {{user `ansible_common_ssh_args`}}'",
+        "{{if user `ansible_collections_path`}}ANSIBLE_COLLECTIONS_PATH={{user `ansible_collections_path`}}{{end}}",
+        "{{if user `ansible_collections_path`}}ANSIBLE_COLLECTIONS_PATHS={{user `ansible_collections_path`}}{{end}}",
         "KUBEVIRT={{user `kubevirt`}}"
       ],
       "extra_arguments": [
@@ -179,6 +183,7 @@
   "variables": {
     "accelerator": "kvm",
     "ansible_common_vars": "",
+    "ansible_collections_path": "",
     "ansible_extra_vars": "ansible_python_interpreter=/usr/bin/python3",
     "ansible_user_vars": "",
     "artifact_name": "{{user `build_name`}}-kube-{{user `kubernetes_semver`}}",

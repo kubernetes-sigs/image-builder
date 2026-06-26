@@ -56,7 +56,9 @@
     {
       "ansible_env_vars": [
         "ANSIBLE_SSH_ARGS='{{user `existing_ansible_ssh_args`}} {{user `ansible_common_ssh_args`}}'",
-        "ANSIBLE_TIMEOUT={{user `ansible_timeout`}}"
+        "ANSIBLE_TIMEOUT={{user `ansible_timeout`}}",
+        "{{if user `ansible_collections_path`}}ANSIBLE_COLLECTIONS_PATH={{user `ansible_collections_path`}}{{end}}",
+        "{{if user `ansible_collections_path`}}ANSIBLE_COLLECTIONS_PATHS={{user `ansible_collections_path`}}{{end}}"
       ],
       "extra_arguments": [
         "--scp-extra-args",
@@ -113,6 +115,7 @@
     }
   ],
   "variables": {
+    "ansible_collections_path": "",
     "ansible_common_vars": "ansible_python_interpreter=/usr/bin/python3",
     "ansible_extra_vars": "",
     "ansible_timeout": "60",
