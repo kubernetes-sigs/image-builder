@@ -42,6 +42,24 @@
     mode: "0644"
   when: http_proxy is defined or https_proxy is defined
 
+- name: Trust Microsoft key for legacy Microsoft apt repositories
+  block:
+    - name: Check for legacy Microsoft apt source
+      ansible.builtin.find:
+        paths: /etc/apt/sources.list.d
+        patterns:
+          - "*.list"
+          - "*.sources"
+        contains: ".*packages\\.microsoft\\.com.*"
+      register: setup_ms_legacy_source
+
+    - name: Download Microsoft Package Repository Key for legacy sources
+      ansible.builtin.get_url:
+        url: https://packages.microsoft.com/keys/microsoft.asc
+        dest: /etc/apt/trusted.gpg.d/microsoft.asc
+        mode: "0644"
+      when: setup_ms_legacy_source.matched > 0
+
 - name: Ensure cloud-final is in a running state
   ansible.builtin.service:
     name: cloud-final
