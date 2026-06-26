@@ -230,7 +230,7 @@
 
 - name: Delete containerd-wasm-shims tarballs
   ansible.builtin.file:
-    path: /tmp/{{ item }}_wasm_shims.tar.gz
+    path: /tmp/{{ item }}_wasm_shim.tar.gz
     state: absent
   when: containerd_wasm_shims_runtimes | length > 0
   loop: "{{ containerd_wasm_shims_runtimes | split(',') }}"
