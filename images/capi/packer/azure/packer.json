@@ -52,6 +52,8 @@
         "resource_group": "{{user `resource_group_name`}}",
         "storage_account_type": "{{user `storage_account_type`}}"
       },
+      "ssh_keep_alive_interval": "30s",
+      "ssh_read_write_timeout": "10m",
       "ssh_username": "packer",
       "subscription_id": "{{user `subscription_id`}}",
       "type": "azure-arm",
@@ -87,7 +89,8 @@
   "provisioners": [
     {
       "ansible_env_vars": [
-        "ANSIBLE_SSH_ARGS='{{user `existing_ansible_ssh_args`}} {{user `ansible_common_ssh_args`}}'"
+        "ANSIBLE_SSH_ARGS={{user `existing_ansible_ssh_args`}} {{user `ansible_common_ssh_args`}} -o ControlMaster=auto -o ControlPersist=600s -o ServerAliveInterval=20 -o ServerAliveCountMax=3 -o ConnectTimeout=30 -o ConnectionAttempts=5 -o TCPKeepAlive=yes",
+        "ANSIBLE_PIPELINING=True"
       ],
       "extra_arguments": [
         "--extra-vars",
@@ -101,11 +104,13 @@
       ],
       "playbook_file": "./ansible/python.yml",
       "type": "ansible",
+      "use_proxy": false,
       "user": "packer"
     },
     {
       "ansible_env_vars": [
-        "ANSIBLE_SSH_ARGS='{{user `existing_ansible_ssh_args`}} {{user `ansible_common_ssh_args`}}'"
+        "ANSIBLE_SSH_ARGS={{user `existing_ansible_ssh_args`}} {{user `ansible_common_ssh_args`}} -o ControlMaster=auto -o ControlPersist=600s -o ServerAliveInterval=20 -o ServerAliveCountMax=3 -o ConnectTimeout=30 -o ConnectionAttempts=5 -o TCPKeepAlive=yes",
+        "ANSIBLE_PIPELINING=True"
       ],
       "extra_arguments": [
         "--extra-vars",
@@ -121,6 +126,7 @@
       ],
       "playbook_file": "./ansible/node.yml",
       "type": "ansible",
+      "use_proxy": false,
       "user": "packer"
     },
     {
