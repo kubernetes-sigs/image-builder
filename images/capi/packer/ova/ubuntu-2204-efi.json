@@ -4,7 +4,7 @@
   "boot_media_path": "/media/HTTP",
   "build_name": "ubuntu-2204-efi",
   "cd_content_location": "./packer/ova/linux/{{user `distro_name`}}/http/22.04.efi/*",
-  "cd_label": "cidata",
+  "cd_label": "CIDATA",
   "distro_arch": "amd64",
   "distro_name": "ubuntu",
   "distro_version": "22.04",
