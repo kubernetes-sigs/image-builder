@@ -14,9 +14,14 @@ autoinstall:
   packages:
     - qemu-guest-agent
   apt:
-    mirror-selection:
-      primary:
-          - uri: http://archive.ubuntu.com/ubuntu
+    preserve_sources_list: false
+    primary:
+      - arches: [default]
+        uri: $UBUNTU_REPO
+    security:
+      - arches: [default]
+        uri: $UBUNTU_SECURITY_REPO
+    geoip: false
   # Create a single-partition with no swap space. Kubernetes
   # really dislikes the idea of anyone else managing memory.
   # For more information on how partitioning is configured,
