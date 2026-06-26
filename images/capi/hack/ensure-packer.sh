@@ -20,14 +20,36 @@ set -o pipefail
 
 [[ -n ${DEBUG:-} ]] && set -o xtrace
 
-# **DO NOT** change the Packer version unless it is available under MPL v2.0.
-_version="1.9.5"
+# **DO NOT** change the default Packer version unless it is available under
+# MPL v2.0. HashiCorp relicensed Packer under the BUSL starting with v1.10.0,
+# so 1.9.5 is the last MPL-2.0 release.
+#
+# Users who want to "bring their own Packer" can either:
+#   * set PACKER_BIN=/path/to/packer to point at an existing binary, in which
+#     case this script will leave it alone, or
+#   * set PACKER_VERSION=x.y.z to download a different version into .local/bin
+#     (combine with IB_ALLOW_ANY_PACKER=1 to accept a non-default Packer
+#     already on PATH instead of "downgrading" it to the pinned version).
+_default_version="1.9.5"
+_version="${PACKER_VERSION:-${_default_version}}"
+_allow_any="${IB_ALLOW_ANY_PACKER:-0}"
 
 # Change directories to the parent directory of the one in which this
 # script is located.
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
 
 source hack/utils.sh
+
+# If the user has explicitly pointed us at a Packer binary, trust it.
+if [ -n "${PACKER_BIN:-}" ]; then
+  if [ ! -x "${PACKER_BIN}" ]; then
+    echo "PACKER_BIN=${PACKER_BIN} is not an executable file" >&2
+    exit 1
+  fi
+  echo "Using user-provided Packer at ${PACKER_BIN}"
+  "${PACKER_BIN}" version || true
+  exit 0
+fi
 
 # Some Linux distributions such as Fedora, RHEL, CentOS have a tool
 # called packer installed by default at /usr/sbin, which will pass the
@@ -41,26 +63,52 @@ source hack/utils.sh
 
 if (command -v packer) >/dev/null 2>&1; then
   echo "Packer is already installed, checking version..."
-  # if it's not the hashicorp packer, return "unexpected packer found"
-  if !(timeout 10 packer version) >/dev/null 2>&1; then
-    echo "unexpected packer found";
-    echo "downloading hashicorp packer version v1.9.5"
-  fi
-  existing_packer_version=$(packer version | head -1 | cut -d 'v' -f 2; exit 0)
-  echo "existing packer version: $existing_packer_version"
-  if [ "$existing_packer_version" != "$_version" ]; then
-    echo "unsupported packer version ($existing_packer_version) found"
-    echo "current packer version: $existing_packer_version is not supported"
-    echo "Downgrading packer to ${_version}"
+  # if it's not the hashicorp packer, fall through to install the pinned version
+  if ! (timeout 10 packer version) >/dev/null 2>&1; then
+    echo "unexpected packer found (no usable 'packer version' output)"
+    echo "downloading hashicorp packer version v${_version}"
   else
-    echo "Packer version is as expected"
-    echo "Packer version $existing_packer_version is already installed"
-    exit 0
+    existing_packer_version=$(packer version | head -1 | cut -d 'v' -f 2; exit 0)
+    echo "existing packer version: $existing_packer_version"
+    if [ "$existing_packer_version" = "$_version" ]; then
+      echo "Packer version $existing_packer_version is already installed"
+      exit 0
+    fi
+    if [ "$_allow_any" = "1" ]; then
+      echo "IB_ALLOW_ANY_PACKER=1 set; accepting existing packer ${existing_packer_version} (expected ${_version})"
+      # Warn loudly if the user has opted into a post-MPL release.
+      if [ "$(printf '%s\n1.10.0\n' "$existing_packer_version" | sort -V | head -n1)" != "$existing_packer_version" ] \
+         || [ "$existing_packer_version" = "1.10.0" ]; then
+        echo "WARNING: Packer >= 1.10.0 is licensed under the BUSL, not MPL-2.0."
+        echo "         You are responsible for ensuring your use complies with that license."
+      fi
+      exit 0
+    fi
+    echo "unsupported packer version ($existing_packer_version) found"
+    echo "current packer version: $existing_packer_version is not ${_version}"
+    echo "Installing packer ${_version} into .local/bin (set IB_ALLOW_ANY_PACKER=1 to keep the existing one)"
   fi
 fi
 
 echo "Installing packer v${_version} in .local/bin"
-mkdir -p .local/bin && cd .local/bin
+mkdir -p .local/bin
+
+# CI runs many `make build-*` targets in parallel, and they all invoke this
+# script at once. Serialize the install with an advisory lock so concurrent
+# runs don't clobber each other's downloads in .local/bin. flock isn't
+# available everywhere (notably macOS), so fall back to running without it;
+# the atomic install below still prevents a half-written binary from being
+# observed by a sibling.
+if command -v flock >/dev/null 2>&1; then
+  exec 9>".local/bin/.packer-install.lock"
+  flock 9
+  # A sibling may have finished the install while we waited for the lock.
+  if [ -x .local/bin/packer ] \
+     && [ "$(.local/bin/packer version 2>/dev/null | head -1 | cut -d 'v' -f 2)" = "${_version}" ]; then
+    echo "Packer v${_version} was installed by a concurrent run; nothing to do"
+    exit 0
+  fi
+fi
 
 SED="sed"
 if command -v gsed >/dev/null; then
@@ -71,14 +119,25 @@ if ! (${SED} --version 2>&1 | grep -q GNU); then
   exit 1
 fi
 
+# Download and unpack in a private temp directory on the same filesystem as
+# .local/bin, then atomically rename the finished binary into place. This
+# guarantees a concurrent run never reads or executes a partially written
+# packer binary (or a clobbered .zip / SHA256SUMS file).
+_workdir="$(mktemp -d "${PWD}/.local/bin/.packer-install.XXXXXX")"
+trap 'rm -rf "${_workdir}"' EXIT
+
 _chkfile="packer_${_version}_SHA256SUMS"
 _chk_url="https://releases.hashicorp.com/packer/${_version}/${_chkfile}"
 _zipfile="packer_${_version}_${HOSTOS}_${HOSTARCH}.zip"
 _zip_url="https://releases.hashicorp.com/packer/${_version}/${_zipfile}"
-curl -SsLO "${_chk_url}"
-curl -SsLO "${_zip_url}"
-${SED} -i -n "/${HOSTOS}_${HOSTARCH}/p" "${_chkfile}"
-checksum_sha256 "${_chkfile}"
-unzip -o "${_zipfile}"
-rm -f "${_chkfile}" "${_zipfile}"
-echo "'packer' has been installed to $(pwd), make sure this directory is in your \$PATH"
+(
+  cd "${_workdir}"
+  curl -SsLO "${_chk_url}"
+  curl -SsLO "${_zip_url}"
+  ${SED} -i -n "/${HOSTOS}_${HOSTARCH}/p" "${_chkfile}"
+  checksum_sha256 "${_chkfile}"
+  unzip -o "${_zipfile}"
+)
+chmod +x "${_workdir}/packer"
+mv -f "${_workdir}/packer" .local/bin/packer
+echo "'packer' has been installed to ${PWD}/.local/bin, make sure this directory is in your \$PATH"
