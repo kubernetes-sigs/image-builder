@@ -5,6 +5,7 @@
         "build_date": "{{isotime}}",
         "build_timestamp": "{{user `build_timestamp`}}",
         "creationTimestamp": "{{isotime \"2006-01-02T15:04:05Z\"}}",
+        "image_builder_commit": "{{user `ib_commit`}}",
         "image_builder_version": "{{user `ib_version`}}",
         "kubernetes_version": "{{user `kubernetes_semver`}}",
         "os_version": "{{user `image_sku`}}"
@@ -99,6 +100,8 @@
         "--extra-vars",
         "{{user `ansible_user_vars`}}",
         "--extra-vars",
+        "image_builder_commit={{user `ib_commit`}}",
+        "--extra-vars",
         "gmsa_keyvault_url={{user `gmsa_keyvault_url`}}"
       ],
       "max_retries": 1,
@@ -185,6 +188,7 @@
     "direct_shared_gallery_image_id": "",
     "exclude_from_latest": "false",
     "gmsa_keyvault_url": "https://kubernetesartifacts.azureedge.net/ccgakvplugin/v1.1.4/binaries/windows-gmsa-ccgakvplugin-v1.1.4.zip",
+    "ib_commit": "{{env `IB_COMMIT`}}",
     "ib_version": "{{env `IB_VERSION`}}",
     "image_offer": "",
     "image_publisher": "",
