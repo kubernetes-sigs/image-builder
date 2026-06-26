@@ -52,26 +52,26 @@
     - name: Find Ubuntu Version
       ansible.builtin.command:
         cmd: lsb_release -cs
-      register: ubuntu_version
+      register: providers_ubuntu_version
       changed_when: false
 
     - name: Find Host Architecture
       ansible.builtin.command:
         cmd: dpkg --print-architecture
-      register: host_arch
+      register: providers_host_arch
       changed_when: false
 
     # TODO: drop once packages.microsoft.com publishes a resolute repo
     - name: Map unsupported codenames to nearest supported codename
       ansible.builtin.set_fact:
-        azure_cli_codename: "{{ 'noble' if ubuntu_version.stdout == 'resolute' else ubuntu_version.stdout }}"
+        providers_azure_cli_codename: "{{ 'noble' if providers_ubuntu_version.stdout == 'resolute' else providers_ubuntu_version.stdout }}"
 
     - name: Add Microsoft Package Repository
       ansible.builtin.apt_repository:
         repo: >-
-          deb [arch={{ host_arch.stdout }} signed-by=/etc/apt/keyrings/microsoft.gpg]
+          deb [arch={{ providers_host_arch.stdout }} signed-by=/etc/apt/keyrings/microsoft.gpg]
           https://packages.microsoft.com/repos/azure-cli/
-          {{ azure_cli_codename }} main
+          {{ providers_azure_cli_codename }} main
         state: present
         update_cache: true
 
