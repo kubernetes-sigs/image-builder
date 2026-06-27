@@ -137,6 +137,10 @@
       - /tmp
       - /var/tmp
     pattern: "*"
+    excludes:
+      - .ansible
+      - ansible-tmp-*
+      - ansible_*_payload_*
   register: temp_files
 
 - name: Reset temp space
