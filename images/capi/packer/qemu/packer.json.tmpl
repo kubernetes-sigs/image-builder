@@ -70,6 +70,18 @@
   ],
   "provisioners": [
     {
+      "expect_disconnect": true,
+      "environment_vars": [
+        "WAIT_FOR_CLOUDINIT={{user `wait_for_cloudinit`}}"
+      ],
+      "inline": [
+        "if [ \"$WAIT_FOR_CLOUDINIT\" != \"true\" ]; then exit 0; fi",
+        "cloud-init status --wait"
+      ],
+      "inline_shebang": "/bin/bash -e",
+      "type": "shell"
+    },
+    {
       "environment_vars": [
         "PYPY_HTTP_SOURCE={{user `pypy_http_source`}}"
       ],
@@ -103,7 +115,8 @@
         "sudo reboot now"
       ],
       "inline_shebang": "/bin/bash -e",
-      "type": "shell"
+      "type": "shell",
+      "pause_after": "{{user `extra_reboot_timeout`}}s"
     },
     {
       "pause_before": "30s",
@@ -231,6 +244,8 @@
     "ssh_password": "$SSH_PASSWORD",
     "ssh_username": "builder",
     "vm_name": "{{user `build_name`}}-kube-{{user `kubernetes_semver`}}",
-    "vnc_bind_address": "127.0.0.1"
+    "vnc_bind_address": "127.0.0.1",
+    "wait_for_cloudinit": "false",
+    "extra_reboot_timeout": "1"
   }
 }
