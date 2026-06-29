@@ -103,7 +103,15 @@
     - name: Include custom post-configuration roles
       ansible.builtin.include_role:
         name: "{{ role }}"
-      loop: "{{ custom_role_names.split() + node_custom_roles_post.split() }}"
+      loop: >-
+        {{
+          (
+            custom_role_names.split()
+            | reject('in', node_custom_roles_pre.split())
+            | list
+          )
+          + node_custom_roles_post.split()
+        }}
       loop_control:
         loop_var: role
       when: custom_role_names != "" or node_custom_roles_post != ""
