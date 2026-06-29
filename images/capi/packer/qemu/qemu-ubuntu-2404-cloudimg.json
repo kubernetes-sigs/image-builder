@@ -1,0 +1,13 @@
+{
+  "build_name": "ubuntu-2404",
+  "cd_files": "./packer/qemu/cloud-init/*",
+  "disk_image": "true",
+  "distribution_version": "2404",
+  "distro_name": "ubuntu",
+  "guest_os_type": "ubuntu-64",
+  "iso_checksum": "https://cloud-images.ubuntu.com/noble/current/SHA256SUMS",
+  "iso_checksum_type": "file",
+  "iso_url": "https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img",
+  "os_display_name": "Ubuntu 24.04",
+  "shutdown_command": "shutdown -P now"
+}
