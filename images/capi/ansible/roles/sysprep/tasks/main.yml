@@ -211,19 +211,48 @@
     - ansible_facts['os_family'] == "Flatcar"
     - not (defer_ssh_cleanup_to_packer | bool)
 
-- name: Truncate all remaining log files in /var/log
-  ansible.builtin.shell: |
-    set -o pipefail
-    find /var/log -type f -iname '*.log' | xargs truncate -s 0
-  args:
-    executable: /bin/bash
+- name: Find remaining log files in /var/log
+  ansible.builtin.find:
+    file_type: file
+    hidden: true
+    paths: /var/log
+    patterns: "(?i).*\\.log$"
+    recurse: true
+    use_regex: true
+  register: sysprep_log_files
+  when: ansible_facts['os_family'] != "Flatcar"
 
+- name: Truncate all remaining log files in /var/log
+  ansible.builtin.command:
+    argv:
+      - truncate
+      - "-s"
+      - "0"
+      - "{{ item.path }}"
+  changed_when: true
+  loop: "{{ sysprep_log_files.files | default([]) }}"
+  loop_control:
+    label: "{{ item.path }}"
+  when: ansible_facts['os_family'] != "Flatcar"
+
+- name: Find logrotated logs in /var/log
+  ansible.builtin.find:
+    file_type: file
+    hidden: true
+    paths: /var/log
+    patterns: ".*[0-9z]$"
+    recurse: true
+    use_regex: true
+  register: sysprep_logrotated_logs
   when: ansible_facts['os_family'] != "Flatcar"
 
 - name: Delete all logrotated logs
-  ansible.builtin.shell:
-    cmd: |
-      find /var/log -type f -regex '.*[0-9z]$' -exec rm {} +
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: absent
+  loop: "{{ sysprep_logrotated_logs.files | default([]) }}"
+  loop_control:
+    label: "{{ item.path }}"
   when: ansible_facts['os_family'] != "Flatcar"
 
 - name: Remove swapfile
