@@ -1,0 +1,21 @@
+{
+  "boot_command_prefix": "c<wait>linux /casper/vmlinuz --- autoinstall ds='nocloud-net;s=http://{{ .HTTPIP }}:{{ .HTTPPort }}/24.04.immutable/'<enter><wait><wait><wait><wait>initrd /casper/initrd<wait><wait><enter><wait>boot<enter>",
+  "autoinstall_profile": "24.04.immutable",
+  "build_name": "ubuntu-2404-immutable",
+  "distribution_version": "2404",
+  "distro_name": "ubuntu",
+  "guest_os_type": "ubuntu-64",
+  "iso_checksum": "e907d92eeec9df64163a7e454cbc8d7755e8ddc7ed42f99dbc80c40f1a138433",
+  "iso_checksum_type": "sha256",
+  "iso_url": "https://releases.ubuntu.com/releases/24.04/ubuntu-24.04.4-live-server-amd64.iso",
+  "immutable_data_partition": "true",
+  "immutable_data_partition_fstype": "ext4",
+  "immutable_data_partition_label": "CAPI-DATA",
+  "immutable_data_partition_mount": "/var/lib/cluster-api-data",
+  "immutable_data_partition_mount_options": "defaults,nofail",
+  "immutable_read_only_root": "true",
+  "immutable_root_partition_size": "12884901888",
+  "os_display_name": "Ubuntu 24.04 immutable",
+  "shutdown_command": "shutdown -P now",
+  "unmount_iso": "true"
+}

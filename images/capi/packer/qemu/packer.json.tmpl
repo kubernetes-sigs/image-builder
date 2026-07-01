@@ -169,6 +169,12 @@
         "kubernetes_cni_source_type": "{{user `kubernetes_cni_source_type`}}",
         "kubernetes_cni_version": "{{user `kubernetes_cni_semver` | replace \"v\" \"\" 1}}",
         "kubernetes_deb_version": "{{ user `kubernetes_deb_version` }}",
+        "immutable_data_partition": "{{user `immutable_data_partition`}}",
+        "immutable_data_partition_fstype": "{{user `immutable_data_partition_fstype`}}",
+        "immutable_data_partition_label": "{{user `immutable_data_partition_label`}}",
+        "immutable_data_partition_mount": "{{user `immutable_data_partition_mount`}}",
+        "immutable_data_partition_mount_options": "{{user `immutable_data_partition_mount_options`}}",
+        "immutable_read_only_root": "{{user `immutable_read_only_root`}}",
         "kubernetes_rpm_version": "{{ split (user `kubernetes_rpm_version`) \"-\" 0  }}",
         "kubernetes_source_type": "{{user `kubernetes_source_type`}}",
         "kubernetes_version": "{{user `kubernetes_semver` | replace \"v\" \"\" 1}}"
@@ -178,9 +184,16 @@
     {
         "type": "shell",
         "environment_vars": [
+          "IMMUTABLE_DATA_PARTITION={{user `immutable_data_partition`}}",
+          "IMMUTABLE_DATA_PARTITION_FSTYPE={{user `immutable_data_partition_fstype`}}",
+          "IMMUTABLE_DATA_PARTITION_LABEL={{user `immutable_data_partition_label`}}",
+          "IMMUTABLE_DATA_PARTITION_MOUNT={{user `immutable_data_partition_mount`}}",
+          "IMMUTABLE_DATA_PARTITION_MOUNT_OPTIONS={{user `immutable_data_partition_mount_options`}}",
+          "IMMUTABLE_READ_ONLY_ROOT={{user `immutable_read_only_root`}}",
           "REMOVE_NAMESERVER={{user `remove_nameserver`}}"
         ],
         "inline": [
+          "bash ./packer/qemu/scripts/configure_immutable_runtime.sh",
           "if [ \"$REMOVE_NAMESERVER\" = \"true\" ]; then",
           "  cat /etc/resolv.conf",
           "  echo 'Removing nameserver from resolv.conf...'",
@@ -222,6 +235,13 @@
     "format": "qcow2",
     "headless": "true",
     "http_directory": "./packer/qemu/linux/{{user `distro_name`}}/http/",
+    "immutable_data_partition": "false",
+    "immutable_data_partition_fstype": "ext4",
+    "immutable_data_partition_label": "CAPI-DATA",
+    "immutable_data_partition_mount": "/var/lib/cluster-api-data",
+    "immutable_data_partition_mount_options": "defaults,nofail",
+    "immutable_read_only_root": "false",
+    "immutable_root_partition_size": "12884901888",
     "kubernetes_cni_deb_version": null,
     "kubernetes_cni_http_source": null,
     "kubernetes_cni_semver": null,
