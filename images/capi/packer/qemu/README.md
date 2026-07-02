@@ -100,8 +100,11 @@ should:
      /etc/cni \
      /etc/containerd \
      /etc/kubernetes \
+     /etc/modprobe.d \
+     /etc/modules-load.d \
      /etc/netplan \
      /etc/ssh \
+     /etc/sysctl.d \
      /etc/systemd \
      /var/lib/cloud \
      /var/lib/containerd \
@@ -114,7 +117,9 @@ should:
 
 6. Write sentinels under at least `/etc/kubernetes` and `/var/lib/kubelet`,
    reboot the guest, then verify the sentinels are still present and `/` is
-   still mounted read-only.
+   still mounted read-only. The same boot test should verify that cloud-init
+   finished, `/etc/hostname` contains the provider-assigned hostname, and
+   `/etc/machine-id` is non-empty after first boot.
 
 For a local pre-CAPI boot smoke, boot the produced artifact with QEMU and a
 temporary NoCloud seed. The smoke should use the same checks as above, plus a
