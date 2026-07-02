@@ -4,7 +4,7 @@
   "distribution": "flatcar",
   "distribution_release": "{{env `FLATCAR_CHANNEL`}}",
   "distribution_version": "{{env `FLATCAR_CHANNEL`}}-{{env `FLATCAR_VERSION`}}",
-  "image_name": "Ubuntu-24.04-2026-01-12",
+  "image_name": "Ubuntu-24.04-2026-06-17",
   "kubernetes_cni_source_type": "http",
   "kubernetes_source_type": "http",
   "python_path": "/opt/pypy/site-packages",
