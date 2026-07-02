@@ -26,7 +26,7 @@
 
 - name: Import Azure Linux sysprep tasks
   ansible.builtin.import_tasks: azurelinux.yml
-  when: ansible_facts['os_family'] in ["Common Base Linux Mariner", "Microsoft Azure Linux"]
+  when: ansible_facts['os_family'] in ["Azure Linux", "Microsoft Azure Linux"]
 
 - name: Import Photon sysprep tasks
   ansible.builtin.import_tasks: photon.yml
@@ -56,7 +56,7 @@
   loop:
     - { path: /etc/machine-id, state: absent, mode: "{{ machine_id_mode }}" }
     - { path: /etc/machine-id, state: touch, mode: "{{ machine_id_mode }}" }
-  when: ansible_facts['os_family'] not in ["Common Base Linux Mariner", "Flatcar", "Microsoft Azure Linuz"]
+  when: ansible_facts['os_family'] not in ["Azure Linux", "Flatcar", "Microsoft Azure Linux"]
 
 - name: Truncate hostname file
   ansible.builtin.file:
@@ -73,7 +73,7 @@
   ansible.builtin.hostname:
     name: localhost.local
   when: >
-    ansible_facts['os_family'] not in ["Common Base Linux Mariner", "Flatcar", "Microsoft Azure Linux", "VMware Photon OS"]
+    ansible_facts['os_family'] not in ["Azure Linux", "Flatcar", "Microsoft Azure Linux", "VMware Photon OS"]
     and packer_build_name != "nutanix"
 
 - name: Reset hosts file

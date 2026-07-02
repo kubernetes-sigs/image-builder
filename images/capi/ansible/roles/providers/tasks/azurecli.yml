@@ -81,7 +81,7 @@
         state: present
 
 - name: Install Azure CLI
-  when: ansible_facts['os_family'] in ["Common Base Linux Mariner", "Microsoft Azure Linux"]
+  when: ansible_facts['os_family'] in ["Azure Linux", "Microsoft Azure Linux"]
   ansible.builtin.package:
     name: azure-cli
     state: present

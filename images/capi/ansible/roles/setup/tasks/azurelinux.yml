@@ -15,6 +15,12 @@
 - name: Import RPM repository tasks
   ansible.builtin.import_tasks: rpm_repos.yml
 
+- name: Install python3-libdnf5 for Azure Linux 4+
+  ansible.builtin.raw: tdnf install -y python3-libdnf5
+  register: install_libdnf5
+  changed_when: "'Nothing to do' not in install_libdnf5.stdout"
+  when: ansible_facts['os_family'] == "Azure Linux"
+
 - name: Perform a tdnf update  # noqa: package-latest
   ansible.builtin.dnf:
     name: "*"

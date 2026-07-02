@@ -18,7 +18,7 @@
 
 - name: Import Azure Linux Kubernetes tasks
   ansible.builtin.import_tasks: azurelinux.yml
-  when: kubernetes_source_type == "pkg" and ansible_facts['os_family'] in ["Common Base Linux Mariner", "Microsoft Azure Linux"]
+  when: kubernetes_source_type == "pkg" and ansible_facts['os_family'] in ["Azure Linux", "Microsoft Azure Linux"]
 
 - name: Import RedHat Kubernetes tasks
   ansible.builtin.import_tasks: redhat.yml
