@@ -24,6 +24,43 @@ command:
     stderr: []
     timeout: 0
 {{end}}
+{{if ne .Vars.immutable_persistent_paths ""}}
+  immutable persistent paths are writable bind mounts:
+    exec: |
+      set -eu
+      printf '%s\n' '{{.Vars.immutable_persistent_paths}}' | tr ',' '\n' | while IFS= read -r path; do
+        [ -n "${path}" ] || continue
+        test -d "${path}"
+        test -w "${path}"
+        options="$(findmnt -n --target "${path}" --output OPTIONS)"
+        case ",${options}," in
+          *,rw,*) ;;
+          *) exit 1 ;;
+        esac
+        awk -v target="${path}" -v mount="{{.Vars.immutable_data_partition_mount}}" \
+          '$2 == target && $3 == "none" && $4 ~ /(^|,)bind(,|$)/ && $4 ~ "x-systemd.requires-mounts-for=" mount { found = 1 } END { exit found ? 0 : 1 }' /etc/fstab
+      done
+    exit-status: 0
+    stdout: []
+    stderr: []
+    timeout: 0
+{{end}}
+{{if ne .Vars.immutable_tmpfs_paths ""}}
+  immutable tmpfs paths are mounted and writable:
+    exec: |
+      set -eu
+      printf '%s\n' '{{.Vars.immutable_tmpfs_paths}}' | tr ',' '\n' | while IFS= read -r path; do
+        [ -n "${path}" ] || continue
+        test -d "${path}"
+        test -w "${path}"
+        test "$(findmnt -n --target "${path}" --output FSTYPE)" = "tmpfs"
+        awk -v target="${path}" '$1 == "tmpfs" && $2 == target && $3 == "tmpfs" { found = 1 } END { exit found ? 0 : 1 }' /etc/fstab
+      done
+    exit-status: 0
+    stdout: []
+    stderr: []
+    timeout: 0
+{{end}}
   PATH=/opt/bin:/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin containerd --version | awk -F' ' '{print substr($3,2); }':
     exit-status: 0
     stdout:

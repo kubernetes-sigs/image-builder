@@ -113,6 +113,86 @@ class ConfigureImmutableRuntimeTests(unittest.TestCase):
 
             self.assertEqual(original, fstab.read_text(encoding="utf-8"))
 
+    def test_configures_persistent_bind_mounts_and_copies_existing_content(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            workdir = pathlib.Path(tmp)
+            fstab = workdir / "fstab"
+            data_mount = workdir / "cluster-api-data"
+            persistent_path = workdir / "etc" / "kubernetes"
+            persisted_file = persistent_path / "kubelet.conf"
+            fstab.write_text("/dev/sda1 / ext4 defaults 0 1\n", encoding="utf-8")
+            persistent_path.mkdir(parents=True)
+            persisted_file.write_text("node config\n", encoding="utf-8")
+
+            self.run_script(
+                {
+                    "IMMUTABLE_RUNTIME_FSTAB_PATH": str(fstab),
+                    "IMMUTABLE_RUNTIME_SKIP_MOUNT": "true",
+                    "IMMUTABLE_RUNTIME_SUDO": "",
+                    "IMMUTABLE_DATA_PARTITION": "true",
+                    "IMMUTABLE_DATA_PARTITION_LABEL": "CAPI-DATA",
+                    "IMMUTABLE_DATA_PARTITION_MOUNT": str(data_mount),
+                    "IMMUTABLE_DATA_PARTITION_FSTYPE": "ext4",
+                    "IMMUTABLE_DATA_PARTITION_MOUNT_OPTIONS": "defaults,nofail",
+                    "IMMUTABLE_PERSISTENT_PATHS": str(persistent_path),
+                }
+            )
+
+            rendered = fstab.read_text(encoding="utf-8")
+            persistent_source = data_mount / "persistent" / str(persistent_path).lstrip("/")
+            self.assertIn(
+                f"{persistent_source} {persistent_path} none bind,nofail,x-systemd.requires-mounts-for={data_mount} 0 0",
+                rendered,
+            )
+            self.assertEqual("node config\n", (persistent_source / "kubelet.conf").read_text(encoding="utf-8"))
+
+    def test_configures_multiple_tmpfs_paths_without_dropping_entries(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            workdir = pathlib.Path(tmp)
+            fstab = workdir / "fstab"
+            first_tmpfs_path = workdir / "tmp"
+            second_tmpfs_path = workdir / "var" / "tmp"
+            fstab.write_text("/dev/sda1 / ext4 defaults 0 1\n", encoding="utf-8")
+
+            self.run_script(
+                {
+                    "IMMUTABLE_RUNTIME_FSTAB_PATH": str(fstab),
+                    "IMMUTABLE_RUNTIME_SKIP_MOUNT": "true",
+                    "IMMUTABLE_RUNTIME_SUDO": "",
+                    "IMMUTABLE_DATA_PARTITION": "false",
+                    "IMMUTABLE_READ_ONLY_ROOT": "false",
+                    "IMMUTABLE_TMPFS_PATHS": f"{first_tmpfs_path},{second_tmpfs_path}",
+                }
+            )
+
+            lines = fstab.read_text(encoding="utf-8").splitlines()
+            self.assertIn(f"tmpfs {first_tmpfs_path} tmpfs mode=1777,nosuid,nodev 0 0", lines)
+            self.assertIn(f"tmpfs {second_tmpfs_path} tmpfs mode=1777,nosuid,nodev 0 0", lines)
+
+    def test_persistent_paths_require_data_partition(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            workdir = pathlib.Path(tmp)
+            fstab = workdir / "fstab"
+            fstab.write_text("/dev/sda1 / ext4 defaults 0 1\n", encoding="utf-8")
+
+            result = subprocess.run(
+                ["bash", str(SCRIPT)],
+                check=False,
+                env={
+                    **os.environ,
+                    "IMMUTABLE_RUNTIME_FSTAB_PATH": str(fstab),
+                    "IMMUTABLE_RUNTIME_SKIP_MOUNT": "true",
+                    "IMMUTABLE_RUNTIME_SUDO": "",
+                    "IMMUTABLE_DATA_PARTITION": "false",
+                    "IMMUTABLE_PERSISTENT_PATHS": str(workdir / "var" / "lib" / "kubelet"),
+                },
+                text=True,
+                capture_output=True,
+            )
+
+            self.assertNotEqual(0, result.returncode)
+            self.assertIn("IMMUTABLE_PERSISTENT_PATHS requires IMMUTABLE_DATA_PARTITION=true", result.stderr)
+
 
 if __name__ == "__main__":
     unittest.main()
