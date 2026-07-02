@@ -9,7 +9,7 @@
       - cloud-init
       - cloud-guest-utils
       - cloud-initramfs-dyn-netconf
-  when: ansible_os_family == "Debian"
+  when: ansible_facts['os_family'] == "Debian"
 
 - name: Install Debian specific packages
   ansible.builtin.apt:
