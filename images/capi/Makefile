@@ -225,6 +225,11 @@ deps-scaleway: deps-common
 set-ssh-password:
 	hack/set-ssh-password.sh
 
+.PHONY: test-qemu-boot-smoke
+test-qemu-boot-smoke: ## Boots a local QEMU image and verifies SSH
+	@test -n "$(QEMU_BOOT_SMOKE_IMAGE)" || (echo "QEMU_BOOT_SMOKE_IMAGE is required" >&2; exit 1)
+	hack/qemu-boot-smoke.sh "$(QEMU_BOOT_SMOKE_IMAGE)" $(QEMU_BOOT_SMOKE_ARGS)
+
 ## --------------------------------------
 ## Container variables
 ## --------------------------------------
