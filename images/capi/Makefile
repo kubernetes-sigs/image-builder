@@ -607,6 +607,12 @@ $(QEMU_VALIDATE_TARGETS): deps-qemu set-ssh-password
 	python3 packer/qemu/scripts/render_ubuntu_autoinstall.py "$(abspath packer/qemu/$(subst validate-,,$@).json)" $(PACKER_VAR_FILE_FLAGS)
 	$(PACKER) validate $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/qemu/$(subst validate-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/qemu/packer.json
 
+.PHONY: test-qemu-immutable
+test-qemu-immutable: ## Runs immutable QEMU helper unit tests
+	python3 -m unittest discover -s packer/qemu/scripts -p '*_test.py'
+
+validate-qemu-ubuntu-2404-immutable: test-qemu-immutable
+
 .PHONY: $(QEMU_KUBEVIRT_BUILD_TARGETS)
 $(QEMU_KUBEVIRT_BUILD_TARGETS): deps-qemu set-ssh-password
 	python3 packer/qemu/scripts/render_ubuntu_autoinstall.py "$(abspath packer/qemu/$(subst build-kubevirt-,,$@).json)" $(PACKER_VAR_FILE_FLAGS)

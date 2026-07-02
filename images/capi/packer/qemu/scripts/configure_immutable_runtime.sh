@@ -18,11 +18,23 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
+FSTAB_PATH="${IMMUTABLE_RUNTIME_FSTAB_PATH:-/etc/fstab}"
+RUNTIME_SUDO="${IMMUTABLE_RUNTIME_SUDO-sudo}"
+SKIP_MOUNT="${IMMUTABLE_RUNTIME_SKIP_MOUNT:-false}"
+
 is_true() {
-  case "${1,,}" in
+  case "$(printf '%s' "$1" | tr '[:upper:]' '[:lower:]')" in
     1 | true | yes | on) return 0 ;;
     *) return 1 ;;
   esac
+}
+
+run_privileged() {
+  if [ -n "${RUNTIME_SUDO}" ]; then
+    "${RUNTIME_SUDO}" "$@"
+  else
+    "$@"
+  fi
 }
 
 append_or_replace_fstab_entry() {
@@ -35,12 +47,12 @@ append_or_replace_fstab_entry() {
   local tmp
 
   tmp="$(mktemp)"
-  sudo awk -v source="${source}" -v target="${target}" '
+  awk -v source="${source}" -v target="${target}" '
     $1 == source || $2 == target { next }
     { print }
-  ' /etc/fstab >"${tmp}"
+  ' "${FSTAB_PATH}" >"${tmp}"
   printf '%s %s %s %s %s %s\n' "${source}" "${target}" "${fstype}" "${options}" "${dump}" "${pass}" >>"${tmp}"
-  sudo install -m 0644 "${tmp}" /etc/fstab
+  run_privileged install -m 0644 "${tmp}" "${FSTAB_PATH}"
   rm -f "${tmp}"
 }
 
@@ -63,12 +75,12 @@ configure_data_partition() {
   local label="${IMMUTABLE_DATA_PARTITION_LABEL:?}"
   local mount_point="${IMMUTABLE_DATA_PARTITION_MOUNT:?}"
   local fstype="${IMMUTABLE_DATA_PARTITION_FSTYPE:-ext4}"
-  local options="${IMMUTABLE_DATA_PARTITION_MOUNT_OPTIONS:-defaults,nofail}"
+  local mount_options="${IMMUTABLE_DATA_PARTITION_MOUNT_OPTIONS:-defaults,nofail}"
 
-  sudo install -d -m 0755 "${mount_point}"
-  append_or_replace_fstab_entry "LABEL=${label}" "${mount_point}" "${fstype}" "${options}" "0" "2"
-  if ! mountpoint -q "${mount_point}"; then
-    sudo mount "${mount_point}"
+  run_privileged install -d -m 0755 "${mount_point}"
+  append_or_replace_fstab_entry "LABEL=${label}" "${mount_point}" "${fstype}" "${mount_options}" "0" "2"
+  if ! is_true "${SKIP_MOUNT}" && ! mountpoint -q "${mount_point}"; then
+    run_privileged mount "${mount_point}"
   fi
 }
 
@@ -78,7 +90,7 @@ configure_read_only_root() {
   local options
   local root_entry
 
-  root_entry="$(awk '$2 == "/" { print $1 "\t" $3 "\t" $4; exit }' /etc/fstab)"
+  root_entry="$(awk '$2 == "/" { print $1 "\t" $3 "\t" $4; exit }' "${FSTAB_PATH}")"
   if [ -n "${root_entry}" ]; then
     read -r source fstype options <<<"${root_entry}"
   else

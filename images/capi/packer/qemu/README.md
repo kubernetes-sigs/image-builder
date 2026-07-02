@@ -33,3 +33,24 @@ Supported immutable variables:
 - `immutable_data_partition_mount_options`: fstab options for the data partition.
 - `immutable_root_partition_size`: root partition size in bytes; the data partition uses the remaining disk.
 - `immutable_read_only_root`: write `/` as read-only in `/etc/fstab` for the final image.
+
+The target validates the contract in three places:
+
+- the Ubuntu autoinstall renderer unit tests verify root/data partition
+  rendering and input validation;
+- `packer validate` verifies the QEMU target, Packer variables, and Goss
+  variable wiring;
+- Goss verifies that the built image has the labeled data partition mounted,
+  the data mount is writable, and `/etc/fstab` marks `/` read-only when
+  `immutable_read_only_root=true`.
+
+The image root remains writable during Packer provisioning. The read-only root
+state is applied through `/etc/fstab` for the next boot so normal Ansible
+provisioning and Goss checks can complete before the image is finalized.
+
+Run the focused immutable validation with:
+
+```bash
+make test-qemu-immutable
+make validate-qemu-ubuntu-2404-immutable
+```
