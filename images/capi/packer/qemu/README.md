@@ -47,6 +47,8 @@ The target validates the contract in three places:
 The image root remains writable during Packer provisioning. The read-only root
 state is applied through `/etc/fstab` for the next boot so normal Ansible
 provisioning and Goss checks can complete before the image is finalized.
+Provider-specific CAPI bootstrap validation should still verify that all runtime
+write paths are backed by persistent storage for the selected infrastructure.
 
 Run the focused immutable validation with:
 
