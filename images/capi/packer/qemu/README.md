@@ -71,7 +71,51 @@ make test-qemu-immutable
 make validate-qemu-ubuntu-2404-immutable
 ```
 
-These checks prove the image build contract. The provider or infrastructure
-project should still boot the produced artifact through Cluster API and verify
-that the Machine becomes Ready with the selected network and image delivery
-path.
+These checks prove the image build contract. They do not replace a provider
+boot test, because the risky immutable-image path is first boot plus bootstrap
+writes after `/` is remounted read-only.
+
+### CAPI and boot validation
+
+After building the image, run one provider-backed Cluster API validation for the
+exact artifact and network path that will consume it. At minimum the validation
+should:
+
+1. Serve or upload the produced image in the format consumed by the provider
+   (`format=raw` for providers that boot raw disk images, `format=qcow2` for
+   providers that boot qcow2).
+2. Create a Cluster API workload cluster using the provider image reference.
+3. Wait until the provider machine reports a provisioned or ready state.
+4. Wait until the CAPI `Machine` has `BootstrapConfigReady=True`,
+   `InfrastructureReady=True`, a non-empty `spec.providerID` or
+   `status.providerID`, and, for full cluster bootstrap tests, a workload
+   `status.nodeRef`.
+5. SSH into the booted guest and verify:
+
+   ```bash
+   findmnt -no OPTIONS / | tr ',' '\n' | grep -qx ro
+   test -w /var/lib/cluster-api-data
+   for path in \
+     /etc/cloud \
+     /etc/cni \
+     /etc/containerd \
+     /etc/kubernetes \
+     /etc/netplan \
+     /etc/ssh \
+     /etc/systemd \
+     /var/lib/cloud \
+     /var/lib/containerd \
+     /var/lib/etcd \
+     /var/lib/kubelet \
+     /var/log; do
+       test -w "${path}"
+   done
+   ```
+
+6. Write sentinels under at least `/etc/kubernetes` and `/var/lib/kubelet`,
+   reboot the guest, then verify the sentinels are still present and `/` is
+   still mounted read-only.
+
+For a local pre-CAPI boot smoke, boot the produced artifact with QEMU and a
+temporary NoCloud seed. The smoke should use the same checks as above, plus a
+reboot/persistence check, before the image is promoted to provider CAPI tests.
