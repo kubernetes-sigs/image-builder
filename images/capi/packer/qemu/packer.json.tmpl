@@ -108,7 +108,17 @@
       "type": "shell"
     },
     {
-      "pause_before": "30s",
+      "inline": [
+        "echo \"Post-reboot SSH ready at $(date -Is)\"",
+        "echo 'Waiting for rebooted systemd state to settle...'",
+        "if ! timeout 180s sudo systemctl is-system-running --wait; then sudo systemctl --failed --no-pager || true; fi",
+        "uname -a"
+      ],
+      "inline_shebang": "/bin/bash -e",
+      "pause_before": "20s",
+      "type": "shell"
+    },
+    {
       "ansible_env_vars": [
         "ANSIBLE_SSH_ARGS='{{user `existing_ansible_ssh_args`}} {{user `ansible_common_ssh_args`}}'",
         "{{if user `ansible_collections_path`}}ANSIBLE_COLLECTIONS_PATH={{user `ansible_collections_path`}}{{end}}",
