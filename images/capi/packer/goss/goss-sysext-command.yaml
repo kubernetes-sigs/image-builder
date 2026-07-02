@@ -1,0 +1,23 @@
+---
+command:
+  systemd-sysext --version:
+    exit-status: 0
+    stdout: []
+    stderr: []
+    timeout: 0
+  systemctl cat systemd-sysext.service:
+    exit-status: 0
+    stdout: []
+    stderr: []
+    timeout: 0
+  ? >-
+    test ! -e /usr/bin/kubelet &&
+    test ! -e /usr/bin/kubeadm &&
+    test ! -e /usr/bin/kubectl &&
+    test ! -e /usr/local/bin/containerd &&
+    test ! -e /opt/cni/bin/bridge
+  :
+    exit-status: 0
+    stdout: []
+    stderr: []
+    timeout: 0

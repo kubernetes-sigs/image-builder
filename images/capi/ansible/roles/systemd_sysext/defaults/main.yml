@@ -1,0 +1,9 @@
+---
+systemd_sysext_required: true
+systemd_sysext_directories:
+  - /etc/extensions
+  - /run/extensions
+  - /var/lib/extensions
+  - /var/lib/sysext-staging
+systemd_sysext_service_name: systemd-sysext.service
+systemd_sysext_enable_service: true
