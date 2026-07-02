@@ -48,7 +48,8 @@ append_or_replace_fstab_entry() {
 
   tmp="$(mktemp)"
   awk -v source="${source}" -v target="${target}" '
-    $1 == source || $2 == target { next }
+    $2 == target { next }
+    source != "none" && source != "tmpfs" && $1 == source { next }
     { print }
   ' "${FSTAB_PATH}" >"${tmp}"
   printf '%s %s %s %s %s %s\n' "${source}" "${target}" "${fstype}" "${options}" "${dump}" "${pass}" >>"${tmp}"
@@ -56,13 +57,42 @@ append_or_replace_fstab_entry() {
   rm -f "${tmp}"
 }
 
+validate_absolute_mount_path() {
+  local path="$1"
+  local variable="$2"
+
+  case "${path}" in
+    /*) ;;
+    *)
+      echo "${variable} entries must be absolute paths: ${path}" >&2
+      exit 1
+      ;;
+  esac
+  if [ "${path}" = "/" ]; then
+    echo "${variable} must not include /" >&2
+    exit 1
+  fi
+}
+
+for_each_csv_path() {
+  local raw="$1"
+  local path
+
+  raw="${raw//,/ }"
+  for path in ${raw}; do
+    [ -n "${path}" ] || continue
+    printf '%s\n' "${path}"
+  done
+}
+
 root_options_with_ro() {
   local current="$1"
   local next=""
   local option
+  local -a current_options
 
-  IFS=',' read -ra options <<<"${current}"
-  for option in "${options[@]}"; do
+  IFS=',' read -ra current_options <<<"${current}"
+  for option in "${current_options[@]}"; do
     case "${option}" in
       "" | defaults | rw | ro) ;;
       *) next="${next:+${next},}${option}" ;;
@@ -82,6 +112,72 @@ configure_data_partition() {
   if ! is_true "${SKIP_MOUNT}" && ! mountpoint -q "${mount_point}"; then
     run_privileged mount "${mount_point}"
   fi
+}
+
+configure_persistent_path() {
+  local path="$1"
+  local mount_point="${IMMUTABLE_DATA_PARTITION_MOUNT:?}"
+  local persistent_root="${IMMUTABLE_PERSISTENT_PATHS_ROOT:-${mount_point%/}/persistent}"
+  local source="${persistent_root}${path}"
+  local source_parent
+
+  validate_absolute_mount_path "${path}" "IMMUTABLE_PERSISTENT_PATHS"
+  source_parent="$(dirname "${source}")"
+  run_privileged install -d -m 0755 "${source_parent}"
+  run_privileged install -d -m 0755 "${source}"
+  if [ ! -d "${path}" ]; then
+    run_privileged install -d -m 0755 "${path}"
+  fi
+  if [ -z "$(find "${source}" -mindepth 1 -print -quit 2>/dev/null)" ] &&
+    [ -n "$(find "${path}" -mindepth 1 -xdev -print -quit 2>/dev/null)" ]; then
+    run_privileged cp -a "${path}/." "${source}/"
+  fi
+  append_or_replace_fstab_entry \
+    "${source}" \
+    "${path}" \
+    "none" \
+    "bind,nofail,x-systemd.requires-mounts-for=${mount_point}" \
+    "0" \
+    "0"
+  if ! is_true "${SKIP_MOUNT}" && ! mountpoint -q "${path}"; then
+    run_privileged mount "${path}"
+  fi
+}
+
+configure_persistent_paths() {
+  local paths="${IMMUTABLE_PERSISTENT_PATHS:-}"
+  local path
+
+  [ -n "${paths}" ] || return 0
+  if ! is_true "${IMMUTABLE_DATA_PARTITION:-false}"; then
+    echo "IMMUTABLE_PERSISTENT_PATHS requires IMMUTABLE_DATA_PARTITION=true" >&2
+    exit 1
+  fi
+  while IFS= read -r path; do
+    configure_persistent_path "${path}"
+  done < <(for_each_csv_path "${paths}")
+}
+
+configure_tmpfs_path() {
+  local path="$1"
+  local mount_options="${IMMUTABLE_TMPFS_MOUNT_OPTIONS:-mode=1777,nosuid,nodev}"
+
+  validate_absolute_mount_path "${path}" "IMMUTABLE_TMPFS_PATHS"
+  run_privileged install -d -m 1777 "${path}"
+  append_or_replace_fstab_entry "tmpfs" "${path}" "tmpfs" "${mount_options}" "0" "0"
+  if ! is_true "${SKIP_MOUNT}" && ! mountpoint -q "${path}"; then
+    run_privileged mount "${path}"
+  fi
+}
+
+configure_tmpfs_paths() {
+  local paths="${IMMUTABLE_TMPFS_PATHS:-}"
+  local path
+
+  [ -n "${paths}" ] || return 0
+  while IFS= read -r path; do
+    configure_tmpfs_path "${path}"
+  done < <(for_each_csv_path "${paths}")
 }
 
 configure_read_only_root() {
@@ -104,6 +200,9 @@ configure_read_only_root() {
 if is_true "${IMMUTABLE_DATA_PARTITION:-false}"; then
   configure_data_partition
 fi
+
+configure_persistent_paths
+configure_tmpfs_paths
 
 if is_true "${IMMUTABLE_READ_ONLY_ROOT:-false}"; then
   configure_read_only_root
