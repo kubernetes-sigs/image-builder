@@ -80,6 +80,8 @@ get_random_cvm_region() {
 
 export PATH=${PWD}/.local/bin:$PATH
 export PATH=${PYTHON_BIN_DIR:-"/root/.local/bin"}:$PATH
+export AZURE_CONFIG_DIR="${AZURE_CONFIG_DIR:-${ARTIFACTS}/azure-cli/main}"
+mkdir -p "${AZURE_CONFIG_DIR}"
 
 export AZURE_LOCATION="${AZURE_LOCATION:-$(get_random_region)}"
 export RESOURCE_GROUP_NAME="image-builder-e2e-$(head /dev/urandom | LC_ALL=C tr -dc a-z0-9 | head -c 6 ; echo '')"
@@ -117,11 +119,22 @@ export FLATCAR_VERSION="$(get_flatcar_version)"
 # Disable them for CI runs so don't run into timeouts
 export PACKER_VAR_FILES="packer/azure/scripts/disable-windows-prepull.json scripts/ci-disable-goss-inspect.json"
 
-declare -A PIDS
-for target in ${SIG_CI_TARGETS[@]};
-do
+run_sig_target() {
+    local target="$1"
+    local location="${2:-${AZURE_LOCATION}}"
+
+    export AZURE_CONFIG_DIR="${ARTIFACTS}/azure-cli/${target}"
+    export AZURE_LOCATION="${location}"
+    mkdir -p "${AZURE_CONFIG_DIR}"
+
     login
-    make build-azure-sig-${target} > ${ARTIFACTS}/azure-sigs/${target}.log 2>&1 &
+    make "build-azure-sig-${target}"
+}
+
+declare -A PIDS
+for target in "${SIG_CI_TARGETS[@]}";
+do
+    run_sig_target "${target}" > "${ARTIFACTS}/azure-sigs/${target}.log" 2>&1 &
     PIDS["sig-${target}"]=$!
 done
 
@@ -132,10 +145,9 @@ if [[ ! " ${VALID_CVM_LOCATIONS[*]} " =~ " ${SELECTED_LOCATION} " ]]; then
     echo "Selected location is ${SELECTED_LOCATION}."
 fi
 
-for target in ${SIG_CVM_CI_TARGETS[@]};
+for target in "${SIG_CVM_CI_TARGETS[@]}";
 do
-    login
-    AZURE_LOCATION="${SELECTED_LOCATION}" make build-azure-sig-${target} > ${ARTIFACTS}/azure-sigs/${target}.log 2>&1 &
+    run_sig_target "${target}" "${SELECTED_LOCATION}" > "${ARTIFACTS}/azure-sigs/${target}.log" 2>&1 &
     PIDS["sig-${target}"]=$!
 done
 
