@@ -222,6 +222,8 @@ deps-scaleway: deps-common
 ## --------------------------------------
 
 .PHONY: set-ssh-password
+set-ssh-password: export PACKER_FLAGS := $(PACKER_FLAGS)
+set-ssh-password: export PACKER_VAR_FILES := $(PACKER_VAR_FILES)
 set-ssh-password:
 	hack/set-ssh-password.sh
 
