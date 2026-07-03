@@ -37,13 +37,14 @@ different contract:
 | `immutable_data_partition_mount_options` | `defaults,nofail` |
 | `immutable_root_partition_size` | `12884901888` |
 | `immutable_read_only_root` | `true` |
-| `immutable_persistent_paths` | `/etc/cloud,/etc/cni,/etc/containerd,/etc/kubernetes,/etc/modprobe.d,/etc/modules-load.d,/etc/netplan,/etc/ssh,/etc/sysctl.d,/etc/systemd,/var/lib/cloud,/var/lib/containerd,/var/lib/etcd,/var/lib/kubelet,/var/log` |
+| `immutable_persistent_paths` | `/etc,/home,/root,/opt/cni/bin,/var/cache,/var/lib/NetworkManager,/var/lib/calico,/var/lib/chrony,/var/lib/cilium,/var/lib/cloud,/var/lib/cni,/var/lib/containerd,/var/lib/dbus,/var/lib/etcd,/var/lib/kubelet,/var/lib/private,/var/lib/systemd,/var/log,/var/spool` |
 | `immutable_tmpfs_paths` | `/tmp,/var/tmp` |
 
-The persistent path list covers cloud-init state, SSH host keys, systemd units
-and drop-ins, netplan, common kernel and network configuration drop-in
-directories, CNI/containerd/Kubernetes configuration, kubelet and containerd
-state, optional etcd state for control-plane images, and logs. Extend
+The persistent path list covers first-boot configuration under `/etc`,
+cloud-init state, user home directories, SSH host keys, CNI binaries and
+runtime state, common CNI data directories, systemd and dbus state,
+NetworkManager state, kubelet/containerd state, optional etcd state for
+control-plane images, caches, spools, and logs. Extend
 `immutable_persistent_paths` when a provider writes additional bootstrap files
 after the root filesystem is remounted read-only.
 
@@ -69,27 +70,31 @@ contract, and verify the guest contract over SSH:
 findmnt -no OPTIONS / | tr ',' '\n' | grep -qx ro
 test -w /var/lib/cluster-api-data
 for path in \
-  /etc/cloud \
-  /etc/cni \
-  /etc/containerd \
-  /etc/kubernetes \
-  /etc/modprobe.d \
-  /etc/modules-load.d \
-  /etc/netplan \
-  /etc/ssh \
-  /etc/sysctl.d \
-  /etc/systemd \
+  /etc \
+  /home \
+  /root \
+  /opt/cni/bin \
+  /var/cache \
+  /var/lib/NetworkManager \
+  /var/lib/calico \
+  /var/lib/chrony \
+  /var/lib/cilium \
   /var/lib/cloud \
+  /var/lib/cni \
   /var/lib/containerd \
+  /var/lib/dbus \
   /var/lib/etcd \
   /var/lib/kubelet \
-  /var/log; do
+  /var/lib/private \
+  /var/lib/systemd \
+  /var/log \
+  /var/spool; do
     test -w "${path}"
 done
 ```
 
-Write sentinels under at least `/etc/kubernetes` and `/var/lib/kubelet`, reboot
-the guest, then verify the sentinels are still present and `/` is still mounted
-read-only. The same boot test should also verify that cloud-init finished,
-`/etc/hostname` contains the provider-assigned hostname, and `/etc/machine-id`
-is non-empty after first boot.
+Write sentinels under at least `/etc/kubernetes`, `/home`, and
+`/var/lib/kubelet`, reboot the guest, then verify the sentinels are still
+present and `/` is still mounted read-only. The same boot test should also
+verify that cloud-init finished, `/etc/hostname` contains the provider-assigned
+hostname, and `/etc/machine-id` is non-empty after first boot.

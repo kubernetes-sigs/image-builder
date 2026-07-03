@@ -41,15 +41,16 @@ The target enables these immutable defaults:
 - `immutable_data_partition_mount_options=defaults,nofail`: fstab options for the data partition.
 - `immutable_root_partition_size=12884901888`: root partition size in bytes; the data partition uses the remaining disk.
 - `immutable_read_only_root=true`: write `/` as read-only in `/etc/fstab` for the final image.
-- `immutable_persistent_paths=/etc/cloud,/etc/cni,/etc/containerd,/etc/kubernetes,/etc/modprobe.d,/etc/modules-load.d,/etc/netplan,/etc/ssh,/etc/sysctl.d,/etc/systemd,/var/lib/cloud,/var/lib/containerd,/var/lib/etcd,/var/lib/kubelet,/var/log`: copy existing contents into the data partition and bind mount them back for CAPI bootstrap and node runtime writes.
+- `immutable_persistent_paths=/etc,/home,/root,/opt/cni/bin,/var/cache,/var/lib/NetworkManager,/var/lib/calico,/var/lib/chrony,/var/lib/cilium,/var/lib/cloud,/var/lib/cni,/var/lib/containerd,/var/lib/dbus,/var/lib/etcd,/var/lib/kubelet,/var/lib/private,/var/lib/systemd,/var/log,/var/spool`: copy existing contents into the data partition and bind mount them back for CAPI bootstrap and node runtime writes.
 - `immutable_tmpfs_paths=/tmp,/var/tmp`: mount volatile scratch paths as tmpfs.
 
-The persistent path list is intentionally explicit. It covers cloud-init state,
-SSH host keys, systemd units and drop-ins, netplan and common kernel/network
-drop-in directories, CNI/containerd/Kubernetes configuration, kubelet and
-containerd state, optional etcd state for control-plane images, and logs.
-Providers that write additional bootstrap files should extend
-`immutable_persistent_paths` rather than making the whole root writable again.
+The persistent path list is intentionally explicit. It covers first-boot
+configuration under `/etc`, cloud-init state, user home directories, SSH host
+keys, CNI binaries and runtime state, common CNI data directories, systemd and
+dbus state, NetworkManager state, kubelet/containerd state, optional etcd state
+for control-plane images, caches, spools, and logs. Providers that write
+additional bootstrap files should extend `immutable_persistent_paths` rather
+than making the whole root writable again.
 
 The target validates the contract in four places:
 
@@ -96,26 +97,31 @@ should:
    findmnt -no OPTIONS / | tr ',' '\n' | grep -qx ro
    test -w /var/lib/cluster-api-data
    for path in \
-     /etc/cloud \
-     /etc/cni \
-     /etc/containerd \
-     /etc/kubernetes \
-     /etc/modprobe.d \
-     /etc/modules-load.d \
-     /etc/netplan \
-     /etc/ssh \
-     /etc/sysctl.d \
-     /etc/systemd \
+     /etc \
+     /home \
+     /root \
+     /opt/cni/bin \
+     /var/cache \
+     /var/lib/NetworkManager \
+     /var/lib/calico \
+     /var/lib/chrony \
+     /var/lib/cilium \
      /var/lib/cloud \
+     /var/lib/cni \
      /var/lib/containerd \
+     /var/lib/dbus \
      /var/lib/etcd \
      /var/lib/kubelet \
-     /var/log; do
+     /var/lib/private \
+     /var/lib/systemd \
+     /var/log \
+     /var/spool; do
        test -w "${path}"
    done
    ```
 
-6. Write sentinels under at least `/etc/kubernetes` and `/var/lib/kubelet`,
+6. Write sentinels under at least `/etc/kubernetes`, `/home`, and
+   `/var/lib/kubelet`,
    reboot the guest, then verify the sentinels are still present and `/` is
    still mounted read-only. The same boot test should verify that cloud-init
    finished, `/etc/hostname` contains the provider-assigned hostname, and

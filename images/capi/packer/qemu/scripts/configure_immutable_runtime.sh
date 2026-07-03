@@ -21,6 +21,7 @@ set -o pipefail
 FSTAB_PATH="${IMMUTABLE_RUNTIME_FSTAB_PATH:-/etc/fstab}"
 RUNTIME_SUDO="${IMMUTABLE_RUNTIME_SUDO-sudo}"
 SKIP_MOUNT="${IMMUTABLE_RUNTIME_SKIP_MOUNT:-false}"
+PERSISTENT_MOUNT_PATHS=()
 
 is_true() {
   case "$(printf '%s' "$1" | tr '[:upper:]' '[:lower:]')" in
@@ -139,9 +140,7 @@ configure_persistent_path() {
     "bind,nofail,x-systemd.requires-mounts-for=${mount_point}" \
     "0" \
     "0"
-  if ! is_true "${SKIP_MOUNT}" && ! mountpoint -q "${path}"; then
-    run_privileged mount "${path}"
-  fi
+  PERSISTENT_MOUNT_PATHS+=("${path}")
 }
 
 configure_persistent_paths() {
@@ -197,6 +196,44 @@ configure_read_only_root() {
   append_or_replace_fstab_entry "${source}" "/" "${fstype}" "$(root_options_with_ro "${options}")" "0" "1"
 }
 
+sync_persistent_fstab_copy() {
+  local path="$1"
+  local mount_point="${IMMUTABLE_DATA_PARTITION_MOUNT:?}"
+  local persistent_root="${IMMUTABLE_PERSISTENT_PATHS_ROOT:-${mount_point%/}/persistent}"
+  local normalized_path="${path%/}"
+  local source
+  local relative_fstab
+
+  [ -n "${normalized_path}" ] || normalized_path="/"
+  case "${FSTAB_PATH}" in
+    "${normalized_path}"/*)
+      source="${persistent_root}${normalized_path}"
+      relative_fstab="${FSTAB_PATH#"${normalized_path}/"}"
+      run_privileged install -d -m 0755 "$(dirname "${source}/${relative_fstab}")"
+      run_privileged install -m 0644 "${FSTAB_PATH}" "${source}/${relative_fstab}"
+      ;;
+  esac
+}
+
+sync_persistent_fstab_copies() {
+  local path
+
+  for path in ${PERSISTENT_MOUNT_PATHS[@]+"${PERSISTENT_MOUNT_PATHS[@]}"}; do
+    sync_persistent_fstab_copy "${path}"
+  done
+}
+
+mount_persistent_paths() {
+  local path
+
+  is_true "${SKIP_MOUNT}" && return 0
+  for path in ${PERSISTENT_MOUNT_PATHS[@]+"${PERSISTENT_MOUNT_PATHS[@]}"}; do
+    if ! mountpoint -q "${path}"; then
+      run_privileged mount "${path}"
+    fi
+  done
+}
+
 if is_true "${IMMUTABLE_DATA_PARTITION:-false}"; then
   configure_data_partition
 fi
@@ -207,3 +244,6 @@ configure_tmpfs_paths
 if is_true "${IMMUTABLE_READ_ONLY_ROOT:-false}"; then
   configure_read_only_root
 fi
+
+sync_persistent_fstab_copies
+mount_persistent_paths
