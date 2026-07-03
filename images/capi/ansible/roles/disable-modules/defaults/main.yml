@@ -1,9 +1,2 @@
-# currently disable modules to address the following exploits:
-# - https://copy.fail/
-# - https://github.com/V4bel/dirtyfrag
-# - https://github.com/0xdeadbeefnetwork/Copy_Fail2-Electric_Boogaloo
-disabled_kernel_modules:
-  - algif_aead
-  - esp4
-  - esp6
-  - rxrpc
+# add kernel modules here to disable them by default when building an image
+disabled_kernel_modules: []
