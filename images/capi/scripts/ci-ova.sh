@@ -164,21 +164,25 @@ cat packer/ova/packer-node.json | jq  'del(.builders[] | select( .name == "vsphe
 cat packer/ova/packer-node.json | jq  'del(.builders[] | select( .name == "vsphere-clone" ).export)' > packer/ova/packer-node.json.tmp && mv packer/ova/packer-node.json.tmp packer/ova/packer-node.json
 cat packer/ova/packer-node.json | jq  'del(."post-processors"[])' > packer/ova/packer-node.json.tmp && mv packer/ova/packer-node.json.tmp packer/ova/packer-node.json
 
-# install deps and build all images
+# Install shared prerequisites before starting parallel image builds. The
+# individual Make targets depend on these phony targets as well, but rerunning
+# set-ssh-password concurrently rewrites shared Packer/user-data files and can
+# make Packer use credentials that no longer match the installer data.
 make deps-ova
+make set-ssh-password
 
 declare -A PIDS
-for target in ${TARGETS[@]};
+for target in "${TARGETS[@]}";
 do
   target=${target#build-node-ova-vsphere-}
   export PACKER_VAR_FILES="ci-${target}.json scripts/ci-disable-goss-inspect.json"
-cat << EOF > ci-${target}.json
+cat << EOF > "ci-${target}.json"
 {
 "build_version": "capv-ci-${target}-${TIMESTAMP}"
 }
 EOF
   export PACKER_LOG=1
-  make build-node-ova-vsphere-${target} > ${ARTIFACTS}/${target}.log 2>&1 &
+  make -o deps-ova -o set-ssh-password "build-node-ova-vsphere-${target}" > "${ARTIFACTS}/${target}.log" 2>&1 &
   PIDS["${target}"]=$!
 done
 
@@ -186,8 +190,7 @@ done
 set +o errexit
 exit_err=false
 for target in "${!PIDS[@]}"; do
-  wait "${PIDS[$target]}"
-  if [[ $? -ne 0 ]]; then
+  if ! wait "${PIDS[$target]}"; then
     exit_err=true
     echo "${target}: FAILED. See logs in the artifacts folder."
   else
