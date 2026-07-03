@@ -1,6 +1,7 @@
 - name: Disable module
   ansible.builtin.copy:
     dest: "/etc/modprobe.d/disable-{{ item }}.conf"
+    mode: "0644"
     content: |
       install {{ item }} /bin/false
   loop: "{{ disabled_kernel_modules }}"
