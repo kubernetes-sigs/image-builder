@@ -155,8 +155,7 @@ done
 set +o errexit
 exit_err=false
 for target in "${!PIDS[@]}"; do
-  wait ${PIDS[$target]}
-  if [[ $? -ne 0 ]]; then
+  if ! wait "${PIDS[$target]}"; then
     exit_err=true
     echo "${target}: FAILED. See logs in the artifacts folder."
   else
