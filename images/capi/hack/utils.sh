@@ -144,7 +144,7 @@ ansible_galaxy_collection_install() {
     galaxy_args+=(--offline)
   fi
 
-  ansible-galaxy collection install "${galaxy_args[@]}" "$@"
+  ansible-galaxy collection install ${galaxy_args[@]+"${galaxy_args[@]}"} "$@"
 }
 
 hostarch_without_darwin_arm64() {
