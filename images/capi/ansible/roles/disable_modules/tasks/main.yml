@@ -9,7 +9,6 @@
   ansible.builtin.copy:
     dest: "/etc/modprobe.d/blacklist.conf"
     content: |
-      # disabled by disable-modules playbook
       blacklist {{ item }}
   loop: "{{ disabled_kernel_modules }}"
 
