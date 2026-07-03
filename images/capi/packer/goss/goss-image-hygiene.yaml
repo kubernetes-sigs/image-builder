@@ -1,6 +1,6 @@
 command:
 {{ if ne .Vars.OS "windows" }}
-  find /etc/ssh -xdev -type f -name 'ssh_host_*_key' -print:
+  sh -c '! find /etc/ssh -xdev -type f -name "ssh_host_*_key" -print -quit | grep -q .':
     exit-status: 0
     stdout: []
     stderr: []
@@ -15,7 +15,7 @@ command:
     stdout: []
     stderr: []
     timeout: 5000
-  sh -c 'find / -xdev \( -name core.\* -o -name \*.core \) -print -quit 2>/dev/null':
+  sh -c 'found="$(find /var/crash /var/lib/systemd/coredump /var/tmp /tmp -xdev -type f \( -name core -o -name "core.*" -o -name "*.core" \) -print -quit 2>/dev/null || true)"; test -z "$found"':
     exit-status: 0
     stdout: []
     stderr: []
