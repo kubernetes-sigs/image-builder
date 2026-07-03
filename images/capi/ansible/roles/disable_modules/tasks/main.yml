@@ -5,13 +5,6 @@
       install {{ item }} /bin/false
   loop: "{{ disabled_kernel_modules }}"
 
-- name: Blacklist module
-  ansible.builtin.copy:
-    dest: "/etc/modprobe.d/blacklist.conf"
-    content: |
-      blacklist {{ item }}
-  loop: "{{ disabled_kernel_modules }}"
-
 - name: Remove module if currently loaded
   community.general.modprobe:
     name: "{{ item }}"
