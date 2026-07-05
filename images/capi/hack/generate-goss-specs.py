@@ -42,7 +42,7 @@ def generate_goss(provider, system, versions, runtime, dryrun=False, save=False)
             'kubernetes_cni_version': versions['cni'],
             'kubernetes_cni_deb_version': versions['cni_deb'],
             'kubernetes_cni_rpm_version': versions['cni_rpm'],
-            'kubernetes_cni_source_type': 'pkg',
+            'kubernetes_cni_source_type': versions['cni_source_type'],
             'runtime': runtime,
             'pause_image': versions['pause']}
 
@@ -104,6 +104,7 @@ def main():
     versions['cni'] = cni['kubernetes_cni_semver'].lstrip('v')
     versions['cni_deb'] = cni['kubernetes_cni_deb_version']
     versions['cni_rpm'] = cni['kubernetes_cni_rpm_version'].split('-')[0] if cni['kubernetes_cni_rpm_version'] else None
+    versions['cni_source_type'] = cni.get('kubernetes_cni_source_type', 'pkg')
 
     k8s = read_json_file(os.path.join(root_path, 'packer', 'config', 'kubernetes.json'))
     versions['k8s'] = k8s['kubernetes_semver'].lstrip('v')
