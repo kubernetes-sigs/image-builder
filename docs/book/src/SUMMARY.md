@@ -3,6 +3,7 @@
 [Introduction](./introduction.md)
 - [CAPI](./capi/capi.md)
   - [Quick Start](./capi/quickstart.md)
+  - [Custom build targets](./capi/custom-build-targets.md)
   - [3DS OUTSCALE](./capi/providers/3dsoutscale.md)
   - [AWS](./capi/providers/aws.md)
   - [Azure](./capi/providers/azure.md)
