@@ -28,7 +28,7 @@ IMMUTABLE_DEFAULTS = {
     "immutable_data_partition": "false",
     "immutable_data_partition_fstype": "ext4",
     "immutable_data_partition_label": "CAPI-DATA",
-    "immutable_data_partition_mount": "/var/lib/cluster-api-data",
+    "immutable_data_partition_mount": "/.capi-data",
     "immutable_root_partition_size": "12884901888",
 }
 

@@ -241,28 +241,26 @@ class ConfigureImmutableRuntimeTests(unittest.TestCase):
             "/etc",
             "/home",
             "/root",
-            "/opt/cni/bin",
+            "/opt",
+            "/srv",
+            "/usr/local",
+            "/var/backups",
             "/var/cache",
-            "/var/lib/NetworkManager",
-            "/var/lib/calico",
-            "/var/lib/chrony",
-            "/var/lib/cilium",
-            "/var/lib/cloud",
-            "/var/lib/cni",
-            "/var/lib/containerd",
-            "/var/lib/dbus",
-            "/var/lib/etcd",
-            "/var/lib/kubelet",
-            "/var/lib/private",
-            "/var/lib/systemd",
+            "/var/crash",
+            "/var/lib",
+            "/var/local",
             "/var/log",
+            "/var/mail",
+            "/var/opt",
             "/var/spool",
         }
 
         self.assertEqual("true", values["immutable_data_partition"])
+        self.assertEqual("/.capi-data", values["immutable_data_partition_mount"])
         self.assertEqual("true", values["immutable_read_only_root"])
         self.assertTrue(expected_paths.issubset(persistent_paths))
         self.assertFalse(any(path.startswith("/etc/") for path in persistent_paths))
+        self.assertFalse(any(path.startswith("/var/lib/") for path in persistent_paths))
 
 
 if __name__ == "__main__":

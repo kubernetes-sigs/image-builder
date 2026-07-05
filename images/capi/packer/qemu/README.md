@@ -37,20 +37,21 @@ The target enables these immutable defaults:
 - `immutable_data_partition=true`: create and mount the data partition.
 - `immutable_data_partition_fstype=ext4`: filesystem type for the data partition.
 - `immutable_data_partition_label=CAPI-DATA`: filesystem label for the data partition.
-- `immutable_data_partition_mount=/var/lib/cluster-api-data`: mount point for persistent runtime data.
+- `immutable_data_partition_mount=/.capi-data`: mount point for persistent runtime data.
 - `immutable_data_partition_mount_options=defaults,nofail`: fstab options for the data partition.
 - `immutable_root_partition_size=12884901888`: root partition size in bytes; the data partition uses the remaining disk.
 - `immutable_read_only_root=true`: write `/` as read-only in `/etc/fstab` for the final image.
-- `immutable_persistent_paths=/etc,/home,/root,/opt/cni/bin,/var/cache,/var/lib/NetworkManager,/var/lib/calico,/var/lib/chrony,/var/lib/cilium,/var/lib/cloud,/var/lib/cni,/var/lib/containerd,/var/lib/dbus,/var/lib/etcd,/var/lib/kubelet,/var/lib/private,/var/lib/systemd,/var/log,/var/spool`: copy existing contents into the data partition and bind mount them back for CAPI bootstrap and node runtime writes.
+- `immutable_persistent_paths=/etc,/home,/root,/opt,/srv,/usr/local,/var/backups,/var/cache,/var/crash,/var/lib,/var/local,/var/log,/var/mail,/var/opt,/var/spool`: copy existing contents into the data partition and bind mount them back for CAPI bootstrap and node runtime writes.
 - `immutable_tmpfs_paths=/tmp,/var/tmp`: mount volatile scratch paths as tmpfs.
 
 The persistent path list is intentionally explicit. It covers first-boot
-configuration under `/etc`, cloud-init state, user home directories, SSH host
-keys, CNI binaries and runtime state, common CNI data directories, systemd and
-dbus state, NetworkManager state, kubelet/containerd state, optional etcd state
-for control-plane images, caches, spools, and logs. Providers that write
-additional bootstrap files should extend `immutable_persistent_paths` rather
-than making the whole root writable again.
+configuration under `/etc`, user home directories, SSH host keys, `/opt`,
+`/usr/local`, `/srv`, and the common mutable `/var` subtrees used by package
+state, cloud-init, kubelet, containerd, CNI, systemd, dbus, NetworkManager,
+control-plane etcd data, caches, crash dumps, spools, and logs. The data
+partition is mounted outside `/var` so `/var/lib` can be persistent as a whole.
+Providers that write additional bootstrap files should extend
+`immutable_persistent_paths` rather than making the whole root writable again.
 
 The target validates the contract in four places:
 
@@ -95,26 +96,22 @@ should:
 
    ```bash
    findmnt -no OPTIONS / | tr ',' '\n' | grep -qx ro
-   test -w /var/lib/cluster-api-data
+   test -w /.capi-data
    for path in \
      /etc \
      /home \
      /root \
-     /opt/cni/bin \
+     /opt \
+     /srv \
+     /usr/local \
+     /var/backups \
      /var/cache \
-     /var/lib/NetworkManager \
-     /var/lib/calico \
-     /var/lib/chrony \
-     /var/lib/cilium \
-     /var/lib/cloud \
-     /var/lib/cni \
-     /var/lib/containerd \
-     /var/lib/dbus \
-     /var/lib/etcd \
-     /var/lib/kubelet \
-     /var/lib/private \
-     /var/lib/systemd \
+     /var/crash \
+     /var/lib \
+     /var/local \
      /var/log \
+     /var/mail \
+     /var/opt \
      /var/spool; do
        test -w "${path}"
    done

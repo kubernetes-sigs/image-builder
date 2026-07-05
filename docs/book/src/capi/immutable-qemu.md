@@ -33,20 +33,21 @@ different contract:
 | `immutable_data_partition` | `true` |
 | `immutable_data_partition_fstype` | `ext4` |
 | `immutable_data_partition_label` | `CAPI-DATA` |
-| `immutable_data_partition_mount` | `/var/lib/cluster-api-data` |
+| `immutable_data_partition_mount` | `/.capi-data` |
 | `immutable_data_partition_mount_options` | `defaults,nofail` |
 | `immutable_root_partition_size` | `12884901888` |
 | `immutable_read_only_root` | `true` |
-| `immutable_persistent_paths` | `/etc,/home,/root,/opt/cni/bin,/var/cache,/var/lib/NetworkManager,/var/lib/calico,/var/lib/chrony,/var/lib/cilium,/var/lib/cloud,/var/lib/cni,/var/lib/containerd,/var/lib/dbus,/var/lib/etcd,/var/lib/kubelet,/var/lib/private,/var/lib/systemd,/var/log,/var/spool` |
+| `immutable_persistent_paths` | `/etc,/home,/root,/opt,/srv,/usr/local,/var/backups,/var/cache,/var/crash,/var/lib,/var/local,/var/log,/var/mail,/var/opt,/var/spool` |
 | `immutable_tmpfs_paths` | `/tmp,/var/tmp` |
 
-The persistent path list covers first-boot configuration under `/etc`,
-cloud-init state, user home directories, SSH host keys, CNI binaries and
-runtime state, common CNI data directories, systemd and dbus state,
-NetworkManager state, kubelet/containerd state, optional etcd state for
-control-plane images, caches, spools, and logs. Extend
-`immutable_persistent_paths` when a provider writes additional bootstrap files
-after the root filesystem is remounted read-only.
+The persistent path list covers first-boot configuration under `/etc`, user home
+directories, SSH host keys, `/opt`, `/usr/local`, `/srv`, and the common mutable
+`/var` subtrees used by package state, cloud-init, kubelet, containerd, CNI,
+systemd, dbus, NetworkManager, control-plane etcd data, caches, crash dumps,
+spools, and logs. The data partition is mounted outside `/var` so `/var/lib`
+can be persistent as a whole. Extend `immutable_persistent_paths` when a
+provider writes additional bootstrap files after the root filesystem is
+remounted read-only.
 
 ## Validation
 
@@ -68,26 +69,22 @@ contract, and verify the guest contract over SSH:
 
 ```bash
 findmnt -no OPTIONS / | tr ',' '\n' | grep -qx ro
-test -w /var/lib/cluster-api-data
+test -w /.capi-data
 for path in \
   /etc \
   /home \
   /root \
-  /opt/cni/bin \
+  /opt \
+  /srv \
+  /usr/local \
+  /var/backups \
   /var/cache \
-  /var/lib/NetworkManager \
-  /var/lib/calico \
-  /var/lib/chrony \
-  /var/lib/cilium \
-  /var/lib/cloud \
-  /var/lib/cni \
-  /var/lib/containerd \
-  /var/lib/dbus \
-  /var/lib/etcd \
-  /var/lib/kubelet \
-  /var/lib/private \
-  /var/lib/systemd \
+  /var/crash \
+  /var/lib \
+  /var/local \
   /var/log \
+  /var/mail \
+  /var/opt \
   /var/spool; do
     test -w "${path}"
 done
