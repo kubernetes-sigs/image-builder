@@ -46,7 +46,10 @@
   block:
     - name: Check for legacy Microsoft apt source
       ansible.builtin.find:
-        paths: /etc/apt/sources.list.d
+        depth: 1
+        paths:
+          - /etc/apt
+          - /etc/apt/sources.list.d
         patterns:
           - "*.list"
           - "*.sources"
