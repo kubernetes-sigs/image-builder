@@ -25,4 +25,7 @@
       kubelet-{{ kubernetes_rpm_version }}
       kubeadm-{{ kubernetes_rpm_version }}
       kubectl-{{ kubernetes_rpm_version }}
-      kubernetes-cni{{ '-' + kubernetes_cni_rpm_version if kubernetes_cni_rpm_version else '' }}
+
+- name: Install Kubernetes CNI package
+  ansible.builtin.command: tdnf install kubernetes-cni{{ '-' + kubernetes_cni_rpm_version if kubernetes_cni_rpm_version else '' }} --nogpgcheck -y
+  when: kubernetes_cni_source_type | default("pkg") == "pkg"
