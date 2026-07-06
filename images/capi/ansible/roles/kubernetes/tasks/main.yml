@@ -36,6 +36,10 @@
   ansible.builtin.import_tasks: cni-url.yml
   when: kubernetes_cni_source_type | default("pkg") == "http"
 
+- name: Import CNI package validation tasks
+  ansible.builtin.import_tasks: cni-pkg.yml
+  when: kubernetes_cni_source_type | default("pkg") == "pkg"
+
 # must include crictl-url.yml after installing containerd,
 # as the cri-containerd tarball also includes crictl.
 - name: Import crictl URL tasks
