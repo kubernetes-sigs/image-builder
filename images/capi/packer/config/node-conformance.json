@@ -1,0 +1,12 @@
+{
+  "node_conformance": "false",
+  "node_conformance_etcd_version": "v3.5.32",
+  "node_conformance_flake_attempts": "1",
+  "node_conformance_focus": "\\[Conformance\\]",
+  "node_conformance_kubelet_flags": "--fail-swap-on=false --runtime-cgroups=/system.slice/containerd.service",
+  "node_conformance_parallelism": "4",
+  "node_conformance_results_dir": "/tmp/kubernetes-node-conformance-results",
+  "node_conformance_skip": "\\[Flaky\\]|\\[Serial\\]|\\[Slow\\]",
+  "node_conformance_standalone_mode": "true",
+  "node_conformance_timeout": "2h"
+}

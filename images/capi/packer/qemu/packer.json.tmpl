@@ -176,6 +176,53 @@
       "version": "{{user `goss_version`}}"
     },
     {
+      "destination": "/tmp/run-e2e-node-conformance.sh",
+      "source": "./hack/run-e2e-node-conformance.sh",
+      "type": "file"
+    },
+    {
+      "environment_vars": [
+        "KUBERNETES_NODE_CONFORMANCE={{user `node_conformance`}}",
+        "KUBERNETES_VERSION={{user `kubernetes_semver`}}",
+        "NODE_CONFORMANCE_ETCD_VERSION={{user `node_conformance_etcd_version`}}",
+        "NODE_CONFORMANCE_FLAKE_ATTEMPTS={{user `node_conformance_flake_attempts`}}",
+        "NODE_CONFORMANCE_FOCUS={{user `node_conformance_focus`}}",
+        "NODE_CONFORMANCE_KUBELET_FLAGS={{user `node_conformance_kubelet_flags`}}",
+        "NODE_CONFORMANCE_PARALLELISM={{user `node_conformance_parallelism`}}",
+        "NODE_CONFORMANCE_RESULTS_DIR={{user `node_conformance_results_dir`}}",
+        "NODE_CONFORMANCE_SKIP={{user `node_conformance_skip`}}",
+        "NODE_CONFORMANCE_STANDALONE_MODE={{user `node_conformance_standalone_mode`}}",
+        "NODE_CONFORMANCE_TIMEOUT={{user `node_conformance_timeout`}}"
+      ],
+      "inline": [
+        "chmod +x /tmp/run-e2e-node-conformance.sh",
+        "set +e; /tmp/run-e2e-node-conformance.sh; node_conformance_exit=$?; set -e; if [ \"$KUBERNETES_NODE_CONFORMANCE\" = \"true\" ] && [ \"$node_conformance_exit\" -ne 0 ]; then mkdir -p \"$NODE_CONFORMANCE_RESULTS_DIR\"; [ -f \"$NODE_CONFORMANCE_RESULTS_DIR/summary.env\" ] || printf 'exit_code=%s\\n' \"$node_conformance_exit\" > \"$NODE_CONFORMANCE_RESULTS_DIR/summary.env\"; fi; exit 0"
+      ],
+      "inline_shebang": "/bin/bash -e",
+      "timeout": "3h",
+      "type": "shell"
+    },
+    {
+      "destination": "node-conformance-results",
+      "direction": "download",
+      "source": "{{user `node_conformance_results_dir`}}",
+      "type": "file"
+    },
+    {
+      "environment_vars": [
+        "KUBERNETES_NODE_CONFORMANCE={{user `node_conformance`}}",
+        "NODE_CONFORMANCE_RESULTS_DIR={{user `node_conformance_results_dir`}}"
+      ],
+      "inline": [
+        "if [ \"$KUBERNETES_NODE_CONFORMANCE\" != \"true\" ]; then exit 0; fi",
+        "if [ ! -f \"$NODE_CONFORMANCE_RESULTS_DIR/summary.env\" ]; then echo 'missing node conformance summary.env' >&2; exit 1; fi",
+        ". \"$NODE_CONFORMANCE_RESULTS_DIR/summary.env\"",
+        "if [ \"${exit_code:-0}\" != \"0\" ]; then echo \"node conformance failed with exit code ${exit_code}\" >&2; exit \"$exit_code\"; fi"
+      ],
+      "inline_shebang": "/bin/bash -e",
+      "type": "shell"
+    },
+    {
         "type": "shell",
         "environment_vars": [
           "REMOVE_NAMESERVER={{user `remove_nameserver`}}"
@@ -242,6 +289,16 @@
     "machine_id_mode": "444",
     "machine_type": "pc",
     "memory": "2048",
+    "node_conformance": "false",
+    "node_conformance_etcd_version": "v3.5.32",
+    "node_conformance_flake_attempts": "1",
+    "node_conformance_focus": "\\[Conformance\\]",
+    "node_conformance_kubelet_flags": "--fail-swap-on=false --runtime-cgroups=/system.slice/containerd.service",
+    "node_conformance_parallelism": "4",
+    "node_conformance_results_dir": "/tmp/kubernetes-node-conformance-results",
+    "node_conformance_skip": "\\[Flaky\\]|\\[Serial\\]|\\[Slow\\]",
+    "node_conformance_standalone_mode": "true",
+    "node_conformance_timeout": "2h",
     "oem_id": "",
     "output_directory": "./output/{{user `build_name`}}-kube-{{user `kubernetes_semver`}}",
     "python_path": "",
