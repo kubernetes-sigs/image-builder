@@ -28,6 +28,8 @@ set -o pipefail
 CAPI_ROOT=$(dirname "${BASH_SOURCE[0]}")/..
 cd "${CAPI_ROOT}" || exit 1
 
+test_status=0
+
 # shellcheck source=ensure-go.sh
 source "./hack/ensure-go.sh"
 # shellcheck source=ensure-boskosctl.sh
