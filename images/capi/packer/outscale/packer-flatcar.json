@@ -142,7 +142,7 @@
     "build_timestamp": "{{timestamp}}",
     "containerd_gvisor_runtime": "false",
     "containerd_gvisor_version": "latest",
-    "containerd_service_url": "https://raw.githubusercontent.com/containerd/containerd/refs/tags/v{{user `containerd_version`}}/containerd.service",
+    "containerd_service_url": "",
     "containerd_version": null,
     "crictl_version": null,
     "debug_ssh_public_key": "",

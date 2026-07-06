@@ -33,11 +33,19 @@
     dest: /tmp/{{ containerd_filename }}
     mode: "0600"
 
-- name: Download containerd.service
+- name: Download containerd.service from URL
   ansible.builtin.get_url:
     url: "{{ containerd_service_url }}"
     dest: /tmp/containerd.service
     mode: "0600"
+  when: containerd_service_url | default("") | length > 0
+
+- name: Create containerd.service from template
+  ansible.builtin.template:
+    src: etc/systemd/system/containerd.service
+    dest: /tmp/containerd.service
+    mode: "0600"
+  when: containerd_service_url | default("") | length == 0
 
 - name: Download runc
   ansible.builtin.get_url:

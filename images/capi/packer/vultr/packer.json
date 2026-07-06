@@ -41,7 +41,7 @@
     "containerd_gvisor_runtime": "false",
     "containerd_gvisor_version": "latest",
     "containerd_image_pull_progress_timeout": null,
-    "containerd_service_url": "https://raw.githubusercontent.com/containerd/containerd/refs/tags/v{{user `containerd_version`}}/containerd.service",
+    "containerd_service_url": "",
     "containerd_version": null,
     "crictl_version": null,
     "existing_ansible_ssh_args": "{{env `ANSIBLE_SSH_ARGS`}}",
