@@ -1,0 +1,31 @@
+# Copyright 2026 The Kubernetes Authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# Rolling latest Kubernetes dependency entry.
+# Refresh with:
+#   images/capi/hack/kubernetes-version-matrix.py update --write
+latest:
+  containerd_version: "2.3.1"
+  crictl_version: "1.36.0"
+  kubernetes_cni_deb_version: "1.9.1-1.1"
+  kubernetes_cni_http_source: "https://github.com/containernetworking/plugins/releases/download"
+  kubernetes_cni_rpm_version: "1.9.1"
+  kubernetes_cni_semver: "v1.9.1"
+  kubernetes_cni_source_type: "pkg"
+  kubernetes_deb_version: "1.36.2-2.1"
+  kubernetes_rpm_version: "1.36.2"
+  kubernetes_semver: "v1.36.2"
+  kubernetes_series: "v1.36"
+  kubernetes_source_type: "pkg"
+  runc_version: "1.4.2"
