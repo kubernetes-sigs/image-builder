@@ -117,7 +117,7 @@ export FLATCAR_VERSION="$(get_flatcar_version)"
 
 # Pre-pulling windows images takes 10-20 mins
 # Disable them for CI runs so don't run into timeouts
-export PACKER_VAR_FILES="packer/azure/scripts/disable-windows-prepull.json scripts/ci-disable-goss-inspect.json"
+export PACKER_VAR_FILES="packer/azure/scripts/disable-windows-prepull.json packer/azure/scripts/disable-windows-debug-tools.json scripts/ci-disable-goss-inspect.json"
 
 run_sig_target() {
     local target="$1"
