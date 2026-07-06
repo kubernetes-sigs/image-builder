@@ -746,12 +746,9 @@ build-azure-sig-ubuntu-2204: ## Builds Ubuntu 22.04 Azure managed image in Share
 build-azure-sig-ubuntu-2404: ## Builds Ubuntu 24.04 Azure managed image in Shared Image Gallery
 build-azure-sig-ubuntu-2604: ## Builds Ubuntu 26.04 Azure managed image in Shared Image Gallery
 build-azure-sig-azurelinux-3: ## Builds Azure Linux 3 Azure managed image in Shared Image Gallery
-build-azure-sig-windows-2019-containerd: ## Builds Windows Server 2019 with containerd Azure managed image in Shared Image Gallery
 build-azure-sig-windows-2022-containerd: ## Builds Windows Server 2022 with containerd Azure managed image in Shared Image Gallery
 build-azure-sig-windows-2025-containerd: ## Builds Windows Server 2025 with containerd Azure managed image in Shared Image Gallery
-build-azure-sig-windows-2019-containerd-cvm: ## Builds Windows Server 2019 with containerd CVM Azure managed image in Shared Image Gallery
 build-azure-sig-windows-2022-containerd-cvm: ## Builds Windows Server 2022 with containerd CVM Azure managed image in Shared Image Gallery
-build-azure-sig-windows-annual-containerd: ## Builds for Windows Server Annual Channel with containerd
 build-azure-sig-azurelinux-3-gen2: ## Builds Azure Linux 3 Gen2 managed image in Shared Image Gallery
 build-azure-sig-flatcar: ## Builds Flatcar Azure managed image in Shared Image Gallery
 build-azure-sig-flatcar-gen2: ## Builds Flatcar Azure Gen2 managed image in Shared Image Gallery
@@ -952,16 +949,17 @@ validate-azure-sig-azurelinux-3: ## Validates Azure Linux 3 Azure managed image 
 validate-azure-sig-ubuntu-2204: ## Validates Ubuntu 22.04 Azure managed image in Shared Image Gallery Packer config
 validate-azure-sig-ubuntu-2404: ## Validates Ubuntu 24.04 Azure managed image in Shared Image Gallery Packer config
 validate-azure-sig-ubuntu-2604: ## Validates Ubuntu 26.04 Azure managed image in Shared Image Gallery Packer config
-validate-azure-sig-windows-2019-containerd: ## Validate Windows Server 2019 with containerd Azure managed image in Shared Image Gallery Packer config
 validate-azure-sig-windows-2022-containerd: ## Validate Windows Server 2022 with containerd Azure managed image in Shared Image Gallery Packer config
 validate-azure-sig-windows-2025-containerd: ## Validate Windows Server 2025 with containerd Azure managed image in Shared Image Gallery Packer config
-validate-azure-sig-windows-annual-containerd: ## Validate Windows Server Annual Channel with containerd Azure managed image in Shared Image Gallery Packer config
+validate-azure-sig-flatcar: ## Validates Flatcar Azure managed image in Shared Image Gallery Packer config
 validate-azure-sig-azurelinux-3-gen2: ## Validates Azure Linux 3 Gen2 Azure managed image in Shared Image Gallery Packer config
+validate-azure-sig-flatcar-gen2: ## Validates Flatcar Azure Gen2 managed image in Shared Image Gallery Packer config
 validate-azure-sig-ubuntu-2204-gen2: ## Validates Ubuntu 22.04 Azure managed image in Shared Image Gallery Packer config
 validate-azure-sig-ubuntu-2204-cvm: ## Validates Ubuntu 22.04 CVM Azure managed image in Shared Image Gallery Packer config
 validate-azure-sig-ubuntu-2404-gen2: ## Validates Ubuntu 24.04 Azure managed image in Shared Image Gallery Packer config
 validate-azure-sig-ubuntu-2404-cvm: ## Validates Ubuntu 24.04 CVM Azure managed image in Shared Image Gallery Packer config
 validate-azure-sig-ubuntu-2604-gen2: ## Validates Ubuntu 26.04 Azure managed image in Shared Image Gallery Packer config
+validate-azure-sig-windows-2022-containerd-cvm: ## Validate Windows Server 2022 with containerd CVM Azure managed image in Shared Image Gallery Packer config
 #validate-azure-sig-ubuntu-2604-cvm: ## Validates Ubuntu 26.04 CVM Azure managed image in Shared Image Gallery Packer config
 validate-azure-all: $(AZURE_VALIDATE_SIG_TARGETS) $(AZURE_VALIDATE_SIG_GEN2_TARGETS) $(AZURE_VALIDATE_SIG_CVM_TARGETS) ## Validates all images for Azure Packer config
 
