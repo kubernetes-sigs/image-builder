@@ -35,6 +35,27 @@
     dest: /opt/cni/bin
     src: /tmp/cni.tar.gz
 
+- name: Verify CNI tarball installed plugin binaries
+  ansible.builtin.stat:
+    path: /opt/cni/bin/{{ item }}
+  register: kubernetes_cni_plugin_binary
+  loop:
+    - bridge
+    - host-local
+    - loopback
+    - portmap
+  failed_when: not kubernetes_cni_plugin_binary.stat.exists or not kubernetes_cni_plugin_binary.stat.executable
+
+- name: Verify CNI tarball version is active
+  ansible.builtin.command:
+    cmd: /opt/cni/bin/host-device
+  register: kubernetes_cni_plugin_version
+  changed_when: false
+  failed_when: >
+    kubernetes_cni_semver not in (kubernetes_cni_plugin_version.stdout ~ kubernetes_cni_plugin_version.stderr) and
+    (kubernetes_cni_semver | regex_replace('^v', '')) not in
+    (kubernetes_cni_plugin_version.stdout ~ kubernetes_cni_plugin_version.stderr)
+
 - name: Remove CNI tarball
   ansible.builtin.file:
     state: absent

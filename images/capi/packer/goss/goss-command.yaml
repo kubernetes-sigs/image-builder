@@ -110,6 +110,37 @@ command:
     stderr: []
     timeout: 0
 {{end}}
+{{if or (eq .Vars.kubernetes_cni_source_type "http") (eq .Vars.kubernetes_cni_source_type "pkg")}}
+  CNI plugin binaries are executable:
+    exec: >-
+      test -x /opt/cni/bin/bridge &&
+      test -x /opt/cni/bin/host-local &&
+      test -x /opt/cni/bin/loopback &&
+      test -x /opt/cni/bin/portmap
+    exit-status: 0
+    stdout: []
+    stderr: []
+    timeout: 0
+{{end}}
+{{if eq .Vars.kubernetes_cni_source_type "pkg"}}
+  CNI plugin binaries are package-owned:
+    exec: >-
+      if command -v dpkg-query >/dev/null 2>&1; then
+        for plugin in bridge host-local loopback portmap; do
+          dpkg-query -S "/opt/cni/bin/${plugin}" | grep -q '^kubernetes-cni' || exit 1;
+        done;
+      elif command -v rpm >/dev/null 2>&1; then
+        for plugin in bridge host-local loopback portmap; do
+          rpm -qf "/opt/cni/bin/${plugin}" | grep -q '^kubernetes-cni-' || exit 1;
+        done;
+      else
+        exit 1;
+      fi
+    exit-status: 0
+    stdout: []
+    stderr: []
+    timeout: 0
+{{end}}
 {{if eq .Vars.kubernetes_cni_source_type "http"}}
   /opt/cni/bin/host-device 2>&1 | awk -F' ' '{print substr($4,2); }':
     exit-status: 0

@@ -1,0 +1,51 @@
+# Copyright 2026 The Kubernetes Authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+---
+- name: Verify CNI package installed plugin binaries
+  ansible.builtin.stat:
+    path: /opt/cni/bin/{{ item }}
+  register: kubernetes_cni_plugin_binary
+  loop:
+    - bridge
+    - host-local
+    - loopback
+    - portmap
+  failed_when: not kubernetes_cni_plugin_binary.stat.exists or not kubernetes_cni_plugin_binary.stat.executable
+
+- name: Verify Debian CNI plugin binaries are package-owned
+  ansible.builtin.command:
+    cmd: dpkg-query -S /opt/cni/bin/{{ item }}
+  register: kubernetes_cni_package_owner
+  loop:
+    - bridge
+    - host-local
+    - loopback
+    - portmap
+  changed_when: false
+  failed_when: not kubernetes_cni_package_owner.stdout.startswith("kubernetes-cni")
+  when: ansible_facts['os_family'] == "Debian"
+
+# ansible.builtin.package cannot query which package owns an installed file.
+- name: Verify RPM CNI plugin binaries are package-owned # noqa command-instead-of-module
+  ansible.builtin.command:
+    cmd: /usr/bin/rpm -qf /opt/cni/bin/{{ item }}
+  register: kubernetes_cni_package_owner
+  loop:
+    - bridge
+    - host-local
+    - loopback
+    - portmap
+  changed_when: false
+  failed_when: not kubernetes_cni_package_owner.stdout.startswith("kubernetes-cni-")
+  when: ansible_facts['os_family'] in ["Common Base Linux Mariner", "Microsoft Azure Linux", "RedHat", "VMware Photon OS"]
