@@ -69,6 +69,7 @@ export PATH=${PWD}/.local/bin:$PATH
 export PATH=${PYTHON_BIN_DIR:-"/root/.local/bin"}:$PATH
 export GC_KIND="false"
 export TIMESTAMP="$(date -u '+%Y%m%dT%H%M%S')"
+export PACKER_CACHE_ROOT="${PACKER_CACHE_ROOT:-${TMPDIR:-/tmp}/image-builder-packer-cache-${BUILD_ID:-$$}}"
 export GOVC_DATACENTER="Datacenter"
 export GOVC_CLUSTER="k8s-gcve-cluster"
 export GOVC_INSECURE=true
@@ -178,14 +179,18 @@ declare -A PIDS
 for target in "${TARGETS[@]}";
 do
   target=${target#build-node-ova-vsphere-}
-  export PACKER_VAR_FILES="ci-${target}.json scripts/ci-disable-goss-inspect.json"
 cat << EOF > "ci-${target}.json"
 {
 "build_version": "capv-ci-${target}-${TIMESTAMP}"
 }
 EOF
-  export PACKER_LOG=1
-  make -o deps-ova -o set-ssh-password "build-node-ova-vsphere-${target}" > "${ARTIFACTS}/${target}.log" 2>&1 &
+  (
+    export PACKER_CACHE_DIR="${PACKER_CACHE_ROOT}/${target}"
+    export PACKER_LOG=1
+    export PACKER_VAR_FILES="ci-${target}.json scripts/ci-disable-goss-inspect.json"
+    mkdir -p "${PACKER_CACHE_DIR}"
+    make -o deps-ova -o set-ssh-password "build-node-ova-vsphere-${target}"
+  ) > "${ARTIFACTS}/${target}.log" 2>&1 &
   PIDS["${target}"]=$!
 done
 
