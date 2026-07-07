@@ -17,6 +17,21 @@ cd images/capi
 PACKER_FLAGS="--var 'node_conformance=true'" make build-qemu-ubuntu-2404
 ```
 
+From the repository root, the CI helper wraps the same configuration with
+defaults suitable for a nested-virtualization runner:
+
+```bash
+images/capi/scripts/ci-qemu-node-conformance.sh
+```
+
+The helper builds `build-qemu-ubuntu-2404-cloudimg` by default with
+`node_conformance=true`, 4 CPUs, and 8 GiB of memory. Override
+`NODE_CONFORMANCE_TARGET`, `NODE_CONFORMANCE_CPUS`,
+`NODE_CONFORMANCE_MEMORY`, `NODE_CONFORMANCE_PARALLELISM`, or
+`NODE_CONFORMANCE_TIMEOUT` to tune a run. The helper requires `/dev/kvm` unless
+`NODE_CONFORMANCE_ACCELERATOR=tcg` is set explicitly for slower local
+debugging.
+
 The runner downloads `kubernetes-test-linux-${ARCH}.tar.gz` for the same
 Kubernetes version configured by `kubernetes_semver`, starts the local CRI
 runtime, stops the system kubelet, and runs `e2e_node.test` with a default focus
