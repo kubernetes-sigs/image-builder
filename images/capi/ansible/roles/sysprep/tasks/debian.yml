@@ -47,28 +47,39 @@
 # The apt-daily/unattended-upgrades services may still be running from before
 # they were disabled above. Retry package selection changes until the dpkg frontend
 # lock is released to avoid a flaky race with concurrent apt activity.
+- name: Define installed packages for package selection changes
+  ansible.builtin.set_fact:
+    sysprep_installed_packages: "{{ ansible_facts.packages.keys() | list | sort }}"
+    sysprep_grub_packages: "{{ ansible_facts.packages.keys() | select('search', 'grub') | list | sort }}"
+  when: sysprep_hold_installed_packages | default(true) | bool
+
+# ansible.builtin.dpkg_selections only changes one package per module call.
+# Feed dpkg's native batch format once to avoid hundreds of SSH round trips.
 - name: Pin all installed packages
-  ansible.builtin.dpkg_selections:
-    name: "{{ item }}"
-    selection: hold
-  loop: "{{ ansible_facts.packages.keys() }}"
+  ansible.builtin.command:
+    cmd: dpkg --set-selections
+    stdin: "{{ sysprep_installed_packages | map('regex_replace', '$', ' hold') | join('\n') }}"
   register: sysprep_dpkg_selections_hold
   until: sysprep_dpkg_selections_hold is not failed
   retries: 30
   delay: 10
-  when: sysprep_hold_installed_packages | default(true) | bool
+  changed_when: sysprep_installed_packages | length > 0
+  when:
+    - sysprep_hold_installed_packages | default(true) | bool
+    - sysprep_installed_packages | length > 0
 
 - name: Unpin grub packages for MaaS
-  ansible.builtin.dpkg_selections:
-    name: "{{ item }}"
-    selection: install
-  loop: "{{ ansible_facts.packages.keys() | select('search', 'grub') | list }}"
+  ansible.builtin.command:
+    cmd: dpkg --set-selections
+    stdin: "{{ sysprep_grub_packages | map('regex_replace', '$', ' install') | join('\n') }}"
   register: sysprep_dpkg_selections_unhold_grub
   until: sysprep_dpkg_selections_unhold_grub is not failed
   retries: 30
   delay: 10
+  changed_when: sysprep_grub_packages | length > 0
   when:
     - sysprep_hold_installed_packages | default(true) | bool
+    - sysprep_grub_packages | length > 0
     - provider is defined and provider is search('maas')
 
 - name: Remove extra repos
