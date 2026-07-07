@@ -1,0 +1,28 @@
+command:
+{{ if ne .Vars.OS "windows" }}
+  sh -c '! find /etc/ssh -xdev -type f -name "ssh_host_*_key" -print -quit | grep -q .':
+    exit-status: 0
+    stdout: []
+    stderr: []
+    timeout: 5000
+  sh -c 'test ! -s /etc/machine-id || grep -qx uninitialized /etc/machine-id':
+    exit-status: 0
+    stdout: []
+    stderr: []
+    timeout: 5000
+  test ! -e /var/lib/cloud/data/instance-id:
+    exit-status: 0
+    stdout: []
+    stderr: []
+    timeout: 5000
+  sh -c 'found="$(find /var/crash /var/lib/systemd/coredump /var/tmp /tmp -xdev -type f \( -name core -o -name "core.*" -o -name "*.core" \) -print -quit 2>/dev/null || true)"; test -z "$found"':
+    exit-status: 0
+    stdout: []
+    stderr: []
+    timeout: 10000
+  du -sm /var/log | awk '{exit ($1 > 200)}':
+    exit-status: 0
+    stdout: []
+    stderr: []
+    timeout: 5000
+{{ end }}
