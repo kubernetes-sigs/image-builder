@@ -38,7 +38,7 @@ The target enables these immutable defaults:
 - `immutable_data_partition_fstype=ext4`: filesystem type for the data partition.
 - `immutable_data_partition_label=CAPI-DATA`: filesystem label for the data partition.
 - `immutable_data_partition_mount=/.capi-data`: mount point for persistent runtime data.
-- `immutable_data_partition_mount_options=defaults,nofail`: fstab options for the data partition.
+- `immutable_data_partition_mount_options=defaults,x-systemd.device-timeout=30s`: fstab options for the required data partition.
 - `immutable_root_partition_size=12884901888`: root partition size in bytes; the data partition uses the remaining disk.
 - `immutable_read_only_root=true`: write `/` as read-only in `/etc/fstab` for the final image.
 - `immutable_persistent_paths=/etc,/home,/root,/opt,/srv,/usr/local,/var/backups,/var/cache,/var/crash,/var/lib,/var/local,/var/log,/var/mail,/var/opt,/var/spool`: copy existing contents into the data partition and bind mount them back for CAPI bootstrap and node runtime writes.
@@ -52,19 +52,30 @@ control-plane etcd data, caches, crash dumps, spools, and logs. The data
 partition is mounted outside `/var` so `/var/lib` can be persistent as a whole.
 Providers that write additional bootstrap files should extend
 `immutable_persistent_paths` rather than making the whole root writable again.
+The data partition and bind mounts are required mounts. Do not add `nofail`
+unless the image target has a separate recovery path for missing writable
+runtime storage. The immutable runtime step writes systemd drop-ins so
+cloud-init, containerd, kubelet, and SSH wait for the writable mounts.
+
+The default QEMU disk is 20 GiB and `immutable_root_partition_size` reserves
+12 GiB for the read-only root. The data partition receives the remaining disk
+space, which must be large enough for `/var/lib/containerd`, kubelet state,
+logs, and bootstrap data. Increase `disk_size` when the workload or provider
+needs more writable runtime capacity.
 
 The target validates the contract in four places:
 
 - the Ubuntu autoinstall renderer unit tests verify root/data partition
   rendering and input validation;
 - the immutable runtime unit tests verify fstab replacement, persistent bind
-  mount generation, content copy, tmpfs generation, and the data-partition
-  requirement for persistent paths;
+  mount generation, top-level directory metadata preservation, systemd mount
+  ordering, content copy, tmpfs generation, and the data-partition requirement
+  for persistent paths;
 - `packer validate` verifies the QEMU target, Packer variables, and Goss
   variable wiring;
 - Goss runs after immutable runtime configuration and verifies the labeled data
   partition, writable data mount, writable persistent bind mounts, writable
-  tmpfs paths, and read-only root fstab entry.
+  tmpfs paths, service mount-ordering drop-ins, and read-only root fstab entry.
 
 Run the focused immutable validation with:
 

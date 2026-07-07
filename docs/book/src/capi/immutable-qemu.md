@@ -34,7 +34,7 @@ different contract:
 | `immutable_data_partition_fstype` | `ext4` |
 | `immutable_data_partition_label` | `CAPI-DATA` |
 | `immutable_data_partition_mount` | `/.capi-data` |
-| `immutable_data_partition_mount_options` | `defaults,nofail` |
+| `immutable_data_partition_mount_options` | `defaults,x-systemd.device-timeout=30s` |
 | `immutable_root_partition_size` | `12884901888` |
 | `immutable_read_only_root` | `true` |
 | `immutable_persistent_paths` | `/etc,/home,/root,/opt,/srv,/usr/local,/var/backups,/var/cache,/var/crash,/var/lib,/var/local,/var/log,/var/mail,/var/opt,/var/spool` |
@@ -48,6 +48,18 @@ spools, and logs. The data partition is mounted outside `/var` so `/var/lib`
 can be persistent as a whole. Extend `immutable_persistent_paths` when a
 provider writes additional bootstrap files after the root filesystem is
 remounted read-only.
+
+The data partition is required for the booted node contract. Do not add
+`nofail` to the data or bind mount options unless the consuming image target has
+a separate recovery path for missing writable runtime storage. The immutable
+runtime step also writes systemd drop-ins so cloud-init, containerd, kubelet,
+and SSH wait for the data, persistent, and tmpfs mounts.
+
+The default QEMU disk is 20 GiB and `immutable_root_partition_size` reserves
+12 GiB for the read-only root. The data partition receives the remaining disk
+space, which must be large enough for `/var/lib/containerd`, kubelet state,
+logs, and bootstrap data. Increase `disk_size` when the workload or provider
+needs more writable runtime capacity.
 
 ## Validation
 

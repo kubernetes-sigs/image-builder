@@ -38,7 +38,19 @@ command:
           *) exit 1 ;;
         esac
         awk -v target="${path}" -v mount="{{.Vars.immutable_data_partition_mount}}" \
-          '$2 == target && $3 == "none" && $4 ~ /(^|,)bind(,|$)/ && $4 ~ "x-systemd.requires-mounts-for=" mount { found = 1 } END { exit found ? 0 : 1 }' /etc/fstab
+          '$2 == target && $3 == "none" && $4 ~ /(^|,)bind(,|$)/ && $4 !~ /(^|,)nofail(,|$)/ && $4 ~ "x-systemd.requires-mounts-for=" mount { found = 1 } END { exit found ? 0 : 1 }' /etc/fstab
+      done
+    exit-status: 0
+    stdout: []
+    stderr: []
+    timeout: 0
+  immutable runtime services wait for writable mounts:
+    exec: |
+      set -eu
+      for service in cloud-init-local.service cloud-init.service cloud-config.service cloud-final.service containerd.service kubelet.service ssh.service sshd.service; do
+        dropin="/etc/systemd/system/${service}.d/10-immutable-runtime-mounts.conf"
+        test -f "${dropin}"
+        grep -F "RequiresMountsFor=" "${dropin}" >/dev/null
       done
     exit-status: 0
     stdout: []

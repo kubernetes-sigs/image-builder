@@ -21,7 +21,10 @@ set -o pipefail
 FSTAB_PATH="${IMMUTABLE_RUNTIME_FSTAB_PATH:-/etc/fstab}"
 RUNTIME_SUDO="${IMMUTABLE_RUNTIME_SUDO-sudo}"
 SKIP_MOUNT="${IMMUTABLE_RUNTIME_SKIP_MOUNT:-false}"
+SYSTEMD_SYSTEM_DIR="${IMMUTABLE_RUNTIME_SYSTEMD_DIR:-/etc/systemd/system}"
 PERSISTENT_MOUNT_PATHS=()
+TMPFS_MOUNT_PATHS=()
+PERSISTENT_FILES_TO_SYNC=()
 
 is_true() {
   case "$(printf '%s' "$1" | tr '[:upper:]' '[:lower:]')" in
@@ -35,6 +38,46 @@ run_privileged() {
     "${RUNTIME_SUDO}" "$@"
   else
     "$@"
+  fi
+}
+
+path_mode() {
+  local path="$1"
+
+  stat -c "%a" "${path}" 2>/dev/null || stat -f "%Lp" "${path}"
+}
+
+path_uid() {
+  local path="$1"
+
+  stat -c "%u" "${path}" 2>/dev/null || stat -f "%u" "${path}"
+}
+
+path_gid() {
+  local path="$1"
+
+  stat -c "%g" "${path}" 2>/dev/null || stat -f "%g" "${path}"
+}
+
+copy_path_metadata() {
+  local path="$1"
+  local source="$2"
+  local mode
+  local uid
+  local gid
+  local source_uid
+  local source_gid
+
+  mode="$(path_mode "${path}")"
+  uid="$(path_uid "${path}")"
+  gid="$(path_gid "${path}")"
+  source_uid="$(path_uid "${source}")"
+  source_gid="$(path_gid "${source}")"
+
+  run_privileged chmod "${mode}" "${source}"
+  run_privileged touch -r "${path}" "${source}"
+  if [ "${uid}:${gid}" != "${source_uid}:${source_gid}" ]; then
+    run_privileged chown "${uid}:${gid}" "${source}"
   fi
 }
 
@@ -106,7 +149,7 @@ configure_data_partition() {
   local label="${IMMUTABLE_DATA_PARTITION_LABEL:?}"
   local mount_point="${IMMUTABLE_DATA_PARTITION_MOUNT:?}"
   local fstype="${IMMUTABLE_DATA_PARTITION_FSTYPE:-ext4}"
-  local mount_options="${IMMUTABLE_DATA_PARTITION_MOUNT_OPTIONS:-defaults,nofail}"
+  local mount_options="${IMMUTABLE_DATA_PARTITION_MOUNT_OPTIONS:-defaults,x-systemd.device-timeout=30s}"
 
   run_privileged install -d -m 0755 "${mount_point}"
   append_or_replace_fstab_entry "LABEL=${label}" "${mount_point}" "${fstype}" "${mount_options}" "0" "2"
@@ -133,11 +176,12 @@ configure_persistent_path() {
     [ -n "$(find "${path}" -mindepth 1 -xdev -print -quit 2>/dev/null)" ]; then
     run_privileged cp -a "${path}/." "${source}/"
   fi
+  copy_path_metadata "${path}" "${source}"
   append_or_replace_fstab_entry \
     "${source}" \
     "${path}" \
     "none" \
-    "bind,nofail,x-systemd.requires-mounts-for=${mount_point}" \
+    "bind,x-systemd.requires-mounts-for=${mount_point}" \
     "0" \
     "0"
   PERSISTENT_MOUNT_PATHS+=("${path}")
@@ -164,6 +208,7 @@ configure_tmpfs_path() {
   validate_absolute_mount_path "${path}" "IMMUTABLE_TMPFS_PATHS"
   run_privileged install -d -m 1777 "${path}"
   append_or_replace_fstab_entry "tmpfs" "${path}" "tmpfs" "${mount_options}" "0" "0"
+  TMPFS_MOUNT_PATHS+=("${path}")
   if ! is_true "${SKIP_MOUNT}" && ! mountpoint -q "${path}"; then
     run_privileged mount "${path}"
   fi
@@ -196,31 +241,82 @@ configure_read_only_root() {
   append_or_replace_fstab_entry "${source}" "/" "${fstype}" "$(root_options_with_ro "${options}")" "0" "1"
 }
 
-sync_persistent_fstab_copy() {
-  local path="$1"
+sync_persistent_file_copy() {
+  local file="$1"
+  local path="$2"
   local mount_point="${IMMUTABLE_DATA_PARTITION_MOUNT:?}"
   local persistent_root="${IMMUTABLE_PERSISTENT_PATHS_ROOT:-${mount_point%/}/persistent}"
   local normalized_path="${path%/}"
   local source
-  local relative_fstab
+  local relative_file
 
   [ -n "${normalized_path}" ] || normalized_path="/"
-  case "${FSTAB_PATH}" in
+  case "${file}" in
     "${normalized_path}"/*)
       source="${persistent_root}${normalized_path}"
-      relative_fstab="${FSTAB_PATH#"${normalized_path}/"}"
-      run_privileged install -d -m 0755 "$(dirname "${source}/${relative_fstab}")"
-      run_privileged install -m 0644 "${FSTAB_PATH}" "${source}/${relative_fstab}"
+      relative_file="${file#"${normalized_path}/"}"
+      run_privileged install -d -m 0755 "$(dirname "${source}/${relative_file}")"
+      run_privileged install -m 0644 "${file}" "${source}/${relative_file}"
       ;;
   esac
 }
 
-sync_persistent_fstab_copies() {
+sync_persistent_file_copies() {
+  local file
   local path
 
-  for path in ${PERSISTENT_MOUNT_PATHS[@]+"${PERSISTENT_MOUNT_PATHS[@]}"}; do
-    sync_persistent_fstab_copy "${path}"
+  PERSISTENT_FILES_TO_SYNC+=("${FSTAB_PATH}")
+  for file in ${PERSISTENT_FILES_TO_SYNC[@]+"${PERSISTENT_FILES_TO_SYNC[@]}"}; do
+    [ -f "${file}" ] || continue
+    for path in ${PERSISTENT_MOUNT_PATHS[@]+"${PERSISTENT_MOUNT_PATHS[@]}"}; do
+      sync_persistent_file_copy "${file}" "${path}"
+    done
   done
+}
+
+requires_mounts_for_paths() {
+  local mount_point="${IMMUTABLE_DATA_PARTITION_MOUNT:-}"
+  local -a paths=()
+  local path
+
+  if is_true "${IMMUTABLE_DATA_PARTITION:-false}" && [ -n "${mount_point}" ]; then
+    paths+=("${mount_point}")
+  fi
+  for path in ${PERSISTENT_MOUNT_PATHS[@]+"${PERSISTENT_MOUNT_PATHS[@]}"}; do
+    paths+=("${path}")
+  done
+  for path in ${TMPFS_MOUNT_PATHS[@]+"${TMPFS_MOUNT_PATHS[@]}"}; do
+    paths+=("${path}")
+  done
+  printf '%s\n' "${paths[@]}" | awk 'NF && !seen[$0]++ { printf "%s%s", sep, $0; sep = " " }'
+}
+
+configure_systemd_mount_ordering() {
+  local services="${IMMUTABLE_SYSTEMD_MOUNT_ORDERING_SERVICES-cloud-init-local.service,cloud-init.service,cloud-config.service,cloud-final.service,containerd.service,kubelet.service,ssh.service,sshd.service}"
+  local mounts
+  local service
+  local dropin_dir
+  local dropin
+  local tmp
+
+  [ -n "${services}" ] || return 0
+  mounts="$(requires_mounts_for_paths)"
+  [ -n "${mounts}" ] || return 0
+
+  while IFS= read -r service; do
+    [ -n "${service}" ] || continue
+    dropin_dir="${SYSTEMD_SYSTEM_DIR%/}/${service}.d"
+    dropin="${dropin_dir}/10-immutable-runtime-mounts.conf"
+    tmp="$(mktemp)"
+    {
+      printf '[Unit]\n'
+      printf 'RequiresMountsFor=%s\n' "${mounts}"
+    } >"${tmp}"
+    run_privileged install -d -m 0755 "${dropin_dir}"
+    run_privileged install -m 0644 "${tmp}" "${dropin}"
+    rm -f "${tmp}"
+    PERSISTENT_FILES_TO_SYNC+=("${dropin}")
+  done < <(for_each_csv_path "${services}")
 }
 
 mount_persistent_paths() {
@@ -245,5 +341,6 @@ if is_true "${IMMUTABLE_READ_ONLY_ROOT:-false}"; then
   configure_read_only_root
 fi
 
-sync_persistent_fstab_copies
+configure_systemd_mount_ordering
+sync_persistent_file_copies
 mount_persistent_paths

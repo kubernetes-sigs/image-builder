@@ -9,7 +9,7 @@
   "immutable_data_partition_fstype": "ext4",
   "immutable_data_partition_label": "CAPI-DATA",
   "immutable_data_partition_mount": "/.capi-data",
-  "immutable_data_partition_mount_options": "defaults,nofail",
+  "immutable_data_partition_mount_options": "defaults,x-systemd.device-timeout=30s",
   "immutable_persistent_paths": "/etc,/home,/root,/opt,/srv,/usr/local,/var/backups,/var/cache,/var/crash,/var/lib,/var/local,/var/log,/var/mail,/var/opt,/var/spool",
   "immutable_read_only_root": "true",
   "immutable_root_partition_size": "12884901888",

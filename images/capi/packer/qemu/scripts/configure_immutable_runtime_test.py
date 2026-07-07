@@ -30,7 +30,7 @@ class ConfigureImmutableRuntimeTests(unittest.TestCase):
         subprocess.run(
             ["bash", str(SCRIPT)],
             check=True,
-            env={**os.environ, **env},
+            env={**os.environ, "IMMUTABLE_SYSTEMD_MOUNT_ORDERING_SERVICES": "", **env},
             text=True,
             capture_output=True,
         )
@@ -51,13 +51,16 @@ class ConfigureImmutableRuntimeTests(unittest.TestCase):
                     "IMMUTABLE_DATA_PARTITION_LABEL": "CAPI-DATA",
                     "IMMUTABLE_DATA_PARTITION_MOUNT": str(data_mount),
                     "IMMUTABLE_DATA_PARTITION_FSTYPE": "ext4",
-                    "IMMUTABLE_DATA_PARTITION_MOUNT_OPTIONS": "defaults,nofail,noatime",
+                    "IMMUTABLE_DATA_PARTITION_MOUNT_OPTIONS": "defaults,noatime,x-systemd.device-timeout=30s",
                     "IMMUTABLE_READ_ONLY_ROOT": "true",
                 }
             )
 
             rendered = fstab.read_text(encoding="utf-8")
-            self.assertIn(f"LABEL=CAPI-DATA {data_mount} ext4 defaults,nofail,noatime 0 2", rendered)
+            self.assertIn(
+                f"LABEL=CAPI-DATA {data_mount} ext4 defaults,noatime,x-systemd.device-timeout=30s 0 2",
+                rendered,
+            )
             self.assertIn("/dev/sda1 / ext4 ro,relatime 0 1", rendered)
             self.assertTrue(data_mount.is_dir())
 
@@ -85,7 +88,7 @@ class ConfigureImmutableRuntimeTests(unittest.TestCase):
                 "IMMUTABLE_DATA_PARTITION_LABEL": "CAPI-DATA",
                 "IMMUTABLE_DATA_PARTITION_MOUNT": str(data_mount),
                 "IMMUTABLE_DATA_PARTITION_FSTYPE": "ext4",
-                "IMMUTABLE_DATA_PARTITION_MOUNT_OPTIONS": "defaults,nofail",
+                "IMMUTABLE_DATA_PARTITION_MOUNT_OPTIONS": "defaults,x-systemd.device-timeout=30s",
                 "IMMUTABLE_READ_ONLY_ROOT": "true",
             }
             self.run_script(env)
@@ -134,7 +137,7 @@ class ConfigureImmutableRuntimeTests(unittest.TestCase):
                     "IMMUTABLE_DATA_PARTITION_LABEL": "CAPI-DATA",
                     "IMMUTABLE_DATA_PARTITION_MOUNT": str(data_mount),
                     "IMMUTABLE_DATA_PARTITION_FSTYPE": "ext4",
-                    "IMMUTABLE_DATA_PARTITION_MOUNT_OPTIONS": "defaults,nofail",
+                    "IMMUTABLE_DATA_PARTITION_MOUNT_OPTIONS": "defaults,x-systemd.device-timeout=30s",
                     "IMMUTABLE_PERSISTENT_PATHS": str(persistent_path),
                 }
             )
@@ -142,10 +145,36 @@ class ConfigureImmutableRuntimeTests(unittest.TestCase):
             rendered = fstab.read_text(encoding="utf-8")
             persistent_source = data_mount / "persistent" / str(persistent_path).lstrip("/")
             self.assertIn(
-                f"{persistent_source} {persistent_path} none bind,nofail,x-systemd.requires-mounts-for={data_mount} 0 0",
+                f"{persistent_source} {persistent_path} none bind,x-systemd.requires-mounts-for={data_mount} 0 0",
                 rendered,
             )
             self.assertEqual("node config\n", (persistent_source / "kubelet.conf").read_text(encoding="utf-8"))
+
+    def test_persistent_bind_mount_source_preserves_directory_metadata(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            workdir = pathlib.Path(tmp)
+            fstab = workdir / "fstab"
+            data_mount = workdir / "cluster-api-data"
+            persistent_path = workdir / "root"
+            fstab.write_text("/dev/sda1 / ext4 defaults 0 1\n", encoding="utf-8")
+            persistent_path.mkdir(parents=True)
+            persistent_path.chmod(0o700)
+
+            self.run_script(
+                {
+                    "IMMUTABLE_RUNTIME_FSTAB_PATH": str(fstab),
+                    "IMMUTABLE_RUNTIME_SKIP_MOUNT": "true",
+                    "IMMUTABLE_RUNTIME_SUDO": "",
+                    "IMMUTABLE_DATA_PARTITION": "true",
+                    "IMMUTABLE_DATA_PARTITION_LABEL": "CAPI-DATA",
+                    "IMMUTABLE_DATA_PARTITION_MOUNT": str(data_mount),
+                    "IMMUTABLE_DATA_PARTITION_FSTYPE": "ext4",
+                    "IMMUTABLE_PERSISTENT_PATHS": str(persistent_path),
+                }
+            )
+
+            persistent_source = data_mount / "persistent" / str(persistent_path).lstrip("/")
+            self.assertEqual(0o700, persistent_source.stat().st_mode & 0o777)
 
     def test_persistent_etc_gets_final_fstab_copy(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -167,7 +196,7 @@ class ConfigureImmutableRuntimeTests(unittest.TestCase):
                     "IMMUTABLE_DATA_PARTITION_LABEL": "CAPI-DATA",
                     "IMMUTABLE_DATA_PARTITION_MOUNT": str(data_mount),
                     "IMMUTABLE_DATA_PARTITION_FSTYPE": "ext4",
-                    "IMMUTABLE_DATA_PARTITION_MOUNT_OPTIONS": "defaults,nofail",
+                    "IMMUTABLE_DATA_PARTITION_MOUNT_OPTIONS": "defaults,x-systemd.device-timeout=30s",
                     "IMMUTABLE_PERSISTENT_PATHS": str(persistent_path),
                     "IMMUTABLE_TMPFS_PATHS": str(tmpfs_path),
                     "IMMUTABLE_READ_ONLY_ROOT": "true",
@@ -179,11 +208,47 @@ class ConfigureImmutableRuntimeTests(unittest.TestCase):
             persistent_fstab = (persistent_source / "fstab").read_text(encoding="utf-8")
             self.assertEqual(root_fstab, persistent_fstab)
             self.assertIn(
-                f"{persistent_source} {persistent_path} none bind,nofail,x-systemd.requires-mounts-for={data_mount} 0 0",
+                f"{persistent_source} {persistent_path} none bind,x-systemd.requires-mounts-for={data_mount} 0 0",
                 persistent_fstab,
             )
             self.assertIn(f"tmpfs {tmpfs_path} tmpfs mode=1777,nosuid,nodev 0 0", persistent_fstab)
             self.assertIn("/dev/sda1 / ext4 ro,relatime 0 1", persistent_fstab)
+
+    def test_systemd_mount_ordering_dropins_are_synced_into_persistent_etc(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = pathlib.Path(tmp) / "root"
+            fstab = root / "etc" / "fstab"
+            data_mount = root / "cluster-api-data"
+            persistent_path = root / "etc"
+            systemd_dir = root / "etc" / "systemd" / "system"
+            fstab.parent.mkdir(parents=True)
+            fstab.write_text("/dev/sda1 / ext4 defaults 0 1\n", encoding="utf-8")
+
+            self.run_script(
+                {
+                    "IMMUTABLE_RUNTIME_FSTAB_PATH": str(fstab),
+                    "IMMUTABLE_RUNTIME_SKIP_MOUNT": "true",
+                    "IMMUTABLE_RUNTIME_SUDO": "",
+                    "IMMUTABLE_RUNTIME_SYSTEMD_DIR": str(systemd_dir),
+                    "IMMUTABLE_DATA_PARTITION": "true",
+                    "IMMUTABLE_DATA_PARTITION_LABEL": "CAPI-DATA",
+                    "IMMUTABLE_DATA_PARTITION_MOUNT": str(data_mount),
+                    "IMMUTABLE_DATA_PARTITION_FSTYPE": "ext4",
+                    "IMMUTABLE_PERSISTENT_PATHS": str(persistent_path),
+                    "IMMUTABLE_TMPFS_PATHS": str(root / "tmp"),
+                    "IMMUTABLE_SYSTEMD_MOUNT_ORDERING_SERVICES": "cloud-init-local.service,containerd.service,kubelet.service",
+                }
+            )
+
+            persistent_source = data_mount / "persistent" / str(persistent_path).lstrip("/")
+            for service in ("cloud-init-local.service", "containerd.service", "kubelet.service"):
+                dropin = systemd_dir / f"{service}.d" / "10-immutable-runtime-mounts.conf"
+                persistent_dropin = (
+                    persistent_source / "systemd" / "system" / f"{service}.d" / "10-immutable-runtime-mounts.conf"
+                )
+                self.assertTrue(dropin.is_file())
+                self.assertEqual(dropin.read_text(encoding="utf-8"), persistent_dropin.read_text(encoding="utf-8"))
+                self.assertIn(f"RequiresMountsFor={data_mount} {persistent_path}", dropin.read_text(encoding="utf-8"))
 
     def test_configures_multiple_tmpfs_paths_without_dropping_entries(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -257,6 +322,7 @@ class ConfigureImmutableRuntimeTests(unittest.TestCase):
 
         self.assertEqual("true", values["immutable_data_partition"])
         self.assertEqual("/.capi-data", values["immutable_data_partition_mount"])
+        self.assertNotIn("nofail", values["immutable_data_partition_mount_options"].split(","))
         self.assertEqual("true", values["immutable_read_only_root"])
         self.assertTrue(expected_paths.issubset(persistent_paths))
         self.assertFalse(any(path.startswith("/etc/") for path in persistent_paths))

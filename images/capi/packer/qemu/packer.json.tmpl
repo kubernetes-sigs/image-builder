@@ -155,6 +155,7 @@
         "IMMUTABLE_TMPFS_PATHS={{user `immutable_tmpfs_paths`}}"
       ],
       "inline": [
+        "if [ \"$IMMUTABLE_DATA_PARTITION\" = \"true\" ] || [ \"$IMMUTABLE_READ_ONLY_ROOT\" = \"true\" ] || [ -n \"$IMMUTABLE_PERSISTENT_PATHS\" ]; then sudo systemctl stop kubelet.service containerd.service || true; fi",
         "bash ./packer/qemu/scripts/configure_immutable_runtime.sh"
       ],
       "type": "shell"
@@ -250,7 +251,7 @@
     "immutable_data_partition_fstype": "ext4",
     "immutable_data_partition_label": "CAPI-DATA",
     "immutable_data_partition_mount": "/.capi-data",
-    "immutable_data_partition_mount_options": "defaults,nofail",
+    "immutable_data_partition_mount_options": "defaults,x-systemd.device-timeout=30s",
     "immutable_persistent_paths": "",
     "immutable_read_only_root": "false",
     "immutable_root_partition_size": "12884901888",
