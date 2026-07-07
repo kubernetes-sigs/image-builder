@@ -209,6 +209,8 @@ stop_system_kubelet() {
 }
 
 cleanup_runtime_state() {
+  local current_cri_images_file
+
   set +e
 
   if [[ -n "${created_cni_config:-}" ]]; then
@@ -217,7 +219,13 @@ cleanup_runtime_state() {
 
   if command -v crictl >/dev/null 2>&1; then
     sudo crictl rm --all >/dev/null 2>&1
-    sudo crictl rmi --prune >/dev/null 2>&1
+    if [[ -n "${preexisting_cri_images_file:-}" && -f "${preexisting_cri_images_file}" ]]; then
+      current_cri_images_file="${work_dir}/current-cri-images.txt"
+      if sudo crictl images -q 2>/dev/null | sort -u >"${current_cri_images_file}"; then
+        comm -13 "${preexisting_cri_images_file}" "${current_cri_images_file}" |
+          xargs -r sudo crictl rmi >/dev/null 2>&1
+      fi
+    fi
   fi
 
   if command -v ctr >/dev/null 2>&1; then
@@ -229,6 +237,17 @@ cleanup_runtime_state() {
     rm -rf "${work_dir}"
   else
     log "kept work dir: ${work_dir}"
+  fi
+}
+
+snapshot_runtime_images() {
+  preexisting_cri_images_file=""
+  if command -v crictl >/dev/null 2>&1; then
+    preexisting_cri_images_file="${work_dir}/preexisting-cri-images.txt"
+    if ! sudo crictl images -q 2>/dev/null | sort -u >"${preexisting_cri_images_file}"; then
+      rm -f "${preexisting_cri_images_file}"
+      preexisting_cri_images_file=""
+    fi
   fi
 }
 
@@ -311,6 +330,7 @@ ensure_etcd "${go_arch}"
 ensure_container_runtime
 endpoint="$(runtime_endpoint)"
 process_name="$(runtime_process_name "${endpoint}")"
+snapshot_runtime_images
 ensure_cni_config
 stop_system_kubelet
 
