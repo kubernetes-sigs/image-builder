@@ -35,12 +35,18 @@
       - cloud-utils-growpart
   when: ansible_facts['os_family'] == "RedHat"
 
-- name: Disable Hyper-V KVP protocol daemon on Ubuntu
+- name: Disable Hyper-V daemons on Ubuntu
   ansible.builtin.systemd:
-    name: hv-kvp-daemon
+    name: "{{ item }}"
     state: stopped
     enabled: false
-  when: ansible_facts['os_family'] == "Debian" and ansible_facts['architecture'] != "aarch64"
+  loop:
+    - hv-fcopy-daemon
+    - hv-kvp-daemon
+    - hv-vss-daemon
+  when:
+    - ansible_facts['os_family'] == "Debian"
+    - ansible_facts['architecture'] != "aarch64"
 
 - name: Create directory for DHCP chrony server files
   ansible.builtin.file:

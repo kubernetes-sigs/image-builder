@@ -94,47 +94,106 @@
     replace: nullbootctl --no-tpm --no-efivars
   when: packer_build_name is search('cvm')
 
-- name: Perform a dist-upgrade
-  ansible.builtin.apt:
-    force_apt_get: true
-    update_cache: true
-    upgrade: dist
-  register: apt_lock_status
-  until: apt_lock_status is not failed
-  retries: 5
-  delay: 10
+- name: Install packages
+  block:
+    - name: Check for existing policy-rc.d
+      ansible.builtin.stat:
+        path: /usr/sbin/policy-rc.d
+      register: setup_policy_rc_d
+      when: setup_block_qemu_hyperv_daemons | bool
 
-- name: Install baseline dependencies  # noqa: package-latest
-  ansible.builtin.apt:
-    force_apt_get: true
-    update_cache: true
-    name: "{{ debs }}"
-    state: latest
-  register: apt_lock_status
-  until: apt_lock_status is not failed
-  retries: 5
-  delay: 10
+    - name: Preserve existing policy-rc.d
+      ansible.builtin.command:
+        argv:
+          - mv
+          - /usr/sbin/policy-rc.d
+          - "{{ setup_policy_rc_d_backup }}"
+      args:
+        creates: "{{ setup_policy_rc_d_backup }}"
+        removes: /usr/sbin/policy-rc.d
+      when:
+        - setup_block_qemu_hyperv_daemons | bool
+        - setup_policy_rc_d.stat.exists | default(false)
 
-- name: Install extra debs  # noqa: package-latest
-  ansible.builtin.apt:
-    force_apt_get: true
-    name: "{{ extra_debs.split() }}"
-    state: latest
-  register: apt_lock_status
-  until: apt_lock_status is not failed
-  retries: 5
-  delay: 10
+    - name: Prevent Hyper-V daemons from starting during QEMU apt installs
+      ansible.builtin.copy:
+        content: |
+          #!/bin/sh
+          for service in {{ setup_qemu_hyperv_daemons | join(' ') }}; do
+            if [ "$1" = "$service" ] || [ "$1" = "$service.service" ]; then
+              exit 101
+            fi
+          done
 
-- name: Install pinned debs
-  ansible.builtin.apt:
-    force_apt_get: true
-    name: "{{ pinned_debs }}"
-    state: present
-    force: true
-  register: apt_lock_status
-  until: apt_lock_status is not failed
-  retries: 5
-  delay: 10
+          if [ -x "{{ setup_policy_rc_d_backup }}" ]; then
+            exec "{{ setup_policy_rc_d_backup }}" "$@"
+          fi
+
+          exit 0
+        dest: /usr/sbin/policy-rc.d
+        mode: "0755"
+      when: setup_block_qemu_hyperv_daemons | bool
+
+    - name: Perform a dist-upgrade
+      ansible.builtin.apt:
+        force_apt_get: true
+        update_cache: true
+        upgrade: dist
+      register: apt_lock_status
+      until: apt_lock_status is not failed
+      retries: 5
+      delay: 10
+
+    - name: Install baseline dependencies  # noqa: package-latest
+      ansible.builtin.apt:
+        force_apt_get: true
+        update_cache: true
+        name: "{{ debs }}"
+        state: latest
+      register: apt_lock_status
+      until: apt_lock_status is not failed
+      retries: 5
+      delay: 10
+
+    - name: Install extra debs  # noqa: package-latest
+      ansible.builtin.apt:
+        force_apt_get: true
+        name: "{{ extra_debs.split() }}"
+        state: latest
+      register: apt_lock_status
+      until: apt_lock_status is not failed
+      retries: 5
+      delay: 10
+
+    - name: Install pinned debs
+      ansible.builtin.apt:
+        force_apt_get: true
+        name: "{{ pinned_debs }}"
+        state: present
+        force: true
+      register: apt_lock_status
+      until: apt_lock_status is not failed
+      retries: 5
+      delay: 10
+  always:
+    - name: Remove temporary QEMU policy-rc.d
+      ansible.builtin.file:
+        path: /usr/sbin/policy-rc.d
+        state: absent
+      when: setup_block_qemu_hyperv_daemons | bool
+
+    - name: Restore existing policy-rc.d
+      ansible.builtin.command:
+        argv:
+          - mv
+          - "{{ setup_policy_rc_d_backup }}"
+          - /usr/sbin/policy-rc.d
+      args:
+        creates: /usr/sbin/policy-rc.d
+        removes: "{{ setup_policy_rc_d_backup }}"
+      when:
+        - setup_block_qemu_hyperv_daemons | bool
+        - setup_policy_rc_d.stat.exists | default(false)
 
 - name: Trust Microsoft key for legacy Microsoft apt repositories after package setup
   ansible.builtin.include_tasks: trust_microsoft_apt_key.yml
