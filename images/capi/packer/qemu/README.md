@@ -41,15 +41,15 @@ The target enables these immutable defaults:
 - `immutable_data_partition_mount_options=defaults,x-systemd.device-timeout=30s`: fstab options for the required data partition.
 - `immutable_root_partition_size=12884901888`: root partition size in bytes; the data partition uses the remaining disk.
 - `immutable_read_only_root=true`: write `/` as read-only in `/etc/fstab` for the final image.
-- `immutable_persistent_paths=/etc,/home,/root,/opt,/srv,/usr/local,/var/backups,/var/cache,/var/crash,/var/lib,/var/local,/var/log,/var/mail,/var/opt,/var/spool`: copy existing contents into the data partition and bind mount them back for CAPI bootstrap and node runtime writes.
+- `immutable_persistent_paths=/etc,/home,/root,/mnt,/media,/opt,/srv,/usr/local,/var/backups,/var/cache,/var/crash,/var/lib,/var/local,/var/log,/var/mail,/var/opt,/var/spool`: copy existing contents into the data partition and bind mount them back for CAPI bootstrap and node runtime writes.
 - `immutable_tmpfs_paths=/tmp,/var/tmp`: mount volatile scratch paths as tmpfs.
 
 The persistent path list is intentionally explicit. It covers first-boot
-configuration under `/etc`, user home directories, SSH host keys, `/opt`,
-`/usr/local`, `/srv`, and the common mutable `/var` subtrees used by package
-state, cloud-init, kubelet, containerd, CNI, systemd, dbus, NetworkManager,
-control-plane etcd data, caches, crash dumps, spools, and logs. The data
-partition is mounted outside `/var` so `/var/lib` can be persistent as a whole.
+configuration under `/etc`, user home directories, SSH host keys, `/mnt`,
+`/media`, `/opt`, `/usr/local`, `/srv`, and the common mutable `/var` subtrees
+used by package state, cloud-init, kubelet, containerd, CNI, systemd, dbus,
+NetworkManager, control-plane etcd data, caches, crash dumps, spools, and logs.
+The data partition is mounted outside `/var` so `/var/lib` can be persistent as a whole.
 Providers that write additional bootstrap files should extend
 `immutable_persistent_paths` rather than making the whole root writable again.
 The data partition and bind mounts are required mounts. Do not add `nofail`
@@ -112,6 +112,8 @@ should:
      /etc \
      /home \
      /root \
+     /mnt \
+     /media \
      /opt \
      /srv \
      /usr/local \

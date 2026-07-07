@@ -306,6 +306,8 @@ class ConfigureImmutableRuntimeTests(unittest.TestCase):
             "/etc",
             "/home",
             "/root",
+            "/mnt",
+            "/media",
             "/opt",
             "/srv",
             "/usr/local",

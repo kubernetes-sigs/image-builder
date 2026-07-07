@@ -37,14 +37,14 @@ different contract:
 | `immutable_data_partition_mount_options` | `defaults,x-systemd.device-timeout=30s` |
 | `immutable_root_partition_size` | `12884901888` |
 | `immutable_read_only_root` | `true` |
-| `immutable_persistent_paths` | `/etc,/home,/root,/opt,/srv,/usr/local,/var/backups,/var/cache,/var/crash,/var/lib,/var/local,/var/log,/var/mail,/var/opt,/var/spool` |
+| `immutable_persistent_paths` | `/etc,/home,/root,/mnt,/media,/opt,/srv,/usr/local,/var/backups,/var/cache,/var/crash,/var/lib,/var/local,/var/log,/var/mail,/var/opt,/var/spool` |
 | `immutable_tmpfs_paths` | `/tmp,/var/tmp` |
 
 The persistent path list covers first-boot configuration under `/etc`, user home
-directories, SSH host keys, `/opt`, `/usr/local`, `/srv`, and the common mutable
-`/var` subtrees used by package state, cloud-init, kubelet, containerd, CNI,
-systemd, dbus, NetworkManager, control-plane etcd data, caches, crash dumps,
-spools, and logs. The data partition is mounted outside `/var` so `/var/lib`
+directories, SSH host keys, `/mnt`, `/media`, `/opt`, `/usr/local`, `/srv`, and
+the common mutable `/var` subtrees used by package state, cloud-init, kubelet,
+containerd, CNI, systemd, dbus, NetworkManager, control-plane etcd data, caches,
+crash dumps, spools, and logs. The data partition is mounted outside `/var` so `/var/lib`
 can be persistent as a whole. Extend `immutable_persistent_paths` when a
 provider writes additional bootstrap files after the root filesystem is
 remounted read-only.
@@ -86,6 +86,8 @@ for path in \
   /etc \
   /home \
   /root \
+  /mnt \
+  /media \
   /opt \
   /srv \
   /usr/local \
