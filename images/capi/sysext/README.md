@@ -1,16 +1,16 @@
 # systemd-sysext image builds
 
 This directory contains generic helpers for optional system extension images.
-Existing CAPI image targets do not use this path. The `*-sysext` targets build
-minimal base images that install only the `systemd-sysext` plumbing and expect
-Kubernetes, containerd, CNI, or other payloads to be supplied as extension
-images at bootstrap time. The normal `node` and provider roles remain attached
-only to the existing non-sysext targets.
+Existing CAPI image targets do not use this path yet. Future `*-sysext` targets
+can build minimal base images that install only the `systemd-sysext` plumbing
+and expect Kubernetes, containerd, CNI, or other payloads to be supplied as
+extension images at bootstrap time. The normal `node` and provider roles remain
+attached only to the existing non-sysext targets.
 
-The sysext image targets use `packer/goss/goss-sysext.yaml` instead of the
-normal node Goss suite. That test checks the extension directories and
-`systemd-sysext` availability, and fails if Kubernetes, containerd, or CNI
-payloads are baked into the base image.
+Those future sysext image targets should use `packer/goss/goss-sysext.yaml`
+instead of the normal node Goss suite. That test checks the extension
+directories and `systemd-sysext` availability, and fails if Kubernetes,
+containerd, or CNI payloads are baked into the base image.
 
 For a raw image that preloads sysext images on disk but keeps them inactive,
 pass `systemd_sysext_enable_service=false` through `ansible_user_vars` and keep
@@ -25,10 +25,11 @@ changes must stay in the base image, bootstrap data, or a future
 Build a layer from a prepared rootfs:
 
 ```bash
-make build-sysext-kubernetes \
-  SYSEXT_LAYER_ROOTFS=/path/to/rootfs \
-  SYSEXT_VERSION=v1.34.0 \
-  SYSEXT_OUTPUT_DIR=out/sysext
+images/capi/sysext/build-sysext-layer.sh \
+  --name kubernetes \
+  --version v1.34.0 \
+  --rootfs /path/to/rootfs \
+  --output-dir out/sysext
 ```
 
 The rootfs must contain only `usr/` and `opt/`. If
