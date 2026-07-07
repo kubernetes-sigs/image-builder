@@ -102,7 +102,7 @@
     {
       "expect_disconnect": true,
       "inline": [
-        "sudo reboot now"
+        "sudo systemd-run --unit=image-builder-reboot --on-active=1s /usr/sbin/reboot"
       ],
       "inline_shebang": "/bin/bash -e",
       "type": "shell"
