@@ -32,6 +32,9 @@
     remote_src: true
     src: /tmp/{{ crictl_filename }}
     dest: "{{ sysusrlocal_prefix }}/bin"
+    owner: root
+    group: root
+    mode: "0755"
     extra_opts:
       - --no-overwrite-dir
 
