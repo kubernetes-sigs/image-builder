@@ -20,6 +20,12 @@
     gpgcheck: "{{ kubernetes_rpm_gpg_check }}"
     gpgkey: "{{ kubernetes_rpm_gpg_key }}"
 
+- name: Import the Kubernetes RPM repository key
+  ansible.builtin.rpm_key:
+    state: present
+    key: "{{ kubernetes_rpm_gpg_key }}"
+  when: kubernetes_rpm_gpg_check | bool
+
 - name: Install Kubernetes
   ansible.builtin.dnf:
     name: "{{ packages }}"
