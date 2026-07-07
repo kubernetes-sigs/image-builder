@@ -88,7 +88,7 @@
     remote_src: true
     src: /tmp/containerd.service
     dest: /etc/systemd/system/containerd.service
-    mode: "0600"
+    mode: "0644"
 
 - name: Copy runc to /usr/local/sbin
   ansible.builtin.copy:
