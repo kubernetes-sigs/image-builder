@@ -42,26 +42,8 @@
     mode: "0644"
   when: http_proxy is defined or https_proxy is defined
 
-- name: Trust Microsoft key for legacy Microsoft apt repositories
-  block:
-    - name: Check for legacy Microsoft apt source
-      ansible.builtin.find:
-        depth: 1
-        paths:
-          - /etc/apt
-          - /etc/apt/sources.list.d
-        patterns:
-          - "*.list"
-          - "*.sources"
-        contains: ".*packages\\.microsoft\\.com.*"
-      register: setup_ms_legacy_source
-
-    - name: Download Microsoft Package Repository Key for legacy sources
-      ansible.builtin.get_url:
-        url: https://packages.microsoft.com/keys/microsoft.asc
-        dest: /etc/apt/trusted.gpg.d/microsoft.asc
-        mode: "0644"
-      when: setup_ms_legacy_source.matched > 0
+- name: Trust Microsoft key for legacy Microsoft apt repositories before apt updates
+  ansible.builtin.include_tasks: trust_microsoft_apt_key.yml
 
 - name: Ensure cloud-final is in a running state
   ansible.builtin.service:
@@ -153,6 +135,9 @@
   until: apt_lock_status is not failed
   retries: 5
   delay: 10
+
+- name: Trust Microsoft key for legacy Microsoft apt repositories after package setup
+  ansible.builtin.include_tasks: trust_microsoft_apt_key.yml
 
 - name: Remove '--no-tpm --no-efivars' from nullboot post install script
   ansible.builtin.replace:
