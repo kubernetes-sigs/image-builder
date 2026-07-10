@@ -68,19 +68,24 @@
 - name: Remove yum package lists
   ansible.builtin.command: /usr/bin/yum -y clean all
 
-- name: Reset network interface IDs
+- name: Reset network interface IDs (legacy ifcfg)
   ansible.builtin.shell: |
     set -o pipefail
     sed -i '/^\(HWADDR\|UUID\)=/d' /etc/sysconfig/network-scripts/ifcfg-*
-  when: packer_builder_type != "googlecompute" and ansible_facts['distribution_major_version']|int not in [9, 10]
+  when: packer_builder_type != "googlecompute" and ansible_facts['distribution_major_version']|int < 9
 
 - name: Migrate interface configuration files to NetworkManager keyfiles
   ansible.builtin.command: nmcli connection migrate
-  when: packer_builder_type != "googlecompute" and ansible_facts['distribution_major_version']|int == 9
+  changed_when: true
+  failed_when: false
+  when: packer_builder_type != "googlecompute" and ansible_facts['distribution_major_version']|int >= 9
 
-- name: Reset network interface IDs
-  ansible.builtin.shell: sed -i '/^\(uuid\)=/d' /etc/NetworkManager/system-connections/*.nmconnection
-  when: packer_builder_type != "googlecompute" and ansible_facts['distribution_major_version']|int in [9, 10]
+- name: Reset network interface IDs (NetworkManager keyfiles)
+  ansible.builtin.shell: |
+    set -o pipefail
+    find /etc/NetworkManager/system-connections/ -maxdepth 1 -type f -name '*.nmconnection' \
+      -exec sed -i '/^uuid=/d' {} +
+  when: packer_builder_type != "googlecompute" and ansible_facts['distribution_major_version']|int >= 9
 
 - name: Remove the kickstart log
   ansible.builtin.file:
