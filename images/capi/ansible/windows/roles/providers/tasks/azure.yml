@@ -74,6 +74,7 @@
   ansible.windows.win_get_url:
     url: https://github.com/kubernetes-sigs/cloud-provider-azure/releases/latest/download/azure-acr-credential-provider-windows-amd64.exe
     dest: C:\var\lib\kubelet\credential-provider\acr-credential-provider.exe
+    url_timeout: 120
 
 # It is a workaround for K8s < 1.30.
 # Detail: https://github.com/kubernetes-sigs/cloud-provider-azure/issues/4533
@@ -84,3 +85,4 @@
   ansible.windows.win_get_url:
     url: https://raw.githubusercontent.com/kubernetes-sigs/cloud-provider-azure/master/examples/out-of-tree/credential-provider-config-win.yaml
     dest: C:\var\lib\kubelet\credential-provider-config.yaml
+    url_timeout: 120

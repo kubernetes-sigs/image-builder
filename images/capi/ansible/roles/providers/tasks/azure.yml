@@ -99,9 +99,11 @@
     url: https://github.com/kubernetes-sigs/cloud-provider-azure/releases/latest/download/azure-acr-credential-provider-linux-amd64
     dest: /var/lib/kubelet/credential-provider/acr-credential-provider
     mode: "0755"
+    timeout: 120
 
 - name: Download OOT credential provider config file
   ansible.builtin.get_url:
     url: https://raw.githubusercontent.com/kubernetes-sigs/cloud-provider-azure/master/examples/out-of-tree/credential-provider-config.yaml
     dest: /var/lib/kubelet/credential-provider-config.yaml
     mode: "0644"
+    timeout: 120
