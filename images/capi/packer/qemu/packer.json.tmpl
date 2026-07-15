@@ -105,6 +105,7 @@
         "sudo reboot now"
       ],
       "inline_shebang": "/bin/bash -e",
+      "skip_clean": true,
       "type": "shell"
     },
     {
@@ -115,7 +116,9 @@
         "uname -a"
       ],
       "inline_shebang": "/bin/bash -e",
-      "pause_before": "20s",
+      "pause_before": "60s",
+      "skip_clean": true,
+      "start_retry_timeout": "10m",
       "type": "shell"
     },
     {
