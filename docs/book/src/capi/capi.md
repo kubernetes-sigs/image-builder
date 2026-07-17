@@ -52,6 +52,8 @@ The `images/capi/packer/config` directory includes several JSON files that defin
 
 Due to OS differences, Windows images has additional configuration in the `packer/config/windows` folder.  See [Windows documentation](./windows/windows.md) for more details.
 
+By default, `kubernetes_source_type` is `"pkg"` and `kubernetes_cni_source_type` is `"http"`, so CNI plugins are installed from the upstream tarball independently of how Kubernetes itself is installed. On the default `pkg` path, `kubelet`'s own package dependency still pulls in the distro `kubernetes-cni` package, which the tarball install then overlays; the effective plugin binaries always come from the tarball (`kubernetes_cni_semver`), not the package, so this does not affect image behavior. It does mean the `kubernetes-cni` package remains registered in the package manager with files on disk that no longer match it, so tools like `dpkg --verify` or `rpm -V` will report the plugin binaries as modified.
+
 ### Customization
 
 Several variables can be used to customize the image build.
