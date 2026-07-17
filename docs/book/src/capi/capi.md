@@ -23,7 +23,7 @@ environment variables:
 | `ANSIBLE_GALAXY_TOKEN` | API token passed to `ansible-galaxy collection install --token` |
 | `ANSIBLE_GALAXY_IGNORE_CERTS` | Set to `true` to pass `--ignore-certs` |
 | `ANSIBLE_GALAXY_TIMEOUT` | Timeout passed to `ansible-galaxy collection install --timeout` |
-| `ANSIBLE_GALAXY_COLLECTIONS_PATH` | Collection install path passed to `--collections-path` |
+| `ANSIBLE_GALAXY_COLLECTIONS_PATH` | Collection install path passed to `--collections-path`. Also exported as `ANSIBLE_COLLECTIONS_PATH` so Ansible can discover the installed collections at provisioning time |
 | `ANSIBLE_GALAXY_NO_CACHE` | Set to `true` to pass `--no-cache` |
 | `ANSIBLE_GALAXY_OFFLINE` | Set to `true` to pass `--offline` |
 

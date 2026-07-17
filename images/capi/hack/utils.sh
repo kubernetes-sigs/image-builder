@@ -121,13 +121,22 @@ pip3_install() {
 
 ansible_galaxy_collection_install() {
   local -a galaxy_args=()
+  local xtrace_was_on=false
+  [[ $- == *x* ]] && xtrace_was_on=true
 
   if [[ -n "${ANSIBLE_GALAXY_SERVER:-}" ]]; then
     galaxy_args+=(--server "${ANSIBLE_GALAXY_SERVER}")
   fi
+
+  # Never let xtrace print the Galaxy token: disable it before even checking
+  # ANSIBLE_GALAXY_TOKEN (xtrace would otherwise echo the expanded value of
+  # that condition) and restore whatever xtrace state was active before.
+  set +o xtrace
   if [[ -n "${ANSIBLE_GALAXY_TOKEN:-}" ]]; then
     galaxy_args+=(--token "${ANSIBLE_GALAXY_TOKEN}")
   fi
+  [[ "${xtrace_was_on}" == true ]] && set -o xtrace
+
   if [[ "${ANSIBLE_GALAXY_IGNORE_CERTS:-false}" == "true" ]]; then
     galaxy_args+=(--ignore-certs)
   fi
@@ -136,6 +145,12 @@ ansible_galaxy_collection_install() {
   fi
   if [[ -n "${ANSIBLE_GALAXY_COLLECTIONS_PATH:-}" ]]; then
     galaxy_args+=(--collections-path "${ANSIBLE_GALAXY_COLLECTIONS_PATH}")
+    # ansible-galaxy only reads ANSIBLE_GALAXY_COLLECTIONS_PATH for the
+    # install itself. Ansible discovers collections at runtime via the
+    # standard ANSIBLE_COLLECTIONS_PATH variable, and most provisioner
+    # templates never forward a custom path otherwise, so export it here
+    # too to make the installed collections actually usable later.
+    export ANSIBLE_COLLECTIONS_PATH="${ANSIBLE_GALAXY_COLLECTIONS_PATH}"
   fi
   if [[ "${ANSIBLE_GALAXY_NO_CACHE:-false}" == "true" ]]; then
     galaxy_args+=(--no-cache)
@@ -144,7 +159,14 @@ ansible_galaxy_collection_install() {
     galaxy_args+=(--offline)
   fi
 
+  # Suspend xtrace again for the final command: galaxy_args may contain the
+  # token added above, and it would otherwise be written to the trace log.
+  set +o xtrace
+  local rc
   ansible-galaxy collection install ${galaxy_args[@]+"${galaxy_args[@]}"} "$@"
+  rc=$?
+  [[ "${xtrace_was_on}" == true ]] && set -o xtrace
+  return "${rc}"
 }
 
 hostarch_without_darwin_arm64() {
