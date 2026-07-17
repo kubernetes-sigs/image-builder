@@ -56,7 +56,7 @@
   loop:
     - { path: /etc/machine-id, state: absent, mode: "{{ machine_id_mode }}" }
     - { path: /etc/machine-id, state: touch, mode: "{{ machine_id_mode }}" }
-  when: ansible_facts['os_family'] not in ["Flatcar", "Microsoft Azure Linux"]
+  when: ansible_facts['os_family'] not in ["Flatcar"]
 
 - name: Truncate hostname file
   ansible.builtin.file:
