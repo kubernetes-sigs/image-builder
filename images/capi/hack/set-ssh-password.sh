@@ -85,6 +85,18 @@ def parse_flags():
 
 
 load_var_file(packer_dir / "config" / "common.json")
+
+# Some Makefile targets (e.g. build-maas-ubuntu-2404-arm64) pass Packer a
+# target-specific var-file (packer/maas/maas-ubuntu-2404-arm64.json) that can
+# override values like ubuntu_repo/ubuntu_security_repo set in common.json
+# (for example, using ports.ubuntu.com for arm64 builds). Load it here too so
+# the rendered autoinstall data matches what Packer will actually use for
+# this target. It can still be overridden by PACKER_VAR_FILES/PACKER_FLAGS
+# below, same as it can on the Packer command line.
+target_var_file = os.environ.get("PACKER_TARGET_VAR_FILE", "")
+if target_var_file:
+    load_var_file(target_var_file)
+
 for var_file in shlex.split(os.environ.get("PACKER_VAR_FILES", "")):
     load_var_file(var_file)
 

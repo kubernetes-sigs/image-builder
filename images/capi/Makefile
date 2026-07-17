@@ -225,7 +225,7 @@ deps-scaleway: deps-common
 set-ssh-password: export PACKER_FLAGS := $(PACKER_FLAGS)
 set-ssh-password: export PACKER_VAR_FILES := $(PACKER_VAR_FILES)
 set-ssh-password:
-	hack/set-ssh-password.sh
+	PACKER_TARGET_VAR_FILE="$(PACKER_TARGET_VAR_FILE)" hack/set-ssh-password.sh
 
 ## --------------------------------------
 ## Container variables
@@ -490,6 +490,30 @@ MAAS_ARM64_BUILD_TARGETS 	:= $(addprefix build-,$(MAAS_ARM64_BUILD_NAMES))
 MAAS_ARM64_VALIDATE_TARGETS 	:= $(addprefix validate-,$(MAAS_ARM64_BUILD_NAMES))
 SCALEWAY_BUILD_TARGETS		:= $(addprefix build-,$(SCALEWAY_BUILD_NAMES))
 SCALEWAY_VALIDATE_TARGETS	:= $(addprefix validate-,$(SCALEWAY_BUILD_NAMES))
+
+# Ubuntu autoinstall builds (qemu, maas, proxmox) render user-data templates
+# using set-ssh-password.sh, which resolves ubuntu_repo/ubuntu_security_repo
+# from common.json, PACKER_VAR_FILES, and PACKER_FLAGS. That resolver has no
+# visibility into the target-specific var-file Packer is actually given below
+# (e.g. build-maas-ubuntu-2404-arm64 -> packer/maas/maas-ubuntu-2404-arm64.json),
+# so overrides set there (such as the ports.ubuntu.com mirrors used by arm64
+# targets) would be silently ignored by the rendered autoinstall data. Record
+# each target's primary var-file in PACKER_TARGET_VAR_FILE so set-ssh-password
+# can load it too, keeping the rendered data in sync with what Packer uses.
+define capi_set_packer_target_var_file
+$(1): PACKER_TARGET_VAR_FILE := $(abspath $(2)/$(subst $(3),,$(1)).json)
+endef
+
+$(foreach t,$(QEMU_BUILD_TARGETS),$(eval $(call capi_set_packer_target_var_file,$(t),packer/qemu,build-)))
+$(foreach t,$(QEMU_VALIDATE_TARGETS),$(eval $(call capi_set_packer_target_var_file,$(t),packer/qemu,validate-)))
+$(foreach t,$(QEMU_KUBEVIRT_BUILD_TARGETS),$(eval $(call capi_set_packer_target_var_file,$(t),packer/qemu,build-kubevirt-)))
+$(foreach t,$(QEMU_KUBEVIRT_VALIDATE_TARGETS),$(eval $(call capi_set_packer_target_var_file,$(t),packer/qemu,validate-kubevirt-)))
+$(foreach t,$(MAAS_BUILD_TARGETS),$(eval $(call capi_set_packer_target_var_file,$(t),packer/maas,build-)))
+$(foreach t,$(MAAS_VALIDATE_TARGETS),$(eval $(call capi_set_packer_target_var_file,$(t),packer/maas,validate-)))
+$(foreach t,$(MAAS_ARM64_BUILD_TARGETS),$(eval $(call capi_set_packer_target_var_file,$(t),packer/maas,build-)))
+$(foreach t,$(MAAS_ARM64_VALIDATE_TARGETS),$(eval $(call capi_set_packer_target_var_file,$(t),packer/maas,validate-)))
+$(foreach t,$(PROXMOX_BUILD_TARGETS),$(eval $(call capi_set_packer_target_var_file,$(t),packer/proxmox,build-proxmox-)))
+$(foreach t,$(PROXMOX_VALIDATE_TARGETS),$(eval $(call capi_set_packer_target_var_file,$(t),packer/proxmox,validate-proxmox-)))
 
 .PHONY: $(NODE_OVA_LOCAL_BUILD_TARGETS)
 $(NODE_OVA_LOCAL_BUILD_TARGETS): deps-ova set-ssh-password
