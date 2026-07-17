@@ -38,13 +38,8 @@
       - kubeadm-{{ kubernetes_rpm_version }}
       - kubectl-{{ kubernetes_rpm_version }}
 
-- name: Install Kubernetes CNI package
-  ansible.builtin.dnf:
-    name: kubernetes-cni{{ '-' + kubernetes_cni_rpm_version if kubernetes_cni_rpm_version else '' }}
-    allow_downgrade: true
-    state: present
-    lock_timeout: 60
-  when: kubernetes_cni_source_type | default("pkg") == "pkg"
+# kubernetes-cni is installed independently of kubernetes_source_type; see
+# cni-pkg.yml, which is imported based solely on kubernetes_cni_source_type.
 
 - name: Allow Kubernetes API server through iptables
   ansible.builtin.iptables:

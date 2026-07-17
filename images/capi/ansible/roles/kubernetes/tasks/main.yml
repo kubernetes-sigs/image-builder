@@ -32,13 +32,21 @@
   ansible.builtin.import_tasks: url.yml
   when: kubernetes_source_type == "http"
 
+- name: Assert supported CNI source type
+  ansible.builtin.assert:
+    that:
+      - kubernetes_cni_source_type | default("pkg") in ["http", "pkg"]
+    fail_msg: >-
+      kubernetes_cni_source_type must be either "http" or "pkg", got
+      "{{ kubernetes_cni_source_type | default('pkg') }}"
+
+- name: Import CNI package tasks
+  ansible.builtin.import_tasks: cni-pkg.yml
+  when: kubernetes_cni_source_type | default("pkg") == "pkg"
+
 - name: Import CNI URL tasks
   ansible.builtin.import_tasks: cni-url.yml
   when: kubernetes_cni_source_type | default("pkg") == "http"
-
-- name: Import CNI package validation tasks
-  ansible.builtin.import_tasks: cni-pkg.yml
-  when: kubernetes_cni_source_type | default("pkg") == "pkg"
 
 # must include crictl-url.yml after installing containerd,
 # as the cri-containerd tarball also includes crictl.

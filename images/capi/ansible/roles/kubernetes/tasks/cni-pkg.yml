@@ -12,6 +12,83 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
+# kubernetes_cni_source_type is intentionally independent of
+# kubernetes_source_type, so the kubernetes-cni package must be installable
+# even when Kubernetes itself comes from kubernetes_http_source. Each distro
+# therefore ensures its Kubernetes package repo is present here rather than
+# relying on the repo setup in debian.yml/redhat.yml/azurelinux.yml/photon.yml,
+# which only runs when kubernetes_source_type == "pkg".
+
+- name: Add the Kubernetes repo (Debian)
+  ansible.builtin.deb822_repository:
+    name: kubernetes
+    types:
+      - deb
+    uris:
+      - "{{ kubernetes_deb_repo }}"
+    suites:
+      - /
+    signed_by: "{{ kubernetes_deb_gpg_key }}"
+    state: present
+    mode: "0644"
+  notify: Update apt cache
+  when: ansible_facts['os_family'] == "Debian"
+
+- name: Flush handlers after adding the Kubernetes repo
+  ansible.builtin.meta: flush_handlers
+
+- name: Install Kubernetes CNI package (Debian)
+  ansible.builtin.apt:
+    name: kubernetes-cni{{ '=' + kubernetes_cni_deb_version if kubernetes_cni_deb_version else '' }}
+    allow_downgrade: true
+  when: ansible_facts['os_family'] == "Debian"
+
+- name: Add the Kubernetes repo (RPM)
+  ansible.builtin.yum_repository:
+    name: kubernetes
+    description: the kubernetes yum repo
+    baseurl: "{{ kubernetes_rpm_repo }}"
+    gpgcheck: "{{ kubernetes_rpm_gpg_check }}"
+    gpgkey: "{{ kubernetes_rpm_gpg_key }}"
+  when: ansible_facts['os_family'] in ["Common Base Linux Mariner", "Microsoft Azure Linux", "RedHat"]
+
+- name: Import the Kubernetes RPM repository key
+  ansible.builtin.rpm_key:
+    state: present
+    key: "{{ kubernetes_rpm_gpg_key }}"
+  when: >-
+    ansible_facts['os_family'] in ["Common Base Linux Mariner", "Microsoft Azure Linux", "RedHat"] and
+    kubernetes_rpm_gpg_check | bool
+
+- name: Install Kubernetes CNI package (RedHat)
+  ansible.builtin.dnf:
+    name: kubernetes-cni{{ '-' + kubernetes_cni_rpm_version if kubernetes_cni_rpm_version else '' }}
+    allow_downgrade: true
+    state: present
+    lock_timeout: 60
+    disable_excludes: "kubernetes"
+    disable_plugin: "priorities"
+  when: ansible_facts['os_family'] == "RedHat"
+
+- name: Install Kubernetes CNI package (Azure Linux)
+  ansible.builtin.dnf:
+    name: kubernetes-cni{{ '-' + kubernetes_cni_rpm_version if kubernetes_cni_rpm_version else '' }}
+    allow_downgrade: true
+    state: present
+    lock_timeout: 60
+  when: ansible_facts['os_family'] in ["Common Base Linux Mariner", "Microsoft Azure Linux"]
+
+- name: Add the Kubernetes repo (Photon)
+  ansible.builtin.template:
+    dest: /etc/yum.repos.d/kubernetes.repo
+    src: etc/yum.repos.d/kubernetes.repo
+    mode: "0644"
+  when: ansible_facts['os_family'] == "VMware Photon OS"
+
+- name: Install Kubernetes CNI package (Photon)
+  ansible.builtin.command: tdnf install kubernetes-cni{{ '-' + kubernetes_cni_rpm_version if kubernetes_cni_rpm_version else '' }} --nogpgcheck -y
+  when: ansible_facts['os_family'] == "VMware Photon OS"
+
 - name: Verify CNI package installed plugin binaries
   ansible.builtin.stat:
     path: /opt/cni/bin/{{ item }}

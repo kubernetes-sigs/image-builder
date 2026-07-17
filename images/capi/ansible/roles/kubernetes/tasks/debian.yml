@@ -39,8 +39,5 @@
       - kubeadm={{ kubernetes_deb_version }}
       - kubectl={{ kubernetes_deb_version }}
 
-- name: Install Kubernetes CNI package
-  ansible.builtin.apt:
-    name: kubernetes-cni{{ '=' + kubernetes_cni_deb_version if kubernetes_cni_deb_version else '' }}
-    allow_downgrade: true
-  when: kubernetes_cni_source_type | default("pkg") == "pkg"
+# kubernetes-cni is installed independently of kubernetes_source_type; see
+# cni-pkg.yml, which is imported based solely on kubernetes_cni_source_type.
