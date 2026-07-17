@@ -172,8 +172,14 @@ configure_persistent_path() {
   if [ ! -d "${path}" ]; then
     run_privileged install -d -m 0755 "${path}"
   fi
-  if [ -z "$(find "${source}" -mindepth 1 -print -quit 2>/dev/null)" ] &&
-    [ -n "$(find "${path}" -mindepth 1 -xdev -print -quit 2>/dev/null)" ]; then
+  # Run these probes with the same privilege as the copy below. configure_persistent_path
+  # is called for restricted paths like /root (normally mode 0700); an
+  # unprivileged `find` on such a path silently returns nothing (its
+  # permission error is suppressed by 2>/dev/null), which would make this
+  # look empty and skip the copy, hiding the original contents behind an
+  # empty bind mount.
+  if [ -z "$(run_privileged find "${source}" -mindepth 1 -print -quit 2>/dev/null)" ] &&
+    [ -n "$(run_privileged find "${path}" -mindepth 1 -xdev -print -quit 2>/dev/null)" ]; then
     run_privileged cp -a "${path}/." "${source}/"
   fi
   copy_path_metadata "${path}" "${source}"
