@@ -505,6 +505,11 @@ def validate_entry(selector: str, entry: dict[str, Any]) -> list[str]:
     kubernetes_minor = ".".join(kubernetes_version.split(".")[:2])
     if not re.fullmatch(r"v\d+\.\d+\.\d+", kubernetes_semver):
         errors.append(f"{selector}: invalid kubernetes_semver {kubernetes_semver!r}")
+    if selector != "latest" and kubernetes_minor != selector:
+        errors.append(
+            f"{selector}: kubernetes_semver {kubernetes_semver!r} does not match "
+            f"the {selector!r} release pin"
+        )
     if entry["kubernetes_series"] != f"v{kubernetes_minor}":
         errors.append(f"{selector}: kubernetes_series does not match kubernetes_semver")
     if entry["kubernetes_rpm_version"] != kubernetes_version:
