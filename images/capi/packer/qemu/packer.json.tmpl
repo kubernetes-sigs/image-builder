@@ -196,7 +196,7 @@
       ],
       "inline": [
         "chmod +x /tmp/run-e2e-node-conformance.sh",
-        "set +e; /tmp/run-e2e-node-conformance.sh; node_conformance_exit=$?; set -e; if [ \"$KUBERNETES_NODE_CONFORMANCE\" = \"true\" ] && [ \"$node_conformance_exit\" -ne 0 ]; then mkdir -p \"$NODE_CONFORMANCE_RESULTS_DIR\"; [ -f \"$NODE_CONFORMANCE_RESULTS_DIR/summary.env\" ] || printf 'exit_code=%s\\n' \"$node_conformance_exit\" > \"$NODE_CONFORMANCE_RESULTS_DIR/summary.env\"; fi; exit 0"
+        "set +e; /tmp/run-e2e-node-conformance.sh; node_conformance_exit=$?; set -e; if [ \"$KUBERNETES_NODE_CONFORMANCE\" = \"true\" ] && [ \"$node_conformance_exit\" -ne 0 ]; then mkdir -p \"$NODE_CONFORMANCE_RESULTS_DIR\"; printf 'exit_code=%s\\n' \"$node_conformance_exit\" > \"$NODE_CONFORMANCE_RESULTS_DIR/summary.env\"; fi; exit 0"
       ],
       "inline_shebang": "/bin/bash -e",
       "timeout": "3h",
