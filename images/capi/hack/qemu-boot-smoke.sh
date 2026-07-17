@@ -28,12 +28,19 @@ Boot a local QEMU image with a copy-on-write overlay and verify that the guest
 accepts SSH on a host-forwarded port. By default, a temporary NoCloud seed ISO
 creates the SSH user, so the source image is not modified.
 
+Flatcar (qemu-flatcar) images are not supported: Flatcar uses Ignition rather
+than cloud-init, and the build removes the SSH user before shutdown, so no
+supported QEMU_SEED value can authenticate to it.
+
 Environment:
   QEMU_BINARY              QEMU binary to run. Default: qemu-system-x86_64
   QEMU_IMG                 qemu-img binary to run. Default: qemu-img
   QEMU_IMAGE_FORMAT        Backing image format. Default: detected by qemu-img
   QEMU_ACCELERATOR         QEMU accelerator. Default: kvm on Linux with /dev/kvm,
-                           hvf on macOS, otherwise tcg
+                           hvf on macOS, otherwise tcg. hvf/kvm are only
+                           selected when QEMU_BINARY's target architecture
+                           matches the host architecture; e.g. running
+                           qemu-system-x86_64 on arm64 macOS defaults to tcg
   QEMU_MACHINE             QEMU machine type. Default: pc
   QEMU_CPUS                vCPU count. Default: 2
   QEMU_MEMORY              Guest memory. Default: 2048
@@ -99,6 +106,12 @@ abs_path() {
   echo "$(cd "${dir}" && pwd -P)/${base}"
 }
 
+is_flatcar_image() {
+  local image="${1}"
+
+  [[ "${image,,}" == *flatcar* ]]
+}
+
 resolve_image() {
   local input="${1}"
   local matches
@@ -123,17 +136,62 @@ resolve_image() {
   printf '%s\n' "${input}"
 }
 
+normalize_arch() {
+  case "${1}" in
+  x86_64 | amd64)
+    echo x86_64
+    ;;
+  aarch64 | arm64)
+    echo aarch64
+    ;;
+  *)
+    echo "${1}"
+    ;;
+  esac
+}
+
+qemu_binary_arch() {
+  case "$(basename "${1}")" in
+  qemu-system-x86_64)
+    echo x86_64
+    ;;
+  qemu-system-aarch64)
+    echo aarch64
+    ;;
+  *)
+    echo ""
+    ;;
+  esac
+}
+
+# detect_accelerator picks a default accelerator for the given QEMU binary.
+# hvf and kvm both require the QEMU binary's target architecture to match the
+# host architecture; e.g. running qemu-system-x86_64 on an arm64 macOS host to
+# boot an amd64 image cannot use hvf and must fall back to tcg.
 detect_accelerator() {
+  local qemu_binary="${1}"
+  local host_arch
+  local binary_arch
+
+  host_arch="$(normalize_arch "$(uname -m)")"
+  binary_arch="$(qemu_binary_arch "${qemu_binary}")"
+
   case "$(uname -s)" in
   Linux)
-    if [[ -r /dev/kvm && -w /dev/kvm ]]; then
+    if [[ -n "${binary_arch}" && "${binary_arch}" != "${host_arch}" ]]; then
+      echo tcg
+    elif [[ -r /dev/kvm && -w /dev/kvm ]]; then
       echo kvm
     else
       echo tcg
     fi
     ;;
   Darwin)
-    echo hvf
+    if [[ -n "${binary_arch}" && "${binary_arch}" != "${host_arch}" ]]; then
+      echo tcg
+    else
+      echo hvf
+    fi
     ;;
   *)
     echo tcg
@@ -215,6 +273,10 @@ require_command "${QEMU_IMG}"
 require_command ssh
 
 image="$(abs_path "$(resolve_image "${image_arg}")")"
+if is_flatcar_image "${image}"; then
+  echo "qemu-boot-smoke.sh does not support Flatcar images: Flatcar uses Ignition, not cloud-init, and the build removes the SSH user before shutdown, so neither QEMU_SEED=cloud-init nor QEMU_SEED=none can authenticate. Image: ${image}" >&2
+  exit 1
+fi
 if [[ ! -r "${QEMU_SSH_PRIVATE_KEY}" ]]; then
   echo "SSH private key is not readable: ${QEMU_SSH_PRIVATE_KEY}" >&2
   exit 1
@@ -259,7 +321,7 @@ none)
   ;;
 esac
 
-QEMU_ACCELERATOR="${QEMU_ACCELERATOR:-$(detect_accelerator)}"
+QEMU_ACCELERATOR="${QEMU_ACCELERATOR:-$(detect_accelerator "${QEMU_BINARY}")}"
 serial_log="${tmp_dir}/serial.log"
 pidfile="${tmp_dir}/qemu.pid"
 
