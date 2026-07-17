@@ -65,12 +65,10 @@ REQUIRED_KEYS = (
     "kubernetes_cni_http_source",
     "kubernetes_cni_rpm_version",
     "kubernetes_cni_semver",
-    "kubernetes_cni_source_type",
     "kubernetes_deb_version",
     "kubernetes_rpm_version",
     "kubernetes_semver",
     "kubernetes_series",
-    "kubernetes_source_type",
     "runc_version",
 )
 TRACKED_GO_MODULES = (
@@ -513,12 +511,11 @@ def validate_entry(selector: str, entry: dict[str, Any]) -> list[str]:
         errors.append(f"{selector}: kubernetes_rpm_version does not match kubernetes_semver")
     if not str(entry["kubernetes_deb_version"]).startswith(f"{kubernetes_version}-"):
         errors.append(f"{selector}: kubernetes_deb_version does not match kubernetes_semver")
-    if entry["kubernetes_cni_source_type"] == "pkg":
-        cni_rpm = entry["kubernetes_cni_rpm_version"]
-        if entry["kubernetes_cni_semver"] != f"v{cni_rpm}":
-            errors.append(f"{selector}: kubernetes_cni_semver does not match RPM CNI version")
-        if not str(entry["kubernetes_cni_deb_version"]).startswith(f"{cni_rpm}-"):
-            errors.append(f"{selector}: DEB and RPM CNI versions do not match")
+    cni_rpm = entry["kubernetes_cni_rpm_version"]
+    if entry["kubernetes_cni_semver"] != f"v{cni_rpm}":
+        errors.append(f"{selector}: kubernetes_cni_semver does not match RPM CNI version")
+    if not str(entry["kubernetes_cni_deb_version"]).startswith(f"{cni_rpm}-"):
+        errors.append(f"{selector}: DEB and RPM CNI versions do not match")
     return errors
 
 
