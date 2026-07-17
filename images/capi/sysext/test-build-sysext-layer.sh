@@ -40,6 +40,8 @@ raw="$("${script_dir}/build-sysext-layer.sh" \
   --version v1.2.3 \
   --rootfs "${rootfs}" \
   --output-dir "${workdir}/out" \
+  --os-id ubuntu \
+  --os-version 24.04 \
   --arch x86_64)"
 
 expected="/usr/lib/extension-release.d/extension-release.sysext-test-v1.2.3-x86-64"

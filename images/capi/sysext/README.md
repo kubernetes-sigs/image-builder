@@ -29,12 +29,17 @@ images/capi/sysext/build-sysext-layer.sh \
   --name kubernetes \
   --version v1.34.0 \
   --rootfs /path/to/rootfs \
-  --output-dir out/sysext
+  --output-dir out/sysext \
+  --os-id ubuntu \
+  --os-version 24.04
 ```
 
 The rootfs must contain only `usr/` and `opt/`. If
 `usr/lib/extension-release.d/extension-release.<raw-image-basename>` is
 missing, the helper creates one from the supplied OS, version, and architecture
-fields. The metadata filename must match the sysext image basename, for example
-`extension-release.kubernetes-v1.34.0-x86-64` for
+fields. `--os-id` and `--os-version` are required and must match the target
+host's `/usr/lib/os-release` `ID` and `VERSION_ID` (for example `ubuntu`/`24.04`
+or `flatcar`/`4152.2.0`); systemd-sysext refuses to merge the image at runtime
+otherwise. The metadata filename must match the sysext image basename, for
+example `extension-release.kubernetes-v1.34.0-x86-64` for
 `kubernetes-v1.34.0-x86-64.raw`.

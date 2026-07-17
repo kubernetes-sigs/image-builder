@@ -18,9 +18,13 @@ set -euo pipefail
 
 usage() {
   cat >&2 <<'EOF'
-Usage: build-sysext-layer.sh --name NAME --version VERSION --rootfs DIR --output-dir DIR [--os-id ID] [--os-version VERSION_ID] [--arch ARCH]
+Usage: build-sysext-layer.sh --name NAME --version VERSION --rootfs DIR --output-dir DIR --os-id ID --os-version VERSION_ID [--arch ARCH]
 
 Builds an ext4 .raw systemd-sysext image from a rootfs containing only usr/ and opt/.
+
+--os-id and --os-version must match the target host's /usr/lib/os-release
+ID and VERSION_ID (for example "ubuntu"/"24.04" or "flatcar"/"4152.2.0"), or
+systemd-sysext will refuse to merge the resulting image at runtime.
 EOF
 }
 
@@ -28,8 +32,8 @@ name=""
 version=""
 rootfs=""
 output_dir=""
-os_id="ubuntu"
-os_version="24.04"
+os_id=""
+os_version=""
 arch="$(uname -m)"
 
 while [ "$#" -gt 0 ]; do
@@ -46,7 +50,8 @@ while [ "$#" -gt 0 ]; do
   esac
 done
 
-if [ -z "${name}" ] || [ -z "${version}" ] || [ -z "${rootfs}" ] || [ -z "${output_dir}" ]; then
+if [ -z "${name}" ] || [ -z "${version}" ] || [ -z "${rootfs}" ] || [ -z "${output_dir}" ] || [ -z "${os_id}" ] || [ -z "${os_version}" ]; then
+  echo "--name, --version, --rootfs, --output-dir, --os-id, and --os-version are all required." >&2
   usage
   exit 2
 fi
