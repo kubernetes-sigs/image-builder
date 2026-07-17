@@ -28,6 +28,8 @@ find_latest_iso() {
     local url_style=$4
     local cache_key="${series}-${arch}-${url_style}"
     local checksum_data
+    local checksum_data_file
+    local http_status
     local latest_entry
     local latest_version
 
@@ -42,11 +44,24 @@ find_latest_iso() {
         return 1
     fi
 
-    if ! checksum_data="$(curl -fsSL "${checksum_url}")"; then
-        echo "WARNING: unable to fetch ${checksum_url}; skipping Ubuntu ${series} ${arch}" >&2
+    checksum_data_file="${cache_dir}/${cache_key}.raw"
+    if ! http_status="$(curl -sSL -o "${checksum_data_file}" -w '%{http_code}' "${checksum_url}")"; then
+        echo "ERROR: network error fetching ${checksum_url}" >&2
+        exit 1
+    fi
+
+    if [[ "${http_status}" == "404" ]]; then
+        echo "WARNING: ${checksum_url} returned 404; Ubuntu ${series} has no point release yet; skipping ${arch}" >&2
         touch "${cache_dir}/${cache_key}.skip"
         return 1
     fi
+
+    if [[ "${http_status}" != "200" ]]; then
+        echo "ERROR: ${checksum_url} returned HTTP ${http_status}" >&2
+        exit 1
+    fi
+
+    checksum_data="$(cat "${checksum_data_file}")"
 
     latest_entry="$(
         printf '%s\n' "${checksum_data}" |
@@ -134,8 +149,8 @@ while IFS= read -r -d '' file; do
             else
               .
             end
-        ' "${file}" > "${tmp}" &&
-        mv "${tmp}" "${file}"
+        ' "${file}" > "${tmp}"
+    mv "${tmp}" "${file}"
 
     echo "Updated ${file} to ${latest_iso_file}"
 done < <(find packer -type f -name '*ubuntu*.json' -print0)
