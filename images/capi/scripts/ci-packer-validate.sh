@@ -41,3 +41,8 @@ AZURE_LOCATION=fake RESOURCE_GROUP_NAME=fake \
   HCLOUD_LOCATION=fake HCLOUD_TOKEN=fake \
   SCW_ACCESS_KEY=fake SCW_PROJECT_ID=fake SCW_SECRET_KEY=fake \
   make validate-all
+
+# Catches drift between the pinned containerd_version and the bundled
+# containerd.service template when someone bumps the version by hand
+# instead of through the Dependabot-driven update workflow.
+make verify-containerd-service-template
