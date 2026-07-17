@@ -129,10 +129,15 @@ def render_user_data(var_file, values):
     profile_dir = ROOT / "qemu" / "linux" / "ubuntu" / "http" / str(profile)
     user_data = profile_dir / "user-data"
     template = profile_dir / "user-data.tmpl"
-    if template.exists():
-        content = template.read_text(encoding="utf-8")
-    elif user_data.exists():
+    # Prefer the already-rendered user-data over the raw .tmpl: set-ssh-password
+    # runs before this script (see the Makefile's QEMU_BUILD_TARGETS recipe) and
+    # substitutes the real $ENCRYPTED_SSH_PASSWORD into user-data. Re-reading the
+    # pristine .tmpl here would discard that substitution and leave the literal
+    # placeholder in the rendered file.
+    if user_data.exists():
         content = user_data.read_text(encoding="utf-8")
+    elif template.exists():
+        content = template.read_text(encoding="utf-8")
     else:
         raise FileNotFoundError(f"{user_data} or {template} is required")
 
@@ -155,13 +160,24 @@ def main():
     parser.add_argument("--extra-var-file", action="append", default=[], type=pathlib.Path)
     args = parser.parse_args()
 
+    # Mirror the precedence Packer itself applies on the CLI (see the Makefile's
+    # QEMU_BUILD_TARGETS recipe): PACKER_NODE_FLAGS -- which embeds any
+    # -var/-var-file supplied through PACKER_FLAGS -- comes first, then the
+    # per-target var-file (args.var_file), then PACKER_VAR_FILES last (passed
+    # here as --extra-var-file). Packer's -var/-var-file flags are last-wins,
+    # so values loaded later in this function must be the ones loaded later on
+    # the actual `packer build`/`packer validate` command line.
     values = dict(IMMUTABLE_DEFAULTS)
-    values.update(load_json(args.var_file))
 
     packer_values, packer_var_files = parse_packer_flags(os.environ.get("PACKER_FLAGS", ""))
-    for var_file in [pathlib.Path(path) for path in packer_var_files] + args.extra_var_file:
+    for var_file in [pathlib.Path(path) for path in packer_var_files]:
         values.update(load_json(var_file))
     values.update(packer_values)
+
+    values.update(load_json(args.var_file))
+
+    for var_file in args.extra_var_file:
+        values.update(load_json(var_file))
 
     render_user_data(args.var_file, values)
 

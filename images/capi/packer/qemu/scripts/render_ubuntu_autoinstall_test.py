@@ -16,9 +16,12 @@
 
 import importlib.util
 import json
+import os
 import pathlib
+import sys
 import tempfile
 import unittest
+from unittest import mock
 
 
 SCRIPT = pathlib.Path(__file__).with_name("render_ubuntu_autoinstall.py")
@@ -133,6 +136,59 @@ class RenderUbuntuAutoinstallTests(unittest.TestCase):
         self.assertEqual("RUNTIME-DATA", values["immutable_data_partition_label"])
         self.assertEqual("/runtime-data", values["immutable_data_partition_mount"])
         self.assertEqual(["overrides.json"], var_files)
+
+    def test_main_applies_target_var_file_after_packer_flags_var_file(self):
+        # Reproduces the ordering Packer itself uses on the CLI: PACKER_NODE_FLAGS
+        # (which embeds -var-file entries supplied through PACKER_FLAGS) is placed
+        # before the per-target -var-file on the actual `packer build`/`packer
+        # validate` command line, so the target file's values must win.
+        with tempfile.TemporaryDirectory() as tmp:
+            root = pathlib.Path(tmp) / "packer"
+            profile_dir = root / "qemu" / "linux" / "ubuntu" / "http" / "24.04.immutable"
+            profile_dir.mkdir(parents=True)
+            (profile_dir / "user-data.tmpl").write_text(
+                "\n".join(
+                    [
+                        "storage:",
+                        "  config:",
+                        "    - id: partition-data",
+                        "${IMMUTABLE_AUTOINSTALL_DATA_PARTITION_CONFIG}",
+                        "",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+
+            packer_flags_var_file = pathlib.Path(tmp) / "packer-flags-vars.json"
+            packer_flags_var_file.write_text(
+                json.dumps({"immutable_data_partition_label": "RUNTIME-DATA"}),
+                encoding="utf-8",
+            )
+
+            target_var_file = pathlib.Path(tmp) / "qemu-ubuntu-2404-immutable.json"
+            target_var_file.write_text(
+                json.dumps(
+                    {
+                        "autoinstall_profile": "24.04.immutable",
+                        "distro_name": "ubuntu",
+                        "immutable_data_partition": "true",
+                        "immutable_data_partition_label": "CAPI-DATA",
+                        "immutable_data_partition_mount": "/.capi-data",
+                        "immutable_root_partition_size": "12884901888",
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            self.renderer.ROOT = root
+            argv = ["render_ubuntu_autoinstall.py", str(target_var_file)]
+            env = {"PACKER_FLAGS": f'-var-file="{packer_flags_var_file}"'}
+            with mock.patch.object(sys, "argv", argv), mock.patch.dict(os.environ, env):
+                self.renderer.main()
+
+            rendered = (profile_dir / "user-data").read_text(encoding="utf-8")
+            self.assertIn("label: CAPI-DATA", rendered)
+            self.assertNotIn("RUNTIME-DATA", rendered)
 
     def test_immutable_template_runs_cleanup_in_target(self):
         template = (
