@@ -146,6 +146,16 @@
     {
       "environment_vars": [
         "IMMUTABLE_DATA_PARTITION={{user `immutable_data_partition`}}",
+        "IMMUTABLE_READ_ONLY_ROOT={{user `immutable_read_only_root`}}",
+        "IMMUTABLE_PERSISTENT_PATHS={{user `immutable_persistent_paths`}}"
+      ],
+      "execute_command": "sudo {{.Vars}} -S -E bash '{{.Path}}'",
+      "script": "./packer/qemu/scripts/stop_immutable_runtime_services.sh",
+      "type": "shell"
+    },
+    {
+      "environment_vars": [
+        "IMMUTABLE_DATA_PARTITION={{user `immutable_data_partition`}}",
         "IMMUTABLE_DATA_PARTITION_FSTYPE={{user `immutable_data_partition_fstype`}}",
         "IMMUTABLE_DATA_PARTITION_LABEL={{user `immutable_data_partition_label`}}",
         "IMMUTABLE_DATA_PARTITION_MOUNT={{user `immutable_data_partition_mount`}}",
@@ -154,10 +164,8 @@
         "IMMUTABLE_READ_ONLY_ROOT={{user `immutable_read_only_root`}}",
         "IMMUTABLE_TMPFS_PATHS={{user `immutable_tmpfs_paths`}}"
       ],
-      "inline": [
-        "if [ \"$IMMUTABLE_DATA_PARTITION\" = \"true\" ] || [ \"$IMMUTABLE_READ_ONLY_ROOT\" = \"true\" ] || [ -n \"$IMMUTABLE_PERSISTENT_PATHS\" ]; then sudo systemctl stop kubelet.service containerd.service || true; fi",
-        "bash ./packer/qemu/scripts/configure_immutable_runtime.sh"
-      ],
+      "execute_command": "sudo {{.Vars}} -S -E bash '{{.Path}}'",
+      "script": "./packer/qemu/scripts/configure_immutable_runtime.sh",
       "type": "shell"
     },
     {
