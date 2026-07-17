@@ -43,6 +43,9 @@ function boskosctlwrapper() {
 }
 
 cleanup() {
+  # Capture the status that triggered this EXIT trap before running any other
+  # command, otherwise it gets clobbered by the cleanup steps below.
+  local trap_status=$?
   echo "Cleaning up image"
   if [ -n "${GCP_PROJECT:-}" ]; then
     filter="name~cluster-api-ubuntu-*"
@@ -58,9 +61,24 @@ cleanup() {
       | bash ) || true
   fi
 
+  # If the guarded build below didn't already record a failure, fall back to
+  # whatever failure actually triggered this EXIT trap (e.g. an expired GCP
+  # key, or a failed post-build image lookup), so it isn't masked by the
+  # initialized test_status=0.
+  if [ "${test_status}" -eq 0 ] && [ "${trap_status}" -ne 0 ]; then
+    test_status="${trap_status}"
+  fi
+
   # stop boskos heartbeat
   if [ -n "${BOSKOS_HOST:-}" ] && [ -n "${RESOURCE_NAME:-}" ]; then
-    boskosctlwrapper release --name "${RESOURCE_NAME}" --target-state dirty || true
+    local release_status=0
+    boskosctlwrapper release --name "${RESOURCE_NAME}" --target-state dirty || release_status="${?}"
+    # Only let a release failure fail the job if the run was otherwise
+    # successful; a real build/test (or other trapped) failure always takes
+    # priority over a release error.
+    if [ "${test_status}" -eq 0 ] && [ "${release_status}" -ne 0 ]; then
+      test_status="${release_status}"
+    fi
   fi
 
   exit "${test_status}"
