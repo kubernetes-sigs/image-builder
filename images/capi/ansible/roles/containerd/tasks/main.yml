@@ -40,6 +40,22 @@
     mode: "0600"
   when: containerd_service_url | default("") | length > 0
 
+- name: Fail if containerd_version overrides the bundled service template without a matching containerd_service_url
+  ansible.builtin.fail:
+    msg: >-
+      containerd_version is set to {{ containerd_version }}, but the bundled
+      containerd.service template was generated for containerd
+      {{ containerd_service_template_version }} and containerd_service_url is
+      empty. Set containerd_service_url to a unit file matching
+      {{ containerd_version }} (e.g. a tag under
+      https://raw.githubusercontent.com/containerd/containerd/refs/tags/v{{ containerd_version }}/containerd.service),
+      or run `make update-containerd-service-template` from images/capi after
+      bumping containerd_service_template_version, to avoid installing a
+      service unit that does not match the selected containerd binary.
+  when:
+    - containerd_service_url | default("") | length == 0
+    - containerd_version != containerd_service_template_version
+
 - name: Create containerd.service from template
   ansible.builtin.template:
     src: etc/systemd/system/containerd.service
