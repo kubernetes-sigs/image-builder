@@ -26,6 +26,5 @@
       kubeadm-{{ kubernetes_rpm_version }}
       kubectl-{{ kubernetes_rpm_version }}
 
-- name: Install Kubernetes CNI package
-  ansible.builtin.command: tdnf install kubernetes-cni{{ '-' + kubernetes_cni_rpm_version if kubernetes_cni_rpm_version else '' }} --nogpgcheck -y
-  when: kubernetes_cni_source_type | default("pkg") == "pkg"
+# kubernetes-cni is installed independently of kubernetes_source_type; see
+# cni-pkg.yml, which is imported based solely on kubernetes_cni_source_type.

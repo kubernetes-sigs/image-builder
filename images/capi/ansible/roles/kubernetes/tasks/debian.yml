@@ -43,12 +43,5 @@
   retries: 5
   delay: 10
 
-- name: Install Kubernetes CNI package
-  ansible.builtin.apt:
-    name: kubernetes-cni{{ '=' + kubernetes_cni_deb_version if kubernetes_cni_deb_version else '' }}
-    allow_downgrade: true
-  when: kubernetes_cni_source_type | default("pkg") == "pkg"
-  register: apt_lock_status
-  until: apt_lock_status is not failed
-  retries: 5
-  delay: 10
+# kubernetes-cni is installed independently of kubernetes_source_type; see
+# cni-pkg.yml, which is imported based solely on kubernetes_cni_source_type.
