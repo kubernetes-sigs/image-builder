@@ -248,11 +248,6 @@ azurelinux:
   azure:
     package:
       open-vm-tools:
-mariner:
-  common-package: *common_azurelinux_rpms
-  azure:
-    package:
-      open-vm-tools:
 rockylinux:
   common-package: *common_rpms
   amazon:
