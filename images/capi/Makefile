@@ -313,6 +313,7 @@ COMMON_NODE_VAR_FILES := packer/config/kubernetes.json \
 					packer/config/wasm-shims.json \
 					packer/config/ansible-args.json \
 					packer/config/goss-args.json \
+					packer/config/node-conformance.json \
 					packer/config/common.json \
 					packer/config/additional_components.json \
 					packer/config/ecr_credential_provider.json
