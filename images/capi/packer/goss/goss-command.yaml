@@ -1,5 +1,78 @@
 command:
 {{ if ne .Vars.OS "windows" }} # Linux Only
+{{if eq .Vars.immutable_data_partition "true"}}
+  test "$(blkid -s LABEL -o value "$(findmnt -n --target "{{.Vars.immutable_data_partition_mount}}" --output SOURCE)")" = "{{.Vars.immutable_data_partition_label}}" && test "$(findmnt -n --target "{{.Vars.immutable_data_partition_mount}}" --output FSTYPE)" = "{{.Vars.immutable_data_partition_fstype}}":
+    exit-status: 0
+    stdout: []
+    stderr: []
+    timeout: 0
+  awk '$1 == "LABEL={{.Vars.immutable_data_partition_label}}" && $2 == "{{.Vars.immutable_data_partition_mount}}" && $3 == "{{.Vars.immutable_data_partition_fstype}}" && $4 == "{{.Vars.immutable_data_partition_mount_options}}" { found = 1 } END { exit found ? 0 : 1 }' /etc/fstab:
+    exit-status: 0
+    stdout: []
+    stderr: []
+    timeout: 0
+  test -w "{{.Vars.immutable_data_partition_mount}}":
+    exit-status: 0
+    stdout: []
+    stderr: []
+    timeout: 0
+{{end}}
+{{if eq .Vars.immutable_read_only_root "true"}}
+  awk '$2 == "/" && $4 ~ /(^|,)ro(,|$)/ { found = 1 } END { exit found ? 0 : 1 }' /etc/fstab:
+    exit-status: 0
+    stdout: []
+    stderr: []
+    timeout: 0
+{{end}}
+{{if ne .Vars.immutable_persistent_paths ""}}
+  immutable persistent paths are writable bind mounts:
+    exec: |
+      set -eu
+      printf '%s\n' '{{.Vars.immutable_persistent_paths}}' | tr ',' '\n' | while IFS= read -r path; do
+        [ -n "${path}" ] || continue
+        test -d "${path}"
+        test -w "${path}"
+        options="$(findmnt -n --target "${path}" --output OPTIONS)"
+        case ",${options}," in
+          *,rw,*) ;;
+          *) exit 1 ;;
+        esac
+        awk -v target="${path}" -v mount="{{.Vars.immutable_data_partition_mount}}" \
+          '$2 == target && $3 == "none" && $4 ~ /(^|,)bind(,|$)/ && $4 !~ /(^|,)nofail(,|$)/ && $4 ~ "x-systemd.requires-mounts-for=" mount { found = 1 } END { exit found ? 0 : 1 }' /etc/fstab
+      done
+    exit-status: 0
+    stdout: []
+    stderr: []
+    timeout: 0
+  immutable runtime services wait for writable mounts:
+    exec: |
+      set -eu
+      for service in cloud-init-local.service cloud-init.service cloud-config.service cloud-final.service containerd.service kubelet.service ssh.service sshd.service; do
+        dropin="/etc/systemd/system/${service}.d/10-immutable-runtime-mounts.conf"
+        test -f "${dropin}"
+        grep -F "RequiresMountsFor=" "${dropin}" >/dev/null
+      done
+    exit-status: 0
+    stdout: []
+    stderr: []
+    timeout: 0
+{{end}}
+{{if ne .Vars.immutable_tmpfs_paths ""}}
+  immutable tmpfs paths are mounted and writable:
+    exec: |
+      set -eu
+      printf '%s\n' '{{.Vars.immutable_tmpfs_paths}}' | tr ',' '\n' | while IFS= read -r path; do
+        [ -n "${path}" ] || continue
+        test -d "${path}"
+        test -w "${path}"
+        test "$(findmnt -n --target "${path}" --output FSTYPE)" = "tmpfs"
+        awk -v target="${path}" '$1 == "tmpfs" && $2 == target && $3 == "tmpfs" { found = 1 } END { exit found ? 0 : 1 }' /etc/fstab
+      done
+    exit-status: 0
+    stdout: []
+    stderr: []
+    timeout: 0
+{{end}}
   PATH=/opt/bin:/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin containerd --version | awk -F' ' '{print substr($3,2); }':
     exit-status: 0
     stdout:

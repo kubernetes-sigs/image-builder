@@ -67,6 +67,8 @@ GET_UBUNTU_DOTTED_SEMVER=$(strip \
 	$(_UBUNTU_SEMVER) \
 )
 
+PACKER_VAR_FILE_FLAGS=$(foreach f,$(abspath $(PACKER_VAR_FILES)),--extra-var-file "$(f)" )
+
 ## --------------------------------------
 ## Dependencies
 ## --------------------------------------
@@ -413,7 +415,7 @@ OPENSTACK_BUILD_NAMES		?=	openstack-ubuntu-2204 openstack-ubuntu-2404 openstack-
 
 OSC_BUILD_NAMES 			?=	osc-ubuntu-2204 osc-ubuntu-2404 osc-ubuntu-2604 osc-flatcar
 
-QEMU_BUILD_NAMES			?=	qemu-ubuntu-2204 qemu-ubuntu-2204-cloudimg qemu-ubuntu-2404 qemu-ubuntu-2404-cloudimg qemu-ubuntu-2404-efi qemu-ubuntu-2604 qemu-ubuntu-2604-efi qemu-ubuntu-2204-efi qemu-centos-9 qemu-centos-10 qemu-rhel-9 qemu-rockylinux-9 qemu-rockylinux-9-cloudimg qemu-flatcar
+QEMU_BUILD_NAMES			?=	qemu-ubuntu-2204 qemu-ubuntu-2204-cloudimg qemu-ubuntu-2404 qemu-ubuntu-2404-cloudimg qemu-ubuntu-2404-immutable qemu-ubuntu-2404-efi qemu-ubuntu-2604 qemu-ubuntu-2604-efi qemu-ubuntu-2204-efi qemu-centos-9 qemu-centos-10 qemu-rhel-9 qemu-rockylinux-9 qemu-rockylinux-9-cloudimg qemu-flatcar
 
 QEMU_KUBEVIRT_BUILD_NAMES	:= $(addprefix kubevirt-,$(QEMU_BUILD_NAMES))
 
@@ -597,18 +599,28 @@ $(OXIDE_VALIDATE_TARGETS): deps-oxide
 
 .PHONY: $(QEMU_BUILD_TARGETS)
 $(QEMU_BUILD_TARGETS): deps-qemu set-ssh-password
+	python3 packer/qemu/scripts/render_ubuntu_autoinstall.py "$(abspath packer/qemu/$(subst build-,,$@).json)" $(PACKER_VAR_FILE_FLAGS)
 	$(PACKER) build $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/qemu/$(subst build-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/qemu/packer.json
 
 .PHONY: $(QEMU_VALIDATE_TARGETS)
 $(QEMU_VALIDATE_TARGETS): deps-qemu set-ssh-password
+	python3 packer/qemu/scripts/render_ubuntu_autoinstall.py "$(abspath packer/qemu/$(subst validate-,,$@).json)" $(PACKER_VAR_FILE_FLAGS)
 	$(PACKER) validate $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/qemu/$(subst validate-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/qemu/packer.json
+
+.PHONY: test-qemu-immutable
+test-qemu-immutable: ## Runs immutable QEMU helper unit tests
+	python3 -m unittest discover -s packer/qemu/scripts -p '*_test.py'
+
+validate-qemu-ubuntu-2404-immutable: test-qemu-immutable
 
 .PHONY: $(QEMU_KUBEVIRT_BUILD_TARGETS)
 $(QEMU_KUBEVIRT_BUILD_TARGETS): deps-qemu set-ssh-password
+	python3 packer/qemu/scripts/render_ubuntu_autoinstall.py "$(abspath packer/qemu/$(subst build-kubevirt-,,$@).json)" $(PACKER_VAR_FILE_FLAGS)
 	$(PACKER) build $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/qemu/$(subst build-kubevirt-,,$@).json)" --var 'kubevirt=true' $(ABSOLUTE_PACKER_VAR_FILES) packer/qemu/packer.json
 
 .PHONY: $(QEMU_KUBEVIRT_VALIDATE_TARGETS)
 $(QEMU_KUBEVIRT_VALIDATE_TARGETS): deps-qemu set-ssh-password
+	python3 packer/qemu/scripts/render_ubuntu_autoinstall.py "$(abspath packer/qemu/$(subst validate-kubevirt-,,$@).json)" $(PACKER_VAR_FILE_FLAGS)
 	$(PACKER) validate $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/qemu/$(subst validate-kubevirt-,,$@).json)" --var 'kubevirt=true' $(ABSOLUTE_PACKER_VAR_FILES) packer/qemu/packer.json
 
 .PHONY: $(RAW_BUILD_TARGETS)
@@ -851,6 +863,7 @@ build-qemu-ubuntu-2204-cloudimg: ## Builds Ubuntu 22.04 QEMU image using cloud i
 build-qemu-ubuntu-2204-efi: ## Builds Ubuntu 22.04 QEMU image that EFI boots
 build-qemu-ubuntu-2404: ## Builds Ubuntu 24.04 QEMU image
 build-qemu-ubuntu-2404-cloudimg: ## Builds Ubuntu 24.04 QEMU image using cloud image
+build-qemu-ubuntu-2404-immutable: ## Builds Ubuntu 24.04 QEMU image with a persistent data partition
 build-qemu-ubuntu-2404-efi: ## Builds Ubuntu 24.04 QEMU image that EFI boots
 build-qemu-ubuntu-2604: ## Builds Ubuntu 26.04 QEMU image
 build-qemu-ubuntu-2604-efi: ## Builds Ubuntu 26.04 QEMU image that EFI boots
@@ -1021,6 +1034,7 @@ validate-qemu-ubuntu-2204-cloudimg: ## Validates Ubuntu 22.04 QEMU image packer 
 validate-qemu-ubuntu-2204-efi: ## Validates Ubuntu 22.04 QEMU EFI image packer config
 validate-qemu-ubuntu-2404: ## Validates Ubuntu 24.04 QEMU image packer config
 validate-qemu-ubuntu-2404-cloudimg: ## Validates Ubuntu 24.04 QEMU image packer config using cloud image
+validate-qemu-ubuntu-2404-immutable: ## Validates Ubuntu 24.04 QEMU image packer config with a persistent data partition
 validate-qemu-ubuntu-2404-efi: ## Validates Ubuntu 24.04 QEMU EFI image packer config
 validate-qemu-ubuntu-2604: ## Validates Ubuntu 26.04 QEMU image packer config
 validate-qemu-ubuntu-2604-efi: ## Validates Ubuntu 26.04 QEMU EFI image packer config
