@@ -128,7 +128,25 @@ run_sig_target() {
     mkdir -p "${AZURE_CONFIG_DIR}"
 
     login
-    make "build-azure-sig-${target}"
+
+    # Shared Image Gallery replication occasionally fails with a transient
+    # storage allocation error in the target region. Retry a couple of times
+    # before giving up, since re-running the same build usually succeeds.
+    local attempt attempt_log
+    attempt_log="$(mktemp)"
+    for attempt in 1 2 3; do
+      if make "build-azure-sig-${target}" 2>&1 | tee "${attempt_log}"; then
+        rm -f "${attempt_log}"
+        return 0
+      fi
+      if ! grep -q "Storage allocation failure" "${attempt_log}"; then
+        rm -f "${attempt_log}"
+        return 1
+      fi
+      echo "build-azure-sig-${target}: retrying after transient SIG replication storage allocation failure (attempt ${attempt}/3)"
+    done
+    rm -f "${attempt_log}"
+    return 1
 }
 
 declare -A PIDS
