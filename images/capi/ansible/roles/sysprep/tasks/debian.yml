@@ -45,31 +45,32 @@
   when: "'unattended-upgrades' in ansible_facts.packages"
 
 # The apt-daily/unattended-upgrades services may still be running from before
-# they were disabled above. Retry package selection changes until the dpkg frontend
+# they were disabled above. Retry the apt-mark calls until the dpkg frontend
 # lock is released to avoid a flaky race with concurrent apt activity.
-- name: Pin all installed packages
-  ansible.builtin.dpkg_selections:
-    name: "{{ item }}"
-    selection: hold
-  loop: "{{ ansible_facts.packages.keys() }}"
-  register: sysprep_dpkg_selections_hold
-  until: sysprep_dpkg_selections_hold is not failed
-  retries: 30
-  delay: 10
-  when: sysprep_hold_installed_packages | default(true) | bool
+- name: Pin all installed packages with apt-mark
+  ansible.builtin.shell: |
+    set -o pipefail
+    dpkg-query -f '${binary:Package}\n' -W | xargs apt-mark hold
 
-- name: Unpin grub packages for MaaS
-  ansible.builtin.dpkg_selections:
-    name: "{{ item }}"
-    selection: install
-  loop: "{{ ansible_facts.packages.keys() | select('search', 'grub') | list }}"
-  register: sysprep_dpkg_selections_unhold_grub
-  until: sysprep_dpkg_selections_unhold_grub is not failed
+  args:
+    executable: /bin/bash
+  register: sysprep_apt_mark_hold
+  until: sysprep_apt_mark_hold.rc == 0
   retries: 30
   delay: 10
-  when:
-    - sysprep_hold_installed_packages | default(true) | bool
-    - provider is defined and provider is search('maas')
+
+- name: Unpin grub packages with apt-mark for MaaS
+  ansible.builtin.shell: |
+    set -o pipefail
+    dpkg-query -f '${binary:Package}\n' -W | grep grub | xargs apt-mark unhold
+
+  args:
+    executable: /bin/bash
+  register: sysprep_apt_mark_unhold_grub
+  until: sysprep_apt_mark_unhold_grub.rc == 0
+  retries: 30
+  delay: 10
+  when: provider is defined and provider is search('maas')
 
 - name: Remove extra repos
   ansible.builtin.file:

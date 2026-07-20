@@ -16,7 +16,6 @@ extra_repos: ""
 pip_conf_file: ""
 remove_extra_repos: false
 flatcar_disable_autologin: false
-sysprep_hold_installed_packages: true
 sysprep_require_grub_file: true
 defer_ssh_cleanup_to_packer: false
 extra_kernel_boot_params: ""
