@@ -20,15 +20,27 @@
     name: "*"
     state: latest
     lock_timeout: 60
+  register: dnf_lock_status
+  until: dnf_lock_status is not failed
+  retries: 5
+  delay: 10
 
 - name: Install baseline dependencies on Azure Linux
   ansible.builtin.dnf:
     name: "{{ rpms }}"
     state: present
     lock_timeout: 60
+  register: dnf_lock_status
+  until: dnf_lock_status is not failed
+  retries: 5
+  delay: 10
 
 - name: Install extra rpms
   ansible.builtin.dnf:
     name: "{{ extra_rpms.split() }}"
     state: present
     lock_timeout: 60
+  register: dnf_lock_status
+  until: dnf_lock_status is not failed
+  retries: 5
+  delay: 10
