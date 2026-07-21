@@ -139,7 +139,7 @@
       <vmw:Config ovf:required="false" vmw:key="nestedHVEnabled" vmw:value="${NESTEDHV}"/>
       <vmw:Config ovf:required="false" vmw:key="virtualICH7MPresent" vmw:value="false"/>
       <vmw:Config ovf:required="false" vmw:key="virtualSMCPresent" vmw:value="false"/>
-      <vmw:Config ovf:required="false" vmw:key="flags.vvtdEnabled" vmw:value="false"/>
+      <vmw:Config ovf:required="false" vmw:key="flags.vvtdEnabled" vmw:value="true"/>
       <vmw:Config ovf:required="false" vmw:key="flags.vbsEnabled" vmw:value="false"/>
       <vmw:Config ovf:required="false" vmw:key="bootOptions.efiSecureBootEnabled" vmw:value="false"/>
       <vmw:Config ovf:required="false" vmw:key="powerOpInfo.standbyAction" vmw:value="checkpoint"/>
