@@ -12,6 +12,21 @@ The Image Builder can be used to build images intended for use with Kubernetes [
 
 If any needed binaries are not present, they can be installed to `images/capi/.bin` with the `make deps` command. This directory will need to be added to your `$PATH`.
 
+By default, `make deps` installs required Ansible collections from Ansible
+Galaxy. Environments that use a Galaxy mirror, private Automation Hub, or
+pre-warmed collection cache can configure the collection install step with these
+environment variables:
+
+| Variable | Description |
+|----------|-------------|
+| `ANSIBLE_GALAXY_SERVER` | Galaxy API server URL passed to `ansible-galaxy collection install --server` |
+| `ANSIBLE_GALAXY_TOKEN` | API token passed to `ansible-galaxy collection install --token` |
+| `ANSIBLE_GALAXY_IGNORE_CERTS` | Set to `true` to pass `--ignore-certs` |
+| `ANSIBLE_GALAXY_TIMEOUT` | Timeout passed to `ansible-galaxy collection install --timeout` |
+| `ANSIBLE_GALAXY_COLLECTIONS_PATH` | Collection install path passed to `--collections-path`. Also exported as `ANSIBLE_COLLECTIONS_PATH` so Ansible can discover the installed collections at provisioning time |
+| `ANSIBLE_GALAXY_NO_CACHE` | Set to `true` to pass `--no-cache` |
+| `ANSIBLE_GALAXY_OFFLINE` | Set to `true` to pass `--offline` |
+
 ## Providers
 
 * [AWS](./providers/aws.md)
