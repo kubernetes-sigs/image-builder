@@ -7,7 +7,7 @@
   "iso_checksum": "e907d92eeec9df64163a7e454cbc8d7755e8ddc7ed42f99dbc80c40f1a138433",
   "iso_checksum_type": "sha256",
   "iso_file": "{{env `ISO_FILE`}}",
-  "iso_url": "https://releases.ubuntu.com/noble/ubuntu-24.04.4-live-server-amd64.iso",
+  "iso_url": "https://releases.ubuntu.com/24.04.4/ubuntu-24.04.4-live-server-amd64.iso",
   "os_display_name": "Ubuntu 24.04",
   "unmount_iso": "true",
   "version": "24.04"

@@ -1243,8 +1243,12 @@ update-all-iso-checksums: update-ubuntu-iso-checksums \
 
 update-all-iso-checksums: ## Updates checksums for all ISOs
 
+.PHONY: update-ubuntu-iso-urls
+update-ubuntu-iso-urls: ## Updates Ubuntu ISO URLs to latest point releases
+	hack/update-ubuntu-iso-urls.sh
+
 .PHONY: update-ubuntu-iso-checksums
-update-ubuntu-iso-checksums: ## Updates checksums for Ubuntu ISOs
+update-ubuntu-iso-checksums: update-ubuntu-iso-urls ## Updates URLs and checksums for Ubuntu ISOs
 	hack/update-iso-checksums.sh ubuntu false SHA256SUMS "*iso_file_name" 1
 	$(MAKE) json-sort
 
