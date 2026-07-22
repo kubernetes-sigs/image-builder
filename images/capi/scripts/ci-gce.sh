@@ -28,6 +28,8 @@ set -o pipefail
 CAPI_ROOT=$(dirname "${BASH_SOURCE[0]}")/..
 cd "${CAPI_ROOT}" || exit 1
 
+test_status=0
+
 # shellcheck source=ensure-go.sh
 source "./hack/ensure-go.sh"
 # shellcheck source=ensure-boskosctl.sh
@@ -41,22 +43,42 @@ function boskosctlwrapper() {
 }
 
 cleanup() {
+  # Capture the status that triggered this EXIT trap before running any other
+  # command, otherwise it gets clobbered by the cleanup steps below.
+  local trap_status=$?
   echo "Cleaning up image"
-  filter="name~cluster-api-ubuntu-*"
-  (gcloud compute images list --project "$GCP_PROJECT" \
-    --no-standard-images --format="table[no-heading](name)" --filter="${filter}" \
-    | awk '{print "gcloud compute images delete --quiet --project '"$GCP_PROJECT"' "$1" " "\n"}' \
-    | bash ) || true
+  if [ -n "${GCP_PROJECT:-}" ]; then
+    filter="name~cluster-api-ubuntu-*"
+    (gcloud compute images list --project "$GCP_PROJECT" \
+      --no-standard-images --format="table[no-heading](name)" --filter="${filter}" \
+      | awk '{print "gcloud compute images delete --quiet --project '"$GCP_PROJECT"' "$1" " "\n"}' \
+      | bash ) || true
 
-  filter="name~cluster-api-rhel-*"
-  (gcloud compute images list --project "$GCP_PROJECT" \
-    --no-standard-images --format="table[no-heading](name)" --filter="${filter}" \
-    | awk '{print "gcloud compute images delete --quiet --project '"$GCP_PROJECT"' "$1" " "\n"}' \
-    | bash ) || true
+    filter="name~cluster-api-rhel-*"
+    (gcloud compute images list --project "$GCP_PROJECT" \
+      --no-standard-images --format="table[no-heading](name)" --filter="${filter}" \
+      | awk '{print "gcloud compute images delete --quiet --project '"$GCP_PROJECT"' "$1" " "\n"}' \
+      | bash ) || true
+  fi
+
+  # If the guarded build below didn't already record a failure, fall back to
+  # whatever failure actually triggered this EXIT trap (e.g. an expired GCP
+  # key, or a failed post-build image lookup), so it isn't masked by the
+  # initialized test_status=0.
+  if [ "${test_status}" -eq 0 ] && [ "${trap_status}" -ne 0 ]; then
+    test_status="${trap_status}"
+  fi
 
   # stop boskos heartbeat
-  if [ -n "${BOSKOS_HOST:-}" ]; then
-    boskosctlwrapper release --name "${RESOURCE_NAME}" --target-state dirty
+  if [ -n "${BOSKOS_HOST:-}" ] && [ -n "${RESOURCE_NAME:-}" ]; then
+    local release_status=0
+    boskosctlwrapper release --name "${RESOURCE_NAME}" --target-state dirty || release_status="${?}"
+    # Only let a release failure fail the job if the run was otherwise
+    # successful; a real build/test (or other trapped) failure always takes
+    # priority over a release error.
+    if [ "${test_status}" -eq 0 ] && [ "${release_status}" -ne 0 ]; then
+      test_status="${release_status}"
+    fi
   fi
 
   exit "${test_status}"
@@ -90,15 +112,16 @@ fi
 groupadd -r packer && useradd -m -s /bin/bash -r -g packer packer
 chown -R packer:packer /home/prow/go/src/sigs.k8s.io/image-builder
 # use the packer user to run the build
-su - packer -c "bash -c 'cd /home/prow/go/src/sigs.k8s.io/image-builder/images/capi && PATH=$PATH:~packer/.local/bin:/home/prow/go/src/sigs.k8s.io/image-builder/images/capi/.local/bin GCP_PROJECT_ID=$GCP_PROJECT GOOGLE_APPLICATION_CREDENTIALS=$GOOGLE_APPLICATION_CREDENTIALS PACKER_VAR_FILES=scripts/ci-disable-goss-inspect.json make deps-gce build-gce-all'"
-test_status="${?}"
+su - packer -c "bash -c 'cd /home/prow/go/src/sigs.k8s.io/image-builder/images/capi && PATH=$PATH:~packer/.local/bin:/home/prow/go/src/sigs.k8s.io/image-builder/images/capi/.local/bin GCP_PROJECT_ID=$GCP_PROJECT GOOGLE_APPLICATION_CREDENTIALS=$GOOGLE_APPLICATION_CREDENTIALS PACKER_VAR_FILES=scripts/ci-disable-goss-inspect.json make deps-gce build-gce-all'" || test_status="${?}"
 
-echo "Displaying the generated image information for Ubuntu"
-filter="name~cluster-api-ubuntu-*"
-gcloud compute images list --project "$GCP_PROJECT" --no-standard-images --filter="${filter}"
+if [ "${test_status}" -eq 0 ]; then
+  echo "Displaying the generated image information for Ubuntu"
+  filter="name~cluster-api-ubuntu-*"
+  gcloud compute images list --project "$GCP_PROJECT" --no-standard-images --filter="${filter}"
 
-echo "Displaying the generated image information for RHEL"
-filter="name~cluster-api-rhel-*"
-gcloud compute images list --project "$GCP_PROJECT" --no-standard-images --filter="${filter}"
+  echo "Displaying the generated image information for RHEL"
+  filter="name~cluster-api-rhel-*"
+  gcloud compute images list --project "$GCP_PROJECT" --no-standard-images --filter="${filter}"
+fi
 
 exit "${test_status}"
