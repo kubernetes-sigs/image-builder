@@ -762,6 +762,7 @@ build-azure-sig-windows-2022-containerd: ## Builds Windows Server 2022 with cont
 build-azure-sig-windows-2025-containerd: ## Builds Windows Server 2025 with containerd Azure managed image in Shared Image Gallery
 build-azure-sig-windows-2022-containerd-cvm: ## Builds Windows Server 2022 with containerd CVM Azure managed image in Shared Image Gallery
 build-azure-sig-azurelinux-3-gen2: ## Builds Azure Linux 3 Gen2 managed image in Shared Image Gallery
+build-azure-sig-azurelinux-4-gen2: ## Builds Azure Linux 4 Gen2 managed image in Shared Image Gallery
 build-azure-sig-flatcar: ## Builds Flatcar Azure managed image in Shared Image Gallery
 build-azure-sig-flatcar-gen2: ## Builds Flatcar Azure Gen2 managed image in Shared Image Gallery
 build-azure-sig-ubuntu-2204-gen2: ## Builds Ubuntu 22.04 Gen2 managed image in Shared Image Gallery
@@ -967,6 +968,7 @@ validate-azure-sig-windows-2022-containerd: ## Validate Windows Server 2022 with
 validate-azure-sig-windows-2025-containerd: ## Validate Windows Server 2025 with containerd Azure managed image in Shared Image Gallery Packer config
 validate-azure-sig-flatcar: ## Validates Flatcar Azure managed image in Shared Image Gallery Packer config
 validate-azure-sig-azurelinux-3-gen2: ## Validates Azure Linux 3 Gen2 Azure managed image in Shared Image Gallery Packer config
+validate-azure-sig-azurelinux-4-gen2: ## Validates Azure Linux 4 Gen2 Azure managed image in Shared Image Gallery Packer config
 validate-azure-sig-flatcar-gen2: ## Validates Flatcar Azure Gen2 managed image in Shared Image Gallery Packer config
 validate-azure-sig-ubuntu-2204-gen2: ## Validates Ubuntu 22.04 Azure managed image in Shared Image Gallery Packer config
 validate-azure-sig-ubuntu-2204-cvm: ## Validates Ubuntu 22.04 CVM Azure managed image in Shared Image Gallery Packer config
