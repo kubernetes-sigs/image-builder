@@ -25,4 +25,6 @@
       kubelet-{{ kubernetes_rpm_version }}
       kubeadm-{{ kubernetes_rpm_version }}
       kubectl-{{ kubernetes_rpm_version }}
-      kubernetes-cni{{ '-' + kubernetes_cni_rpm_version if kubernetes_cni_rpm_version else '' }}
+
+# kubernetes-cni is installed independently of kubernetes_source_type; see
+# cni-pkg.yml, which is imported based solely on kubernetes_cni_source_type.
