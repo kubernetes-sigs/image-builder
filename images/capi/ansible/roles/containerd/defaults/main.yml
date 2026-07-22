@@ -19,6 +19,13 @@ containerd_gvisor_version: latest
 containerd_baseurl: https://github.com/containerd/containerd/releases/download/v{{ containerd_version }}
 containerd_filename: "containerd-{{ containerd_version }}-{{ system }}-{{ arch }}.tar.gz"
 containerd_url: "{{ containerd_baseurl }}/{{ containerd_filename }}"
+containerd_service_url: ""
+# containerd_service_template_version is the containerd version the bundled
+# containerd.service template (etc/systemd/system/containerd.service) was
+# generated for. It is kept in sync by hack/update-containerd-service-template.py
+# and used to detect when containerd_version has been overridden without a
+# matching containerd_service_url.
+containerd_service_template_version: "2.3.2"
 containerd_runc_url: "https://github.com/opencontainers/runc/releases/download/v{{ runc_version }}/runc.{{ arch }}"
 runc_version: "1.4.3"
 containerd_runc_checksum_url: "https://github.com/opencontainers/runc/releases/download/v{{ runc_version }}/runc.sha256sum"

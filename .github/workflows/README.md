@@ -4,7 +4,12 @@ This directory contains GitHub Actions workflows for building and publishing Azu
 
 ## Workflow Overview
 
-The entire pipeline is defined in a single workflow file, `build-azure-sig.yaml`, which contains all stages as separate jobs:
+The Azure SIG image pipeline is defined in `build-azure-sig.yaml`, which contains all stages as separate jobs:
+
+`update-containerd-service-template.yaml` is a maintenance workflow for
+Dependabot PRs. When a same-repository Dependabot branch updates the pinned
+Linux containerd version files, it refreshes the bundled `containerd.service`
+template and commits the generated change back to the Dependabot branch.
 
 ## Pipeline Stages
 

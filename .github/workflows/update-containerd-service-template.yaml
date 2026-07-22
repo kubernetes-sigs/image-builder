@@ -1,0 +1,100 @@
+name: Update containerd service template
+
+on:
+  pull_request_target:
+    types:
+      - opened
+      - reopened
+      - synchronize
+    paths:
+      - images/capi/packer/config/containerd.json
+      - images/capi/packer/config/ppc64le/containerd.json
+
+permissions:
+  contents: write
+  pull-requests: read
+
+jobs:
+  update-containerd-service-template:
+    name: Update containerd.service template
+    if: >-
+      ${{
+        github.actor == 'dependabot[bot]' &&
+        github.event.pull_request.head.repo.full_name == github.repository &&
+        startsWith(github.event.pull_request.head.ref, 'dependabot/')
+      }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Dependabot branch
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0  # v7.0.0
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+
+      - name: Verify PR file scope
+        id: scope
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          set -euo pipefail
+
+          config_file_pattern='^images/capi/packer/config/(ppc64le/)?containerd\.json$'
+          generated_template='images/capi/ansible/roles/containerd/templates/etc/systemd/system/containerd.service'
+
+          mapfile -t changed_files < <(git diff --name-only "${BASE_SHA}"...HEAD)
+          if ((${#changed_files[@]} == 0)); then
+            echo "No changed files found against ${BASE_SHA}; nothing to update."
+            echo "should_update=false" >> "${GITHUB_OUTPUT}"
+            exit 0
+          fi
+
+          printf 'Changed files:\n'
+          printf '  %s\n' "${changed_files[@]}"
+
+          has_containerd_config_change=false
+          for file in "${changed_files[@]}"; do
+            if [[ ! "${file}" =~ ${config_file_pattern} && "${file}" != "${generated_template}" ]]; then
+              echo "::error file=${file}::This workflow only handles containerd version pins and the generated containerd.service template."
+              exit 1
+            fi
+            if [[ "${file}" =~ ${config_file_pattern} ]]; then
+              has_containerd_config_change=true
+            fi
+          done
+
+          echo "should_update=${has_containerd_config_change}" >> "${GITHUB_OUTPUT}"
+
+      - name: Update bundled service template
+        if: steps.scope.outputs.should_update == 'true'
+        working-directory: images/capi
+        run: |
+          set -euo pipefail
+          make update-containerd-service-template
+
+      - name: Commit generated template
+        if: steps.scope.outputs.should_update == 'true'
+        env:
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
+        run: |
+          set -euo pipefail
+
+          generated_template='images/capi/ansible/roles/containerd/templates/etc/systemd/system/containerd.service'
+          if git diff --quiet -- "${generated_template}"; then
+            echo "containerd.service template is already current."
+            exit 0
+          fi
+
+          mapfile -t worktree_changes < <(git diff --name-only)
+          if ((${#worktree_changes[@]} != 1)) || [[ "${worktree_changes[0]}" != "${generated_template}" ]]; then
+            echo "::error::Updater changed unexpected files:"
+            printf '  %s\n' "${worktree_changes[@]}"
+            exit 1
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "${generated_template}"
+          git commit -m "dependabot: update containerd service template"
+          git push origin "HEAD:${HEAD_REF}"

@@ -223,6 +223,14 @@ deps-scaleway: deps-common
 ## Packer Configuration
 ## --------------------------------------
 
+.PHONY: update-containerd-service-template
+update-containerd-service-template: ## Updates the bundled containerd.service template from the pinned containerd version
+	hack/update-containerd-service-template.py --write
+
+.PHONY: verify-containerd-service-template
+verify-containerd-service-template: ## Verifies the bundled containerd.service template matches the pinned containerd version
+	hack/update-containerd-service-template.py
+
 .PHONY: set-ssh-password
 set-ssh-password:
 	hack/set-ssh-password.sh
