@@ -1,0 +1,99 @@
+name: Update Kubernetes version matrix
+
+on:
+  pull_request_target:
+    types:
+      - opened
+      - reopened
+      - synchronize
+    paths:
+      - "images/capi/packer/config/kubernetes-version-dependencies/**/go.mod"
+      - "images/capi/packer/config/kubernetes-version-dependencies/**/go.sum"
+
+permissions:
+  contents: write
+  pull-requests: read
+
+jobs:
+  update-kubernetes-version-matrix:
+    if: >-
+      ${{
+        github.actor == 'dependabot[bot]' &&
+        github.event.pull_request.head.repo.full_name == github.repository &&
+        startsWith(github.event.pull_request.head.ref, 'dependabot/')
+      }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout pull request branch
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+
+      - name: Verify pull request scope
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          set -euo pipefail
+
+          git fetch --no-tags --depth=1 origin "${BASE_SHA}"
+          changed_files="$(git diff --name-only "${BASE_SHA}" HEAD)"
+          if [ -z "${changed_files}" ]; then
+            echo "No changed files found"
+            exit 1
+          fi
+
+          tracking_pattern='^images/capi/packer/config/kubernetes-version-dependencies/(latest|release-[0-9]+-[0-9]+)/go\.(mod|sum)$'
+          invalid_files="$(
+            printf '%s\n' "${changed_files}" |
+              grep -Ev "${tracking_pattern}" || true
+          )"
+          if [ -n "${invalid_files}" ]; then
+            echo "Dependabot matrix updates may only change generated tracking manifests:" >&2
+            printf '%s\n' "${invalid_files}" >&2
+            exit 1
+          fi
+
+          if ! printf '%s\n' "${changed_files}" | grep -Eq '/go\.mod$'; then
+            echo "Expected at least one tracking go.mod change" >&2
+            exit 1
+          fi
+
+      - name: Update matrix YAML
+        run: |
+          set -euo pipefail
+
+          images/capi/hack/kubernetes-version-matrix.py sync-tracking --write
+          images/capi/hack/kubernetes-version-matrix.py verify
+
+      - name: Commit generated matrix
+        env:
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
+        run: |
+          set -euo pipefail
+
+          if git diff --quiet; then
+            echo "Kubernetes version matrix already matches tracking manifests"
+            exit 0
+          fi
+
+          generated_pattern='^images/capi/packer/config/kubernetes-version-(latest|matrix)\.yaml$'
+          tracking_pattern='^images/capi/packer/config/kubernetes-version-dependencies/(latest|release-[0-9]+-[0-9]+)/go\.(mod|sum)$'
+          invalid_files="$(
+            git diff --name-only |
+              grep -Ev "(${generated_pattern})|(${tracking_pattern})" || true
+          )"
+          if [ -n "${invalid_files}" ]; then
+            echo "Matrix sync produced unexpected changes:" >&2
+            printf '%s\n' "${invalid_files}" >&2
+            exit 1
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add \
+            images/capi/packer/config/kubernetes-version-latest.yaml \
+            images/capi/packer/config/kubernetes-version-matrix.yaml \
+            images/capi/packer/config/kubernetes-version-dependencies
+          git commit -m "dependabot: update Kubernetes version matrix"
+          git push origin "HEAD:${HEAD_REF}"
