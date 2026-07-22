@@ -1,0 +1,2 @@
+# add kernel modules here to disable them by default when building an image
+disabled_kernel_modules: []
