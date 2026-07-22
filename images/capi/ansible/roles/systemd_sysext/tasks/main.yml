@@ -1,0 +1,59 @@
+# Copyright 2026 The Kubernetes Authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+---
+- name: Derive systemd-sysext host facts
+  ansible.builtin.set_fact:
+    systemd_sysext_service_manager: >-
+      {{
+        ansible_service_mgr
+        | default(ansible_facts.service_mgr | default(''))
+      }}
+    systemd_sysext_virtualization_type: >-
+      {{
+        ansible_virtualization_type
+        | default(ansible_facts.virtualization_type | default(''))
+      }}
+
+- name: Check systemd-sysext availability
+  ansible.builtin.command: systemd-sysext --version
+  register: systemd_sysext_version_check
+  changed_when: false
+  failed_when:
+    - systemd_sysext_required | bool
+    - systemd_sysext_version_check.rc != 0
+  when:
+    - systemd_sysext_service_manager == "systemd"
+    - systemd_sysext_virtualization_type != "docker"
+
+- name: Create system extension directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  loop: "{{ systemd_sysext_directories }}"
+  when:
+    - systemd_sysext_service_manager == "systemd"
+    - systemd_sysext_virtualization_type != "docker"
+
+- name: Enable systemd-sysext at boot
+  ansible.builtin.systemd:
+    name: "{{ systemd_sysext_service_name }}"
+    enabled: true
+    daemon_reload: true
+  when:
+    - systemd_sysext_enable_service | bool
+    - systemd_sysext_service_manager == "systemd"
+    - systemd_sysext_virtualization_type != "docker"

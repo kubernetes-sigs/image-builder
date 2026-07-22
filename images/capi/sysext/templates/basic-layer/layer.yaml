@@ -1,0 +1,7 @@
+---
+name: example
+version: "0.1.0"
+osID: ubuntu
+osVersion: "24.04"
+arch: x86_64
+rootfs: rootfs

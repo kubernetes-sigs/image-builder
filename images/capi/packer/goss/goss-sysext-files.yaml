@@ -1,0 +1,14 @@
+---
+file:
+  /etc/extensions:
+    exists: true
+    filetype: directory
+  /run/extensions:
+    exists: true
+    filetype: directory
+  /var/lib/extensions:
+    exists: true
+    filetype: directory
+  /var/lib/sysext-staging:
+    exists: true
+    filetype: directory
