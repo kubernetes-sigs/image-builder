@@ -4,10 +4,10 @@
     mode: "0644"
     content: |
       install {{ item }} /bin/false
-  loop: "{{ disabled_kernel_modules }}"
+  loop: "{{ disabled_kernel_modules_list }}"
 
 - name: Remove module if currently loaded
   community.general.modprobe:
     name: "{{ item }}"
     state: absent
-  loop: "{{ disabled_kernel_modules }}"
+  loop: "{{ disabled_kernel_modules_list }}"
