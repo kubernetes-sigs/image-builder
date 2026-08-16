@@ -7,6 +7,7 @@
 /.local/bin/
 manifest.json
 **.DS_Store
+/packer/ssh-password.auto.pkrvars.json
 
 # Goss test droppings
 debug-goss-spec.yaml
