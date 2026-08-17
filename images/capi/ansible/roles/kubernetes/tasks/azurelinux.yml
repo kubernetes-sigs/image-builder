@@ -44,7 +44,7 @@
     name: firewalld
     enabled: false
     state: stopped
-  failed_when: false
+  when: "'firewalld.service' in ansible_facts.services"
 
 - name: Allow Kubernetes API server through iptables
   ansible.builtin.iptables:
