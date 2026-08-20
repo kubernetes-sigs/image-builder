@@ -195,6 +195,14 @@ command:
     stderr: []
     timeout: 0
 {{end}}
+{{if and (ne .Vars.kubernetes_cni_source_type "http") (ne .Vars.kubernetes_cni_source_type "pkg")}}
+  Kubernetes CNI source type is invalid:
+    exec: ":"
+    exit-status: 1
+    stdout: []
+    stderr: []
+    timeout: 0
+{{end}}
 {{if eq .Vars.kubernetes_cni_source_type "pkg"}}
   CNI plugin binaries are package-owned:
     exec: >-
