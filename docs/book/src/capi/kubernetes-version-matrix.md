@@ -46,6 +46,11 @@ patch updates only. The rolling `latest` entry can move to newer minor versions.
 Kubernetes releases are tracked through `k8s.io/client-go` module tags and then
 mapped back to Kubernetes `v1.x.y` versions in the matrix.
 
+Each tracking module has a `tools.go` file with blank imports for the tracked
+modules. Dependabot runs `go mod tidy` after updates, so these imports keep the
+tracking requirements from being removed even though the manifests are not
+otherwise built.
+
 When Dependabot updates those manifests, the
 `Update Kubernetes version matrix` workflow regenerates the YAML files with:
 
