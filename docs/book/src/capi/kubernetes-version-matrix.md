@@ -75,7 +75,10 @@ go.sum fails instead of passing quietly.
 independently of `kubernetes_cni_deb_version` and
 `kubernetes_cni_rpm_version`, which pin the distro `kubernetes-cni` package.
 The two are versioned separately upstream, so `update --write` refreshes the
-package versions and carries the tarball version over unchanged.
+package versions and carries the tarball version over unchanged. A CNI module
+update can therefore advance `kubernetes_cni_semver` before the matching
+`kubernetes-cni` package is published: URL-based targets then install the newer
+tarball while package-based targets keep the pinned package version.
 
 More generally, `update --write` only rewrites what it resolves from upstream
 release metadata: the Kubernetes version fields, the kubernetes-cni package

@@ -34,7 +34,7 @@ releasePins:
     kubernetes_cni_deb_version: "1.6.0-1.1"
     kubernetes_cni_http_source: "https://github.com/containernetworking/plugins/releases/download"
     kubernetes_cni_rpm_version: "1.6.0"
-    kubernetes_cni_semver: "v1.6.0"
+    kubernetes_cni_semver: "v1.6.2"
     kubernetes_deb_version: "1.32.13-1.1"
     kubernetes_rpm_version: "1.32.13"
     kubernetes_semver: "v1.32.13"
