@@ -42,8 +42,8 @@
     name: kubernetes-cni{{ '=' + kubernetes_cni_deb_version if kubernetes_cni_deb_version else '' }}
     allow_downgrade: true
   when: ansible_facts['os_family'] == "Debian"
-  register: apt_lock_status
-  until: apt_lock_status is not failed
+  register: kubernetes_cni_apt_lock_status
+  until: kubernetes_cni_apt_lock_status is not failed
   retries: 5
   delay: 10
 
