@@ -104,7 +104,7 @@ def main():
     versions['cni'] = cni['kubernetes_cni_semver'].lstrip('v')
     versions['cni_deb'] = cni['kubernetes_cni_deb_version']
     versions['cni_rpm'] = cni['kubernetes_cni_rpm_version'].split('-')[0] if cni['kubernetes_cni_rpm_version'] else None
-    versions['cni_source_type'] = cni.get('kubernetes_cni_source_type', 'pkg')
+    versions['cni_source_type'] = cni['kubernetes_cni_source_type']
 
     k8s = read_json_file(os.path.join(root_path, 'packer', 'config', 'kubernetes.json'))
     versions['k8s'] = k8s['kubernetes_semver'].lstrip('v')

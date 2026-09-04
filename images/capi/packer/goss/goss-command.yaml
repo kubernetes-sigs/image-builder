@@ -150,7 +150,7 @@ command:
     timeout: 0
     stdout: ["coredns", "etcd", "kube-apiserver", "kube-controller-manager", "kube-proxy", "kube-scheduler", "pause"]
 {{end}}
-{{if and (eq .Vars.kubernetes_source_type "http") (eq .Vars.kubernetes_cni_source_type "http") (not .Vars.kubernetes_load_additional_imgs)}}
+{{if and (eq .Vars.kubernetes_source_type "http") (not .Vars.kubernetes_load_additional_imgs)}}
 # The second last pipe of awk is to take out arch from kube-apiserver-amd64 (i.e. amd64 or any other arch)
   crictl images | grep -v 'IMAGE ID' | awk '{print $1}' | awk -F'/' '{print $NF}' | sed 's/-{{ .Vars.arch }}//g' | sort:
     exit-status: 0
@@ -158,7 +158,7 @@ command:
     timeout: 0
     stdout: ["kube-apiserver", "kube-controller-manager", "kube-proxy", "kube-scheduler"]
 {{end}}
-{{if and (eq .Vars.kubernetes_source_type "http") (eq .Vars.kubernetes_cni_source_type "http") (.Vars.kubernetes_load_additional_imgs)}}
+{{if and (eq .Vars.kubernetes_source_type "http") (.Vars.kubernetes_load_additional_imgs)}}
 # The second last pipe of awk is to take out arch from kube-apiserver-amd64 (i.e. amd64 or any other arch)
   crictl images | grep -v 'IMAGE ID' | awk '{print $1}' | awk -F'/' '{print $NF}' | sed 's/-{{ .Vars.arch }}//g' | sort:
     exit-status: 0
@@ -191,14 +191,6 @@ command:
       test -x /opt/cni/bin/loopback &&
       test -x /opt/cni/bin/portmap
     exit-status: 0
-    stdout: []
-    stderr: []
-    timeout: 0
-{{end}}
-{{if and (ne .Vars.kubernetes_cni_source_type "http") (ne .Vars.kubernetes_cni_source_type "pkg")}}
-  Kubernetes CNI source type is invalid:
-    exec: ":"
-    exit-status: 1
     stdout: []
     stderr: []
     timeout: 0
