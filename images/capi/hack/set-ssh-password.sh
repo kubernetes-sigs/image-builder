@@ -20,85 +20,6 @@ set -o pipefail
 
 PACKER_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../packer" && pwd -P)"
 
-resolve_packer_var() {
-  local key="$1"
-  local default="$2"
-
-  PACKER_DIR="$PACKER_DIR" python3 - "$key" "$default" <<'PY'
-import json
-import os
-import shlex
-import sys
-from pathlib import Path
-
-key = sys.argv[1]
-value = sys.argv[2]
-packer_dir = Path(os.environ["PACKER_DIR"])
-cwd = Path.cwd()
-
-
-def resolve_path(path):
-    candidate = Path(path)
-    if candidate.is_absolute():
-        return candidate
-    if (cwd / candidate).exists():
-        return cwd / candidate
-    return packer_dir.parent / candidate
-
-
-def load_var_file(path):
-    global value
-    candidate = resolve_path(path)
-    if not candidate.is_file():
-        return
-    with candidate.open(encoding="utf-8") as var_file:
-        data = json.load(var_file)
-    if key in data:
-        value = str(data[key])
-
-
-def parse_flags():
-    var_files = []
-    vars_from_flags = []
-    tokens = shlex.split(os.environ.get("PACKER_FLAGS", ""))
-    index = 0
-    while index < len(tokens):
-        token = tokens[index]
-        if token in ("-var-file", "--var-file") and index + 1 < len(tokens):
-            var_files.append(tokens[index + 1])
-            index += 2
-            continue
-        if token.startswith("-var-file=") or token.startswith("--var-file="):
-            var_files.append(token.split("=", 1)[1])
-            index += 1
-            continue
-        if token in ("-var", "--var") and index + 1 < len(tokens):
-            vars_from_flags.append(tokens[index + 1])
-            index += 2
-            continue
-        if token.startswith("-var=") or token.startswith("--var="):
-            vars_from_flags.append(token.split("=", 1)[1])
-            index += 1
-            continue
-        index += 1
-    return var_files, vars_from_flags
-
-
-load_var_file(packer_dir / "config" / "common.json")
-for var_file in shlex.split(os.environ.get("PACKER_VAR_FILES", "")):
-    load_var_file(var_file)
-
-flag_var_files, flag_vars = parse_flags()
-for var_file in flag_var_files:
-    load_var_file(var_file)
-for item in flag_vars:
-    if item.startswith(f"{key}="):
-        value = item.split("=", 1)[1]
-
-print(value)
-PY
-}
-
 openssl_binary=openssl11
 if ! command -v $openssl_binary >/dev/null 2>&1; then
   openssl_binary=openssl
@@ -122,59 +43,15 @@ fi
 
 export SSH_PASSWORD=${SSH_PASSWORD:-"$(LC_ALL=C tr -dc A-Za-z0-9 </dev/urandom | head -c 16; echo)"}
 SALT=$(LC_ALL=C tr -dc A-Za-z0-9 </dev/urandom | head -c 16; echo)
-ENCRYPTED_SSH_PASSWORD=$($openssl_binary passwd -6 -salt "$SALT" -stdin <<< "$SSH_PASSWORD")
-export ENCRYPTED_SSH_PASSWORD
+export ENCRYPTED_SSH_PASSWORD=$($openssl_binary passwd -6 -salt $SALT -stdin <<< $SSH_PASSWORD)
 
-# The values are injected with sed, so every character that is special in a sed
-# replacement has to be escaped first: a backslash, an ampersand (the whole
-# match) and the "|" delimiter. A newline cannot be escaped this way, so reject
-# it instead of silently producing a broken template.
-if [[ "$SSH_PASSWORD" == *$'\n'* ]]; then
-  echo "SSH_PASSWORD must not contain a newline" 1>&2
-  exit 1
-fi
-
-# escape_sed_replacement prints its argument escaped for use as the replacement
-# text of a "s|...|...|" expression.
-escape_sed_replacement() {
-  printf '%s' "$1" | sed -e 's/[|&\\]/\\&/g'
-}
-
-export UBUNTU_REPO=${UBUNTU_REPO:-"$(resolve_packer_var ubuntu_repo "http://us.archive.ubuntu.com/ubuntu")"}
-export UBUNTU_SECURITY_REPO=${UBUNTU_SECURITY_REPO:-"$(resolve_packer_var ubuntu_security_repo "http://security.ubuntu.com/ubuntu")"}
-
-escaped_ssh_password=$(escape_sed_replacement "$SSH_PASSWORD")
-escaped_encrypted_ssh_password=$(escape_sed_replacement "$ENCRYPTED_SSH_PASSWORD")
-escaped_ubuntu_repo=$(escape_sed_replacement "$UBUNTU_REPO")
-escaped_ubuntu_security_repo=$(escape_sed_replacement "$UBUNTU_SECURITY_REPO")
-
-# The rendered files are written with a redirect rather than piped through tee:
-# they contain the plaintext password, the password hash and whatever other
-# credentials a template carries, and tee would copy all of it into the build
-# log. Only the path of each rendered file is printed.
-find "$PACKER_DIR" -type f -name "*.tmpl" -print0 | while IFS= read -r -d '' file; do
-  rendered=${file%.*}
-  if [ -f "$rendered" ]; then
+for file in $(find $PACKER_DIR -type f -name "*.tmpl"); do
+  if [ -f "${file%.*}" ]; then
     # HACK: There seems to be a case where this can actually
     # fail with the file not being found, leading to test failures.
     # If we fail to remove the file we just continue and assume
     # that the file was already removed.
-    rm "$rendered" || true
+    rm ${file%.*} || true
   fi
-  sed -e "s|\$SSH_PASSWORD|$escaped_ssh_password|g" \
-      -e "s|\$ENCRYPTED_SSH_PASSWORD|$escaped_encrypted_ssh_password|g" \
-      -e "s|\$UBUNTU_REPO|$escaped_ubuntu_repo|g" \
-      -e "s|\$UBUNTU_SECURITY_REPO|$escaped_ubuntu_security_repo|g" \
-      "$file" > "$rendered"
-  echo "rendered $rendered"
+  sed -e "s|\$SSH_PASSWORD|$SSH_PASSWORD|g" -e "s|\$ENCRYPTED_SSH_PASSWORD|$ENCRYPTED_SSH_PASSWORD|g" $file | tee ${file%.*}
 done
-
-# HCL2 templates can't pick up $SSH_PASSWORD/$ENCRYPTED_SSH_PASSWORD via the
-# .tmpl sed substitution above (that's plain text replacement, not something
-# Packer's HCL2 engine does), and the env vars exported above don't survive
-# into the separate shell that runs the actual `packer build`/`validate`
-# recipe line. Write them to a var-file instead, which does survive (Make
-# prerequisites and recipes only share the filesystem, not environment).
-jq -n --arg ssh_password "$SSH_PASSWORD" --arg encrypted_ssh_password "$ENCRYPTED_SSH_PASSWORD" \
-  '{ssh_password: $ssh_password, encrypted_ssh_password: $encrypted_ssh_password}' \
-  > "$PACKER_DIR/ssh-password.auto.pkrvars.json"

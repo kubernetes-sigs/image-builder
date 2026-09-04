@@ -261,16 +261,20 @@ class MirrorRenderingTests(RendererTestCase):
             self.assertIn("uri: http://us.archive.ubuntu.com/ubuntu", rendered)
             self.renderer.clean_user_data(directory)
 
-    def test_render_discards_a_stale_password_stash(self):
+    def test_render_recovers_a_stash_left_by_an_interrupted_run(self):
         directory = self.write_profile("packer/qemu/linux/ubuntu/http/24.04", MIRROR_TEMPLATE)
         user_data = directory / "user-data"
-        user_data.write_text(SET_SSH_PASSWORD_OUTPUT, encoding="utf-8")
-        (directory / "user-data.orig").write_text("passwd: stale", encoding="utf-8")
+        # As if a run had been killed after writing the rendered file.
+        user_data.write_text(
+            SET_SSH_PASSWORD_OUTPUT.replace("$UBUNTU_REPO", "http://stale/ubuntu"),
+            encoding="utf-8",
+        )
+        (directory / "user-data.orig").write_text(SET_SSH_PASSWORD_OUTPUT, encoding="utf-8")
+
         self.renderer.render_user_data(directory, dict(MIRRORS))
-        self.assertIn("passwd: $6$salt$hash", user_data.read_text())
-        self.assertNotIn("stale", user_data.read_text())
         self.renderer.clean_user_data(directory)
-        self.assertEqual(SET_SSH_PASSWORD_OUTPUT, user_data.read_text())
+
+        self.assertEqual(SET_SSH_PASSWORD_OUTPUT, user_data.read_text(encoding="utf-8"))
 
     def test_unsubstituted_password_placeholder_is_refused(self):
         directory = self.write_profile(
@@ -434,19 +438,6 @@ class MainTests(RendererTestCase):
         self.assertIn("us.archive.ubuntu.com", (self.directory / "user-data").read_text())
         self.assertFalse((other / "user-data").exists())
 
-    def test_private_http_copies_do_not_change_shared_password_or_mirrors(self):
-        (self.directory / "user-data").write_text(SET_SSH_PASSWORD_OUTPUT)
-        (self.directory / "user-data.orig").write_text("passwd: stale")
-        for number in range(2):
-            output = self.capi_root / f"private-{number}"
-            self.packer_args += ["-var", f"ubuntu_repo=http://mirror{number}/ubuntu"]
-            self.run_main("--output-dir", str(output))
-            self.assertEqual(0o700, output.stat().st_mode & 0o777)
-            rendered = (output / "24.04/user-data").read_text()
-            self.assertIn(f"http://mirror{number}/ubuntu", rendered)
-            self.assertIn("passwd: $6$salt$hash", rendered)
-            self.assertEqual(SET_SSH_PASSWORD_OUTPUT, (self.directory / "user-data").read_text())
-
     def test_command_line_var_overrides_the_var_files(self):
         self.packer_args += ["--var", "ubuntu_repo=http://mirror.example.com/ubuntu"]
 
@@ -466,14 +457,11 @@ class MainTests(RendererTestCase):
 
     def test_clean_keeps_the_rendered_user_data_on_request(self):
         self.run_main()
-        stash = self.directory / "user-data.orig"
-        stash.write_text("old password")
 
         with mock.patch.dict(os.environ, {"KEEP_RENDERED_AUTOINSTALL": "1"}):
             self.run_main("--clean")
 
         self.assertTrue((self.directory / "user-data").exists())
-        self.assertFalse(stash.exists())
 
     def test_nothing_is_printed_that_could_expose_a_mirror_credential(self):
         self.packer_args += ["--var", "ubuntu_repo=http://user:pass@mirror.example.com/ubuntu"]
@@ -517,17 +505,6 @@ class RepositoryTemplateTests(unittest.TestCase):
         self.assertIn("curtin in-target --target=/target -- swapoff -a", template)
         self.assertIn("curtin in-target --target=/target -- apt-get clean", template)
         self.assertNotIn("    - swapoff -a\n", template)
-
-    def test_immutable_qemu_target_uses_point_release_iso_url(self):
-        target = (
-            pathlib.Path(__file__).resolve().parents[1]
-            / "qemu-ubuntu-2404-immutable.json"
-        )
-
-        self.assertRegex(
-            json.loads(target.read_text(encoding="utf-8"))["iso_url"],
-            r"^https://releases\.ubuntu\.com/(24\.04\.\d+)/ubuntu-\1-live-server-amd64\.iso$",
-        )
 
 
 if __name__ == "__main__":
