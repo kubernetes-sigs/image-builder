@@ -28,6 +28,10 @@
     mode: "0755"
     owner: root
     group: root
+  register: kubernetes_cni_tarball_download
+  until: kubernetes_cni_tarball_download is not failed
+  retries: 5
+  delay: 3
 
 - name: Install CNI
   ansible.builtin.unarchive:
