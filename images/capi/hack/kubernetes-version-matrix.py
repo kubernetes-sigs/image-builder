@@ -31,7 +31,7 @@ import sys
 import urllib.request
 import xml.etree.ElementTree as ET
 from pathlib import Path
-from typing import Any
+from typing import Any, NamedTuple
 
 
 sys.dont_write_bytecode = True
@@ -41,10 +41,9 @@ REPO_ROOT = CAPI_ROOT.parents[1]
 MATRIX_FILE = CAPI_ROOT / "packer/config/kubernetes-version-matrix.yaml"
 LATEST_FILE = CAPI_ROOT / "packer/config/kubernetes-version-latest.yaml"
 TRACKING_DIR = CAPI_ROOT / "packer/config/kubernetes-version-dependencies"
-TRACKING_MODULE_PREFIX = (
-    "sigs.k8s.io/image-builder/images/capi/packer/config/kubernetes-version-dependencies"
-)
-TRACKING_GO_VERSION = "1.24"
+TRACKING_FILE_NAME = ".pre-commit-config.yaml"
+DEPENDABOT_FILE = REPO_ROOT / ".github/dependabot.yml"
+DEPENDABOT_ECOSYSTEM = "pre-commit"
 KUBERNETES_DEB_RESOLVER = (
     REPO_ROOT / ".github/actions/configure-k8s-version/resolve-kubernetes-deb-version.py"
 )
@@ -71,12 +70,28 @@ REQUIRED_KEYS = (
     "kubernetes_series",
     "runc_version",
 )
-TRACKED_GO_MODULES = (
-    ("github.com/containerd/containerd/v2", "containerd_version"),
-    ("github.com/containernetworking/plugins", "kubernetes_cni_semver"),
-    ("github.com/opencontainers/runc", "runc_version"),
-    ("k8s.io/client-go", "kubernetes_semver"),
-    ("sigs.k8s.io/cri-tools", "crictl_version"),
+
+
+class TrackedRepo(NamedTuple):
+    """A git repository Dependabot follows through a pre-commit ``rev``.
+
+    ``unprefixed`` marks the matrix keys that store the upstream release tag
+    without its leading ``v``.
+    """
+
+    repo: str
+    entry_key: str
+    unprefixed: bool
+
+
+TRACKED_REPOS = (
+    TrackedRepo("https://github.com/containerd/containerd", "containerd_version", True),
+    TrackedRepo(
+        "https://github.com/containernetworking/plugins", "kubernetes_cni_semver", False
+    ),
+    TrackedRepo("https://github.com/opencontainers/runc", "runc_version", True),
+    TrackedRepo("https://github.com/kubernetes/kubernetes", "kubernetes_semver", False),
+    TrackedRepo("https://github.com/kubernetes-sigs/cri-tools", "crictl_version", True),
 )
 
 
@@ -237,6 +252,15 @@ def resolve_crictl_version(minor: str) -> str:
 
 
 def refresh_entry(selector: str, current: dict[str, Any]) -> dict[str, Any]:
+    """Refresh the pins one selector resolves from upstream release metadata.
+
+    Only the Kubernetes version fields, the kubernetes-cni package versions and
+    crictl are refreshed here. ``containerd_version``, ``runc_version`` and
+    ``kubernetes_cni_semver`` are deliberately carried over from ``current``:
+    Dependabot tracks each of them through a pre-commit ``rev``, and the CNI
+    plugins tarball in particular does not have to match the kubernetes-cni
+    package version.
+    """
     kubernetes_semver = stable_kubernetes_version(selector)
     kubernetes_version = kubernetes_semver.removeprefix("v")
     cni_rpm_version = resolve_cni_rpm_version(selector)
@@ -246,7 +270,6 @@ def refresh_entry(selector: str, current: dict[str, Any]) -> dict[str, Any]:
             "crictl_version": resolve_crictl_version(selector),
             "kubernetes_cni_deb_version": resolve_cni_deb_version(selector),
             "kubernetes_cni_rpm_version": cni_rpm_version,
-            "kubernetes_cni_semver": f"v{cni_rpm_version}",
             "kubernetes_deb_version": resolve_kubernetes_deb_version(kubernetes_version),
             "kubernetes_rpm_version": kubernetes_version,
             "kubernetes_semver": kubernetes_semver,
@@ -265,8 +288,11 @@ def refresh_matrix() -> tuple[dict[str, dict[str, Any]], dict[str, Any]]:
 
     latest_semver = stable_kubernetes_version()
     latest_selector = ".".join(latest_semver.removeprefix("v").split(".")[:2])
-    latest_base = refreshed_pins.get(latest_selector, latest)
-    refreshed_latest = refresh_entry(latest_selector, latest_base)
+    # Refresh the rolling entry from its own values, never from the release pin
+    # for the same minor. containerd, runc and the CNI plugins tarball are
+    # tracked separately for latest and may legitimately run ahead of the pin,
+    # so seeding from the pin would silently roll them back.
+    refreshed_latest = refresh_entry(latest_selector, latest)
     return refreshed_pins, refreshed_latest
 
 
@@ -336,99 +362,263 @@ def tracking_selector_name(selector: str) -> str:
     return f"release-{selector.replace('.', '-')}"
 
 
-def tracking_go_mod_path(selector: str) -> Path:
-    return TRACKING_DIR / tracking_selector_name(selector) / "go.mod"
+def tracking_config_path(selector: str) -> Path:
+    return TRACKING_DIR / tracking_selector_name(selector) / TRACKING_FILE_NAME
 
 
-def kubernetes_module_version(kubernetes_semver: Any) -> str:
-    version = str(kubernetes_semver).removeprefix("v")
-    major, minor, patch = version.split(".", 2)
-    if major != "1":
-        raise ValueError(f"expected Kubernetes major version 1, got {kubernetes_semver}")
-    return f"v0.{minor}.{patch}"
+def tracking_rev(tracked: TrackedRepo, entry: dict[str, Any]) -> str:
+    """Return the git tag ``tracked`` is pinned to in ``entry``."""
+    value = str(entry[tracked.entry_key])
+    return f"v{value}" if tracked.unprefixed else value
 
 
-def kubernetes_semver_from_module(module_version: str) -> str:
-    version = module_version.removeprefix("v")
-    major, minor, patch = version.split(".", 2)
-    if major != "0":
-        raise ValueError(f"expected Kubernetes module major version 0, got {module_version}")
-    return f"v1.{minor}.{patch}"
+def tracking_value(tracked: TrackedRepo, rev: str) -> str:
+    """Return the matrix value a git tag maps back to."""
+    return rev.removeprefix("v") if tracked.unprefixed else rev
 
 
-def go_module_version(module: str, value: Any) -> str:
-    if module == "k8s.io/client-go":
-        return kubernetes_module_version(value)
-    version = str(value)
-    if version.startswith("v"):
-        return version
-    return f"v{version}"
-
-
-def render_tracking_go_mod(selector: str, entry: dict[str, Any]) -> str:
-    module_name = f"{TRACKING_MODULE_PREFIX}/{tracking_selector_name(selector)}"
+def render_tracking_config(selector: str, entry: dict[str, Any]) -> str:
     lines = [
-        f"module {module_name}",
-        "",
-        f"go {TRACKING_GO_VERSION}",
-        "",
-        "require (",
+        "# Copyright 2026 The Kubernetes Authors.",
+        "#",
+        "# Licensed under the Apache License, Version 2.0 (the \"License\");",
+        "# you may not use this file except in compliance with the License.",
+        "# You may obtain a copy of the License at",
+        "#",
+        "#     http://www.apache.org/licenses/LICENSE-2.0",
+        "#",
+        "# Unless required by applicable law or agreed to in writing, software",
+        "# distributed under the License is distributed on an \"AS IS\" BASIS,",
+        "# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.",
+        "# See the License for the specific language governing permissions and",
+        "# limitations under the License.",
+        "#",
+        f"# Dependabot tracking manifest for the {selector} dependency set.",
+        "# Dependabot's pre-commit updater follows the git tags of the repositories",
+        "# below and rewrites the matching rev. The pre-commit tool never runs these",
+        "# hooks. Regenerate with:",
+        "#   images/capi/hack/kubernetes-version-matrix.py render-tracking --write",
+        "repos:",
     ]
-    for module, entry_key in TRACKED_GO_MODULES:
-        lines.append(f"\t{module} {go_module_version(module, entry[entry_key])}")
-    lines.append(")")
+    for tracked in TRACKED_REPOS:
+        lines.append(f"  - repo: {tracked.repo}")
+        lines.append(f"    rev: {tracking_rev(tracked, entry)}")
+        lines.append("    hooks: []")
     return "\n".join(lines) + "\n"
 
 
-def render_tracking_go_mods(
+def tracking_entries(
+    release_pins: dict[str, dict[str, Any]], latest: dict[str, Any]
+) -> list[tuple[str, dict[str, Any]]]:
+    entries = [
+        (selector, release_pins[selector])
+        for selector in sorted(release_pins, key=version_sort_key)
+    ]
+    entries.append(("latest", latest))
+    return entries
+
+
+def render_tracking_configs(
     release_pins: dict[str, dict[str, Any]], latest: dict[str, Any]
 ) -> dict[Path, str]:
-    manifests = {
-        tracking_go_mod_path(selector): render_tracking_go_mod(selector, release_pins[selector])
-        for selector in sorted(release_pins, key=version_sort_key)
+    return {
+        tracking_config_path(selector): render_tracking_config(selector, entry)
+        for selector, entry in tracking_entries(release_pins, latest)
     }
-    manifests[tracking_go_mod_path("latest")] = render_tracking_go_mod("latest", latest)
-    return manifests
 
 
-def read_tracking_go_mod(selector: str) -> dict[str, str]:
-    path = tracking_go_mod_path(selector)
+def read_tracking_config(selector: str) -> dict[str, str]:
+    """Return the rev every repository in one tracking manifest is pinned to.
+
+    Only ``repo`` and ``rev`` are read, so Dependabot may reorder or reformat
+    the manifest as long as the pairs survive.
+    """
+    path = tracking_config_path(selector)
     if not path.exists():
         raise FileNotFoundError(f"{path} does not exist")
 
-    versions: dict[str, str] = {}
-    in_require_block = False
-    for line in path.read_text().splitlines():
-        stripped = line.strip()
-        if not stripped or stripped.startswith("//"):
+    revs: dict[str, str] = {}
+    for repo in yq_json(path, ".repos") or []:
+        if isinstance(repo, dict) and "repo" in repo and "rev" in repo:
+            revs[str(repo["repo"])] = str(repo["rev"])
+    return revs
+
+
+def tracking_issues(selector: str, entry: dict[str, Any]) -> list[str]:
+    """Report why a tracking manifest does not match the matrix; empty when it does."""
+    path = tracking_config_path(selector)
+    if not path.exists():
+        return [f"{path}: missing Dependabot tracking manifest"]
+
+    revs = read_tracking_config(selector)
+    issues = []
+    for tracked in TRACKED_REPOS:
+        expected = tracking_rev(tracked, entry)
+        actual = revs.pop(tracked.repo, None)
+        if actual is None:
+            issues.append(f"{path}: {tracked.repo} is not tracked")
+        elif actual != expected:
+            issues.append(f"{path}: {tracked.repo} rev is {actual}, expected {expected}")
+    issues.extend(f"{path}: unexpected repository {repo}" for repo in sorted(revs))
+    return issues
+
+
+def unexpected_tracking_files(expected_paths: set[Path]) -> list[str]:
+    if not TRACKING_DIR.exists():
+        return []
+    return [
+        f"{path}: unexpected Dependabot tracking file"
+        for path in sorted(TRACKING_DIR.rglob("*"))
+        if path.is_file() and path not in expected_paths
+    ]
+
+
+def dependabot_directory(selector: str) -> str:
+    directory = TRACKING_DIR / tracking_selector_name(selector)
+    return f"/{directory.relative_to(REPO_ROOT).as_posix()}"
+
+
+def ignore_bound(selector: str, tracked: TrackedRepo, entry: dict[str, Any]) -> str:
+    """Return the ignore range that holds one repository to the selector's pin policy.
+
+    A release pin is held below the next minor of its pinned version, the
+    rolling latest entry below the next major. The range is a single clause on
+    purpose: Dependabot::PreCommit::Requirement passes the whole string to
+    Gem::Requirement without splitting on commas, so a two-clause range raises
+    Gem::Requirement::BadRequirementError and fails the update job.
+    """
+    major, minor = str(entry[tracked.entry_key]).removeprefix("v").split(".")[:2]
+    if selector == "latest":
+        return f">= {int(major) + 1}.0.0"
+    return f">= {major}.{int(minor) + 1}.0"
+
+
+def expected_dependabot_ignores(selector: str, entry: dict[str, Any]) -> dict[str, str]:
+    return {
+        tracked.repo: ignore_bound(selector, tracked, entry) for tracked in TRACKED_REPOS
+    }
+
+
+def dependabot_precommit_updates() -> list[tuple[list[str], dict[str, Any]]]:
+    """Return the directories and body of every pre-commit entry in dependabot.yml."""
+    config = yq_json(DEPENDABOT_FILE, ".")
+    updates = []
+    for update in config.get("updates") or []:
+        if update.get("package-ecosystem") != DEPENDABOT_ECOSYSTEM:
             continue
-        if stripped == "require (":
-            in_require_block = True
+        directories = list(update.get("directories") or [])
+        if directory := update.get("directory"):
+            directories.append(directory)
+        updates.append((directories, update))
+    return updates
+
+
+def dependabot_ignore_issues(
+    directory: str, selector: str, entry: dict[str, Any], update: dict[str, Any]
+) -> list[str]:
+    """Check one entry ignores exactly the ranges the pin policy implies."""
+    issues = []
+    conditions: dict[str, list[str]] = {}
+    for condition in update.get("ignore") or []:
+        name = str(condition.get("dependency-name"))
+        if condition.get("update-types"):
+            issues.append(
+                f"{DEPENDABOT_FILE}: {directory} ignores {name} by update-type, which "
+                "dependabot-core cannot apply to a pre-commit dependency"
+            )
+        conditions.setdefault(name, []).extend(condition.get("versions") or [])
+
+    for repo, bound in expected_dependabot_ignores(selector, entry).items():
+        if conditions.pop(repo, None) != [bound]:
+            issues.append(
+                f'{DEPENDABOT_FILE}: {directory} must ignore {repo} versions [ "{bound}" ]'
+            )
+    issues.extend(
+        f"{DEPENDABOT_FILE}: {directory} ignores {name}, which the matrix does not track"
+        for name in sorted(conditions)
+    )
+    return issues
+
+
+def dependabot_issues(
+    release_pins: dict[str, dict[str, Any]], latest: dict[str, Any]
+) -> list[str]:
+    """Check dependabot.yml holds every tracking directory to its pin policy.
+
+    Every directory needs its own entry, named exactly, because the ignore
+    ranges differ per directory and a glob cannot carry per-directory ranges.
+    """
+    issues = []
+    by_directory: dict[str, dict[str, Any]] = {}
+    for directories, update in dependabot_precommit_updates():
+        for directory in directories:
+            if directory in by_directory:
+                issues.append(
+                    f"{DEPENDABOT_FILE}: {directory} has more than one pre-commit entry"
+                )
+            by_directory[directory] = update
+
+    for selector, entry in tracking_entries(release_pins, latest):
+        directory = dependabot_directory(selector)
+        update = by_directory.pop(directory, None)
+        if update is None:
+            issues.append(f"{DEPENDABOT_FILE}: no pre-commit entry for {directory}")
             continue
-        if in_require_block and stripped == ")":
-            in_require_block = False
+        issues.extend(dependabot_ignore_issues(directory, selector, entry, update))
+    issues.extend(
+        f"{DEPENDABOT_FILE}: pre-commit entry {directory!r} is not a tracking directory"
+        for directory in sorted(by_directory)
+    )
+    return issues
+
+
+def pin_policy_errors(
+    selector: str, current: dict[str, Any], values: dict[str, str]
+) -> list[str]:
+    """Reject rev changes that are wider than the selector's pin policy.
+
+    The explicit ``ignore`` ranges in dependabot.yml are the first guard and
+    keep Dependabot from proposing such a change at all. This is the second:
+    the ranges are only as good as their last regeneration, and a rev can also
+    reach the tree by hand, so a release pin takes patch updates only and the
+    rolling latest entry takes everything below a major bump.
+    """
+    segments = 1 if selector == "latest" else 2
+    errors = []
+    for tracked in TRACKED_REPOS:
+        before = str(current.get(tracked.entry_key, "")).removeprefix("v")
+        after = values[tracked.entry_key].removeprefix("v")
+        if not before or before.split(".")[:segments] == after.split(".")[:segments]:
             continue
-        if stripped.startswith("require "):
-            stripped = stripped.removeprefix("require ").strip()
-        if not in_require_block and " " not in stripped:
-            continue
-        parts = stripped.split()
-        if len(parts) >= 2:
-            versions[parts[0]] = parts[1]
-    return versions
+        errors.append(
+            f"{selector}: {tracked.repo} moved from {before} to {after}, which the "
+            f"{selector} pin policy does not allow"
+        )
+    return errors
 
 
 def entry_from_tracking(selector: str, current: dict[str, Any]) -> dict[str, Any]:
-    versions = read_tracking_go_mod(selector)
-    missing_modules = [
-        module for module, _ in TRACKED_GO_MODULES if module not in versions
-    ]
-    if missing_modules:
+    """Fold the revs Dependabot maintains back into one matrix entry.
+
+    The kubernetes-cni package versions are not touched. They pin the distro
+    package, which is versioned separately from the CNI plugins tarball that
+    ``kubernetes_cni_semver`` selects.
+    """
+    revs = read_tracking_config(selector)
+    missing = [tracked.repo for tracked in TRACKED_REPOS if tracked.repo not in revs]
+    if missing:
         raise ValueError(
-            f"{selector}: tracking manifest missing modules: {', '.join(missing_modules)}"
+            f"{selector}: tracking manifest missing repositories: {', '.join(missing)}"
         )
 
-    kubernetes_semver = kubernetes_semver_from_module(versions["k8s.io/client-go"])
+    values = {
+        tracked.entry_key: tracking_value(tracked, revs[tracked.repo])
+        for tracked in TRACKED_REPOS
+    }
+    if errors := pin_policy_errors(selector, current, values):
+        raise ValueError("; ".join(errors))
+
+    kubernetes_semver = values["kubernetes_semver"]
     kubernetes_version = kubernetes_semver.removeprefix("v")
     kubernetes_minor = ".".join(kubernetes_version.split(".")[:2])
     if selector != "latest" and kubernetes_minor != selector:
@@ -437,26 +627,17 @@ def entry_from_tracking(selector: str, current: dict[str, Any]) -> dict[str, Any
             f"expected {selector}"
         )
 
-    cni_semver = versions["github.com/containernetworking/plugins"]
-    cni_version = cni_semver.removeprefix("v")
-    cni_rpm_version = resolve_cni_rpm_version(kubernetes_minor, cni_version)
+    deb_version = current.get("kubernetes_deb_version")
+    if current.get("kubernetes_rpm_version") != kubernetes_version or not deb_version:
+        deb_version = resolve_kubernetes_deb_version(kubernetes_version)
+
     updated = dict(current)
+    updated.update(values)
     updated.update(
         {
-            "containerd_version": versions[
-                "github.com/containerd/containerd/v2"
-            ].removeprefix("v"),
-            "crictl_version": versions["sigs.k8s.io/cri-tools"].removeprefix("v"),
-            "kubernetes_cni_deb_version": resolve_cni_deb_version(
-                kubernetes_minor, cni_version
-            ),
-            "kubernetes_cni_rpm_version": cni_rpm_version,
-            "kubernetes_cni_semver": f"v{cni_rpm_version}",
-            "kubernetes_deb_version": resolve_kubernetes_deb_version(kubernetes_version),
+            "kubernetes_deb_version": deb_version,
             "kubernetes_rpm_version": kubernetes_version,
-            "kubernetes_semver": kubernetes_semver,
             "kubernetes_series": f"v{kubernetes_minor}",
-            "runc_version": versions["github.com/opencontainers/runc"].removeprefix("v"),
         }
     )
     return {key: updated[key] for key in REQUIRED_KEYS}
@@ -468,7 +649,7 @@ def expected_files(
     return {
         MATRIX_FILE: render_release_matrix_yaml(release_pins),
         LATEST_FILE: render_latest_yaml(latest),
-        **render_tracking_go_mods(release_pins, latest),
+        **render_tracking_configs(release_pins, latest),
     }
 
 
@@ -516,9 +697,13 @@ def validate_entry(selector: str, entry: dict[str, Any]) -> list[str]:
         errors.append(f"{selector}: kubernetes_rpm_version does not match kubernetes_semver")
     if not str(entry["kubernetes_deb_version"]).startswith(f"{kubernetes_version}-"):
         errors.append(f"{selector}: kubernetes_deb_version does not match kubernetes_semver")
+    # kubernetes_cni_semver pins the CNI plugins tarball and is tracked on its
+    # own, so it is only checked for shape, not against the package versions.
+    if not re.fullmatch(r"v\d+\.\d+\.\d+", str(entry["kubernetes_cni_semver"])):
+        errors.append(
+            f"{selector}: invalid kubernetes_cni_semver {entry['kubernetes_cni_semver']!r}"
+        )
     cni_rpm = entry["kubernetes_cni_rpm_version"]
-    if entry["kubernetes_cni_semver"] != f"v{cni_rpm}":
-        errors.append(f"{selector}: kubernetes_cni_semver does not match RPM CNI version")
     if not str(entry["kubernetes_cni_deb_version"]).startswith(f"{cni_rpm}-"):
         errors.append(f"{selector}: DEB and RPM CNI versions do not match")
     return errors
@@ -531,19 +716,12 @@ def verify() -> int:
         errors.extend(validate_entry(selector, entry))
     errors.extend(validate_entry("latest", latest))
 
-    expected_tracking = render_tracking_go_mods(release_pins, latest)
-    for path, expected in expected_tracking.items():
-        if not path.exists():
-            errors.append(f"{path}: missing generated Dependabot tracking manifest")
-            continue
-        current = path.read_text()
-        if current != expected:
-            errors.append(f"{path}: generated Dependabot tracking manifest is out of date")
-
-    expected_paths = set(expected_tracking)
-    for path in TRACKING_DIR.glob("*/go.mod"):
-        if path not in expected_paths:
-            errors.append(f"{path}: unexpected Dependabot tracking manifest")
+    expected_paths = set()
+    for selector, entry in tracking_entries(release_pins, latest):
+        expected_paths.add(tracking_config_path(selector))
+        errors.extend(tracking_issues(selector, entry))
+    errors.extend(unexpected_tracking_files(expected_paths))
+    errors.extend(dependabot_issues(release_pins, latest))
 
     if errors:
         for error in errors:
@@ -559,6 +737,19 @@ def update(write: bool) -> int:
 
     if changed and not write:
         print("Kubernetes version matrix is out of date; rerun with --write", file=sys.stderr)
+        return 1
+    return verify()
+
+
+def render_tracking(write: bool) -> int:
+    release_pins, latest = load_matrix()
+    changed = apply_expected_files(render_tracking_configs(release_pins, latest), write)
+
+    if changed and not write:
+        print(
+            "Dependabot tracking manifests do not match the matrix; rerun with --write",
+            file=sys.stderr,
+        )
         return 1
     return verify()
 
@@ -592,7 +783,14 @@ def main() -> int:
     subparsers.add_parser("verify", help="verify matrix structure and tracking manifests")
 
     update_parser = subparsers.add_parser("update", help="refresh Kubernetes package pins")
-    update_parser.add_argument("--write", action="store_true", help="write refreshed YAML files")
+    update_parser.add_argument("--write", action="store_true", help="write refreshed files")
+
+    render_tracking_parser = subparsers.add_parser(
+        "render-tracking", help="regenerate the Dependabot tracking manifests from the matrix"
+    )
+    render_tracking_parser.add_argument(
+        "--write", action="store_true", help="write the tracking manifests"
+    )
 
     sync_parser = subparsers.add_parser(
         "sync-tracking", help="refresh matrix YAML from Dependabot tracking manifests"
@@ -607,6 +805,8 @@ def main() -> int:
         return verify()
     if args.command == "update":
         return update(args.write)
+    if args.command == "render-tracking":
+        return render_tracking(args.write)
     if args.command == "sync-tracking":
         return sync_tracking(args.write)
     return 1

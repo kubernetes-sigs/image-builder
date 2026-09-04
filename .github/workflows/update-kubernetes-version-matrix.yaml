@@ -7,8 +7,7 @@ on:
       - reopened
       - synchronize
     paths:
-      - "images/capi/packer/config/kubernetes-version-dependencies/**/go.mod"
-      - "images/capi/packer/config/kubernetes-version-dependencies/**/go.sum"
+      - "images/capi/packer/config/kubernetes-version-dependencies/**/.pre-commit-config.yaml"
 
 permissions:
   contents: write
@@ -43,7 +42,7 @@ jobs:
             exit 1
           fi
 
-          tracking_pattern='^images/capi/packer/config/kubernetes-version-dependencies/(latest|release-[0-9]+-[0-9]+)/go\.(mod|sum)$'
+          tracking_pattern='^images/capi/packer/config/kubernetes-version-dependencies/(latest|release-[0-9]+-[0-9]+)/\.pre-commit-config\.yaml$'
           invalid_files="$(
             printf '%s\n' "${changed_files}" |
               grep -Ev "${tracking_pattern}" || true
@@ -54,8 +53,8 @@ jobs:
             exit 1
           fi
 
-          if ! printf '%s\n' "${changed_files}" | grep -Eq '/go\.mod$'; then
-            echo "Expected at least one tracking go.mod change" >&2
+          if ! printf '%s\n' "${changed_files}" | grep -Eq '/\.pre-commit-config\.yaml$'; then
+            echo "Expected at least one tracking manifest change" >&2
             exit 1
           fi
 
@@ -78,7 +77,7 @@ jobs:
           fi
 
           generated_pattern='^images/capi/packer/config/kubernetes-version-(latest|matrix)\.yaml$'
-          tracking_pattern='^images/capi/packer/config/kubernetes-version-dependencies/(latest|release-[0-9]+-[0-9]+)/go\.(mod|sum)$'
+          tracking_pattern='^images/capi/packer/config/kubernetes-version-dependencies/(latest|release-[0-9]+-[0-9]+)/\.pre-commit-config\.yaml$'
           invalid_files="$(
             git diff --name-only |
               grep -Ev "(${generated_pattern})|(${tracking_pattern})" || true
