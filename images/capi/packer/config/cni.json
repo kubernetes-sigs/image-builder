@@ -3,5 +3,5 @@
   "kubernetes_cni_http_source": "https://github.com/containernetworking/plugins/releases/download",
   "kubernetes_cni_rpm_version": null,
   "kubernetes_cni_semver": "v1.9.1",
-  "kubernetes_cni_source_type": "http"
+  "kubernetes_cni_source_type": ""
 }

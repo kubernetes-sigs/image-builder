@@ -1,3 +1,6 @@
+{{/* An empty kubernetes_cni_source_type means the CNI plugins follow kubernetes_source_type. */}}
+{{- $cni_source := .Vars.kubernetes_cni_source_type -}}
+{{- if eq $cni_source "" -}}{{- $cni_source = .Vars.kubernetes_source_type -}}{{- end -}}
 command:
 {{ if ne .Vars.OS "windows" }} # Linux Only
 {{if eq .Vars.immutable_data_partition "true"}}
@@ -183,7 +186,7 @@ command:
     stderr: []
     timeout: 0
 {{end}}
-{{if or (eq .Vars.kubernetes_cni_source_type "http") (eq .Vars.kubernetes_cni_source_type "pkg")}}
+{{if or (eq $cni_source "http") (eq $cni_source "pkg")}}
   CNI plugin binaries are executable:
     exec: >-
       test -x /opt/cni/bin/bridge &&
@@ -195,7 +198,7 @@ command:
     stderr: []
     timeout: 0
 {{end}}
-{{if eq .Vars.kubernetes_cni_source_type "pkg"}}
+{{if eq $cni_source "pkg"}}
   CNI plugin binaries are package-owned:
     exec: >-
       if command -v dpkg-query >/dev/null 2>&1; then
@@ -214,7 +217,7 @@ command:
     stderr: []
     timeout: 0
 {{end}}
-{{if eq .Vars.kubernetes_cni_source_type "http"}}
+{{if eq $cni_source "http"}}
   /opt/cni/bin/host-device 2>&1 | awk -F' ' '{print substr($4,2); }':
     exit-status: 0
     stdout: [{{ .Vars.kubernetes_cni_version }}]

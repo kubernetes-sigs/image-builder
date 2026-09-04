@@ -12,12 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-# kubernetes_cni_source_type is intentionally independent of
-# kubernetes_source_type, so the kubernetes-cni package must be installable
-# even when Kubernetes itself comes from kubernetes_http_source. Each distro
-# therefore ensures its Kubernetes package repo is present here rather than
-# relying on the repo setup in debian.yml/redhat.yml/azurelinux.yml/photon.yml,
-# which only runs when kubernetes_source_type == "pkg".
+# kubernetes_cni_source_type can select the package while Kubernetes itself
+# comes from kubernetes_http_source, so the kubernetes-cni package must be
+# installable on the http Kubernetes path too. Each distro therefore ensures its
+# Kubernetes package repo is present here rather than relying on the repo setup
+# in debian.yml/redhat.yml/azurelinux.yml/photon.yml, which only runs when
+# kubernetes_source_type == "pkg".
 
 - name: Add the Kubernetes repo (Debian)
   ansible.builtin.deb822_repository:

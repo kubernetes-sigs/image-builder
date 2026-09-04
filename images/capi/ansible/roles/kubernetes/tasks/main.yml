@@ -12,24 +12,27 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-# kubernetes_source_type and kubernetes_cni_source_type are independent: the CNI
-# plugins are installed by cni-pkg.yml or cni-url.yml regardless of how Kubernetes
-# itself is installed. Validate both before anything is installed.
+# kubernetes_cni_source_type is empty by default, in which case the CNI plugins
+# follow kubernetes_source_type. Setting it to "http" or "pkg" decouples the two
+# and installs the plugins from that source whatever Kubernetes itself uses.
+# kubernetes_cni_source_type_effective resolves the two into the value the CNI
+# task files are selected on. Validate before anything is installed.
 - name: Assert supported Kubernetes and CNI source types
   ansible.builtin.assert:
     that:
       - kubernetes_source_type | default("") in ["http", "pkg"]
-      - kubernetes_cni_source_type | default("") in ["http", "pkg"]
+      - kubernetes_cni_source_type | default("") in ["", "http", "pkg"]
     fail_msg: >-
-      kubernetes_source_type and kubernetes_cni_source_type must each be "http"
-      or "pkg", got
+      kubernetes_source_type must be "http" or "pkg" and
+      kubernetes_cni_source_type must be "http", "pkg" or empty to follow
+      kubernetes_source_type, got
       kubernetes_source_type="{{ kubernetes_source_type | default('') }}" and
       kubernetes_cni_source_type="{{ kubernetes_cni_source_type | default('') }}"
 
 - name: Assert the CNI package source is not used on Flatcar
   ansible.builtin.assert:
     that:
-      - kubernetes_cni_source_type != "pkg"
+      - kubernetes_cni_source_type_effective != "pkg"
     fail_msg: >-
       kubernetes_cni_source_type="pkg" is not supported on Flatcar, which has no
       package manager. Set kubernetes_cni_source_type="http".
@@ -57,11 +60,11 @@
 
 - name: Import CNI package tasks
   ansible.builtin.import_tasks: cni-pkg.yml
-  when: kubernetes_cni_source_type == "pkg"
+  when: kubernetes_cni_source_type_effective == "pkg"
 
 - name: Import CNI URL tasks
   ansible.builtin.import_tasks: cni-url.yml
-  when: kubernetes_cni_source_type == "http"
+  when: kubernetes_cni_source_type_effective == "http"
 
 # must include crictl-url.yml after installing containerd,
 # as the cri-containerd tarball also includes crictl.

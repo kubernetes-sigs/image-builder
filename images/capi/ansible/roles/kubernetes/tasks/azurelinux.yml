@@ -38,8 +38,8 @@
       - kubeadm-{{ kubernetes_rpm_version }}
       - kubectl-{{ kubernetes_rpm_version }}
 
-# kubernetes-cni is installed independently of kubernetes_source_type; see
-# cni-pkg.yml, which is imported based solely on kubernetes_cni_source_type.
+# kubernetes-cni is installed by cni-pkg.yml, which is selected by
+# kubernetes_cni_source_type_effective rather than by this file.
 
 - name: Allow Kubernetes API server through iptables
   ansible.builtin.iptables:
