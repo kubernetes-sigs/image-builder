@@ -12,6 +12,10 @@ Ubuntu autoinstall builds use the `ubuntu_repo` and `ubuntu_security_repo` Packe
 PACKER_FLAGS="--var 'ubuntu_repo=http://mirror.example.com/ubuntu' --var 'ubuntu_security_repo=http://security.example.com/ubuntu'" make build-proxmox-ubuntu-2404
 ```
 
+The user-data is rendered per build target from that target's own Packer
+variables. See the [Ubuntu apt mirror docs](../../../../docs/book/src/capi/capi.md#overriding-the-ubuntu-apt-mirrors)
+for the resolution order and for mirrors that carry credentials.
+
 ## ISO files
 
 To use existing ISO files, set the `ISO_FILE` environment variable to the path of the ISO file.

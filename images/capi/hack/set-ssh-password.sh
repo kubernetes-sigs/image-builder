@@ -20,6 +20,7 @@ set -o pipefail
 
 PACKER_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../packer" && pwd -P)"
 
+<<<<<<< HEAD
 resolve_packer_var() {
   local key="$1"
   local default="$2"
@@ -99,6 +100,8 @@ print(value)
 PY
 }
 
+=======
+>>>>>>> 17479d994 (capi: render Ubuntu autoinstall mirrors per build target)
 openssl_binary=openssl11
 if ! command -v $openssl_binary >/dev/null 2>&1; then
   openssl_binary=openssl
@@ -122,6 +125,7 @@ fi
 
 export SSH_PASSWORD=${SSH_PASSWORD:-"$(LC_ALL=C tr -dc A-Za-z0-9 </dev/urandom | head -c 16; echo)"}
 SALT=$(LC_ALL=C tr -dc A-Za-z0-9 </dev/urandom | head -c 16; echo)
+<<<<<<< HEAD
 ENCRYPTED_SSH_PASSWORD=$($openssl_binary passwd -6 -salt "$SALT" -stdin <<< "$SSH_PASSWORD")
 export ENCRYPTED_SSH_PASSWORD
 
@@ -159,7 +163,6 @@ find "$PACKER_DIR" -type f -name "*.tmpl" -print0 | while IFS= read -r -d '' fil
     # fail with the file not being found, leading to test failures.
     # If we fail to remove the file we just continue and assume
     # that the file was already removed.
-<<<<<<< HEAD
     rm "$rendered" || true
   fi
   sed -e "s|\$SSH_PASSWORD|$escaped_ssh_password|g" \

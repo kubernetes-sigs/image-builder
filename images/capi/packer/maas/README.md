@@ -47,6 +47,10 @@ Ubuntu autoinstall builds use the `ubuntu_repo` and `ubuntu_security_repo` Packe
 PACKER_FLAGS="--var 'ubuntu_repo=http://mirror.example.com/ubuntu' --var 'ubuntu_security_repo=http://security.example.com/ubuntu'" make build-maas-ubuntu-2404-efi
 ```
 
+The user-data is rendered per build target from that target's own Packer
+variables. See the [Ubuntu apt mirror docs](../../../../docs/book/src/capi/capi.md#overriding-the-ubuntu-apt-mirrors)
+for the resolution order and for mirrors that carry credentials.
+
 # Uploading to MaaS
 
 To upload the generates images to MaaS, run the following command.
