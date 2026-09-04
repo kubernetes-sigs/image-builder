@@ -25,10 +25,11 @@ and `packer/config/containerd.json` without editing those files directly.
 The matrix intentionally omits `kubernetes_source_type` and
 `kubernetes_cni_source_type`. Those fields select how a target installs
 Kubernetes and CNI (package manager vs. URL download). `kubernetes_source_type`
-defaults to `pkg` and `kubernetes_cni_source_type` defaults to `http`, and some
-targets, such as Flatcar, require `http` for both. Because
-`PACKER_VAR_FILES` is applied after the target var file, rendering those
-fields into the matrix would override a target's own source-type choice.
+defaults to `pkg`, `kubernetes_cni_source_type` is empty by default so that the
+CNI plugins follow it, and some targets, such as Flatcar, require `http` for
+both. Because `PACKER_VAR_FILES` is applied after the target var file,
+rendering those fields into the matrix would override a target's own
+source-type choice.
 Leave the source type in the target-specific var file and let it take
 precedence over the matrix values.
 
