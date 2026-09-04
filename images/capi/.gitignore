@@ -11,3 +11,4 @@ manifest.json
 # Goss test droppings
 debug-goss-spec.yaml
 goss-spec.yaml
+node-conformance-results/

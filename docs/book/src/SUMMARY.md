@@ -27,6 +27,7 @@
   - [MaaS](./capi/providers/maas.md)
   - [Including ECR Credential Provider](./capi/ecr-credential-provider.md)
   - [Testing the Images](./capi/goss/goss.md)
+  - [Kubernetes Node Conformance](./capi/node-conformance.md)
   - [Using Container Images](./capi/container-image.md)
   - [Customizing containerd](./capi/containerd/customizing-containerd.md)
   - [Kubernetes version matrix](./capi/kubernetes-version-matrix.md)
