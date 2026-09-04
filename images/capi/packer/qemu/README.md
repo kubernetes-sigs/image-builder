@@ -182,3 +182,29 @@ make test-qemu-boot-smoke QEMU_BOOT_SMOKE_IMAGE=/path/to/image.qcow2
 The smoke helper does not support `qemu-flatcar` images because they use
 Ignition instead of cloud-init. Set `QEMU_BOOT_SMOKE_OS=flatcar` when invoking
 the Make target to fail fast before attempting an unsupported SSH check.
+
+## Node conformance
+
+`hack/qemu-node-conformance.sh` runs the Kubernetes `e2e_node.test` conformance
+subset against an already built image. Like the boot smoke test it boots a
+throwaway copy-on-write overlay with a temporary NoCloud seed ISO, so the built
+artifact is only ever read from and cannot end up carrying conformance state:
+
+```bash
+make test-qemu-node-conformance QEMU_NODE_CONFORMANCE_IMAGE=output/ubuntu-2404-kube-v1.33.0
+```
+
+The hook downloads the `e2e_node.test` binary matching the kubelet in the image.
+Results are copied back into a fresh timestamped subdirectory of
+`node-conformance-results/` before the exit status is evaluated; nothing under
+that directory is removed, so runs accumulate side by side.
+
+Node conformance is opt-in and is not wired into required CI. It is intended for
+release or periodic image validation jobs where the added runtime is acceptable,
+not for every local or presubmit image build.
+
+Flatcar targets are excluded, for the same reason the boot smoke test excludes
+them. Set `QEMU_NODE_CONFORMANCE_OS=flatcar` to fail fast.
+
+See [Kubernetes Node Conformance](../../../../docs/book/src/capi/node-conformance.md)
+for the full list of configuration variables.
