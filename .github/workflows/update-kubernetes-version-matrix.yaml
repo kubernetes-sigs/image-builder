@@ -1,6 +1,12 @@
 name: Update Kubernetes version matrix
 
 on:
+  pull_request:
+    paths:
+      - "images/capi/packer/config/kubernetes-version-*.yaml"
+      - "images/capi/packer/config/kubernetes-version-dependencies/**/.pre-commit-config.yaml"
+      - "images/capi/hack/kubernetes-version-matrix.py"
+      - ".github/dependabot.yml"
   pull_request_target:
     types:
       - opened
@@ -14,6 +20,12 @@ permissions:
   pull-requests: read
 
 jobs:
+  verify-kubernetes-version-matrix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - run: images/capi/hack/kubernetes-version-matrix.py verify
+
   update-kubernetes-version-matrix:
     if: >-
       ${{

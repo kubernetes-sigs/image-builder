@@ -26,8 +26,8 @@ updates:
 # Kubernetes version matrix tracking manifests.
 # One entry per directory: the ignore ranges below hold each pinned
 # repository to the pin policy of its directory, and those ranges differ
-# per directory, so a single globbed entry cannot express them. Regenerate
-# the ranges after a pin crosses a minor; verify them with:
+# per directory, so a single globbed entry cannot express them. The ranges are
+# hand-maintained; verify reports the value to write after a pin changes:
 #   images/capi/hack/kubernetes-version-matrix.py verify
 
 # Kubernetes version matrix release pin 1.31
