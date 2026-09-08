@@ -55,7 +55,8 @@ runtime, stops the system kubelet, and runs `e2e_node.test` with a default focus
 of `[Conformance]`.
 
 Each run writes its results into a fresh timestamped subdirectory of
-`node-conformance-results/`, before the exit status is evaluated, so logs and
+`NODE_CONFORMANCE_OUTPUT_DIR` (defaulting to `ARTIFACTS` when set, otherwise
+`images/capi/node-conformance-results/`), before the exit status is evaluated, so logs and
 JUnit reports are preserved even when the run fails. Nothing under
 `NODE_CONFORMANCE_OUTPUT_DIR` is ever deleted, so repeated runs accumulate side
 by side and pointing the variable at an existing directory is safe. The SSH exit
@@ -79,7 +80,7 @@ raised for a conformance workload:
 | `QEMU_CPUS` | `4` | vCPUs given to the guest. |
 | `QEMU_MEMORY` | `4096` | Guest memory in MiB. |
 | `QEMU_SSH_TIMEOUT` | `900` | Seconds to wait for SSH after boot. |
-| `NODE_CONFORMANCE_OUTPUT_DIR` | `node-conformance-results` | Host directory that per-run result subdirectories are created in. |
+| `NODE_CONFORMANCE_OUTPUT_DIR` | `ARTIFACTS` when set, otherwise `images/capi/node-conformance-results` | Host directory that per-run result subdirectories are created in. The fallback is relative to the repository root. |
 
 The conformance run itself is tuned with the following variables, which are
 forwarded into the guest:

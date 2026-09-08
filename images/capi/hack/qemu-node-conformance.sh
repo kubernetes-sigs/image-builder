@@ -59,7 +59,8 @@ Environment:
   QEMU_SSH_PUBLIC_KEY              SSH public key. Default: cloudinit/id_rsa.capi.pub
   QEMU_IMAGE_OS                    Set to flatcar to fail fast. Default: unset
   NODE_CONFORMANCE_OUTPUT_DIR      Host directory for downloaded results.
-                                   Default: node-conformance-results
+                                   Default: ${ARTIFACTS} when set, otherwise
+                                   ${capi_dir}/node-conformance-results
   NODE_CONFORMANCE_RESULTS_DIR     Guest results directory.
                                    Default: /tmp/kubernetes-node-conformance-results
   KUBERNETES_VERSION               Version of the test tarball to download.
