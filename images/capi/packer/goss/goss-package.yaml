@@ -85,6 +85,12 @@ package:
 
 {{ if eq .Vars.OS "windows"}} # Windows
 # Workaround until windows features are added to goss
+# The first Get-WindowsFeature call after boot is slow on Windows Server 2025:
+# in CI it usually takes 60-140s and has been observed to take over 300s,
+# while every later call takes about 1s. Keep this timeout well above that
+# tail. It must also stay larger than goss_retry_timeout (goss-args.json):
+# once a single command times out, goss has already used up its retry budget
+# and does not run a second pass.
 command:
 {{range $name, $vers := index .Vars .Vars.OS "common-windows-features"}}
   "Windows Feature - {{ $name }}":
@@ -92,7 +98,7 @@ command:
     exit-status: 0
     stdout: {{range $vers.expected}}
     - {{.}}
-    timeout: 180000
+    timeout: 600000
     {{end}}
 {{end}}
 {{end}}
