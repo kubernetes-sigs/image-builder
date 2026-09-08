@@ -12,6 +12,67 @@ The Image Builder can be used to build images intended for use with Kubernetes [
 
 If any needed binaries are not present, they can be installed to `images/capi/.bin` with the `make deps` command. This directory will need to be added to your `$PATH`.
 
+## Ansible Galaxy configuration
+
+`make deps` installs the Ansible collections the playbooks need with
+`ansible-galaxy`. Environments that use a Galaxy mirror or a private Automation
+Hub configure this with ansible-core's own settings, either in
+`images/capi/ansible.cfg` (picked up because the `make` targets run from
+`images/capi`) or with the equivalent environment variables. The server list
+format and the per-server keys are described in
+[Configuring the ansible-galaxy client](https://docs.ansible.com/ansible/latest/collections_guide/collections_installing.html#configuring-the-ansible-galaxy-client);
+the settings themselves are in the
+[ansible-core configuration reference](https://docs.ansible.com/ansible/latest/reference_appendices/config.html).
+
+| Setting | `ansible.cfg` | Environment variable |
+|---------|---------------|----------------------|
+| [`GALAXY_SERVER`](https://docs.ansible.com/ansible/latest/reference_appendices/config.html#galaxy-server): default Galaxy server URL, ignored once `server_list` is set | `[galaxy] server` | `ANSIBLE_GALAXY_SERVER` |
+| [`GALAXY_SERVER_LIST`](https://docs.ansible.com/ansible/latest/reference_appendices/config.html#galaxy-server-list): named servers to query, in resolution order | `[galaxy] server_list` | `ANSIBLE_GALAXY_SERVER_LIST` |
+| [Per-server keys](https://docs.ansible.com/ansible/latest/collections_guide/collections_installing.html#configuring-the-ansible-galaxy-client): `url`, `token`, `username`, `password`, `auth_url`, `client_id`, `validate_certs`, `timeout` | `[galaxy_server.<name>]` | `ANSIBLE_GALAXY_SERVER_<NAME>_URL`, `ANSIBLE_GALAXY_SERVER_<NAME>_TOKEN`, ... |
+| [`GALAXY_IGNORE_CERTS`](https://docs.ansible.com/ansible/latest/reference_appendices/config.html#galaxy-ignore-certs): do not validate TLS certificates | `[galaxy] ignore_certs` | `ANSIBLE_GALAXY_IGNORE` |
+| [`GALAXY_SERVER_TIMEOUT`](https://docs.ansible.com/ansible/latest/reference_appendices/config.html#galaxy-server-timeout): default API timeout in seconds | `[galaxy] server_timeout` | `ANSIBLE_GALAXY_SERVER_TIMEOUT` |
+| [`GALAXY_TOKEN_PATH`](https://docs.ansible.com/ansible/latest/reference_appendices/config.html#galaxy-token-path): local access token file for the default server | `[galaxy] token_path` | `ANSIBLE_GALAXY_TOKEN_PATH` |
+| [`COLLECTIONS_PATHS`](https://docs.ansible.com/ansible/latest/reference_appendices/config.html#collections-paths): where collections are installed and looked up | `[defaults] collections_path` | `ANSIBLE_COLLECTIONS_PATH` |
+
+`<NAME>` is the upper-cased `server_list` entry, so the server `myhub` reads
+`ANSIBLE_GALAXY_SERVER_MYHUB_URL` and friends.
+
+A private Automation Hub needs `server_list`, because the per-server
+credentials only exist there. A self-hosted hub usually needs no more than a
+URL and a token:
+
+```bash
+export ANSIBLE_GALAXY_SERVER_LIST=myhub
+export ANSIBLE_GALAXY_SERVER_MYHUB_URL=https://hub.example.com/api/galaxy/content/published/
+export ANSIBLE_GALAXY_SERVER_MYHUB_TOKEN=<token>
+make deps
+```
+
+A hub that authenticates against Red Hat SSO needs `_AUTH_URL` on top, with an
+offline token in `_TOKEN`. `_CLIENT_ID` defaults to `cloud-services`:
+
+```bash
+export ANSIBLE_GALAXY_SERVER_MYHUB_AUTH_URL=https://sso.redhat.com/auth/realms/redhat-external/protocol/openid-connect/token
+```
+
+A few things worth knowing:
+
+* Setting `server_list` makes ansible-core ignore `[galaxy] server`. Passing a
+  URL to `ansible-galaxy --server` ignores `server_list` too, and drops the
+  per-server credentials with it; passing the name of a `server_list` entry
+  selects that entry with its configuration.
+* `ANSIBLE_COLLECTIONS_PATH` is both the install destination (its first entry)
+  and the runtime search path, so a custom path needs no further wiring.
+* Keep tokens for `server_list` entries in
+  `ANSIBLE_GALAXY_SERVER_<NAME>_TOKEN`; `ANSIBLE_GALAXY_TOKEN_PATH` applies only
+  to the default `server`. `--token` (`--api-key`) would expose tokens in the
+  process arguments, and it is ignored for servers defined in `server_list`.
+* ansible-core 2.19 and later also accept
+  `ANSIBLE_GALAXY_SERVER_<NAME>_CLIENT_SECRET` for a Keycloak service account;
+  the pinned 2.18 version does not support this setting.
+* The GCE CI scripts forward every `ANSIBLE_*` variable to the unprivileged
+  user that runs the build.
+
 ## Providers
 
 * [AWS](./providers/aws.md)
