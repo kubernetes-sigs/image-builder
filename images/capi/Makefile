@@ -521,6 +521,12 @@ MAAS_ARM64_VALIDATE_TARGETS 	:= $(addprefix validate-,$(MAAS_ARM64_BUILD_NAMES))
 SCALEWAY_BUILD_TARGETS		:= $(addprefix build-,$(SCALEWAY_BUILD_NAMES))
 SCALEWAY_VALIDATE_TARGETS	:= $(addprefix validate-,$(SCALEWAY_BUILD_NAMES))
 
+# These recipes render and restore shared autoinstall user-data files. Serialize
+# the invocation so parallel aggregate targets cannot serve another target's
+# mirrors. This is deliberately global because Make 3.81 cannot serialize leaf
+# recipes with a target-specific .NOTPARALLEL prerequisite list.
+.NOTPARALLEL:
+
 .PHONY: $(NODE_OVA_LOCAL_BUILD_TARGETS)
 $(NODE_OVA_LOCAL_BUILD_TARGETS): deps-ova set-ssh-password
     # This uses a packer file builder to input unattend variables into a JSON file to be consumed by the python script before running the vmware-iso provisioner

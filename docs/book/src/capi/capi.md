@@ -251,11 +251,10 @@ rendered `user-data` is the same file:
 * `build-maas-ubuntu-2404-efi` and `build-qemu-ubuntu-2404-efi`, and the same
   pair for 26.04.
 
-Run such targets one after another, not in the same `make -j` invocation. In
-parallel they render and restore the one file underneath each other, so a build
-can be served another target's mirrors or lose the file while Packer is still
-serving it. Sequential runs, including a plain `make build-qemu-all`, are
-unaffected.
+The Makefile serializes these renderer-backed targets, including their aggregate
+targets, so `make -j` cannot render or restore the shared file underneath a
+different Packer invocation. The renderer still restores the password-substituted
+file when each target exits.
 
 ##### Setting up an HTTP Proxy
 
