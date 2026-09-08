@@ -6,6 +6,8 @@ on:
       - "images/capi/packer/config/kubernetes-version-*.yaml"
       - "images/capi/packer/config/kubernetes-version-dependencies/**/.pre-commit-config.yaml"
       - "images/capi/hack/kubernetes-version-matrix.py"
+      - "images/capi/hack/kubernetes_version_matrix_test.py"
+      - ".github/workflows/update-kubernetes-version-matrix.yaml"
       - ".github/dependabot.yml"
   pull_request_target:
     types:
@@ -16,20 +18,24 @@ on:
       - "images/capi/packer/config/kubernetes-version-dependencies/**/.pre-commit-config.yaml"
 
 permissions:
-  contents: write
+  contents: read
   pull-requests: read
 
 jobs:
   verify-kubernetes-version-matrix:
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - run: images/capi/hack/kubernetes-version-matrix.py verify
+      - run: python3 images/capi/hack/kubernetes_version_matrix_test.py
 
   update-kubernetes-version-matrix:
-    if: github.event_name == 'pull_request_target'
+    permissions:
+      contents: write
     if: >-
       ${{
+        github.event_name == 'pull_request_target' &&
         github.actor == 'dependabot[bot]' &&
         github.event.pull_request.head.repo.full_name == github.repository &&
         startsWith(github.event.pull_request.head.ref, 'dependabot/')
