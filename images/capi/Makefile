@@ -362,7 +362,12 @@ COMMON_POWERVS_VAR_FILES := packer/config/kubernetes.json \
 # specified by PACKER_FLAGS, as well as prefixing the list with the variable
 # files from COMMON_VAR_FILES, with each file prefixed by -var-file=.
 #
-# Any existing values from PACKER_FLAGS take precendence over variable files.
+# Packer does not resolve -var and -var-file the same way. Any -var in
+# PACKER_FLAGS overrides every variable file, wherever it appears on the
+# command line. A -var-file in PACKER_FLAGS is resolved by position, so it
+# overrides the COMMON_*_VAR_FILES that precede it but is itself overridden by
+# the per-target variable file and by PACKER_VAR_FILES, both of which come
+# later on the command line.
 PACKER_NODE_FLAGS := $(foreach f,$(abspath $(COMMON_NODE_VAR_FILES)),-var-file="$(f)" ) \
 				$(PACKER_FLAGS)
 ABSOLUTE_PACKER_VAR_FILES := $(foreach f,$(abspath $(PACKER_VAR_FILES)),-var-file="$(f)" )
