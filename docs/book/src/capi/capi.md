@@ -63,11 +63,13 @@ A few things worth knowing:
   selects that entry with its configuration.
 * `ANSIBLE_COLLECTIONS_PATH` is both the install destination (its first entry)
   and the runtime search path, so a custom path needs no further wiring.
-* Keep tokens in `ANSIBLE_GALAXY_SERVER_<NAME>_TOKEN` or in the file named by
-  `ANSIBLE_GALAXY_TOKEN_PATH`. `--token` (`--api-key`) would expose them in the
+* Keep tokens for `server_list` entries in
+  `ANSIBLE_GALAXY_SERVER_<NAME>_TOKEN`; `ANSIBLE_GALAXY_TOKEN_PATH` applies only
+  to the default `server`. `--token` (`--api-key`) would expose tokens in the
   process arguments, and it is ignored for servers defined in `server_list`.
-* ansible-core also accepts `ANSIBLE_GALAXY_SERVER_<NAME>_CLIENT_SECRET` for a
-  Keycloak service account, although the guide above does not list it.
+* ansible-core 2.19 and later also accept
+  `ANSIBLE_GALAXY_SERVER_<NAME>_CLIENT_SECRET` for a Keycloak service account;
+  the pinned 2.18 version does not support this setting.
 * The GCE CI scripts forward every `ANSIBLE_*` variable to the unprivileged
   user that runs the build.
 
