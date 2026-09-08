@@ -31,7 +31,7 @@ the settings themselves are in the
 | [Per-server keys](https://docs.ansible.com/ansible/latest/collections_guide/collections_installing.html#configuring-the-ansible-galaxy-client): `url`, `token`, `username`, `password`, `auth_url`, `client_id`, `validate_certs`, `timeout` | `[galaxy_server.<name>]` | `ANSIBLE_GALAXY_SERVER_<NAME>_URL`, `ANSIBLE_GALAXY_SERVER_<NAME>_TOKEN`, ... |
 | [`GALAXY_IGNORE_CERTS`](https://docs.ansible.com/ansible/latest/reference_appendices/config.html#galaxy-ignore-certs): do not validate TLS certificates | `[galaxy] ignore_certs` | `ANSIBLE_GALAXY_IGNORE` |
 | [`GALAXY_SERVER_TIMEOUT`](https://docs.ansible.com/ansible/latest/reference_appendices/config.html#galaxy-server-timeout): default API timeout in seconds | `[galaxy] server_timeout` | `ANSIBLE_GALAXY_SERVER_TIMEOUT` |
-| [`GALAXY_TOKEN_PATH`](https://docs.ansible.com/ansible/latest/reference_appendices/config.html#galaxy-token-path): local galaxy access token file | `[galaxy] token_path` | `ANSIBLE_GALAXY_TOKEN_PATH` |
+| [`GALAXY_TOKEN_PATH`](https://docs.ansible.com/ansible/latest/reference_appendices/config.html#galaxy-token-path): local access token file for the default server | `[galaxy] token_path` | `ANSIBLE_GALAXY_TOKEN_PATH` |
 | [`COLLECTIONS_PATHS`](https://docs.ansible.com/ansible/latest/reference_appendices/config.html#collections-paths): where collections are installed and looked up | `[defaults] collections_path` | `ANSIBLE_COLLECTIONS_PATH` |
 
 `<NAME>` is the upper-cased `server_list` entry, so the server `myhub` reads
