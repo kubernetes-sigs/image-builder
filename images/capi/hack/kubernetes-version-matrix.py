@@ -588,7 +588,12 @@ def pin_policy_errors(
     for tracked in TRACKED_REPOS:
         before = str(current.get(tracked.entry_key, "")).removeprefix("v")
         after = values[tracked.entry_key].removeprefix("v")
-        if not before or before.split(".")[:segments] == after.split(".")[:segments]:
+        if not before or version_sort_key(after) == version_sort_key(before):
+            continue
+        if version_sort_key(after) < version_sort_key(before):
+            errors.append(f"{selector}: {tracked.repo} moved backwards from {before} to {after}")
+            continue
+        if before.split(".")[:segments] == after.split(".")[:segments]:
             continue
         errors.append(
             f"{selector}: {tracked.repo} moved from {before} to {after}, which the "
@@ -600,9 +605,8 @@ def pin_policy_errors(
 def entry_from_tracking(selector: str, current: dict[str, Any]) -> dict[str, Any]:
     """Fold the revs Dependabot maintains back into one matrix entry.
 
-    The kubernetes-cni package versions are not touched. They pin the distro
-    package, which is versioned separately from the CNI plugins tarball that
-    ``kubernetes_cni_semver`` selects.
+    The kubernetes-cni package versions are refreshed when the Kubernetes minor
+    changes because the distro repository is minor-specific.
     """
     revs = read_tracking_config(selector)
     missing = [tracked.repo for tracked in TRACKED_REPOS if tracked.repo not in revs]
@@ -631,6 +635,13 @@ def entry_from_tracking(selector: str, current: dict[str, Any]) -> dict[str, Any
     if current.get("kubernetes_rpm_version") != kubernetes_version or not deb_version:
         deb_version = resolve_kubernetes_deb_version(kubernetes_version)
 
+    if current.get("kubernetes_series") != f"v{kubernetes_minor}":
+        cni_deb = resolve_cni_deb_version(kubernetes_minor)
+        cni_rpm = resolve_cni_rpm_version(kubernetes_minor)
+    else:
+        cni_deb = current["kubernetes_cni_deb_version"]
+        cni_rpm = current["kubernetes_cni_rpm_version"]
+
     updated = dict(current)
     updated.update(values)
     updated.update(
@@ -638,6 +649,8 @@ def entry_from_tracking(selector: str, current: dict[str, Any]) -> dict[str, Any
             "kubernetes_deb_version": deb_version,
             "kubernetes_rpm_version": kubernetes_version,
             "kubernetes_series": f"v{kubernetes_minor}",
+            "kubernetes_cni_deb_version": cni_deb,
+            "kubernetes_cni_rpm_version": cni_rpm,
         }
     )
     return {key: updated[key] for key in REQUIRED_KEYS}
@@ -693,6 +706,9 @@ def validate_entry(selector: str, entry: dict[str, Any]) -> list[str]:
         )
     if entry["kubernetes_series"] != f"v{kubernetes_minor}":
         errors.append(f"{selector}: kubernetes_series does not match kubernetes_semver")
+    for key in ("containerd_version", "crictl_version", "runc_version"):
+        if not re.fullmatch(r"\d+\.\d+\.\d+", str(entry[key])):
+            errors.append(f"{selector}: invalid {key} {entry[key]!r}")
     if entry["kubernetes_rpm_version"] != kubernetes_version:
         errors.append(f"{selector}: kubernetes_rpm_version does not match kubernetes_semver")
     if not str(entry["kubernetes_deb_version"]).startswith(f"{kubernetes_version}-"):
@@ -756,11 +772,15 @@ def render_tracking(write: bool) -> int:
 
 def sync_tracking(write: bool) -> int:
     release_pins, latest = load_matrix()
-    synced_pins = {
-        selector: entry_from_tracking(selector, release_pins[selector])
-        for selector in sorted(release_pins, key=version_sort_key)
-    }
-    synced_latest = entry_from_tracking("latest", latest)
+    try:
+        synced_pins = {
+            selector: entry_from_tracking(selector, release_pins[selector])
+            for selector in sorted(release_pins, key=version_sort_key)
+        }
+        synced_latest = entry_from_tracking("latest", latest)
+    except ValueError as error:
+        print(f"ERROR: {error}", file=sys.stderr)
+        return 1
     changed = apply_expected_files(expected_files(synced_pins, synced_latest), write)
 
     if changed and not write:
