@@ -27,6 +27,7 @@ jobs:
       - run: images/capi/hack/kubernetes-version-matrix.py verify
 
   update-kubernetes-version-matrix:
+    if: github.event_name == 'pull_request_target'
     if: >-
       ${{
         github.actor == 'dependabot[bot]' &&
