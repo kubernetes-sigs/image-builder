@@ -145,6 +145,7 @@
   when:
     - ansible_facts['os_family'] != "Flatcar"
     - "'cloud-init-network.service' not in ansible_facts.services"
+    - "(item + '.service') in ansible_facts.services"
 
 - name: Create cloud-init config file
   ansible.builtin.copy:
