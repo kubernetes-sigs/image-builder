@@ -15,6 +15,7 @@ command:
     test ! -e /usr/bin/kubeadm &&
     test ! -e /usr/bin/kubectl &&
     test ! -e /usr/local/bin/containerd &&
+    test ! -e /usr/bin/containerd &&
     test ! -e /opt/bin/kubelet &&
     test ! -e /opt/bin/kubeadm &&
     test ! -e /opt/bin/kubectl &&
