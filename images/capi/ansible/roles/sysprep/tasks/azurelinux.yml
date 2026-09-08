@@ -24,6 +24,20 @@
   ansible.builtin.set_fact:
     package_list: "{{ ansible_facts.packages.keys() | join(' ') }}"
 
+- name: Exclude packages from tdnf upgrades
+  ansible.builtin.lineinfile:
+    path: /etc/tdnf/tdnf.conf
+    regexp: ^excludepkgs=
+    line: excludepkgs={{ package_list }}
+    insertafter: '^\[main\]$'
+
+- name: Exclude packages from dnf upgrades
+  ansible.builtin.lineinfile:
+    path: /etc/dnf/dnf.conf
+    regexp: ^excludepkgs=
+    line: excludepkgs={{ package_list }}
+    insertafter: '^\[main\]$'
+
 - name: Import RPM repository tasks
   ansible.builtin.import_tasks: rpm_repos.yml
 
