@@ -531,6 +531,12 @@ ALL_VALIDATE_TARGETS := $(sort $(foreach v,\
 	$(filter-out ALL_VALIDATE_TARGETS,$(filter %_TARGETS,$(.VARIABLES))),\
 	$(if $(findstring VALIDATE,$(v)),$($(v)))))
 
+# These recipes render and restore shared autoinstall user-data files. Serialize
+# the invocation so parallel aggregate targets cannot serve another target's
+# mirrors. This is deliberately global because Make 3.81 cannot serialize leaf
+# recipes with a target-specific .NOTPARALLEL prerequisite list.
+.NOTPARALLEL:
+
 .PHONY: $(NODE_OVA_LOCAL_BUILD_TARGETS)
 $(NODE_OVA_LOCAL_BUILD_TARGETS): deps-ova set-ssh-password
     # This uses a packer file builder to input unattend variables into a JSON file to be consumed by the python script before running the vmware-iso provisioner
