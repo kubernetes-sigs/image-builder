@@ -1274,11 +1274,13 @@ update-rockylinux-iso-checksums: ## Updates checksums for Rocky Linux ISOs
 
 .PHONY: update-centos-9-iso-checksums
 update-centos-9-iso-checksums: ## Updates checksums for Centos 9 ISOs
+	hack/update-centos-iso-urls.sh centos-9
 	hack/update-iso-checksums.sh centos-9 false SHA256SUM "SHA256 (iso_file_name)" 4
 	$(MAKE) json-sort
 
 .PHONY: update-centos-10-iso-checksums
 update-centos-10-iso-checksums: ## Updates checksums for Centos 10 ISOs
+	hack/update-centos-iso-urls.sh centos-10
 	hack/update-iso-checksums.sh centos-10 false SHA256SUM "SHA256 (iso_file_name)" 4
 	$(MAKE) json-sort
 
