@@ -732,6 +732,11 @@ def verify() -> int:
         errors.extend(validate_entry(selector, entry))
     errors.extend(validate_entry("latest", latest))
 
+    if errors:
+        for error in errors:
+            print(f"ERROR: {error}", file=sys.stderr)
+        return 1
+
     expected_paths = set()
     for selector, entry in tracking_entries(release_pins, latest):
         expected_paths.add(tracking_config_path(selector))
