@@ -204,6 +204,17 @@ class RenderUbuntuAutoinstallTests(unittest.TestCase):
         self.assertIn("curtin in-target --target=/target -- apt-get clean", template)
         self.assertNotIn("    - swapoff -a\n", template)
 
+    def test_immutable_qemu_target_uses_point_release_iso_url(self):
+        target = (
+            pathlib.Path(__file__).resolve().parents[1]
+            / "qemu-ubuntu-2404-immutable.json"
+        )
+
+        self.assertRegex(
+            json.loads(target.read_text(encoding="utf-8"))["iso_url"],
+            r"^https://releases\.ubuntu\.com/(24\.04\.\d+)/ubuntu-\1-live-server-amd64\.iso$",
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -4,10 +4,10 @@
   "build_name": "ubuntu-2604-efi",
   "distribution_version": "2604",
   "distro_name": "ubuntu",
-  "iso_checksum": "dec49008a71f6098d0bcfc822021f4d042d5f2db279e4d75bdd981304f1ca5d9",
+  "iso_checksum": "cc8a95cde20f6ced61a322420de00f10cc3c90ced545daa46cb9c1a117f1d927",
   "iso_checksum_type": "sha256",
   "iso_file": "{{env `ISO_FILE`}}",
-  "iso_url": "https://releases.ubuntu.com/resolute/ubuntu-26.04-live-server-amd64.iso",
+  "iso_url": "https://releases.ubuntu.com/26.04.1/ubuntu-26.04.1-live-server-amd64.iso",
   "os_display_name": "Ubuntu 26.04",
   "unmount_iso": "true",
   "version": "26.04"
