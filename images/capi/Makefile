@@ -240,6 +240,11 @@ test-qemu-boot-smoke: ## Boots a local QEMU image and verifies SSH
 	@test -n "$(QEMU_BOOT_SMOKE_IMAGE)" || (echo "QEMU_BOOT_SMOKE_IMAGE is required" >&2; exit 1)
 	QEMU_IMAGE_OS="$(QEMU_BOOT_SMOKE_OS)" hack/qemu-boot-smoke.sh "$(QEMU_BOOT_SMOKE_IMAGE)" $(QEMU_BOOT_SMOKE_ARGS)
 
+.PHONY: test-qemu-node-conformance
+test-qemu-node-conformance: ## Runs Kubernetes node conformance against a built QEMU image
+	@test -n "$(QEMU_NODE_CONFORMANCE_IMAGE)" || (echo "QEMU_NODE_CONFORMANCE_IMAGE is required" >&2; exit 1)
+	QEMU_IMAGE_OS="$(QEMU_NODE_CONFORMANCE_OS)" hack/qemu-node-conformance.sh "$(QEMU_NODE_CONFORMANCE_IMAGE)" $(QEMU_NODE_CONFORMANCE_ARGS)
+
 ## --------------------------------------
 ## Container variables
 ## --------------------------------------
@@ -621,7 +626,7 @@ $(QEMU_VALIDATE_TARGETS): deps-qemu set-ssh-password
 	$(PACKER) validate $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/qemu/$(subst validate-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/qemu/packer.json
 
 .PHONY: test-qemu-immutable
-test-qemu-immutable: ## Runs immutable QEMU helper unit tests
+test-qemu-immutable: ## Runs QEMU helper unit tests
 	python3 -m unittest discover -s packer/qemu/scripts -p '*_test.py'
 
 validate-qemu-ubuntu-2404-immutable: test-qemu-immutable

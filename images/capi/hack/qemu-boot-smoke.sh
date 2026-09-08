@@ -66,13 +66,19 @@ fi
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 capi_dir="$(cd "${script_dir}/.." && pwd -P)"
 
+# shellcheck source-path=SCRIPTDIR
+# shellcheck source=lib/qemu-guest.sh
+source "${script_dir}/lib/qemu-guest.sh"
+
 image_arg="${1}"
 shift
 
-qemu_extra_args=()
+QEMU_GUEST_EXTRA_ARGS=()
 if [[ ${1:-} == "--" ]]; then
   shift
-  qemu_extra_args=("${@}")
+  # A trailing "--" with nothing after it leaves no positional parameters, and
+  # bash before 4.4 treats "${@}" as unset under nounset.
+  QEMU_GUEST_EXTRA_ARGS=(${@+"${@}"})
 elif [[ $# -gt 0 ]]; then
   usage
   exit 1
@@ -93,189 +99,14 @@ QEMU_SMOKE_COMMAND="${QEMU_SMOKE_COMMAND:-true}"
 QEMU_SEED="${QEMU_SEED:-cloud-init}"
 QEMU_IMAGE_OS="${QEMU_IMAGE_OS:-}"
 
-require_command() {
-  if ! command -v "${1}" >/dev/null 2>&1; then
-    echo "${1} must be in PATH" >&2
-    exit 1
-  fi
-}
+qemu_guest_require_command "${QEMU_BINARY}"
+qemu_guest_require_command "${QEMU_IMG}"
+qemu_guest_require_command ssh
 
-abs_path() {
-  local path="${1}"
-  local dir
-  local base
-
-  dir="$(dirname "${path}")"
-  base="$(basename "${path}")"
-  echo "$(cd "${dir}" && pwd -P)/${base}"
-}
-
-is_flatcar_requested() {
-  [[ "${QEMU_IMAGE_OS}" == "flatcar" ]]
-}
-
-resolve_image() {
-  local input="${1}"
-  local matches
-  local count
-
-  if [[ -d "${input}" ]]; then
-    matches="$(find "${input}" -maxdepth 1 -type f \( -name "*.qcow2" -o -name "*.raw" -o -name "*.img" \) -print | sort)"
-    count="$(printf '%s\n' "${matches}" | sed '/^$/d' | wc -l | tr -d ' ')"
-    if [[ "${count}" != "1" ]]; then
-      echo "expected exactly one *.qcow2, *.raw, or *.img file in ${input}; found ${count}" >&2
-      exit 1
-    fi
-    printf '%s\n' "${matches}"
-    return
-  fi
-
-  if [[ ! -f "${input}" ]]; then
-    echo "image does not exist: ${input}" >&2
-    exit 1
-  fi
-
-  printf '%s\n' "${input}"
-}
-
-normalize_arch() {
-  case "${1}" in
-  x86_64 | amd64)
-    echo x86_64
-    ;;
-  aarch64 | arm64)
-    echo aarch64
-    ;;
-  *)
-    echo "${1}"
-    ;;
-  esac
-}
-
-qemu_binary_arch() {
-  case "$(basename "${1}")" in
-  qemu-system-x86_64)
-    echo x86_64
-    ;;
-  qemu-system-aarch64)
-    echo aarch64
-    ;;
-  *)
-    echo ""
-    ;;
-  esac
-}
-
-# detect_accelerator picks a default accelerator for the given QEMU binary.
-# hvf and kvm both require the QEMU binary's target architecture to match the
-# host architecture; e.g. running qemu-system-x86_64 on an arm64 macOS host to
-# boot an amd64 image cannot use hvf and must fall back to tcg.
-detect_accelerator() {
-  local qemu_binary="${1}"
-  local host_arch
-  local binary_arch
-
-  host_arch="$(normalize_arch "$(uname -m)")"
-  binary_arch="$(qemu_binary_arch "${qemu_binary}")"
-
-  case "$(uname -s)" in
-  Linux)
-    if [[ -z "${binary_arch}" || "${binary_arch}" != "${host_arch}" ]]; then
-      echo tcg
-    elif [[ -r /dev/kvm && -w /dev/kvm ]]; then
-      echo kvm
-    else
-      echo tcg
-    fi
-    ;;
-  Darwin)
-    if [[ -z "${binary_arch}" || "${binary_arch}" != "${host_arch}" ]]; then
-      echo tcg
-    else
-      echo hvf
-    fi
-    ;;
-  *)
-    echo tcg
-    ;;
-  esac
-}
-
-detect_image_format() {
-  local image="${1}"
-  local format
-
-  require_command python3
-  format="$("${QEMU_IMG}" info --output=json "${image}" | python3 -c 'import json, sys; print(json.load(sys.stdin).get("format", ""))')"
-  if [[ -z "${format}" ]]; then
-    echo "could not detect image format for ${image}; set QEMU_IMAGE_FORMAT" >&2
-    exit 1
-  fi
-  echo "${format}"
-}
-
-write_seed_iso() {
-  local seed_dir="${1}"
-  local seed_iso="${2}"
-  local public_key="${3}"
-
-  mkdir -p "${seed_dir}"
-  cat >"${seed_dir}/meta-data" <<EOF
-instance-id: qemu-boot-smoke-$(date +%s)
-local-hostname: qemu-boot-smoke
-EOF
-  cat >"${seed_dir}/user-data" <<EOF
-#cloud-config
-ssh_pwauth: false
-users:
-  - default
-  - name: ${QEMU_SSH_USER}
-    lock_passwd: true
-    sudo: ALL=(ALL) NOPASSWD:ALL
-    shell: /bin/bash
-    ssh_authorized_keys:
-      - ${public_key}
-EOF
-
-  if command -v cloud-localds >/dev/null 2>&1; then
-    cloud-localds "${seed_iso}" "${seed_dir}/user-data" "${seed_dir}/meta-data"
-  elif command -v genisoimage >/dev/null 2>&1; then
-    (cd "${seed_dir}" && genisoimage -output "${seed_iso}" -volid cidata -joliet -rock user-data meta-data >/dev/null)
-  elif command -v mkisofs >/dev/null 2>&1; then
-    (cd "${seed_dir}" && mkisofs -output "${seed_iso}" -volid cidata -joliet -rock user-data meta-data >/dev/null)
-  elif command -v xorriso >/dev/null 2>&1; then
-    (cd "${seed_dir}" && xorriso -as mkisofs -output "${seed_iso}" -volid cidata -joliet -rock user-data meta-data >/dev/null)
-  elif command -v hdiutil >/dev/null 2>&1; then
-    hdiutil makehybrid -o "${seed_iso}" -hfs -joliet -iso -default-volume-name cidata "${seed_dir}" >/dev/null
-  else
-    echo "cloud-localds, genisoimage, mkisofs, xorriso, or hdiutil is required to create the seed ISO" >&2
-    exit 1
-  fi
-}
-
-# shellcheck disable=SC2329 # Called from the EXIT trap.
-stop_qemu() {
-  local pid="${1:-}"
-
-  if [[ -z "${pid}" ]]; then
-    return
-  fi
-  if ! kill -0 "${pid}" >/dev/null 2>&1; then
-    return
-  fi
-  kill "${pid}" >/dev/null 2>&1 || true
-  sleep 2
-  if kill -0 "${pid}" >/dev/null 2>&1; then
-    kill -9 "${pid}" >/dev/null 2>&1 || true
-  fi
-}
-
-require_command "${QEMU_BINARY}"
-require_command "${QEMU_IMG}"
-require_command ssh
-
-image="$(abs_path "$(resolve_image "${image_arg}")")"
-if is_flatcar_requested; then
+if ! image="$(qemu_guest_resolve_image_path "${image_arg}")"; then
+  exit 1
+fi
+if [[ "${QEMU_IMAGE_OS}" == "flatcar" ]]; then
   echo "qemu-boot-smoke.sh does not support Flatcar images: Flatcar uses Ignition, not cloud-init, and the build removes the SSH user before shutdown, so neither QEMU_SEED=cloud-init nor QEMU_SEED=none can authenticate. Image: ${image}" >&2
   exit 1
 fi
@@ -285,95 +116,58 @@ if [[ ! -r "${QEMU_SSH_PRIVATE_KEY}" ]]; then
 fi
 
 tmp_dir="$(mktemp -d "${TMPDIR:-/tmp}/qemu-boot-smoke.XXXXXX")"
-qemu_pid=""
+QEMU_GUEST_PID=""
 # shellcheck disable=SC2329 # Called from the EXIT trap.
 cleanup() {
-  stop_qemu "${qemu_pid}"
+  qemu_guest_stop "${QEMU_GUEST_PID}"
   rm -rf "${tmp_dir}"
 }
 trap cleanup EXIT
+# Ctrl-C during the SSH wait must stop the guest and remove the overlay, so turn
+# the signal into an exit that runs the EXIT trap.
+trap 'exit 130' INT TERM
 
-ssh_key="${tmp_dir}/ssh_key"
-cp "${QEMU_SSH_PRIVATE_KEY}" "${ssh_key}"
-chmod 0600 "${ssh_key}"
+QEMU_GUEST_SSH_KEY="${tmp_dir}/ssh_key"
+cp "${QEMU_SSH_PRIVATE_KEY}" "${QEMU_GUEST_SSH_KEY}"
+chmod 0600 "${QEMU_GUEST_SSH_KEY}"
 
 if [[ -r "${QEMU_SSH_PUBLIC_KEY}" ]]; then
   public_key="$(cat "${QEMU_SSH_PUBLIC_KEY}")"
 else
-  require_command ssh-keygen
-  public_key="$(ssh-keygen -y -f "${ssh_key}")"
+  qemu_guest_require_command ssh-keygen
+  public_key="$(ssh-keygen -y -f "${QEMU_GUEST_SSH_KEY}")"
 fi
 
-backing_format="${QEMU_IMAGE_FORMAT:-$(detect_image_format "${image}")}"
-runtime_disk="${tmp_dir}/disk.qcow2"
-"${QEMU_IMG}" create -f qcow2 -F "${backing_format}" -b "${image}" "${runtime_disk}" >/dev/null
+backing_format="${QEMU_IMAGE_FORMAT:-$(qemu_guest_detect_image_format "${QEMU_IMG}" "${image}")}"
+QEMU_GUEST_DISK="${tmp_dir}/disk.qcow2"
+qemu_guest_create_overlay "${QEMU_IMG}" "${image}" "${backing_format}" "${QEMU_GUEST_DISK}"
 
-seed_args=()
+QEMU_GUEST_SEED_ARGS=()
 case "${QEMU_SEED}" in
 cloud-init)
   seed_iso="${tmp_dir}/cidata.iso"
-  write_seed_iso "${tmp_dir}/seed" "${seed_iso}" "${public_key}"
-  seed_args=(-drive "file=${seed_iso},media=cdrom,readonly=on")
+  qemu_guest_write_seed_iso "${tmp_dir}/seed" "${seed_iso}" "${QEMU_SSH_USER}" "${public_key}" qemu-boot-smoke
+  QEMU_GUEST_SEED_ARGS=(-drive "file=${seed_iso},media=cdrom,readonly=on")
   ;;
-none)
-  ;;
+none) ;;
 *)
   echo "unsupported QEMU_SEED=${QEMU_SEED}; expected cloud-init or none" >&2
   exit 1
   ;;
 esac
 
-QEMU_ACCELERATOR="${QEMU_ACCELERATOR:-$(detect_accelerator "${QEMU_BINARY}")}"
-serial_log="${tmp_dir}/serial.log"
-pidfile="${tmp_dir}/qemu.pid"
+QEMU_GUEST_BINARY="${QEMU_BINARY}"
+QEMU_GUEST_ACCELERATOR="${QEMU_ACCELERATOR:-$(qemu_guest_detect_accelerator "${QEMU_BINARY}")}"
+QEMU_GUEST_MACHINE="${QEMU_MACHINE}"
+QEMU_GUEST_MEMORY="${QEMU_MEMORY}"
+QEMU_GUEST_CPUS="${QEMU_CPUS}"
+QEMU_GUEST_SSH_PORT="${QEMU_SSH_PORT}"
+QEMU_GUEST_SSH_USER="${QEMU_SSH_USER}"
+QEMU_GUEST_SSH_TIMEOUT="${QEMU_SSH_TIMEOUT}"
+QEMU_GUEST_SSH_INTERVAL="${QEMU_SSH_INTERVAL}"
+QEMU_GUEST_SERIAL_LOG="${tmp_dir}/serial.log"
+QEMU_GUEST_PIDFILE="${tmp_dir}/qemu.pid"
 
-"${QEMU_BINARY}" \
-  -accel "${QEMU_ACCELERATOR}" \
-  -machine "${QEMU_MACHINE}" \
-  -m "${QEMU_MEMORY}" \
-  -smp "${QEMU_CPUS}" \
-  -drive "file=${runtime_disk},if=virtio,format=qcow2" \
-  "${seed_args[@]}" \
-  -netdev "user,id=net0,hostfwd=tcp:127.0.0.1:${QEMU_SSH_PORT}-:22" \
-  -device "virtio-net-pci,netdev=net0" \
-  -display none \
-  -serial "file:${serial_log}" \
-  -monitor none \
-  -no-reboot \
-  -pidfile "${pidfile}" \
-  -daemonize \
-  "${qemu_extra_args[@]}"
-
-qemu_pid="$(cat "${pidfile}")"
-deadline=$((SECONDS + QEMU_SSH_TIMEOUT))
-
-echo "Waiting up to ${QEMU_SSH_TIMEOUT}s for SSH on 127.0.0.1:${QEMU_SSH_PORT}..."
-while ((SECONDS < deadline)); do
-  if ! kill -0 "${qemu_pid}" >/dev/null 2>&1; then
-    echo "QEMU exited before SSH became available" >&2
-    sed -n '1,160p' "${serial_log}" >&2 || true
-    exit 1
-  fi
-
-  if ssh \
-    -F /dev/null \
-    -o BatchMode=yes \
-    -o ConnectTimeout=5 \
-    -o IdentitiesOnly=yes \
-    -o LogLevel=ERROR \
-    -o StrictHostKeyChecking=no \
-    -o UserKnownHostsFile=/dev/null \
-    -i "${ssh_key}" \
-    -p "${QEMU_SSH_PORT}" \
-    "${QEMU_SSH_USER}@127.0.0.1" \
-    "${QEMU_SMOKE_COMMAND}" >/dev/null; then
-    echo "QEMU boot smoke succeeded for ${image}"
-    exit 0
-  fi
-
-  sleep "${QEMU_SSH_INTERVAL}"
-done
-
-echo "Timed out waiting for SSH on 127.0.0.1:${QEMU_SSH_PORT}" >&2
-sed -n '1,160p' "${serial_log}" >&2 || true
-exit 1
+qemu_guest_start
+qemu_guest_wait_for_ssh "${QEMU_SMOKE_COMMAND}"
+echo "QEMU boot smoke succeeded for ${image}"
