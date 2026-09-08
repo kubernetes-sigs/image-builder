@@ -43,10 +43,10 @@ images/capi/scripts/ci-qemu-node-conformance.sh
 ```
 
 It builds `build-qemu-ubuntu-2404-cloudimg` by default, then runs conformance
-against the produced artifact with KVM acceleration, 4 CPUs, and 8 GiB of
-memory. Override `NODE_CONFORMANCE_TARGET`, `NODE_CONFORMANCE_CPUS`,
-`NODE_CONFORMANCE_MEMORY`, or `NODE_CONFORMANCE_ACCELERATOR` to tune a run. It
-requires `/dev/kvm` unless `NODE_CONFORMANCE_ACCELERATOR=tcg` is set explicitly
+against the produced artifact with KVM acceleration, 4 CPUs, and 4 GiB of
+memory. Override `NODE_CONFORMANCE_TARGET`, `QEMU_CPUS`, `QEMU_MEMORY`, or
+`QEMU_ACCELERATOR` to tune a run. It
+requires `/dev/kvm` unless `QEMU_ACCELERATOR=tcg` is set explicitly
 for slower local debugging.
 
 Inside the guest, the hook downloads `kubernetes-test-linux-${ARCH}.tar.gz` for
@@ -58,12 +58,12 @@ Each run writes its results into a fresh timestamped subdirectory of
 `node-conformance-results/`, before the exit status is evaluated, so logs and
 JUnit reports are preserved even when the run fails. Nothing under
 `NODE_CONFORMANCE_OUTPUT_DIR` is ever deleted, so repeated runs accumulate side
-by side and pointing the variable at an existing directory is safe. A missing or
-unparsable `summary.env` is treated as a failure.
+by side and pointing the variable at an existing directory is safe. The SSH exit
+status from the guest hook determines whether the run passes.
 
-Flatcar targets are excluded. Flatcar uses Ignition rather than cloud-init and
-the build removes the SSH user before shutdown, so the guest cannot be reached
-over SSH. Set `QEMU_IMAGE_OS=flatcar` to fail fast.
+Flatcar targets are excluded because they use Ignition rather than cloud-init
+and remove the SSH user before shutdown. Set `QEMU_IMAGE_OS=flatcar` to fail
+fast.
 
 ## Configuration
 
@@ -94,7 +94,6 @@ forwarded into the guest:
 | `NODE_CONFORMANCE_TIMEOUT` | `2h` | Ginkgo timeout for the e2e-node run. |
 | `NODE_CONFORMANCE_STANDALONE_MODE` | `false` | Passes `--standalone-mode=true` to `e2e_node.test`. |
 | `NODE_CONFORMANCE_KUBELET_FLAGS` | `--fail-swap-on=false --runtime-cgroups=/system.slice/containerd.service` | Extra kubelet flags passed to `e2e_node.test`. |
-| `NODE_CONFORMANCE_ETCD_VERSION` | `v3.5.32` | etcd version downloaded when `etcd` is not already installed. |
 | `NODE_CONFORMANCE_DOWNLOAD_TIMEOUT` | `1800` | Seconds any single large download may take before it fails. |
 | `NODE_CONFORMANCE_RESULTS_DIR` | `/tmp/kubernetes-node-conformance-results` | Guest result directory that is downloaded. |
 

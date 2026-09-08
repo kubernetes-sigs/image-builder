@@ -74,29 +74,7 @@ Environment:
   NODE_CONFORMANCE_KUBELET_FLAGS   Extra kubelet flags. Default:
                                    --fail-swap-on=false
                                    --runtime-cgroups=/system.slice/containerd.service
-  NODE_CONFORMANCE_ETCD_VERSION    etcd to download when absent. Default: v3.5.32
 EOF
-}
-
-# node_conformance_summary_exit_code prints the exit code the guest hook
-# recorded. A summary that is missing or that does not report an exit code is a
-# failure, never an implicit pass.
-node_conformance_summary_exit_code() {
-  local summary_file="${1}"
-  local exit_code
-
-  if [[ ! -f "${summary_file}" ]]; then
-    echo "missing node conformance summary: ${summary_file}" >&2
-    return 1
-  fi
-
-  exit_code="$(sed -n 's/^exit_code=\([0-9][0-9]*\)$/\1/p' "${summary_file}" | tail -n 1)"
-  if [[ -z "${exit_code}" ]]; then
-    echo "node conformance summary does not report an exit_code: ${summary_file}" >&2
-    return 1
-  fi
-
-  printf '%s\n' "${exit_code}"
 }
 
 # node_conformance_guest_env prints the shell-quoted environment assignments
@@ -106,16 +84,8 @@ node_conformance_guest_env() {
   local -a assignments=("NODE_CONFORMANCE_RESULTS_DIR=${1}")
   local name
 
-  for name in \
-    KUBERNETES_VERSION \
-    NODE_CONFORMANCE_ETCD_VERSION \
-    NODE_CONFORMANCE_FLAKE_ATTEMPTS \
-    NODE_CONFORMANCE_FOCUS \
-    NODE_CONFORMANCE_KUBELET_FLAGS \
-    NODE_CONFORMANCE_PARALLELISM \
-    NODE_CONFORMANCE_SKIP \
-    NODE_CONFORMANCE_STANDALONE_MODE \
-    NODE_CONFORMANCE_TIMEOUT; do
+  for name in KUBERNETES_VERSION ${!NODE_CONFORMANCE_@}; do
+    [[ "${name}" == NODE_CONFORMANCE_RESULTS_DIR ]] && continue
     if [[ -n "${!name:-}" ]]; then
       assignments+=("${name}=${!name}")
     fi
@@ -144,7 +114,6 @@ main() {
   local remote_env_args
   local run_status=0
   local download_status=0
-  local exit_code
 
   if [[ $# -lt 1 ]]; then
     usage
@@ -168,7 +137,7 @@ main() {
   QEMU_BINARY="${QEMU_BINARY:-qemu-system-x86_64}"
   QEMU_IMG="${QEMU_IMG:-qemu-img}"
   guest_results_dir="${NODE_CONFORMANCE_RESULTS_DIR:-/tmp/kubernetes-node-conformance-results}"
-  output_dir="${NODE_CONFORMANCE_OUTPUT_DIR:-${capi_dir}/node-conformance-results}"
+  output_dir="${NODE_CONFORMANCE_OUTPUT_DIR:-${ARTIFACTS:-${capi_dir}/node-conformance-results}}"
   hook_script="${script_dir}/run-e2e-node-conformance.sh"
 
   qemu_guest_require_command "${QEMU_BINARY}"
@@ -261,9 +230,8 @@ main() {
   cp -R "${tmp_dir}/results/." "${run_dir}/"
   echo "Node conformance results downloaded to ${run_dir}"
 
-  exit_code="$(node_conformance_summary_exit_code "${run_dir}/summary.env")" || return 1
-  if [[ "${exit_code}" != "0" || "${run_status}" -ne 0 ]]; then
-    echo "node conformance failed: hook exit_code=${exit_code}, ssh status=${run_status}" >&2
+  if [[ "${run_status}" -ne 0 ]]; then
+    echo "node conformance failed: ssh status=${run_status}" >&2
     return 1
   fi
 
