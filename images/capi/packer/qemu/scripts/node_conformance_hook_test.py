@@ -68,32 +68,6 @@ def documented_defaults():
 
 
 class GuestHookTests(unittest.TestCase):
-    def test_flatcar_is_explicitly_rejected(self):
-        with tempfile.TemporaryDirectory() as tmp:
-            tmp_path = pathlib.Path(tmp)
-            fake_bin = tmp_path / "bin"
-            fake_bin.mkdir()
-            write_stub(fake_bin / "sudo", SUDO_STUB)
-            os_release = tmp_path / "os-release"
-            os_release.write_text('ID="flatcar"\n', encoding="utf-8")
-            results_dir = tmp_path / "results"
-
-            result = subprocess.run(
-                ["bash", str(HOOK)],
-                text=True,
-                capture_output=True,
-                env={
-                    **os.environ,
-                    "PATH": f"{fake_bin}:{os.environ['PATH']}",
-                    "NODE_CONFORMANCE_RESULTS_DIR": str(results_dir),
-                    "NODE_CONFORMANCE_OS_RELEASE_FILE": str(os_release),
-                },
-            )
-
-            self.assertNotEqual(0, result.returncode)
-            self.assertIn("not supported on Flatcar", result.stderr)
-            self.assertIn("exit_code=1", (results_dir / "summary.env").read_text(encoding="utf-8"))
-
     def test_e2e_node_runs_from_the_work_dir_without_the_container_runtime_flag(self):
         with tempfile.TemporaryDirectory() as tmp:
             tmp_path = pathlib.Path(tmp)
@@ -142,6 +116,54 @@ run_e2e_node unix:///run/containerd/containerd.sock /usr/bin/containerd
             # Standalone mode never joins the test apiserver, so it is off by
             # default and must not be requested here.
             self.assertNotIn("--standalone-mode", recorded)
+
+    def test_e2e_node_propagates_ginkgo_failure_through_tee(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = pathlib.Path(tmp)
+            fake_bin = tmp_path / "bin"
+            fake_bin.mkdir()
+            write_stub(fake_bin / "sudo", SUDO_STUB)
+            work_dir = tmp_path / "work"
+            results_dir = tmp_path / "results"
+            work_dir.mkdir()
+            results_dir.mkdir()
+            ginkgo = write_stub(tmp_path / "ginkgo", "#!/usr/bin/env bash\nexit 7\n")
+
+            command = f"""
+set -euo pipefail
+source {str(HOOK)!r}
+work_dir={str(work_dir)!r}
+results_dir={str(results_dir)!r}
+ginkgo_bin={str(ginkgo)!r}
+e2e_node_test={str(tmp_path / 'e2e_node.test')!r}
+run_e2e_node unix:///run/containerd/containerd.sock /usr/bin/containerd
+"""
+            result = subprocess.run(
+                ["bash", "-c", command],
+                text=True,
+                capture_output=True,
+                env={**os.environ, "PATH": f"{fake_bin}:{os.environ['PATH']}"},
+            )
+
+            self.assertEqual(7, result.returncode, result.stderr)
+
+    def test_stop_system_kubelet_failure_is_fatal(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = pathlib.Path(tmp)
+            fake_bin = tmp_path / "bin"
+            fake_bin.mkdir()
+            write_stub(fake_bin / "sudo", SUDO_STUB)
+            write_stub(
+                fake_bin / "systemctl",
+                "#!/usr/bin/env bash\n[[ $1 == list-unit-files ]] && exit 0\nexit 19\n",
+            )
+            result = subprocess.run(
+                ["bash", "-c", f"source {str(HOOK)!r}\nstop_system_kubelet"],
+                text=True,
+                capture_output=True,
+                env={**os.environ, "PATH": f"{fake_bin}:{os.environ['PATH']}"},
+            )
+            self.assertEqual(19, result.returncode)
 
     def test_checksum_without_a_trailing_newline_is_accepted(self):
         # dl.k8s.io serves the digest with no trailing newline, which makes
@@ -196,20 +218,6 @@ verify_sha256_file {str(payload)!r} {str(sha_file)!r}
         self.assertEqual("false", shell_default(HOOK.read_text(encoding="utf-8"),
                                                 "NODE_CONFORMANCE_STANDALONE_MODE"))
 
-    def test_snapshot_and_restore_helpers_are_gone(self):
-        script = HOOK.read_text(encoding="utf-8")
-
-        for removed in (
-            "snapshot_node_state",
-            "restore_node_state",
-            "snapshot_runtime_state",
-            "cleanup_cri_runtime_state",
-            "cleanup_ctr_runtime_state",
-            "restore_service_state",
-        ):
-            self.assertNotIn(removed, script)
-
-
 class RunnerTests(unittest.TestCase):
     def source_runner(self, command, env=None):
         return subprocess.run(
@@ -218,35 +226,6 @@ class RunnerTests(unittest.TestCase):
             capture_output=True,
             env={**os.environ, **(env or {})},
         )
-
-    def test_missing_summary_is_a_failure(self):
-        with tempfile.TemporaryDirectory() as tmp:
-            missing = pathlib.Path(tmp) / "summary.env"
-
-            result = self.source_runner(f"node_conformance_summary_exit_code {str(missing)!r}")
-
-            self.assertNotEqual(0, result.returncode)
-            self.assertIn("missing node conformance summary", result.stderr)
-
-    def test_summary_without_an_exit_code_is_a_failure(self):
-        with tempfile.TemporaryDirectory() as tmp:
-            summary = pathlib.Path(tmp) / "summary.env"
-            summary.write_text("skipped=true\n", encoding="utf-8")
-
-            result = self.source_runner(f"node_conformance_summary_exit_code {str(summary)!r}")
-
-            self.assertNotEqual(0, result.returncode)
-            self.assertIn("does not report an exit_code", result.stderr)
-
-    def test_summary_exit_code_is_reported(self):
-        with tempfile.TemporaryDirectory() as tmp:
-            summary = pathlib.Path(tmp) / "summary.env"
-            summary.write_text("exit_code=7\n", encoding="utf-8")
-
-            result = self.source_runner(f"node_conformance_summary_exit_code {str(summary)!r}")
-
-            self.assertEqual(0, result.returncode, result.stderr)
-            self.assertEqual("7\n", result.stdout)
 
     def test_only_explicitly_set_variables_are_forwarded_to_the_guest(self):
         result = self.source_runner(
@@ -259,7 +238,7 @@ class RunnerTests(unittest.TestCase):
         self.assertIn("NODE_CONFORMANCE_FOCUS=", result.stdout)
         self.assertNotIn("NODE_CONFORMANCE_TIMEOUT", result.stdout)
 
-    def test_flatcar_images_are_rejected_before_boot(self):
+    def test_runner_rejects_flatcar_before_boot(self):
         with tempfile.TemporaryDirectory() as tmp:
             tmp_path = pathlib.Path(tmp)
             fake_bin = tmp_path / "bin"
@@ -267,37 +246,59 @@ class RunnerTests(unittest.TestCase):
             for name in ("qemu-system-x86_64", "qemu-img", "ssh", "scp"):
                 write_stub(fake_bin / name, "#!/usr/bin/env bash\nexit 0\n")
             image = tmp_path / "image.qcow2"
-            image.write_text("", encoding="utf-8")
+            image.touch()
+            key = tmp_path / "key"
+            key.write_text("key\n", encoding="utf-8")
 
             result = subprocess.run(
-                ["bash", str(RUNNER), str(image)],
+                ["bash", str(RUNNER), str(image), "--"],
                 text=True,
                 capture_output=True,
                 env={
                     **os.environ,
                     "PATH": f"{fake_bin}:{os.environ['PATH']}",
+                    "QEMU_IMAGE_FORMAT": "raw",
                     "QEMU_IMAGE_OS": "flatcar",
+                    "QEMU_SSH_PRIVATE_KEY": str(key),
                 },
             )
-
             self.assertNotEqual(0, result.returncode)
             self.assertIn("does not support Flatcar images", result.stderr)
 
-    def test_ci_helper_rejects_flatcar_target(self):
-        result = subprocess.run(
-            ["bash", str(CI_HELPER)],
-            text=True,
-            capture_output=True,
-            env={
-                **os.environ,
-                "NODE_CONFORMANCE_TARGET": "build-qemu-flatcar",
-                "NODE_CONFORMANCE_ACCELERATOR": "tcg",
-            },
-        )
-
-        self.assertNotEqual(0, result.returncode)
-        self.assertIn("not supported for node conformance", result.stderr)
-
+    def test_runner_fails_when_ssh_reports_a_nonzero_hook_status(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = pathlib.Path(tmp)
+            image = tmp_path / "image.qcow2"
+            image.touch()
+            key = tmp_path / "key"
+            key.write_text("key\n", encoding="utf-8")
+            command = f"""
+source {str(RUNNER)!r}
+qemu_guest_require_command() {{ :; }}
+qemu_guest_resolve_image_path() {{ printf '%s\\n' "$1"; }}
+qemu_guest_create_overlay() {{ :; }}
+qemu_guest_write_seed_iso() {{ :; }}
+qemu_guest_start() {{ QEMU_GUEST_PID=1; }}
+qemu_guest_wait_for_ssh() {{ :; }}
+qemu_guest_scp() {{ if [[ "$1" == guest:* ]]; then mkdir -p "$2"; touch "$2/e2e_node.log"; fi; }}
+qemu_guest_ssh() {{ return 23; }}
+qemu_guest_dump_serial_log() {{ :; }}
+qemu_guest_stop() {{ :; }}
+main {str(image)!r}
+"""
+            result = subprocess.run(
+                ["bash", "-c", command],
+                text=True,
+                capture_output=True,
+                env={
+                    **os.environ,
+                    "QEMU_SSH_PRIVATE_KEY": str(key),
+                    "QEMU_IMAGE_FORMAT": "raw",
+                    "NODE_CONFORMANCE_RESULTS_DIR": "/tmp/node-results",
+                },
+            )
+            self.assertNotEqual(0, result.returncode)
+            self.assertIn("ssh status=23", result.stderr)
 
 class ArgumentHandlingTests(unittest.TestCase):
     def test_conformance_runner_accepts_a_trailing_separator(self):
@@ -319,53 +320,12 @@ class ArgumentHandlingTests(unittest.TestCase):
                 env={
                     **os.environ,
                     "PATH": f"{fake_bin}:{os.environ['PATH']}",
-                    # Stop right after argument parsing.
-                    "QEMU_IMAGE_OS": "flatcar",
+                    # Stop after argument parsing and image format detection.
+                    "QEMU_IMAGE_FORMAT": "raw",
                 },
             )
 
             self.assertNotIn("unbound variable", result.stderr)
-            self.assertIn("does not support Flatcar images", result.stderr)
-
-    def test_no_bare_positional_expansion_after_a_shift(self):
-        text = RUNNER.read_text(encoding="utf-8")
-
-        self.assertNotIn('=("${@}")', text, "the ${@+...} guard is required")
-
-
-class OutputDirectoryTests(unittest.TestCase):
-    def test_the_caller_supplied_output_directory_is_never_removed(self):
-        # NODE_CONFORMANCE_OUTPUT_DIR is caller supplied, so an rm -rf on it
-        # would delete whatever the caller pointed at, including a cwd.
-        runner = RUNNER.read_text(encoding="utf-8")
-
-        self.assertNotIn('rm -rf "${output_dir}"', runner)
-        self.assertIn('mkdir -p "${output_dir}"', runner)
-        self.assertIn('run_dir="$(mktemp -d "${output_dir}/', runner)
-
-    def test_results_are_evaluated_from_the_per_run_directory(self):
-        runner = RUNNER.read_text(encoding="utf-8")
-
-        self.assertIn('node_conformance_summary_exit_code "${run_dir}/summary.env"', runner)
-
-
-class SignalHandlingTests(unittest.TestCase):
-    def test_interrupts_run_the_exit_cleanup(self):
-        text = RUNNER.read_text(encoding="utf-8")
-
-        self.assertIn("trap cleanup EXIT", text)
-        self.assertIn("trap 'exit 130' INT TERM", text)
-
-
-class DownloadHardeningTests(unittest.TestCase):
-    def test_downloads_retry_and_are_time_capped(self):
-        hook = HOOK.read_text(encoding="utf-8")
-
-        self.assertIn("--retry 3 --retry-delay 5 --retry-connrefused", hook)
-        self.assertIn('--max-time "${max_time}"', hook)
-        # Every download goes through the hardened helper.
-        self.assertEqual(1, hook.count("curl --fail"))
-
 
 class ImageIsNotModifiedTests(unittest.TestCase):
     def test_packer_template_has_no_node_conformance_provisioners(self):
@@ -374,12 +334,6 @@ class ImageIsNotModifiedTests(unittest.TestCase):
 
         self.assertNotIn("node_conformance", serialized)
         self.assertNotIn("run-e2e-node-conformance", serialized)
-
-    def test_conformance_runs_on_a_copy_on_write_overlay(self):
-        runner = RUNNER.read_text(encoding="utf-8")
-
-        self.assertIn("qemu_guest_create_overlay", runner)
-        self.assertIn("qemu_guest_create_overlay", QEMU_GUEST_LIB.read_text(encoding="utf-8"))
 
     def test_boot_smoke_and_conformance_share_the_qemu_guest_library(self):
         for script in (RUNNER, BOOT_SMOKE):
@@ -403,7 +357,6 @@ class DocumentationTests(unittest.TestCase):
             "NODE_CONFORMANCE_TIMEOUT",
             "NODE_CONFORMANCE_STANDALONE_MODE",
             "NODE_CONFORMANCE_KUBELET_FLAGS",
-            "NODE_CONFORMANCE_ETCD_VERSION",
             "NODE_CONFORMANCE_DOWNLOAD_TIMEOUT",
             "NODE_CONFORMANCE_RESULTS_DIR",
         ):

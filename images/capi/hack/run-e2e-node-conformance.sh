@@ -89,24 +89,6 @@ verify_sha256_file() {
   printf '%s  %s\n' "${expected}" "${file}" | sha256sum --check --strict
 }
 
-is_flatcar() (
-  local os_release_file="${NODE_CONFORMANCE_OS_RELEASE_FILE:-/etc/os-release}"
-  local id=""
-  local id_like=""
-
-  set +u
-  if [[ -r "${os_release_file}" ]]; then
-    # shellcheck disable=SC1090
-    . "${os_release_file}"
-    id="${ID:-}"
-    id_like="${ID_LIKE:-}"
-  fi
-
-  id="$(printf '%s' "${id}" | tr '[:upper:]' '[:lower:]')"
-  id_like="$(printf '%s' "${id_like}" | tr '[:upper:]' '[:lower:]')"
-  [[ "${id}" == "flatcar" || " ${id_like} " == *" flatcar "* ]]
-)
-
 # node_conformance_download fetches a URL to a file. dl.k8s.io and the GitHub
 # release CDN both fail intermittently, so retry, and cap each transfer so that
 # a stalled download fails the run instead of hanging it until the Ginkgo
@@ -144,28 +126,6 @@ download_kubernetes_tests() {
   e2e_node_test="${work_dir}/kubernetes/test/bin/e2e_node.test"
   ginkgo_bin="${work_dir}/kubernetes/test/bin/ginkgo"
   chmod +x "${e2e_node_test}" "${ginkgo_bin}"
-}
-
-ensure_etcd() {
-  local go_arch="$1"
-  local etcd_version="${NODE_CONFORMANCE_ETCD_VERSION:-v3.5.32}"
-  local download_timeout="${NODE_CONFORMANCE_DOWNLOAD_TIMEOUT:-1800}"
-  local etcd_url
-
-  if command -v etcd >/dev/null 2>&1; then
-    log "using etcd from PATH: $(command -v etcd)"
-    return
-  fi
-
-  mkdir -p "${work_dir}/bin"
-  etcd_url="https://github.com/etcd-io/etcd/releases/download/${etcd_version}/etcd-${etcd_version}-linux-${go_arch}.tar.gz"
-  log "downloading etcd ${etcd_version}: ${etcd_url}"
-  node_conformance_download "${download_timeout}" "${work_dir}/etcd.tar.gz" "${etcd_url}"
-  tar -xzf "${work_dir}/etcd.tar.gz" -C "${work_dir}"
-  install -m 0755 \
-    "${work_dir}/etcd-${etcd_version}-linux-${go_arch}/etcd" \
-    "${work_dir}/bin/etcd"
-  export PATH="${work_dir}/bin:${PATH}"
 }
 
 runtime_endpoint() {
@@ -261,23 +221,8 @@ stop_system_kubelet() {
   if command -v systemctl >/dev/null 2>&1 &&
     systemctl list-unit-files kubelet.service >/dev/null 2>&1; then
     log "stopping system kubelet before e2e-node starts its own kubelet"
-    sudo systemctl stop kubelet || true
+    sudo systemctl stop kubelet
   fi
-}
-
-# publish_results records the final exit code and hands the results directory to
-# the invoking SSH user so hack/qemu-node-conformance.sh can copy it out.
-publish_results() {
-  local exit_code=$?
-
-  set +e
-  if [[ -n "${results_dir:-}" ]]; then
-    sudo mkdir -p "${results_dir}"
-    printf 'exit_code=%s\n' "${exit_code}" | sudo tee "${results_dir}/summary.env" >/dev/null
-    sudo chown -R "$(id -u):$(id -g)" "${results_dir}"
-  fi
-
-  exit "${exit_code}"
 }
 
 run_e2e_node() {
@@ -291,18 +236,10 @@ run_e2e_node() {
   local parallelism="${NODE_CONFORMANCE_PARALLELISM:-1}"
   local flake_attempts="${NODE_CONFORMANCE_FLAKE_ATTEMPTS:-1}"
   local kubelet_flags="${NODE_CONFORMANCE_KUBELET_FLAGS:---fail-swap-on=false --runtime-cgroups=/system.slice/containerd.service}"
-  local kubelet_root_dir="${NODE_CONFORMANCE_KUBELET_ROOT_DIR:-${work_dir}/kubelet}"
   local standalone_mode="${NODE_CONFORMANCE_STANDALONE_MODE:-false}"
   local -a ginkgo_args
   local -a test_args
   local exit_code=0
-
-  if [[ " ${kubelet_flags} " != *" --root-dir="* ]]; then
-    kubelet_flags+=" --root-dir=${kubelet_root_dir}"
-  fi
-  if [[ " ${kubelet_flags} " != *" --cert-dir="* ]]; then
-    kubelet_flags+=" --cert-dir=${kubelet_root_dir}/pki"
-  fi
 
   ginkgo_args=(
     "--nodes=${parallelism}"
@@ -341,6 +278,7 @@ run_e2e_node() {
     exit "${PIPESTATUS[0]}"
   ) || exit_code=$?
 
+  sudo chown -R "$(id -u):$(id -g)" "${results_dir}"
   return "${exit_code}"
 }
 
@@ -352,12 +290,6 @@ main() {
 
   results_dir="${NODE_CONFORMANCE_RESULTS_DIR:-/tmp/kubernetes-node-conformance-results}"
   mkdir -p "${results_dir}"
-  trap publish_results EXIT
-
-  if is_flatcar; then
-    die "node conformance is not supported on Flatcar images"
-  fi
-
   require_cmd curl
   require_cmd sha256sum
   require_cmd sudo
@@ -376,7 +308,6 @@ main() {
   go_arch="$(detect_go_arch)"
 
   download_kubernetes_tests "${kubernetes_version}" "${go_arch}"
-  ensure_etcd "${go_arch}"
   ensure_container_runtime
   endpoint="$(runtime_endpoint)"
   process_name="$(runtime_process_name "${endpoint}")"

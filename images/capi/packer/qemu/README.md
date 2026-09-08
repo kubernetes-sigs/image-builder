@@ -199,12 +199,13 @@ Results are copied back into a fresh timestamped subdirectory of
 `node-conformance-results/` before the exit status is evaluated; nothing under
 that directory is removed, so runs accumulate side by side.
 
+Flatcar targets are excluded because they use Ignition rather than cloud-init
+and remove the SSH user before shutdown. Set `QEMU_IMAGE_OS=flatcar` to fail
+fast.
+
 Node conformance is opt-in and is not wired into required CI. It is intended for
 release or periodic image validation jobs where the added runtime is acceptable,
 not for every local or presubmit image build.
-
-Flatcar targets are excluded, for the same reason the boot smoke test excludes
-them. Set `QEMU_NODE_CONFORMANCE_OS=flatcar` to fail fast.
 
 See [Kubernetes Node Conformance](../../../../docs/book/src/capi/node-conformance.md)
 for the full list of configuration variables.
