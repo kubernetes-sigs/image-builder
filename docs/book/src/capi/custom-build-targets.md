@@ -58,9 +58,12 @@ Builder.
    point.
 2. Add the target name to the provider list in `images/capi/Makefile`, or to the
    shared OS version list used by that provider.
-3. Add static build and validate help entries in the "Document dynamic build
-   targets" and "Document dynamic validate targets" sections of
-   `images/capi/Makefile` so `make help` shows the new target.
+3. Add a static build help entry in the "Document dynamic build targets"
+   section of `images/capi/Makefile` so `make help` shows the new build
+   target. The per-image validate help is generated automatically from
+   `ALL_VALIDATE_TARGETS`, so no manual validate stub is needed. Any variable
+   named `*VALIDATE*_TARGETS` is picked up automatically, so even a new
+   provider family needs nothing added here.
 4. Update the provider documentation when users need new credentials, cloud
    image identifiers, or provider-specific variables.
 5. Run the matching `validate-*` target. Run a real `build-*` target when the
@@ -70,7 +73,8 @@ For example, a new QEMU target named `qemu-example-linux-9` would usually need:
 
 - `images/capi/packer/qemu/qemu-example-linux-9.json`
 - `qemu-example-linux-9` in `QEMU_BUILD_NAMES`
-- `build-qemu-example-linux-9` and `validate-qemu-example-linux-9` help entries
+- a `build-qemu-example-linux-9` help entry (the matching
+  `validate-qemu-example-linux-9` help is generated automatically)
 
 ## Target name reference
 
