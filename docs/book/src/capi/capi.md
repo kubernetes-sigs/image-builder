@@ -52,6 +52,48 @@ The `images/capi/packer/config` directory includes several JSON files that defin
 
 Due to OS differences, Windows images has additional configuration in the `packer/config/windows` folder.  See [Windows documentation](./windows/windows.md) for more details.
 
+### CNI plugin installation
+
+`kubernetes_cni_source_type` selects where the CNI plugins come from. It is empty by default,
+which means the plugins follow `kubernetes_source_type`: a package Kubernetes install gets the
+distro `kubernetes-cni` package, and an http Kubernetes install gets the upstream
+[containernetworking/plugins](https://github.com/containernetworking/plugins/releases) tarball
+pinned by `kubernetes_cni_semver`. Since `kubernetes_source_type` defaults to `pkg`, the default
+image installs the plugins from the package, as before.
+
+Set `kubernetes_cni_source_type` explicitly to decouple the two. `"http"` installs the tarball
+even when Kubernetes comes from packages, and `"pkg"` installs the `kubernetes-cni` package even
+when Kubernetes comes from `kubernetes_http_source`. Both values are validated before anything is
+installed, and `"pkg"` is rejected on Flatcar, which has no package manager. The Flatcar var files
+set `kubernetes_source_type` and `kubernetes_cni_source_type` to `"http"` explicitly.
+
+Reasons to choose `"http"` explicitly are getting one CNI plugin version across every target,
+including those with no `kubernetes-cni` package at all, and making the plugin version independent
+of what the Kubernetes package repositories carry. It is not about getting a newer version: for a
+given Kubernetes minor the tarball and the package are often the same version.
+
+#### Choosing http CNI on the package Kubernetes path
+
+`kubernetes_source_type="pkg"` with `kubernetes_cni_source_type="http"` installs both. `kubelet`
+declares a hard dependency on `kubernetes-cni (>= 1.2.0)`, so the package is still pulled in as a
+kubelet dependency and the tarball install then overwrites the plugin binaries in `/opt/cni/bin`.
+Consequences of that combination:
+
+* The `kubernetes-cni` package stays registered while its files on disk no longer match it, so
+  `dpkg --verify` and `rpm -V kubernetes-cni` report the plugin binaries as modified.
+* Any later upgrade, reinstall or removal of the `kubernetes-cni` package silently replaces or
+  deletes the tarball binaries, because the package owns the same paths under `/opt/cni/bin`.
+  `pkgs.k8s.io` does move `kubernetes-cni` within a single Kubernetes minor: the `v1.34`
+  repository carries both `1.6.0` and `1.7.1`, so an `apt upgrade` or `dnf update` that is
+  allowed to touch the package will roll the plugins back or forward without warning.
+
+The `sysprep` role already holds every installed package at the end of a build (`apt-mark hold`
+on Debian, `exclude=`/`excludepkgs=` on RHEL-family and Photon), so a plain `apt upgrade` or
+`dnf update` inside a built image leaves `kubernetes-cni` alone. Operators who manage packages
+after the build and remove that pin should either keep a hold or version lock on
+`kubernetes-cni`, or leave `kubernetes_cni_source_type` empty so the package and the files on
+disk stay consistent.
+
 ### Customization
 
 Several variables can be used to customize the image build.
@@ -67,6 +109,8 @@ Several variables can be used to customize the image build.
 | `extra_rpms`                                                                                                               | This can be set to a space delimited string containing the names of additional RPM packages to install                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | `""`                          |
 | `http_proxy`                                                                                                               | This can be set to URL to use as an HTTP proxy during the Ansible stage of building                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | `""`                          |
 | `https_proxy`                                                                                                              | This can be set to URL to use as an HTTPS proxy during the Ansible stage of building                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | `""`                          |
+| `kubernetes_cni_semver`                                                                                                    | This can be set to the semantic version of the CNI plugins tarball, installed when the effective CNI source is `"http"`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | `"v1.9.1"`                    |
+| `kubernetes_cni_source_type`                                                                                               | Where the CNI plugins are installed from: `"http"` for the upstream tarball or `"pkg"` for the distro `kubernetes-cni` package. Empty means follow `kubernetes_source_type`. `"pkg"` is not supported on Flatcar. See [CNI plugin installation](#cni-plugin-installation)                                                                                                                                                                                                                                                                                                                                                                  | `""`                          |
 | `kubernetes_deb_version`                                                                                                   | This can be set to the version of Kubernetes which will be installed in debian based image                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | `"1.26.7-1.1"`                |
 | `kubernetes_rpm_version`                                                                                                   | This can be set to the version of Kubernetes which will be installed in rpm based image                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | `"1.26.7"`                    |
 | `kubernetes_semver`                                                                                                        | This can be set to semantic verion of Kubernetes which will be installed in the image                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | `"v1.26.7"`                   |
