@@ -64,6 +64,30 @@
     ansible_facts['os_family'] in ["Common Base Linux Mariner", "Microsoft Azure Linux", "RedHat"] and
     kubernetes_rpm_gpg_check | bool
 
+- name: Check for the Azure Linux CNI plugin package
+  ansible.builtin.command:
+    argv:
+      - rpm
+      - -q
+      - cni-plugins
+  register: azurelinux_cni_plugins_package
+  changed_when: false
+  failed_when: false
+  when: ansible_facts['os_family'] in ["Common Base Linux Mariner", "Microsoft Azure Linux"]
+
+- name: Swap the Azure Linux CNI plugin package for Kubernetes CNI
+  ansible.builtin.command:  # noqa command-instead-of-module
+    argv:
+      - dnf
+      - swap
+      - cni-plugins
+      - "kubernetes-cni{{ '-' + kubernetes_cni_rpm_version if kubernetes_cni_rpm_version else '' }}"
+      - --assumeyes
+  register: azurelinux_cni_swap
+  when:
+    - ansible_facts['os_family'] in ["Common Base Linux Mariner", "Microsoft Azure Linux"]
+    - azurelinux_cni_plugins_package.rc == 0
+
 - name: Install Kubernetes CNI package (RedHat)
   ansible.builtin.dnf:
     name: kubernetes-cni{{ '-' + kubernetes_cni_rpm_version if kubernetes_cni_rpm_version else '' }}
