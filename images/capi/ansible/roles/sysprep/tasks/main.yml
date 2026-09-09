@@ -110,14 +110,8 @@
 - name: Reset cloud-init
   ansible.builtin.shell:
     cmd: |
-      cloud-init clean --machine-id
-  when: ansible_facts['os_family'] == "Debian"
-
-- name: Reset cloud-init
-  ansible.builtin.shell:
-    cmd: |
       cloud-init clean
-  when: ansible_facts['os_family'] == "RedHat"
+  when: ansible_facts['os_family'] in ["Debian", "RedHat"]
 
 - name: Remove cloud-init.disabled
   ansible.builtin.file:
