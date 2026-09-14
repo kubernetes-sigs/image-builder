@@ -43,15 +43,42 @@ fi
 
 export SSH_PASSWORD=${SSH_PASSWORD:-"$(LC_ALL=C tr -dc A-Za-z0-9 </dev/urandom | head -c 16; echo)"}
 SALT=$(LC_ALL=C tr -dc A-Za-z0-9 </dev/urandom | head -c 16; echo)
-export ENCRYPTED_SSH_PASSWORD=$($openssl_binary passwd -6 -salt $SALT -stdin <<< $SSH_PASSWORD)
+ENCRYPTED_SSH_PASSWORD=$($openssl_binary passwd -6 -salt "$SALT" -stdin <<< "$SSH_PASSWORD")
+export ENCRYPTED_SSH_PASSWORD
 
-for file in $(find $PACKER_DIR -type f -name "*.tmpl"); do
-  if [ -f "${file%.*}" ]; then
+# The values are injected with sed, so every character that is special in a sed
+# replacement has to be escaped first: a backslash, an ampersand (the whole
+# match) and the "|" delimiter. A newline cannot be escaped this way, so reject
+# it instead of silently producing a broken template.
+if [[ "$SSH_PASSWORD" == *$'\n'* ]]; then
+  echo "SSH_PASSWORD must not contain a newline" 1>&2
+  exit 1
+fi
+
+# escape_sed_replacement prints its argument escaped for use as the replacement
+# text of a "s|...|...|" expression.
+escape_sed_replacement() {
+  printf '%s' "$1" | sed -e 's/[|&\\]/\\&/g'
+}
+
+escaped_ssh_password=$(escape_sed_replacement "$SSH_PASSWORD")
+escaped_encrypted_ssh_password=$(escape_sed_replacement "$ENCRYPTED_SSH_PASSWORD")
+
+# The rendered files are written with a redirect rather than piped through tee:
+# they contain the plaintext password, the password hash and whatever other
+# credentials a template carries, and tee would copy all of it into the build
+# log. Only the path of each rendered file is printed.
+find "$PACKER_DIR" -type f -name "*.tmpl" -print0 | while IFS= read -r -d '' file; do
+  rendered=${file%.*}
+  if [ -f "$rendered" ]; then
     # HACK: There seems to be a case where this can actually
     # fail with the file not being found, leading to test failures.
     # If we fail to remove the file we just continue and assume
     # that the file was already removed.
-    rm ${file%.*} || true
+    rm "$rendered" || true
   fi
-  sed -e "s|\$SSH_PASSWORD|$SSH_PASSWORD|g" -e "s|\$ENCRYPTED_SSH_PASSWORD|$ENCRYPTED_SSH_PASSWORD|g" $file | tee ${file%.*}
+  sed -e "s|\$SSH_PASSWORD|$escaped_ssh_password|g" \
+      -e "s|\$ENCRYPTED_SSH_PASSWORD|$escaped_encrypted_ssh_password|g" \
+      "$file" > "$rendered"
+  echo "rendered $rendered"
 done
