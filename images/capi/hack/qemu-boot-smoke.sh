@@ -72,7 +72,7 @@ shift
 qemu_extra_args=()
 if [[ ${1:-} == "--" ]]; then
   shift
-  qemu_extra_args=("${@}")
+  qemu_extra_args=(${@+"${@}"})
 elif [[ $# -gt 0 ]]; then
   usage
   exit 1
@@ -107,7 +107,8 @@ abs_path() {
 
   dir="$(dirname "${path}")"
   base="$(basename "${path}")"
-  echo "$(cd "${dir}" && pwd -P)/${base}"
+  dir="$(cd "${dir}" && pwd -P)" || return 1
+  echo "${dir}/${base}"
 }
 
 is_flatcar_requested() {
@@ -274,7 +275,8 @@ require_command "${QEMU_BINARY}"
 require_command "${QEMU_IMG}"
 require_command ssh
 
-image="$(abs_path "$(resolve_image "${image_arg}")")"
+resolved_image="$(resolve_image "${image_arg}")" || exit 1
+image="$(abs_path "${resolved_image}")"
 if is_flatcar_requested; then
   echo "qemu-boot-smoke.sh does not support Flatcar images: Flatcar uses Ignition, not cloud-init, and the build removes the SSH user before shutdown, so neither QEMU_SEED=cloud-init nor QEMU_SEED=none can authenticate. Image: ${image}" >&2
   exit 1
@@ -333,7 +335,7 @@ pidfile="${tmp_dir}/qemu.pid"
   -m "${QEMU_MEMORY}" \
   -smp "${QEMU_CPUS}" \
   -drive "file=${runtime_disk},if=virtio,format=qcow2" \
-  "${seed_args[@]}" \
+  ${seed_args[@]+"${seed_args[@]}"} \
   -netdev "user,id=net0,hostfwd=tcp:127.0.0.1:${QEMU_SSH_PORT}-:22" \
   -device "virtio-net-pci,netdev=net0" \
   -display none \
@@ -342,7 +344,7 @@ pidfile="${tmp_dir}/qemu.pid"
   -no-reboot \
   -pidfile "${pidfile}" \
   -daemonize \
-  "${qemu_extra_args[@]}"
+  ${qemu_extra_args[@]+"${qemu_extra_args[@]}"}
 
 qemu_pid="$(cat "${pidfile}")"
 deadline=$((SECONDS + QEMU_SSH_TIMEOUT))
