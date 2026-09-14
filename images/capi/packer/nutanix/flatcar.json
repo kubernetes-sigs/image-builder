@@ -1,10 +1,8 @@
 {
   "ansible_extra_vars": "ansible_python_interpreter=/opt/bin/python3",
-  "build_name": "flatcar-{{env `FLATCAR_CHANNEL`}}-{{env `FLATCAR_VERSION`}}",
-  "channel_name": "{{env `FLATCAR_CHANNEL`}}",
+  "build_name": "flatcar",
   "distribution": "flatcar",
   "distribution_release": "Core",
-  "distribution_version": "{{env `FLATCAR_CHANNEL`}}",
   "distro_name": "flatcar",
   "guest_os_type": "Linux",
   "image_url": "flatcar_production_openstack_image.img",
