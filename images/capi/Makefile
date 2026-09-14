@@ -54,6 +54,8 @@ help: ## Display this help
 	@echo '  cleaning artifacts created from building OVAs using a local'
 	@echo '  hypervisor.'
 	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[36m<target>\033[0m\n"} /^[a-zA-Z0-9_-]+:.*?##/ { printf "  \033[36m%-35s\033[0m %s\n", $$1, $$2 } /^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5) } ' $(MAKEFILE_LIST)
+	@printf "\n\033[1mValidate packer config (per-image, generated)\033[0m\n"
+	@for t in $(ALL_VALIDATE_TARGETS); do printf "  \033[36m%-36s\033[0m %s\n" "$$t" "Validates $${t#validate-} packer config"; done
 
 .PHONY: version
 version: ## Display version of image-builder
@@ -503,6 +505,14 @@ MAAS_ARM64_BUILD_TARGETS 	:= $(addprefix build-,$(MAAS_ARM64_BUILD_NAMES))
 MAAS_ARM64_VALIDATE_TARGETS 	:= $(addprefix validate-,$(MAAS_ARM64_BUILD_NAMES))
 SCALEWAY_BUILD_TARGETS		:= $(addprefix build-,$(SCALEWAY_BUILD_NAMES))
 SCALEWAY_VALIDATE_TARGETS	:= $(addprefix validate-,$(SCALEWAY_BUILD_NAMES))
+
+# All generated per-image validate targets, used by `make help` so the listing
+# never drifts from the build targets it is derived from. Collected
+# automatically from every `*VALIDATE*_TARGETS` list above (so new provider
+# families need no change here), excluding this aggregate itself.
+ALL_VALIDATE_TARGETS := $(sort $(foreach v,\
+	$(filter-out ALL_VALIDATE_TARGETS,$(filter %_TARGETS,$(.VARIABLES))),\
+	$(if $(findstring VALIDATE,$(v)),$($(v)))))
 
 .PHONY: $(NODE_OVA_LOCAL_BUILD_TARGETS)
 $(NODE_OVA_LOCAL_BUILD_TARGETS): deps-ova set-ssh-password
@@ -955,171 +965,46 @@ build-scaleway-ubuntu-2604: ## Builds Ubuntu 26.04 Scaleway image
 build-scaleway-all: $(SCALEWAY_BUILD_TARGETS) ## Builds all Scaleway images
 
 ## --------------------------------------
-## Document dynamic validate targets
+## Validate targets
+##
+## Per-image validate-* targets are generated from the *_BUILD_NAMES lists
+## above (see *_VALIDATE_TARGETS) and are listed by `make help` from
+## $(ALL_VALIDATE_TARGETS), so this block only needs the -all aggregates.
+## Do not hand-maintain per-image validate-* stubs here; they drift.
 ## --------------------------------------
 ##@ Validate packer config
-validate-ami-almalinux-9: ## Validates AlmaLinux 9 AMI Packer config
-validate-ami-amazon-2: ## Validates Amazon-2 Linux AMI Packer config
-validate-ami-amazon-2023: ## Validates Amazon-2023 Linux AMI Packer config
-validate-ami-amazon-2023-arm64: ## Validates Amazon-2023 Linux arm64 AMI Packer config
-validate-ami-flatcar: ## Validates Flatcar AMI Packer config
-validate-ami-flatcar-arm64: ## Validates Flatcar arm64 AMI Packer config
-validate-ami-ubuntu-2204: ## Validates Ubuntu 22.04 AMI Packer config
-validate-ami-ubuntu-2204-arm64: ## Validates Ubuntu 22.04 arm64 AMI Packer config
-validate-ami-ubuntu-2404: ## Validates Ubuntu 24.04 AMI Packer config
-validate-ami-ubuntu-2404-arm64: ## Validates Ubuntu 24.04 arm64 AMI Packer config
-validate-ami-ubuntu-2604: ## Validates Ubuntu 26.04 AMI Packer config
-validate-ami-windows-2019: ## Validates Windows Server 2019 AMI Packer config
 validate-ami-all: $(AMI_VALIDATE_TARGETS) ## Validates all AMIs Packer config
 
-validate-huaweicloud-ubuntu-2204: ## Validates Ubuntu 22.04 HuaweiCloud Snapshot Packer config
-
-validate-azure-sig-azurelinux-3: ## Validates Azure Linux 3 Azure managed image in Shared Image Gallery Packer config
-validate-azure-sig-ubuntu-2204: ## Validates Ubuntu 22.04 Azure managed image in Shared Image Gallery Packer config
-validate-azure-sig-ubuntu-2404: ## Validates Ubuntu 24.04 Azure managed image in Shared Image Gallery Packer config
-validate-azure-sig-ubuntu-2604: ## Validates Ubuntu 26.04 Azure managed image in Shared Image Gallery Packer config
-validate-azure-sig-windows-2022-containerd: ## Validate Windows Server 2022 with containerd Azure managed image in Shared Image Gallery Packer config
-validate-azure-sig-windows-2025-containerd: ## Validate Windows Server 2025 with containerd Azure managed image in Shared Image Gallery Packer config
-validate-azure-sig-flatcar: ## Validates Flatcar Azure managed image in Shared Image Gallery Packer config
-validate-azure-sig-azurelinux-3-gen2: ## Validates Azure Linux 3 Gen2 Azure managed image in Shared Image Gallery Packer config
-validate-azure-sig-flatcar-gen2: ## Validates Flatcar Azure Gen2 managed image in Shared Image Gallery Packer config
-validate-azure-sig-ubuntu-2204-gen2: ## Validates Ubuntu 22.04 Azure managed image in Shared Image Gallery Packer config
-validate-azure-sig-ubuntu-2204-cvm: ## Validates Ubuntu 22.04 CVM Azure managed image in Shared Image Gallery Packer config
-validate-azure-sig-ubuntu-2404-gen2: ## Validates Ubuntu 24.04 Azure managed image in Shared Image Gallery Packer config
-validate-azure-sig-ubuntu-2404-cvm: ## Validates Ubuntu 24.04 CVM Azure managed image in Shared Image Gallery Packer config
-validate-azure-sig-ubuntu-2604-gen2: ## Validates Ubuntu 26.04 Azure managed image in Shared Image Gallery Packer config
-validate-azure-sig-windows-2022-containerd-cvm: ## Validate Windows Server 2022 with containerd CVM Azure managed image in Shared Image Gallery Packer config
-#validate-azure-sig-ubuntu-2604-cvm: ## Validates Ubuntu 26.04 CVM Azure managed image in Shared Image Gallery Packer config
 validate-azure-all: $(AZURE_VALIDATE_SIG_TARGETS) $(AZURE_VALIDATE_SIG_GEN2_TARGETS) $(AZURE_VALIDATE_SIG_CVM_TARGETS) ## Validates all images for Azure Packer config
 
-validate-do-ubuntu-2204: ## Validates Ubuntu 22.04 DigitalOcean Snapshot Packer config
-validate-do-ubuntu-2404: ## Validates Ubuntu 24.04 DigitalOcean Snapshot Packer config
-validate-do-ubuntu-2604: ## Validates Ubuntu 26.04 DigitalOcean Snapshot Packer config
 validate-do-all: $(DO_VALIDATE_TARGETS) ## Validates all DigitalOcean Snapshot Packer config
 
-validate-openstack-ubuntu-2204: ## Validates Ubuntu 22.04 Openstack Image Packer config
-validate-openstack-ubuntu-2404: ## Validates Ubuntu 22.04 Openstack Image Packer config
-validate-openstack-ubuntu-2604: ## Validates Ubuntu 26.04 Openstack Image Packer config
-validate-openstack-rocky-9: ## Validates Rocky 9 Openstack Image Packer config
-validate-openstack-flatcar: ## Validates Flatcar Openstack Image Packer config
 validate-openstack-all: $(OPENSTACK_VALIDATE_TARGETS) ## Validates all Openstack Glance Image Packer config
 
-validate-oxide-ubuntu-2404: ## Validates Ubuntu 24.04 Oxide Snapshot Packer config
 validate-oxide-all: $(OXIDE_VALIDATE_TARGETS) ## Validates all Oxide Snapshot Packer config
 
-validate-gce-ubuntu-2204: ## Validates Ubuntu 22.04 GCE Snapshot Packer config
-validate-gce-ubuntu-2404: ## Validates Ubuntu 24.04 GCE Snapshot Packer config
-validate-gce-ubuntu-2604: ## Validates Ubuntu 26.04 GCE Snapshot Packer config
 validate-gce-all: $(GCE_VALIDATE_TARGETS) ## Validates all GCE Snapshot Packer config
 
-validate-node-ova-local-flatcar: ## Validates Flatcar stable Node OVA Packer config w local hypervisor
-validate-node-ova-local-photon-4: ## Validates Photon 4 Node OVA Packer config w local hypervisor
-validate-node-ova-local-photon-5: ## Validates Photon 5 Node OVA Packer config w local hypervisor
-validate-node-ova-local-rhel-9: ## Validates RHEL 9 Node OVA Packer config w local hypervisor
-validate-node-ova-local-rockylinux-9: ## Validates RockyLinux 9 Node OVA Packer config w local hypervisor
-validate-node-ova-local-almalinux-9: ## Validates AlmaLinux 9 Node OVA Packer config w local hypervisor
-validate-node-ova-local-ubuntu-2204: ## Validates Ubuntu 22.04 Node OVA Packer config w local hypervisor
-validate-node-ova-local-ubuntu-2404: ## Validates Ubuntu 24.04 Node OVA Packer config w local hypervisor
-validate-node-ova-local-ubuntu-2604: ## Validates Ubuntu 26.04 Node OVA Packer config w local hypervisor
-validate-node-ova-local-windows-2019: ## Validates Windows Server 2019 Node OVA Packer config w local hypervisor
-validate-node-ova-local-windows-2022: ## Validates Windows Server 2022 Node OVA Packer config w local hypervisor
 validate-node-ova-local-all: $(NODE_OVA_LOCAL_VALIDATE_TARGETS) ## Validates all Node OVAs Packer config w local hypervisor
 
-validate-node-ova-local-vmx-photon-4: ## Validates Photon 4 Node OVA from VMX file w local hypervisor
-validate-node-ova-local-vmx-photon-5: ## Validates Photon 5 Node OVA from VMX file w local hypervisor
-validate-node-ova-local-vmx-rhel-9: ## Validates RHEL 9 Node OVA from VMX file w local hypervisor
-validate-node-ova-local-vmx-rockylinux-9: ## Validates RockyLinux 9 Node OVA from VMX file w local hypervisor
-validate-node-ova-local-vmx-almalinux-9: ## Validates AlmaLinux 9 Node OVA from VMX file w local hypervisor
-validate-node-ova-local-vmx-ubuntu-2204: ## Validates Ubuntu 22.04 Node OVA from VMX file w local hypervisor
-validate-node-ova-local-vmx-ubuntu-2404: ## Validates Ubuntu 24.04 Node OVA from VMX file w local hypervisor
-validate-node-ova-local-vmx-ubuntu-2604: ## Validates Ubuntu 26.04 Node OVA from VMX file w local hypervisor
-
-validate-node-ova-local-base-photon-4: ## Validates Photon 4 Base Node OVA w local hypervisor
-validate-node-ova-local-base-photon-5: ## Validates Photon 5 Base Node OVA w local hypervisor
-validate-node-ova-local-base-rhel-9: ## Validates RHEL 9 Base Node OVA w local hypervisor
-validate-node-ova-local-base-rockylinux-9: ## Validates RockyLinux 9 Base Node OVA w local hypervisor
-validate-node-ova-local-base-almalinux-9: ## Validates AlmaLinux 9 Base Node OVA w local hypervisor
-validate-node-ova-local-base-ubuntu-2204: ## Validates Ubuntu 22.04 Base Node OVA w local hypervisor
-validate-node-ova-local-base-ubuntu-2404: ## Validates Ubuntu 24.04 Base Node OVA w local hypervisor
-validate-node-ova-local-base-ubuntu-2604: ## Validates Ubuntu 26.04 Base Node OVA w local hypervisor
-
-validate-qemu-flatcar: ## Validates Flatcar QEMU image packer config
-validate-qemu-ubuntu-2204: ## Validates Ubuntu 22.04 QEMU image packer config
-validate-qemu-ubuntu-2204-cloudimg: ## Validates Ubuntu 22.04 QEMU image packer config using cloud image
-validate-qemu-ubuntu-2204-efi: ## Validates Ubuntu 22.04 QEMU EFI image packer config
-validate-qemu-ubuntu-2404: ## Validates Ubuntu 24.04 QEMU image packer config
-validate-qemu-ubuntu-2404-cloudimg: ## Validates Ubuntu 24.04 QEMU image packer config using cloud image
-validate-qemu-ubuntu-2404-immutable: ## Validates Ubuntu 24.04 QEMU image packer config with a persistent data partition
-validate-qemu-ubuntu-2404-efi: ## Validates Ubuntu 24.04 QEMU EFI image packer config
-validate-qemu-ubuntu-2604: ## Validates Ubuntu 26.04 QEMU image packer config
-validate-qemu-ubuntu-2604-efi: ## Validates Ubuntu 26.04 QEMU EFI image packer config
-validate-qemu-rhel-9: ## Validates RHEL 9 QEMU image
-validate-qemu-rockylinux-9: ## Validates Rocky Linux 9 QEMU image packer config
-validate-qemu-rockylinux-9-cloudimg: ## Validates Rocky Linux 9 QEMU image packer config using cloud image
 validate-qemu-all: $(QEMU_VALIDATE_TARGETS) ## Validates all Qemu Packer config
 
-validate-raw-flatcar: ## Validates Flatcar RAW image packer config
-validate-raw-ubuntu-2204: ## Validates Ubuntu 22.04 RAW image packer config
-validate-raw-ubuntu-2204-efi: ## Validates Ubuntu 22.04 RAW EFI image packer config
-validate-raw-ubuntu-2404: ## Validates Ubuntu 24.04 RAW image packer config
-validate-raw-ubuntu-2404-efi: ## Validates Ubuntu 24.04 RAW EFI image packer config
-validate-raw-ubuntu-2604: ## Validates Ubuntu 26.04 RAW image packer config
-validate-raw-ubuntu-2604-efi: ## Validates Ubuntu 26.04 RAW EFI image packer config
-validate-raw-rhel-9: ## Validates RHEL 9 RAW image packer config
 validate-raw-all: $(RAW_VALIDATE_TARGETS) ## Validates all RAW Packer config
 
-validate-oci-ubuntu-2204: ## Validates the OCI ubuntu-2204 image packer config
-validate-oci-oracle-linux-9: ## Validates the OCI Oracle Linux 9.x image packer config
-validate-oci-windows-2019: ## Validates the OCI Windows 2019 image packer config
-validate-oci-windows-2022: ## Validates the OCI Windows 2022 image packer config
 validate-oci-all: $(OCI_VALIDATE_TARGETS) ## Validates all OCI image packer config
 
-validate-osc-ubuntu-2204: ## Validates Ubuntu 22.04 Outscale Snapshot Packer config
-validate-osc-ubuntu-2404: ## Validates Ubuntu 24.04 Outscale Snapshot Packer config
-validate-osc-ubuntu-2604: ## Validates Ubuntu 26.04 Outscale Snapshot Packer config
-validate-osc-flatcar: ## Validates Flatcar Outscale Snapshot Packer config
 validate-osc-all: $(OSC_VALIDATE_TARGETS) ## Validates all Outscale Snapshot Packer config
 
-validate-powervs-centos-9: ## Validates the PowerVS CentOS 9 image packer config
-validate-powervs-centos-10: ## Validates the PowerVS CentOS 10 image packer config
-validate-powervs-centos-10-dhcp: ## Validates the PowerVS CentOS 10 DHCP image packer config
 validate-powervs-all: $(POWERVS_VALIDATE_TARGETS) ## Validates all PowerVS Packer config
 
-validate-nutanix-ubuntu-2204: ## Validates Ubuntu 22.04 Nutanix Packer config
-validate-nutanix-ubuntu-2404: ## Validates Ubuntu 24.04 Nutanix Packer config
-validate-nutanix-ubuntu-2604: ## Validates Ubuntu 26.04 Nutanix Packer config
-validate-nutanix-rhel-9: ## Validates RedHat Enterprise Linux 9 Nutanix Packer config
-validate-nutanix-rockylinux-9: ## Validates Rocky Linux 9 Nutanix Packer config
-validate-nutanix-flatcar: ## Validates the Nutanix Flatcar Nutanix Packer config
-validate-nutanix-windows-2022: ## Validates Windows Server 2022 Nutanix Packer config
 validate-nutanix-all: $(NUTANIX_VALIDATE_TARGETS) ## Validates all Nutanix Packer config
 
-validate-hcloud-ubuntu-2204: ## Validates Ubuntu 22.04 Hetzner Cloud Packer config
-validate-hcloud-ubuntu-2404: ## Validates Ubuntu 24.04 Hetzner Cloud Packer config
-validate-hcloud-ubuntu-2604: ## Validates Ubuntu 26.04 Hetzner Cloud Packer config
-validate-hcloud-rockylinux-9: ## Validates Rocky Linux 9 Hetzner Cloud Packer config
-validate-hcloud-flatcar: ## Validates the Hetzner Cloud Flatcar Packer config
-validate-hcloud-flatcar-arm64: ## Validates the Hetzner Cloud Flatcar arm64 Packer config
 validate-hcloud-all: $(HCLOUD_VALIDATE_TARGETS) ## Validates all Hetzner Cloud Packer config
 
-validate-proxmox-ubuntu-2204: ## Validates Ubuntu 22.04 Proxmox Packer config
-validate-proxmox-ubuntu-2404: ## Validates Ubuntu 24.04 Proxmox Packer config
-validate-proxmox-ubuntu-2404-efi: ## Validates Ubuntu 24.04 EFI Proxmox Packer config
-validate-proxmox-ubuntu-2604: ## Validates Ubuntu 26.04 Proxmox Packer config
-validate-proxmox-ubuntu-2604-efi: ## Validates Ubuntu 26.04 EFI Proxmox Packer config
-validate-proxmox-rockylinux-9: ## Validates Rocky Linux 9 Proxmox Packer config
-validate-proxmox-flatcar: ## Validates Flatcar Proxmox Packer config
 validate-proxmox-all: $(PROXMOX_VALIDATE_TARGETS) ## Validates all Proxmox Packer config
 
-validate-vultr-ubuntu-2204: ## Validates Ubuntu 22.04 Vultr Snapshot Packer config
-validate-vultr-ubuntu-2404: ## Validates Ubuntu 24.04 Vultr Snapshot Packer config
-validate-vultr-ubuntu-2604: ## Validates Ubuntu 26.04 Vultr Snapshot Packer config
 validate-vultr-all: $(VULTR_VALIDATE_TARGETS) ## Validates all Vultr Snapshot Packer config
 
-validate-scaleway-rockylinux-9: ## Validates Rocky Linux 9 Scaleway image Packer config
-validate-scaleway-ubuntu-2204: ## Validates Ubuntu 22.04 Scaleway image Packer config
-validate-scaleway-ubuntu-2404: ## Validates Ubuntu 24.04 Scaleway image Packer config
-validate-scaleway-ubuntu-2604: ## Validates Ubuntu 26.04 Scaleway image Packer config
 validate-scaleway-all: $(SCALEWAY_VALIDATE_TARGETS) ## Validates all Scaleway Cloud Packer config
 
 validate-all: validate-ami-all \
