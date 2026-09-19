@@ -441,6 +441,7 @@ class MainTests(RendererTestCase):
             output = self.capi_root / f"private-{number}"
             self.packer_args += ["-var", f"ubuntu_repo=http://mirror{number}/ubuntu"]
             self.run_main("--output-dir", str(output))
+            self.assertEqual(0o700, output.stat().st_mode & 0o777)
             rendered = (output / "24.04/user-data").read_text()
             self.assertIn(f"http://mirror{number}/ubuntu", rendered)
             self.assertIn("passwd: $6$salt$hash", rendered)

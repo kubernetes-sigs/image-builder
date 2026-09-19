@@ -381,6 +381,7 @@ def main(argv=None):
         if http_root.is_dir():
             shutil.copytree(http_root, output, dirs_exist_ok=True,
                             ignore=shutil.ignore_patterns("user-data.orig"))
+            output.chmod(0o700)
         if directory is not None:
             directory = output / directory.relative_to(http_root)
     if directory is None or not directory.is_dir():
