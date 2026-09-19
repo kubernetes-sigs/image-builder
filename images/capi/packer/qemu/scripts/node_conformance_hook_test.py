@@ -14,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import json
 import os
 import pathlib
 import subprocess
@@ -39,6 +40,40 @@ def write_stub(path, body, mode=0o755):
 
 
 class GuestHookTests(unittest.TestCase):
+    def test_cni_setup_ignores_unrelated_files_and_preserves_network_configs(self):
+        for filename in ("README", "existing.conf", "existing.conflist", "existing.json"):
+            with self.subTest(filename=filename), tempfile.TemporaryDirectory() as tmp:
+                root = pathlib.Path(tmp)
+                fake_bin = root / "bin"
+                fake_bin.mkdir()
+                write_stub(fake_bin / "sudo", SUDO_STUB)
+                for plugin in ("bridge", "host-local", "loopback", "portmap"):
+                    write_stub(fake_bin / plugin, "#!/bin/sh\nexit 0\n")
+                conf = root / "net.d"
+                conf.mkdir()
+                existing = conf / filename
+                existing.write_text("existing content")
+                command = f"""
+source {str(HOOK)!r}
+cni_bin_dir={str(fake_bin)!r}
+cni_conf_dir={str(conf)!r}
+cni_data_dir={str(root / 'data')!r}
+ensure_cni_config
+"""
+                result = subprocess.run(
+                    ["bash", "-c", command], text=True, capture_output=True,
+                    env={**os.environ, "PATH": f"{fake_bin}:{os.environ['PATH']}"},
+                )
+                self.assertEqual(0, result.returncode, result.stderr)
+                self.assertEqual("existing content", existing.read_text())
+                generated = conf / "10-node-conformance.conflist"
+                if filename == "README":
+                    config = json.loads(generated.read_text())
+                    self.assertEqual(["bridge", "portmap"], [p["type"] for p in config["plugins"]])
+                    self.assertEqual("host-local", config["plugins"][0]["ipam"]["type"])
+                else:
+                    self.assertFalse(generated.exists())
+
     def test_e2e_node_runs_from_the_work_dir_without_the_container_runtime_flag(self):
         with tempfile.TemporaryDirectory() as tmp:
             tmp_path = pathlib.Path(tmp)

@@ -178,7 +178,8 @@ ensure_cni_config() {
   done
 
   sudo mkdir -p "${cni_conf_dir}"
-  if sudo find "${cni_conf_dir}" -mindepth 1 -maxdepth 1 -type f -print -quit |
+  if sudo find "${cni_conf_dir}" -mindepth 1 -maxdepth 1 -type f \
+    \( -name '*.conf' -o -name '*.conflist' -o -name '*.json' \) -print -quit |
     grep -q .; then
     log "using existing CNI config in ${cni_conf_dir}"
     return
