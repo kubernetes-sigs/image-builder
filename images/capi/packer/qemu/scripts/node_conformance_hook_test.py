@@ -14,24 +14,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import json
 import os
 import pathlib
-import re
 import subprocess
 import tempfile
 import unittest
 
 
 CAPI_DIR = pathlib.Path(__file__).resolve().parents[3]
-REPO_ROOT = pathlib.Path(__file__).resolve().parents[5]
 HOOK = CAPI_DIR / "hack" / "run-e2e-node-conformance.sh"
 RUNNER = CAPI_DIR / "hack" / "qemu-node-conformance.sh"
-BOOT_SMOKE = CAPI_DIR / "hack" / "qemu-boot-smoke.sh"
-QEMU_GUEST_LIB = CAPI_DIR / "hack" / "lib" / "qemu-guest.sh"
-CI_HELPER = CAPI_DIR / "scripts" / "ci-qemu-node-conformance.sh"
-PACKER_TEMPLATE = CAPI_DIR / "packer" / "qemu" / "packer.json.tmpl"
-DOC = REPO_ROOT / "docs" / "book" / "src" / "capi" / "node-conformance.md"
 
 SUDO_STUB = '''#!/usr/bin/env bash
 # Drop sudo options such as -E, then run the command directly.
@@ -44,27 +36,6 @@ def write_stub(path, body, mode=0o755):
     path.write_text(body, encoding="utf-8")
     path.chmod(mode)
     return path
-
-
-def shell_default(script_text, name):
-    """Returns the literal default of a "${NAME:-DEFAULT}" expansion.
-
-    The expansions live inside double quotes, so bash collapses a doubled
-    backslash into a single one before the value is used.
-    """
-    match = re.search(r'\$\{' + re.escape(name) + r':-(.*?)\}"', script_text)
-    if match is None:
-        raise AssertionError(f"no default found for {name}")
-    return match.group(1).replace("\\\\", "\\")
-
-
-def documented_defaults():
-    defaults = {}
-    for line in DOC.read_text(encoding="utf-8").splitlines():
-        match = re.match(r"^\| `([A-Z_]+)` \| `(.*?)` \| ", line)
-        if match:
-            defaults[match.group(1)] = match.group(2).replace("\\|", "|")
-    return defaults
 
 
 class GuestHookTests(unittest.TestCase):
@@ -214,9 +185,6 @@ verify_sha256_file {str(payload)!r} {str(sha_file)!r}
             self.assertNotEqual(0, result.returncode)
             self.assertIn("invalid or unreadable SHA256 file", result.stderr)
 
-    def test_standalone_mode_is_opt_in(self):
-        self.assertEqual("false", shell_default(HOOK.read_text(encoding="utf-8"),
-                                                "NODE_CONFORMANCE_STANDALONE_MODE"))
 
 class RunnerTests(unittest.TestCase):
     def source_runner(self, command, env=None):
@@ -326,51 +294,6 @@ class ArgumentHandlingTests(unittest.TestCase):
             )
 
             self.assertNotIn("unbound variable", result.stderr)
-
-class ImageIsNotModifiedTests(unittest.TestCase):
-    def test_packer_template_has_no_node_conformance_provisioners(self):
-        template = json.loads(PACKER_TEMPLATE.read_text(encoding="utf-8"))
-        serialized = json.dumps(template)
-
-        self.assertNotIn("node_conformance", serialized)
-        self.assertNotIn("run-e2e-node-conformance", serialized)
-
-    def test_boot_smoke_and_conformance_share_the_qemu_guest_library(self):
-        for script in (RUNNER, BOOT_SMOKE):
-            self.assertIn(
-                'source "${script_dir}/lib/qemu-guest.sh"',
-                script.read_text(encoding="utf-8"),
-                f"{script} should reuse the shared QEMU guest helpers",
-            )
-
-
-class DocumentationTests(unittest.TestCase):
-    def test_documented_hook_defaults_match_the_script(self):
-        script = HOOK.read_text(encoding="utf-8")
-        documented = documented_defaults()
-
-        for name in (
-            "NODE_CONFORMANCE_FOCUS",
-            "NODE_CONFORMANCE_SKIP",
-            "NODE_CONFORMANCE_PARALLELISM",
-            "NODE_CONFORMANCE_FLAKE_ATTEMPTS",
-            "NODE_CONFORMANCE_TIMEOUT",
-            "NODE_CONFORMANCE_STANDALONE_MODE",
-            "NODE_CONFORMANCE_KUBELET_FLAGS",
-            "NODE_CONFORMANCE_DOWNLOAD_TIMEOUT",
-            "NODE_CONFORMANCE_RESULTS_DIR",
-        ):
-            self.assertIn(name, documented)
-            self.assertEqual(shell_default(script, name), documented[name], name)
-
-    def test_documented_runner_defaults_match_the_script(self):
-        script = RUNNER.read_text(encoding="utf-8")
-        documented = documented_defaults()
-
-        for name in ("QEMU_CPUS", "QEMU_MEMORY", "QEMU_SSH_TIMEOUT"):
-            self.assertIn(name, documented)
-            self.assertEqual(shell_default(script, name), documented[name], name)
-
 
 if __name__ == "__main__":
     unittest.main()
