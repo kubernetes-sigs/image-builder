@@ -70,6 +70,17 @@ class ResolveImageTests(unittest.TestCase):
             self.assertEqual(0, result.returncode, result.stderr)
             self.assertEqual(f"RESOLVED {image.resolve()}\n", result.stdout)
 
+    def test_extensionless_packer_image_and_ambiguity(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            directory = pathlib.Path(tmp)
+            image = directory / directory.name
+            image.touch()
+            result = self.resolve(tmp + "/")
+            self.assertEqual(0, result.returncode, result.stderr)
+            self.assertEqual(f"RESOLVED {image.resolve()}\n", result.stdout)
+            (directory / "other.qcow2").touch()
+            self.assertEqual(3, self.resolve(tmp).returncode)
+
     def test_relative_image_resolves_to_an_absolute_path(self):
         with tempfile.TemporaryDirectory() as tmp:
             image = pathlib.Path(tmp) / "disk.qcow2"
