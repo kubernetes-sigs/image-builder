@@ -531,12 +531,6 @@ ALL_VALIDATE_TARGETS := $(sort $(foreach v,\
 	$(filter-out ALL_VALIDATE_TARGETS,$(filter %_TARGETS,$(.VARIABLES))),\
 	$(if $(findstring VALIDATE,$(v)),$($(v)))))
 
-# These recipes render and restore shared autoinstall user-data files. Serialize
-# the invocation so parallel aggregate targets cannot serve another target's
-# mirrors. This is deliberately global because Make 3.81 cannot serialize leaf
-# recipes with a target-specific .NOTPARALLEL prerequisite list.
-.NOTPARALLEL:
-
 .PHONY: $(NODE_OVA_LOCAL_BUILD_TARGETS)
 $(NODE_OVA_LOCAL_BUILD_TARGETS): deps-ova set-ssh-password
     # This uses a packer file builder to input unattend variables into a JSON file to be consumed by the python script before running the vmware-iso provisioner
@@ -646,15 +640,19 @@ $(OXIDE_VALIDATE_TARGETS): deps-oxide
 .PHONY: $(QEMU_BUILD_TARGETS)
 $(QEMU_BUILD_TARGETS): deps-qemu set-ssh-password
 	packer_args=( $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/qemu/$(subst build-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) ); \
-	trap '$(RENDER_UBUNTU_AUTOINSTALL) --clean --packer-template packer/qemu/packer.json -- "$${packer_args[@]}"' EXIT; \
-	$(RENDER_UBUNTU_AUTOINSTALL) --packer-template packer/qemu/packer.json -- "$${packer_args[@]}" && \
+	http_dir=$$(mktemp -d) || exit 1; \
+	trap '[ "$${KEEP_RENDERED_AUTOINSTALL:-0}" = 1 ] || rm -rf "$$http_dir"' EXIT; \
+	$(RENDER_UBUNTU_AUTOINSTALL) --output-dir "$$http_dir" --packer-template packer/qemu/packer.json -- "$${packer_args[@]}" && \
+	packer_args+=( -var "http_directory=$$http_dir" ) && \
 	$(PACKER) build "$${packer_args[@]}" packer/qemu/packer.json
 
 .PHONY: $(QEMU_VALIDATE_TARGETS)
 $(QEMU_VALIDATE_TARGETS): deps-qemu set-ssh-password
 	packer_args=( $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/qemu/$(subst validate-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) ); \
-	trap '$(RENDER_UBUNTU_AUTOINSTALL) --clean --packer-template packer/qemu/packer.json -- "$${packer_args[@]}"' EXIT; \
-	$(RENDER_UBUNTU_AUTOINSTALL) --packer-template packer/qemu/packer.json -- "$${packer_args[@]}" && \
+	http_dir=$$(mktemp -d) || exit 1; \
+	trap '[ "$${KEEP_RENDERED_AUTOINSTALL:-0}" = 1 ] || rm -rf "$$http_dir"' EXIT; \
+	$(RENDER_UBUNTU_AUTOINSTALL) --output-dir "$$http_dir" --packer-template packer/qemu/packer.json -- "$${packer_args[@]}" && \
+	packer_args+=( -var "http_directory=$$http_dir" ) && \
 	$(PACKER) validate "$${packer_args[@]}" packer/qemu/packer.json
 
 .PHONY: test-qemu-immutable
@@ -666,15 +664,19 @@ validate-qemu-ubuntu-2404-immutable: test-qemu-immutable
 .PHONY: $(QEMU_KUBEVIRT_BUILD_TARGETS)
 $(QEMU_KUBEVIRT_BUILD_TARGETS): deps-qemu set-ssh-password
 	packer_args=( $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/qemu/$(subst build-kubevirt-,,$@).json)" --var 'kubevirt=true' $(ABSOLUTE_PACKER_VAR_FILES) ); \
-	trap '$(RENDER_UBUNTU_AUTOINSTALL) --clean --packer-template packer/qemu/packer.json -- "$${packer_args[@]}"' EXIT; \
-	$(RENDER_UBUNTU_AUTOINSTALL) --packer-template packer/qemu/packer.json -- "$${packer_args[@]}" && \
+	http_dir=$$(mktemp -d) || exit 1; \
+	trap '[ "$${KEEP_RENDERED_AUTOINSTALL:-0}" = 1 ] || rm -rf "$$http_dir"' EXIT; \
+	$(RENDER_UBUNTU_AUTOINSTALL) --output-dir "$$http_dir" --packer-template packer/qemu/packer.json -- "$${packer_args[@]}" && \
+	packer_args+=( -var "http_directory=$$http_dir" ) && \
 	$(PACKER) build "$${packer_args[@]}" packer/qemu/packer.json
 
 .PHONY: $(QEMU_KUBEVIRT_VALIDATE_TARGETS)
 $(QEMU_KUBEVIRT_VALIDATE_TARGETS): deps-qemu set-ssh-password
 	packer_args=( $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/qemu/$(subst validate-kubevirt-,,$@).json)" --var 'kubevirt=true' $(ABSOLUTE_PACKER_VAR_FILES) ); \
-	trap '$(RENDER_UBUNTU_AUTOINSTALL) --clean --packer-template packer/qemu/packer.json -- "$${packer_args[@]}"' EXIT; \
-	$(RENDER_UBUNTU_AUTOINSTALL) --packer-template packer/qemu/packer.json -- "$${packer_args[@]}" && \
+	http_dir=$$(mktemp -d) || exit 1; \
+	trap '[ "$${KEEP_RENDERED_AUTOINSTALL:-0}" = 1 ] || rm -rf "$$http_dir"' EXIT; \
+	$(RENDER_UBUNTU_AUTOINSTALL) --output-dir "$$http_dir" --packer-template packer/qemu/packer.json -- "$${packer_args[@]}" && \
+	packer_args+=( -var "http_directory=$$http_dir" ) && \
 	$(PACKER) validate "$${packer_args[@]}" packer/qemu/packer.json
 
 .PHONY: $(RAW_BUILD_TARGETS)
@@ -736,15 +738,19 @@ $(HCLOUD_VALIDATE_TARGETS): deps-hcloud
 .PHONY: $(PROXMOX_BUILD_TARGETS)
 $(PROXMOX_BUILD_TARGETS): deps-proxmox set-ssh-password
 	packer_args=( $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/proxmox/$(subst build-proxmox-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) ); \
-	trap '$(RENDER_UBUNTU_AUTOINSTALL) --clean --packer-template packer/proxmox/packer.json -- "$${packer_args[@]}"' EXIT; \
-	$(RENDER_UBUNTU_AUTOINSTALL) --packer-template packer/proxmox/packer.json -- "$${packer_args[@]}" && \
+	http_dir=$$(mktemp -d) || exit 1; \
+	trap '[ "$${KEEP_RENDERED_AUTOINSTALL:-0}" = 1 ] || rm -rf "$$http_dir"' EXIT; \
+	$(RENDER_UBUNTU_AUTOINSTALL) --output-dir "$$http_dir" --packer-template packer/proxmox/packer.json -- "$${packer_args[@]}" && \
+	packer_args+=( -var "http_directory=$$http_dir" ) && \
 	$(PACKER) build "$${packer_args[@]}" packer/proxmox/packer.json
 
 .PHONY: $(PROXMOX_VALIDATE_TARGETS)
 $(PROXMOX_VALIDATE_TARGETS): deps-proxmox set-ssh-password
 	packer_args=( $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/proxmox/$(subst validate-proxmox-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) ); \
-	trap '$(RENDER_UBUNTU_AUTOINSTALL) --clean --packer-template packer/proxmox/packer.json -- "$${packer_args[@]}"' EXIT; \
-	$(RENDER_UBUNTU_AUTOINSTALL) --packer-template packer/proxmox/packer.json -- "$${packer_args[@]}" && \
+	http_dir=$$(mktemp -d) || exit 1; \
+	trap '[ "$${KEEP_RENDERED_AUTOINSTALL:-0}" = 1 ] || rm -rf "$$http_dir"' EXIT; \
+	$(RENDER_UBUNTU_AUTOINSTALL) --output-dir "$$http_dir" --packer-template packer/proxmox/packer.json -- "$${packer_args[@]}" && \
+	packer_args+=( -var "http_directory=$$http_dir" ) && \
 	$(PACKER) validate "$${packer_args[@]}" packer/proxmox/packer.json
 
 .PHONY: $(VULTR_BUILD_TARGETS)
@@ -758,29 +764,37 @@ $(VULTR_VALIDATE_TARGETS): deps-vultr
 .PHONY: $(MAAS_BUILD_TARGETS)
 $(MAAS_BUILD_TARGETS): deps-qemu set-ssh-password
 	packer_args=( $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/maas/$(subst build-,,$@).json)" --var="ansible_user_vars=provider=maas" $(ABSOLUTE_PACKER_VAR_FILES) ); \
-	trap '$(RENDER_UBUNTU_AUTOINSTALL) --clean --packer-template packer/maas/packer.json -- "$${packer_args[@]}"' EXIT; \
-	$(RENDER_UBUNTU_AUTOINSTALL) --packer-template packer/maas/packer.json -- "$${packer_args[@]}" && \
+	http_dir=$$(mktemp -d) || exit 1; \
+	trap '[ "$${KEEP_RENDERED_AUTOINSTALL:-0}" = 1 ] || rm -rf "$$http_dir"' EXIT; \
+	$(RENDER_UBUNTU_AUTOINSTALL) --output-dir "$$http_dir" --packer-template packer/maas/packer.json -- "$${packer_args[@]}" && \
+	packer_args+=( -var "http_directory=$$http_dir" ) && \
 	$(PACKER) build "$${packer_args[@]}" packer/maas/packer.json
 
 .PHONY: $(MAAS_VALIDATE_TARGETS)
 $(MAAS_VALIDATE_TARGETS): deps-qemu set-ssh-password
 	packer_args=( $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/maas/$(subst validate-,,$@).json)" --var="ansible_user_vars=provider=maas" $(ABSOLUTE_PACKER_VAR_FILES) ); \
-	trap '$(RENDER_UBUNTU_AUTOINSTALL) --clean --packer-template packer/maas/packer.json -- "$${packer_args[@]}"' EXIT; \
-	$(RENDER_UBUNTU_AUTOINSTALL) --packer-template packer/maas/packer.json -- "$${packer_args[@]}" && \
+	http_dir=$$(mktemp -d) || exit 1; \
+	trap '[ "$${KEEP_RENDERED_AUTOINSTALL:-0}" = 1 ] || rm -rf "$$http_dir"' EXIT; \
+	$(RENDER_UBUNTU_AUTOINSTALL) --output-dir "$$http_dir" --packer-template packer/maas/packer.json -- "$${packer_args[@]}" && \
+	packer_args+=( -var "http_directory=$$http_dir" ) && \
 	$(PACKER) validate "$${packer_args[@]}" packer/maas/packer.json
 
 .PHONY: $(MAAS_ARM64_BUILD_TARGETS)
 $(MAAS_ARM64_BUILD_TARGETS): deps-qemu set-ssh-password
 	packer_args=( $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/maas/$(subst build-,,$@).json)" --var="ansible_user_vars=provider=maas" $(ABSOLUTE_PACKER_VAR_FILES) ); \
-	trap '$(RENDER_UBUNTU_AUTOINSTALL) --clean --packer-template packer/maas/packer-arm64.json -- "$${packer_args[@]}"' EXIT; \
-	$(RENDER_UBUNTU_AUTOINSTALL) --packer-template packer/maas/packer-arm64.json -- "$${packer_args[@]}" && \
+	http_dir=$$(mktemp -d) || exit 1; \
+	trap '[ "$${KEEP_RENDERED_AUTOINSTALL:-0}" = 1 ] || rm -rf "$$http_dir"' EXIT; \
+	$(RENDER_UBUNTU_AUTOINSTALL) --output-dir "$$http_dir" --packer-template packer/maas/packer-arm64.json -- "$${packer_args[@]}" && \
+	packer_args+=( -var "http_directory=$$http_dir" ) && \
 	$(PACKER) build "$${packer_args[@]}" packer/maas/packer-arm64.json
 
 .PHONY: $(MAAS_ARM64_VALIDATE_TARGETS)
 $(MAAS_ARM64_VALIDATE_TARGETS): deps-qemu set-ssh-password
 	packer_args=( $(PACKER_NODE_FLAGS) -var-file="$(abspath packer/maas/$(subst validate-,,$@).json)" --var="ansible_user_vars=provider=maas" $(ABSOLUTE_PACKER_VAR_FILES) ); \
-	trap '$(RENDER_UBUNTU_AUTOINSTALL) --clean --packer-template packer/maas/packer-arm64.json -- "$${packer_args[@]}"' EXIT; \
-	$(RENDER_UBUNTU_AUTOINSTALL) --packer-template packer/maas/packer-arm64.json -- "$${packer_args[@]}" && \
+	http_dir=$$(mktemp -d) || exit 1; \
+	trap '[ "$${KEEP_RENDERED_AUTOINSTALL:-0}" = 1 ] || rm -rf "$$http_dir"' EXIT; \
+	$(RENDER_UBUNTU_AUTOINSTALL) --output-dir "$$http_dir" --packer-template packer/maas/packer-arm64.json -- "$${packer_args[@]}" && \
+	packer_args+=( -var "http_directory=$$http_dir" ) && \
 	$(PACKER) validate "$${packer_args[@]}" packer/maas/packer-arm64.json
 
 .PHONY: $(SCALEWAY_BUILD_TARGETS)

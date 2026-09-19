@@ -42,11 +42,9 @@ parallel `make -j` runs cannot render one target's user-data with another
 target's variables.
 
 `ubuntu_repo` and `ubuntu_security_repo` may carry credentials, so this script
-never prints a variable value, and `--clean` undoes the substitution again when
-the build recipe exits. It restores the file as set-ssh-password.sh wrote it,
-kept alongside as `user-data.orig` while the build runs, because another target
-can share the same autoinstall directory. Set KEEP_RENDERED_AUTOINSTALL=1 to
-keep the rendered file for debugging.
+never prints a variable value. Make passes --output-dir for a private HTTP
+copy and removes that copy when Packer exits, unless KEEP_RENDERED_AUTOINSTALL=1.
+The legacy in-place CLI restores its pre-render file with --clean.
 """
 
 import argparse
@@ -54,6 +52,7 @@ import json
 import os
 import pathlib
 import re
+import shutil
 import sys
 
 
@@ -295,11 +294,9 @@ def render_user_data(directory, values):
     user_data = directory / "user-data"
     stash = directory / "user-data.orig"
 
-    # A run killed between the write below and the restore in clean_user_data
-    # leaves the stash behind. Put it back first so the stash always holds
-    # set-ssh-password's output rather than a mirror-substituted file.
-    if stash.is_file():
-        os.replace(stash, user_data)
+    # set-ssh-password has already generated the current build password.
+    # A leftover stash belongs to an earlier build and must never replace it.
+    stash.unlink(missing_ok=True)
 
     # Prefer the already-rendered user-data over the raw .tmpl: set-ssh-password
     # runs first (see the build recipes in the Makefile) and substitutes the real
@@ -368,6 +365,7 @@ def main(argv=None):
     script_args, packer_args = split_argv(sys.argv[1:] if argv is None else argv)
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--packer-template", required=True)
+    parser.add_argument("--output-dir", help="render into a private copy of the HTTP directory")
     parser.add_argument(
         "--clean",
         action="store_true",
@@ -377,11 +375,20 @@ def main(argv=None):
 
     values = resolve_values(args.packer_template, packer_args)
     directory = autoinstall_dir(values)
+    if args.output_dir:
+        http_root = (CAPI_ROOT / interpolate(values.get("http_directory", ""), values)).resolve()
+        output = pathlib.Path(args.output_dir).resolve()
+        if http_root.is_dir():
+            shutil.copytree(http_root, output, dirs_exist_ok=True,
+                            ignore=shutil.ignore_patterns("user-data.orig"))
+        if directory is not None:
+            directory = output / directory.relative_to(http_root)
     if directory is None or not directory.is_dir():
         return
 
     if args.clean:
         if keep_rendered():
+            (directory / "user-data.orig").unlink(missing_ok=True)
             return
         cleaned = clean_user_data(directory)
         if cleaned is not None:

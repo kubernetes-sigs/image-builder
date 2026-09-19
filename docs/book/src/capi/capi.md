@@ -292,30 +292,18 @@ or one listed in `PACKER_VAR_FILES`, never in `PACKER_FLAGS`. Make echoes the
 recipe it runs, and `PACKER_FLAGS` is part of that recipe, so a `--var
 'ubuntu_repo=http://user:password@...'` ends up in the build log.
 
-The renderer itself never prints a variable value, and it restores the
-`user-data` that `hack/set-ssh-password.sh` wrote when the build target exits,
-whether Packer succeeded or not, so the substituted mirror does not stay in the
-work tree. While the target runs, the pre-render file sits next to it as
-`user-data.orig`; both names are git-ignored. Set `KEEP_RENDERED_AUTOINSTALL=1`
-to keep the rendered file for debugging.
+The renderer never prints a mirror value. Each build or validation recipe copies
+its HTTP directory into a private temporary directory, renders only the selected
+autoinstall profile there, and passes that directory to Packer. The temporary
+copy is removed when Packer exits, including on failure. Set
+`KEEP_RENDERED_AUTOINSTALL=1` to retain it for debugging; the renderer prints its
+path. Remove retained copies when finished, since they can contain credentials.
 
-###### Targets that share an autoinstall directory
-
-Several targets are served from the same autoinstall directory, so their
-rendered `user-data` is the same file:
-
-* `build-qemu-<name>` and `build-kubevirt-<name>` (for example
-  `build-qemu-ubuntu-2404` and `build-kubevirt-qemu-ubuntu-2404`), which share
-  `packer/qemu/linux/ubuntu/http/24.04`,
-* `build-proxmox-ubuntu-2404` and `build-proxmox-ubuntu-2404-efi`, and the same
-  pair for 26.04,
-* `build-maas-ubuntu-2404-efi` and `build-qemu-ubuntu-2404-efi`, and the same
-  pair for 26.04.
-
-The Makefile serializes these renderer-backed targets, including their aggregate
-targets, so `make -j` cannot render or restore the shared file underneath a
-different Packer invocation. The renderer still restores the password-substituted
-file when each target exits.
+Targets that share an autoinstall template, including QEMU/KubeVirt and
+Proxmox BIOS/EFI variants, use separate copies. `make -j` can therefore run them
+and other providers in parallel without changing another build's mirrors or
+password. Separate Make processes still need separate checkouts because
+`set-ssh-password.sh` generates the shared Packer templates.
 
 ##### Setting up an HTTP Proxy
 
