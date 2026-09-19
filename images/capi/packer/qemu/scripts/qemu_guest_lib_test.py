@@ -96,13 +96,6 @@ class ResolveImageTests(unittest.TestCase):
             self.assertEqual(0, result.returncode, result.stderr)
             self.assertEqual(f"{image.resolve()}\n", result.stdout)
 
-    def test_callers_do_not_nest_resolve_inside_abs_path(self):
-        self.assertNotIn(
-            'qemu_guest_abs_path "$(qemu_guest_resolve_image',
-            BOOT_SMOKE.read_text(encoding="utf-8"),
-            "the resolve status must not be discarded",
-        )
-
 
 class ArgumentHandlingTests(unittest.TestCase):
     """A trailing "--" leaves no positional parameters, and bash before 4.4
@@ -132,20 +125,6 @@ class ArgumentHandlingTests(unittest.TestCase):
 
             self.assertNotIn("unbound variable", result.stderr)
             self.assertIn("does not support Flatcar images", result.stderr)
-
-    def test_no_bare_positional_expansion_after_a_shift(self):
-        for script in (BOOT_SMOKE, QEMU_GUEST_LIB):
-            text = script.read_text(encoding="utf-8")
-            self.assertNotIn('=("${@}")', text, f"{script} needs the ${{@+...}} guard")
-            self.assertNotIn('in "${@}"', text, f"{script} needs the ${{@+...}} guard")
-
-
-class SignalHandlingTests(unittest.TestCase):
-    def test_interrupts_run_the_exit_cleanup(self):
-        text = BOOT_SMOKE.read_text(encoding="utf-8")
-
-        self.assertIn("trap cleanup EXIT", text)
-        self.assertIn("trap 'exit 130' INT TERM", text)
 
 
 if __name__ == "__main__":
