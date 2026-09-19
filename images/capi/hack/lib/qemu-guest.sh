@@ -48,10 +48,11 @@ qemu_guest_resolve_image() {
   local count
 
   if [[ -d "${input}" ]]; then
-    matches="$(find "${input}" -maxdepth 1 -type f \( -name "*.qcow2" -o -name "*.raw" -o -name "*.img" \) -print | sort)"
+    # Packer's default vm_name has no extension and matches its output directory.
+    matches="$(find "${input}" -maxdepth 1 -type f \( -name "*.qcow2" -o -name "*.raw" -o -name "*.img" -o -name "$(basename "$(cd "${input}" && pwd -P)")" \) -print | sort)"
     count="$(printf '%s\n' "${matches}" | sed '/^$/d' | wc -l | tr -d ' ')"
     if [[ "${count}" != "1" ]]; then
-      echo "expected exactly one *.qcow2, *.raw, or *.img file in ${input}; found ${count}" >&2
+      echo "expected exactly one Packer-named, *.qcow2, *.raw, or *.img file in ${input}; found ${count}" >&2
       return 1
     fi
     printf '%s\n' "${matches}"
