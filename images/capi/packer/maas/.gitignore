@@ -4,3 +4,4 @@ ks.cfg
 preseed.cfg
 preseed-efi.cfg
 user-data
+user-data.orig

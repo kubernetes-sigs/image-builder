@@ -182,3 +182,13 @@ make test-qemu-boot-smoke QEMU_BOOT_SMOKE_IMAGE=/path/to/image.qcow2
 The smoke helper does not support `qemu-flatcar` images because they use
 Ignition instead of cloud-init. Set `QEMU_BOOT_SMOKE_OS=flatcar` when invoking
 the Make target to fail fast before attempting an unsupported SSH check.
+
+Ubuntu autoinstall builds use the `ubuntu_repo` and `ubuntu_security_repo` Packer variables while rendering the installer user-data. For example:
+
+```bash
+PACKER_FLAGS="--var 'ubuntu_repo=http://mirror.example.com/ubuntu' --var 'ubuntu_security_repo=http://security.example.com/ubuntu'" make build-qemu-ubuntu-2404
+```
+
+The user-data is rendered per build target from that target's own Packer
+variables. See the [Ubuntu apt mirror docs](../../../../docs/book/src/capi/capi.md#overriding-the-ubuntu-apt-mirrors)
+for the resolution order and for mirrors that carry credentials.

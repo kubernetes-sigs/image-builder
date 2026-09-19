@@ -6,6 +6,16 @@ To build an image using a specific version of Kubernetes use the "PACKER_FLAGS" 
 PACKER_FLAGS="--var 'kubernetes_rpm_version=1.28.3' --var 'kubernetes_semver=v1.28.3' --var 'kubernetes_series=v1.28' --var 'kubernetes_deb_version=1.28.3-1.1'" make build-proxmox-ubuntu-2204
 ```
 
+Ubuntu autoinstall builds use the `ubuntu_repo` and `ubuntu_security_repo` Packer variables while rendering the installer user-data. For example:
+
+```
+PACKER_FLAGS="--var 'ubuntu_repo=http://mirror.example.com/ubuntu' --var 'ubuntu_security_repo=http://security.example.com/ubuntu'" make build-proxmox-ubuntu-2404
+```
+
+The user-data is rendered per build target from that target's own Packer
+variables. See the [Ubuntu apt mirror docs](../../../../docs/book/src/capi/capi.md#overriding-the-ubuntu-apt-mirrors)
+for the resolution order and for mirrors that carry credentials.
+
 ## ISO files
 
 To use existing ISO files, set the `ISO_FILE` environment variable to the path of the ISO file.
