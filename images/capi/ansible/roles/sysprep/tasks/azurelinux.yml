@@ -24,12 +24,17 @@
   ansible.builtin.set_fact:
     package_list: "{{ ansible_facts.packages.keys() | join(' ') }}"
 
-- name: Exclude packages from tdnf upgrades
-  ansible.builtin.lineinfile:
-    path: /etc/tdnf/tdnf.conf
-    regexp: ^excludepkgs=
-    line: excludepkgs={{ package_list }}
-    insertafter: '^\[main\]$'
+- name: Create tdnf locks directory
+  ansible.builtin.file:
+    path: /etc/tdnf/locks.d
+    state: directory
+    mode: "0755"
+
+- name: Lock installed packages in tdnf
+  ansible.builtin.copy:
+    dest: /etc/tdnf/locks.d/image-builder.conf
+    content: "{{ ansible_facts.packages.keys() | join('\n') }}\n"
+    mode: "0644"
 
 - name: Exclude packages from dnf upgrades
   ansible.builtin.lineinfile:
