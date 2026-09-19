@@ -49,8 +49,10 @@ export PACKER_FLAGS="--var 'kubernetes_rpm_version=1.29.6' --var 'kubernetes_sem
 make build-proxmox-ubuntu-2204
 ```
 
-If different packages are desired then find the available dep packages [here](https://build.opensuse.org/package/revisions/isv:kubernetes:core:shared:build/kubernetes-cni) 
-and [here](https://build.opensuse.org/project/show/isv:kubernetes:core:stable).
+If different Kubernetes packages or CNI plugin tarballs are desired, override the corresponding
+`kubernetes_*` and `kubernetes_cni_*` variables. Kubernetes packages are available
+[here](https://build.opensuse.org/project/show/isv:kubernetes:core:stable), and CNI plugin
+tarballs are available from the [containernetworking/plugins releases](https://github.com/containernetworking/plugins/releases).
 
 If using a proxmox API token the format of the PROXMOX_USERNAME and PROXMOX_TOKEN must look like so:
 
