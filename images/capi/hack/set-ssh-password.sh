@@ -82,3 +82,13 @@ find "$PACKER_DIR" -type f -name "*.tmpl" -print0 | while IFS= read -r -d '' fil
       "$file" > "$rendered"
   echo "rendered $rendered"
 done
+
+# HCL2 templates can't pick up $SSH_PASSWORD/$ENCRYPTED_SSH_PASSWORD via the
+# .tmpl sed substitution above (that's plain text replacement, not something
+# Packer's HCL2 engine does), and the env vars exported above don't survive
+# into the separate shell that runs the actual `packer build`/`validate`
+# recipe line. Write them to a var-file instead, which does survive (Make
+# prerequisites and recipes only share the filesystem, not environment).
+jq -n --arg ssh_password "$SSH_PASSWORD" --arg encrypted_ssh_password "$ENCRYPTED_SSH_PASSWORD" \
+  '{ssh_password: $ssh_password, encrypted_ssh_password: $encrypted_ssh_password}' \
+  > "$PACKER_DIR/ssh-password.auto.pkrvars.json"
