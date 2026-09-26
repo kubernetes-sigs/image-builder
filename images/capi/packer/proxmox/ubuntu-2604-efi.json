@@ -1,6 +1,6 @@
 {
   "bios": "ovmf",
-  "boot_command_prefix": "c<wait>linux /casper/vmlinuz --- autoinstall ds='nocloud-net;s=http://{{ .HTTPIP }}:{{ .HTTPPort }}/26.04/'<enter><wait10s>initrd /casper/initrd<enter><wait10s>boot<enter><wait10s>",
+  "boot_command_prefix": "c<wait>linux /casper/vmlinuz --- autoinstall ds='nocloud-net;s=http://{{ .HTTPIP }}:{{ .HTTPPort }}/26.04.efi/'<enter><wait10s>initrd /casper/initrd<enter><wait10s>boot<enter><wait10s>",
   "build_name": "ubuntu-2604-efi",
   "distribution_version": "2604",
   "distro_name": "ubuntu",
