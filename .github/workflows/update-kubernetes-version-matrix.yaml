@@ -43,7 +43,7 @@ jobs:
             exit 1
           fi
 
-          tracking_pattern='^images/capi/packer/config/kubernetes-version-dependencies/(latest|release-[0-9]+-[0-9]+)/go\.(mod|sum)$'
+          tracking_pattern='^images/capi/packer/config/kubernetes-version-dependencies/(latest|release-[0-9]+-[0-9]+)/(containerd|cni-plugins|runc|kubernetes|cri-tools)/go\.(mod|sum)$'
           invalid_files="$(
             printf '%s\n' "${changed_files}" |
               grep -Ev "${tracking_pattern}" || true
@@ -78,7 +78,7 @@ jobs:
           fi
 
           generated_pattern='^images/capi/packer/config/kubernetes-version-(latest|matrix)\.yaml$'
-          tracking_pattern='^images/capi/packer/config/kubernetes-version-dependencies/(latest|release-[0-9]+-[0-9]+)/go\.(mod|sum)$'
+          tracking_pattern='^images/capi/packer/config/kubernetes-version-dependencies/(latest|release-[0-9]+-[0-9]+)/(containerd|cni-plugins|runc|kubernetes|cri-tools)/go\.(mod|sum)$'
           invalid_files="$(
             git diff --name-only |
               grep -Ev "(${generated_pattern})|(${tracking_pattern})" || true
