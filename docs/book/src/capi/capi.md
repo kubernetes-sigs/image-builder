@@ -148,6 +148,8 @@ Several variables can be used to customize the image build.
 | `containerd_service_url`                                                                                                   | Custom URL for the `containerd.service` unit file. By default image-builder renders the bundled unit template, avoiding a network download during provisioning.                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | `""`                          |
 | `enable_containerd_audit`                                                                                                  | If set to `"true"`, auditd will be configured with containerd specific audit controls.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | `"false"`                     |
 | `kubernetes_enable_automatic_resource_sizing`                                                                              | If set to `"true"`, the kubelet will be configured to automatically size system-reserved for CPU and memory.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | `"false"`                     |
+| `ubuntu_repo`                                                                                                              | Ubuntu apt mirror. Used both by the Ansible `setup` role and, for the Ubuntu autoinstall builds (qemu, maas, proxmox, including the 24.04 immutable target), by the installer's `apt.primary` mirror. See [Overriding the Ubuntu apt mirrors](#overriding-the-ubuntu-apt-mirrors).                                                                                          | `"http://us.archive.ubuntu.com/ubuntu"` |
+| `ubuntu_security_repo`                                                                                                     | Ubuntu apt security mirror, applied in the same places as `ubuntu_repo`.                                                                                                                                                                                                                                                                                                  | `"http://security.ubuntu.com/ubuntu"` |
 
 The variables found in `packer/config/*.json` or `packer/<provider>/*.json` should not need to be modified directly. For customization it is better to create a JSON file with your changes and provide it via the `PACKER_VAR_FILES` environment variable. Variables set in this file will override any previous values. Multiple files can be passed via `PACKER_VAR_FILES`, with the last file taking precedence over any others.
 
@@ -231,6 +233,77 @@ Then, execute the build (using a Photon OVA as an example) with the following:
 ```sh
 PACKER_VAR_FILES=internal_repos.json make build-node-ova-local-photon-5
 ```
+
+##### Overriding the Ubuntu apt mirrors
+
+The `ubuntu_repo` and `ubuntu_security_repo` variables point Ubuntu builds at a
+different apt mirror. They are applied in two places:
+
+* the Ansible `setup` role writes them into the image's apt sources, for every
+  Ubuntu target, and
+* the Ubuntu autoinstall `user-data` of the qemu, maas and proxmox targets,
+  including the 24.04 immutable target, so the installer itself already pulls
+  packages from the mirror.
+
+The 22.04 autoinstall templates carry no `apt` block, so the installer stage of
+the 22.04 targets is not covered by these variables and keeps Ubuntu's default
+mirrors. The Ansible `setup` role still applies them to the built image.
+
+```sh
+PACKER_FLAGS="--var 'ubuntu_repo=http://mirror.example.com/ubuntu' --var 'ubuntu_security_repo=http://mirror.example.com/ubuntu'" make build-qemu-ubuntu-2404
+```
+
+The same values can come from a var file instead:
+
+```json
+{
+  "ubuntu_repo": "http://mirror.example.com/ubuntu",
+  "ubuntu_security_repo": "http://mirror.example.com/ubuntu"
+}
+```
+
+```sh
+PACKER_VAR_FILES=mirror.json make build-qemu-ubuntu-2404
+```
+
+###### Precedence
+
+The autoinstall `user-data` is rendered per build target, from the same
+`-var`/`-var-file` sequence that target hands to Packer, so the mirrors in the
+installer are the mirrors Packer resolves. Packer's order for these templates,
+lowest to highest, is:
+
+1. the `variables` block of `packer/<provider>/packer.json`,
+2. every `-var-file`, in the order it appears on the command line, which for a
+   build target means `packer/config/*.json` first, then any `-var-file` inside
+   `PACKER_FLAGS`, then the target's own `packer/<provider>/<target>.json`, then
+   the files listed in `PACKER_VAR_FILES`,
+3. every `-var`, which wins over every `-var-file` regardless of position.
+
+So a `--var 'ubuntu_repo=...'` in `PACKER_FLAGS` always wins, while a value in
+`PACKER_VAR_FILES` wins over the target's own var file. This matters for the
+targets that ship their own mirrors, such as `build-maas-ubuntu-2404-arm64`,
+which defaults to `http://ports.ubuntu.com/ubuntu-ports`.
+
+###### Mirrors with credentials
+
+Put a mirror URL that carries credentials in a var file, either the target's own
+or one listed in `PACKER_VAR_FILES`, never in `PACKER_FLAGS`. Make echoes the
+recipe it runs, and `PACKER_FLAGS` is part of that recipe, so a `--var
+'ubuntu_repo=http://user:password@...'` ends up in the build log.
+
+The renderer never prints a mirror value. Each build or validation recipe copies
+its HTTP directory into a private temporary directory, renders only the selected
+autoinstall profile there, and passes that directory to Packer. The temporary
+copy is removed when Packer exits, including on failure. Set
+`KEEP_RENDERED_AUTOINSTALL=1` to retain it for debugging; the renderer prints its
+path. Remove retained copies when finished, since they can contain credentials.
+
+Targets that share an autoinstall template, including QEMU/KubeVirt and
+Proxmox BIOS/EFI variants, use separate copies. `make -j` can therefore run them
+and other providers in parallel without changing another build's mirrors or
+password. Separate Make processes still need separate checkouts because
+`set-ssh-password.sh` generates the shared Packer templates.
 
 ##### Setting up an HTTP Proxy
 
