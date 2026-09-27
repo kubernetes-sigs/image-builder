@@ -1,0 +1,25 @@
+# Copyright 2026 The Kubernetes Authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+---
+systemd_sysext_required: true
+# systemd-sysext search paths that persist in the shipped image. /run/extensions
+# is a systemd search path too, but it lives on tmpfs and cannot be baked in.
+systemd_sysext_directories:
+  - /etc/extensions
+  - /var/lib/extensions
+# Staging area for .raw images that are present on disk but not merged, matching
+# the /opt/extensions/<name> layout the gpu role already uses on Flatcar.
+systemd_sysext_staging_dir: /opt/extensions
+systemd_sysext_service_name: systemd-sysext.service
+systemd_sysext_enable_service: true
