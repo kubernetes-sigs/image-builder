@@ -59,6 +59,21 @@
   retries: 30
   delay: 10
 
+- name: Allow Azure extensions to upgrade curl and its libraries
+  ansible.builtin.shell: |
+    set -o pipefail
+    dpkg-query -f '${binary:Package}\n' -W |
+      grep -E '^(curl|libcurl[0-9][^:]*)($|:)' |
+      xargs apt-mark unhold
+
+  args:
+    executable: /bin/bash
+  register: sysprep_apt_mark_unhold_curl
+  until: sysprep_apt_mark_unhold_curl.rc == 0
+  retries: 30
+  delay: 10
+  when: packer_builder_type.startswith('azure')
+
 - name: Unpin packages with apt-mark for MaaS
   ansible.builtin.shell: |
     set -o pipefail
