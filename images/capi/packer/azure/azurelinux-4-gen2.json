@@ -1,0 +1,10 @@
+{
+  "build_name": "azurelinux-4-gen2",
+  "distribution": "azurelinux",
+  "distribution_release": "azurelinux-4",
+  "distribution_version": "4",
+  "image_offer": "azurelinux-4",
+  "image_publisher": "microsoftazurelinux",
+  "image_sku": "4",
+  "os_disk_size_gb": "20"
+}
