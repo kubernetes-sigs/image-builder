@@ -61,6 +61,14 @@ space, which must be large enough for `/var/lib/containerd`, kubelet state,
 logs, and bootstrap data. Increase `disk_size` when the workload or provider
 needs more writable runtime capacity.
 
+## Apt mirrors
+
+The autoinstall `user-data` of this target takes its `apt.primary` and
+`apt.security` mirrors from the `ubuntu_repo` and `ubuntu_security_repo` Packer
+variables, the same as the other Ubuntu autoinstall targets. See
+[Overriding the Ubuntu apt mirrors](./capi.md#overriding-the-ubuntu-apt-mirrors)
+for the resolution order and for how mirrors that carry credentials are handled.
+
 ## Validation
 
 Run the focused local checks after changing this target:

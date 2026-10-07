@@ -12,67 +12,6 @@ The Image Builder can be used to build images intended for use with Kubernetes [
 
 If any needed binaries are not present, they can be installed to `images/capi/.bin` with the `make deps` command. This directory will need to be added to your `$PATH`.
 
-## Ansible Galaxy configuration
-
-`make deps` installs the Ansible collections the playbooks need with
-`ansible-galaxy`. Environments that use a Galaxy mirror or a private Automation
-Hub configure this with ansible-core's own settings, either in
-`images/capi/ansible.cfg` (picked up because the `make` targets run from
-`images/capi`) or with the equivalent environment variables. The server list
-format and the per-server keys are described in
-[Configuring the ansible-galaxy client](https://docs.ansible.com/ansible/latest/collections_guide/collections_installing.html#configuring-the-ansible-galaxy-client);
-the settings themselves are in the
-[ansible-core configuration reference](https://docs.ansible.com/ansible/latest/reference_appendices/config.html).
-
-| Setting | `ansible.cfg` | Environment variable |
-|---------|---------------|----------------------|
-| [`GALAXY_SERVER`](https://docs.ansible.com/ansible/latest/reference_appendices/config.html#galaxy-server): default Galaxy server URL, ignored once `server_list` is set | `[galaxy] server` | `ANSIBLE_GALAXY_SERVER` |
-| [`GALAXY_SERVER_LIST`](https://docs.ansible.com/ansible/latest/reference_appendices/config.html#galaxy-server-list): named servers to query, in resolution order | `[galaxy] server_list` | `ANSIBLE_GALAXY_SERVER_LIST` |
-| [Per-server keys](https://docs.ansible.com/ansible/latest/collections_guide/collections_installing.html#configuring-the-ansible-galaxy-client): `url`, `token`, `username`, `password`, `auth_url`, `client_id`, `validate_certs`, `timeout` | `[galaxy_server.<name>]` | `ANSIBLE_GALAXY_SERVER_<NAME>_URL`, `ANSIBLE_GALAXY_SERVER_<NAME>_TOKEN`, ... |
-| [`GALAXY_IGNORE_CERTS`](https://docs.ansible.com/ansible/latest/reference_appendices/config.html#galaxy-ignore-certs): do not validate TLS certificates | `[galaxy] ignore_certs` | `ANSIBLE_GALAXY_IGNORE` |
-| [`GALAXY_SERVER_TIMEOUT`](https://docs.ansible.com/ansible/latest/reference_appendices/config.html#galaxy-server-timeout): default API timeout in seconds | `[galaxy] server_timeout` | `ANSIBLE_GALAXY_SERVER_TIMEOUT` |
-| [`GALAXY_TOKEN_PATH`](https://docs.ansible.com/ansible/latest/reference_appendices/config.html#galaxy-token-path): local access token file for the default server | `[galaxy] token_path` | `ANSIBLE_GALAXY_TOKEN_PATH` |
-| [`COLLECTIONS_PATHS`](https://docs.ansible.com/ansible/latest/reference_appendices/config.html#collections-paths): where collections are installed and looked up | `[defaults] collections_path` | `ANSIBLE_COLLECTIONS_PATH` |
-
-`<NAME>` is the upper-cased `server_list` entry, so the server `myhub` reads
-`ANSIBLE_GALAXY_SERVER_MYHUB_URL` and friends.
-
-A private Automation Hub needs `server_list`, because the per-server
-credentials only exist there. A self-hosted hub usually needs no more than a
-URL and a token:
-
-```bash
-export ANSIBLE_GALAXY_SERVER_LIST=myhub
-export ANSIBLE_GALAXY_SERVER_MYHUB_URL=https://hub.example.com/api/galaxy/content/published/
-export ANSIBLE_GALAXY_SERVER_MYHUB_TOKEN=<token>
-make deps
-```
-
-A hub that authenticates against Red Hat SSO needs `_AUTH_URL` on top, with an
-offline token in `_TOKEN`. `_CLIENT_ID` defaults to `cloud-services`:
-
-```bash
-export ANSIBLE_GALAXY_SERVER_MYHUB_AUTH_URL=https://sso.redhat.com/auth/realms/redhat-external/protocol/openid-connect/token
-```
-
-A few things worth knowing:
-
-* Setting `server_list` makes ansible-core ignore `[galaxy] server`. Passing a
-  URL to `ansible-galaxy --server` ignores `server_list` too, and drops the
-  per-server credentials with it; passing the name of a `server_list` entry
-  selects that entry with its configuration.
-* `ANSIBLE_COLLECTIONS_PATH` is both the install destination (its first entry)
-  and the runtime search path, so a custom path needs no further wiring.
-* Keep tokens for `server_list` entries in
-  `ANSIBLE_GALAXY_SERVER_<NAME>_TOKEN`; `ANSIBLE_GALAXY_TOKEN_PATH` applies only
-  to the default `server`. `--token` (`--api-key`) would expose tokens in the
-  process arguments, and it is ignored for servers defined in `server_list`.
-* ansible-core 2.19 and later also accept
-  `ANSIBLE_GALAXY_SERVER_<NAME>_CLIENT_SECRET` for a Keycloak service account;
-  the pinned 2.18 version does not support this setting.
-* The GCE CI scripts forward every `ANSIBLE_*` variable to the unprivileged
-  user that runs the build.
-
 ## Providers
 
 * [AWS](./providers/aws.md)
@@ -148,6 +87,8 @@ Several variables can be used to customize the image build.
 | `containerd_service_url`                                                                                                   | Custom URL for the `containerd.service` unit file. By default image-builder renders the bundled unit template, avoiding a network download during provisioning.                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | `""`                          |
 | `enable_containerd_audit`                                                                                                  | If set to `"true"`, auditd will be configured with containerd specific audit controls.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | `"false"`                     |
 | `kubernetes_enable_automatic_resource_sizing`                                                                              | If set to `"true"`, the kubelet will be configured to automatically size system-reserved for CPU and memory.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | `"false"`                     |
+| `ubuntu_repo`                                                                                                              | Ubuntu apt mirror. Used both by the Ansible `setup` role and, for the Ubuntu autoinstall builds (qemu, maas, proxmox, including the 24.04 immutable target), by the installer's `apt.primary` mirror. See [Overriding the Ubuntu apt mirrors](#overriding-the-ubuntu-apt-mirrors).                                                                                          | `"http://us.archive.ubuntu.com/ubuntu"` |
+| `ubuntu_security_repo`                                                                                                     | Ubuntu apt security mirror, applied in the same places as `ubuntu_repo`.                                                                                                                                                                                                                                                                                                  | `"http://security.ubuntu.com/ubuntu"` |
 
 The variables found in `packer/config/*.json` or `packer/<provider>/*.json` should not need to be modified directly. For customization it is better to create a JSON file with your changes and provide it via the `PACKER_VAR_FILES` environment variable. Variables set in this file will override any previous values. Multiple files can be passed via `PACKER_VAR_FILES`, with the last file taking precedence over any others.
 
@@ -231,6 +172,90 @@ Then, execute the build (using a Photon OVA as an example) with the following:
 ```sh
 PACKER_VAR_FILES=internal_repos.json make build-node-ova-local-photon-5
 ```
+
+##### Overriding the Ubuntu apt mirrors
+
+The `ubuntu_repo` and `ubuntu_security_repo` variables point Ubuntu builds at a
+different apt mirror. They are applied in two places:
+
+* the Ansible `setup` role writes them into the image's apt sources, for every
+  Ubuntu target, and
+* the Ubuntu autoinstall `user-data` of the qemu, maas and proxmox targets,
+  including the 24.04 immutable target, so the installer itself already pulls
+  packages from the mirror.
+
+The 22.04 autoinstall templates carry no `apt` block, so the installer stage of
+the 22.04 targets is not covered by these variables and keeps Ubuntu's default
+mirrors. The Ansible `setup` role still applies them to the built image.
+
+```sh
+PACKER_FLAGS="--var 'ubuntu_repo=http://mirror.example.com/ubuntu' --var 'ubuntu_security_repo=http://mirror.example.com/ubuntu'" make build-qemu-ubuntu-2404
+```
+
+The same values can come from a var file instead:
+
+```json
+{
+  "ubuntu_repo": "http://mirror.example.com/ubuntu",
+  "ubuntu_security_repo": "http://mirror.example.com/ubuntu"
+}
+```
+
+```sh
+PACKER_VAR_FILES=mirror.json make build-qemu-ubuntu-2404
+```
+
+###### Precedence
+
+The autoinstall `user-data` is rendered per build target, from the same
+`-var`/`-var-file` sequence that target hands to Packer, so the mirrors in the
+installer are the mirrors Packer resolves. Packer's order for these templates,
+lowest to highest, is:
+
+1. the `variables` block of `packer/<provider>/packer.json`,
+2. every `-var-file`, in the order it appears on the command line, which for a
+   build target means `packer/config/*.json` first, then any `-var-file` inside
+   `PACKER_FLAGS`, then the target's own `packer/<provider>/<target>.json`, then
+   the files listed in `PACKER_VAR_FILES`,
+3. every `-var`, which wins over every `-var-file` regardless of position.
+
+So a `--var 'ubuntu_repo=...'` in `PACKER_FLAGS` always wins, while a value in
+`PACKER_VAR_FILES` wins over the target's own var file. This matters for the
+targets that ship their own mirrors, such as `build-maas-ubuntu-2404-arm64`,
+which defaults to `http://ports.ubuntu.com/ubuntu-ports`.
+
+###### Mirrors with credentials
+
+Put a mirror URL that carries credentials in a var file, either the target's own
+or one listed in `PACKER_VAR_FILES`, never in `PACKER_FLAGS`. Make echoes the
+recipe it runs, and `PACKER_FLAGS` is part of that recipe, so a `--var
+'ubuntu_repo=http://user:password@...'` ends up in the build log.
+
+The renderer itself never prints a variable value, and it restores the
+`user-data` that `hack/set-ssh-password.sh` wrote when the build target exits,
+whether Packer succeeded or not, so the substituted mirror does not stay in the
+work tree. While the target runs, the pre-render file sits next to it as
+`user-data.orig`; both names are git-ignored. Set `KEEP_RENDERED_AUTOINSTALL=1`
+to keep the rendered file for debugging.
+
+###### Targets that share an autoinstall directory
+
+Several targets are served from the same autoinstall directory, so their
+rendered `user-data` is the same file:
+
+* `build-qemu-<name>` and `build-kubevirt-<name>` (for example
+  `build-qemu-ubuntu-2404` and `build-kubevirt-qemu-ubuntu-2404`), which share
+  `packer/qemu/linux/ubuntu/http/24.04`,
+* `build-proxmox-ubuntu-2404` and `build-proxmox-ubuntu-2404-efi`, and the same
+  pair for 26.04,
+* `build-maas-ubuntu-2404-efi` and `build-qemu-ubuntu-2404-efi`, and the same
+  pair for 26.04.
+
+Run such targets one after another, not in the same `make -j` invocation. In
+parallel they render and restore the one file underneath each other, so a build
+can be served another target's mirrors or lose the file while Packer is still
+serving it. Sequential runs, including a plain `make build-qemu-all`, are
+unaffected.
 
 ##### Setting up an HTTP Proxy
 
