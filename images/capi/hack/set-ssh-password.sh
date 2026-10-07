@@ -18,7 +18,7 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-PACKER_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../packer" && pwd -P)"
+PACKER_DIR="${PACKER_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../packer" && pwd -P)}"
 
 openssl_binary=openssl11
 if ! command -v $openssl_binary >/dev/null 2>&1; then
