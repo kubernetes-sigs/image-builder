@@ -45,47 +45,21 @@
   when: "'unattended-upgrades' in ansible_facts.packages"
 
 # The apt-daily/unattended-upgrades services may still be running from before
-# they were disabled above. Retry the apt-mark calls until the dpkg frontend
+# they were disabled above. Retry the apt-mark call until the dpkg frontend
 # lock is released to avoid a flaky race with concurrent apt activity.
-- name: Pin all installed packages with apt-mark
-  ansible.builtin.shell: |
-    set -o pipefail
-    dpkg-query -f '${binary:Package}\n' -W | xargs apt-mark hold
-
-  args:
-    executable: /bin/bash
-  register: sysprep_apt_mark_hold
-  until: sysprep_apt_mark_hold.rc == 0
+- name: Hold Kubernetes packages
+  ansible.builtin.command:
+    argv:
+      - apt-mark
+      - hold
+      - kubeadm
+      - kubectl
+      - kubelet
+  register: sysprep_apt_mark_hold_kubernetes
+  until: sysprep_apt_mark_hold_kubernetes.rc == 0
   retries: 30
   delay: 10
-
-- name: Allow Azure extensions to upgrade curl and its libraries
-  ansible.builtin.shell: |
-    set -o pipefail
-    dpkg-query -f '${binary:Package}\n' -W |
-      grep -E '^(curl|libcurl[0-9][^:]*)($|:)' |
-      xargs apt-mark unhold
-
-  args:
-    executable: /bin/bash
-  register: sysprep_apt_mark_unhold_curl
-  until: sysprep_apt_mark_unhold_curl.rc == 0
-  retries: 30
-  delay: 10
-  when: packer_builder_type.startswith('azure')
-
-- name: Unpin packages with apt-mark for MaaS
-  ansible.builtin.shell: |
-    set -o pipefail
-    dpkg-query -f '${binary:Package}\n' -W | grep -E '^linux-|^grub|^initramfs' | xargs apt-mark unhold
-
-  args:
-    executable: /bin/bash
-  register: sysprep_apt_mark_unhold_grub
-  until: sysprep_apt_mark_unhold_grub.rc == 0
-  retries: 30
-  delay: 10
-  when: provider is defined and provider is search('maas')
+  when: kubernetes_source_type == "pkg"
 
 - name: Remove extra repos
   ansible.builtin.file:
