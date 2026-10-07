@@ -46,12 +46,11 @@ SALT=$(LC_ALL=C tr -dc A-Za-z0-9 </dev/urandom | head -c 16; echo)
 export ENCRYPTED_SSH_PASSWORD=$($openssl_binary passwd -6 -salt $SALT -stdin <<< $SSH_PASSWORD)
 
 for file in $(find $PACKER_DIR -type f -name "*.tmpl"); do
-  if [ -f "${file%.*}" ]; then
-    # HACK: There seems to be a case where this can actually
-    # fail with the file not being found, leading to test failures.
-    # If we fail to remove the file we just continue and assume
-    # that the file was already removed.
-    rm ${file%.*} || true
+  rendered=${file%.*}
+  temporary=$(mktemp "${rendered}.tmp.XXXXXX")
+  if ! sed -e "s|\$SSH_PASSWORD|$SSH_PASSWORD|g" -e "s|\$ENCRYPTED_SSH_PASSWORD|$ENCRYPTED_SSH_PASSWORD|g" "$file" > "$temporary"; then
+    rm -f "$temporary"
+    exit 1
   fi
-  sed -e "s|\$SSH_PASSWORD|$SSH_PASSWORD|g" -e "s|\$ENCRYPTED_SSH_PASSWORD|$ENCRYPTED_SSH_PASSWORD|g" $file | tee ${file%.*}
+  mv "$temporary" "$rendered"
 done
