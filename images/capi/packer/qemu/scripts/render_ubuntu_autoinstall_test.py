@@ -265,16 +265,19 @@ class MirrorRenderingTests(RendererTestCase):
         directory = self.write_profile("packer/qemu/linux/ubuntu/http/24.04", MIRROR_TEMPLATE)
         user_data = directory / "user-data"
         # As if a run had been killed after writing the rendered file.
+        (directory / "user-data.orig").write_text(SET_SSH_PASSWORD_OUTPUT, encoding="utf-8")
         user_data.write_text(
             SET_SSH_PASSWORD_OUTPUT.replace("$UBUNTU_REPO", "http://stale/ubuntu"),
             encoding="utf-8",
         )
-        (directory / "user-data.orig").write_text(SET_SSH_PASSWORD_OUTPUT, encoding="utf-8")
 
         self.renderer.render_user_data(directory, dict(MIRRORS))
         self.renderer.clean_user_data(directory)
 
-        self.assertEqual(SET_SSH_PASSWORD_OUTPUT, user_data.read_text(encoding="utf-8"))
+        self.assertEqual(
+            SET_SSH_PASSWORD_OUTPUT.replace("$UBUNTU_REPO", "http://stale/ubuntu"),
+            user_data.read_text(encoding="utf-8"),
+        )
 
     def test_unsubstituted_password_placeholder_is_refused(self):
         directory = self.write_profile(
@@ -457,11 +460,11 @@ class MainTests(RendererTestCase):
 
     def test_clean_keeps_the_rendered_user_data_on_request(self):
         self.run_main()
-
         with mock.patch.dict(os.environ, {"KEEP_RENDERED_AUTOINSTALL": "1"}):
             self.run_main("--clean")
 
         self.assertTrue((self.directory / "user-data").exists())
+        self.assertFalse((self.directory / "user-data.orig").exists())
 
     def test_nothing_is_printed_that_could_expose_a_mirror_credential(self):
         self.packer_args += ["--var", "ubuntu_repo=http://user:pass@mirror.example.com/ubuntu"]

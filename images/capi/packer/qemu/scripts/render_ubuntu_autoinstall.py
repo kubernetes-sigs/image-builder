@@ -295,11 +295,14 @@ def render_user_data(directory, values):
     user_data = directory / "user-data"
     stash = directory / "user-data.orig"
 
-    # A run killed between the write below and the restore in clean_user_data
-    # leaves the stash behind. Put it back first so the stash always holds
-    # set-ssh-password's output rather than a mirror-substituted file.
-    if stash.is_file():
-        os.replace(stash, user_data)
+    # A previous interrupted run can leave a stale stash behind. The current
+    # user-data was written by set-ssh-password after that stash, so discard it;
+    # a stash newer than user-data belongs to this renderer and is restored.
+    if stash.is_file() and user_data.is_file():
+        if stash.stat().st_mtime_ns <= user_data.stat().st_mtime_ns:
+            stash.unlink()
+        else:
+            os.replace(stash, user_data)
 
     # Prefer the already-rendered user-data over the raw .tmpl: set-ssh-password
     # runs first (see the build recipes in the Makefile) and substitutes the real
@@ -382,6 +385,8 @@ def main(argv=None):
 
     if args.clean:
         if keep_rendered():
+            stash = directory / "user-data.orig"
+            stash.unlink(missing_ok=True)
             return
         cleaned = clean_user_data(directory)
         if cleaned is not None:
