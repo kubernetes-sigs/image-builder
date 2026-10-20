@@ -18,7 +18,7 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-PACKER_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../packer" && pwd -P)"
+PACKER_DIR="${PACKER_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../packer" && pwd -P)}"
 
 openssl_binary=openssl11
 if ! command -v $openssl_binary >/dev/null 2>&1; then
@@ -43,52 +43,14 @@ fi
 
 export SSH_PASSWORD=${SSH_PASSWORD:-"$(LC_ALL=C tr -dc A-Za-z0-9 </dev/urandom | head -c 16; echo)"}
 SALT=$(LC_ALL=C tr -dc A-Za-z0-9 </dev/urandom | head -c 16; echo)
-ENCRYPTED_SSH_PASSWORD=$($openssl_binary passwd -6 -salt "$SALT" -stdin <<< "$SSH_PASSWORD")
-export ENCRYPTED_SSH_PASSWORD
+export ENCRYPTED_SSH_PASSWORD=$($openssl_binary passwd -6 -salt $SALT -stdin <<< $SSH_PASSWORD)
 
-# The values are injected with sed, so every character that is special in a sed
-# replacement has to be escaped first: a backslash, an ampersand (the whole
-# match) and the "|" delimiter. A newline cannot be escaped this way, so reject
-# it instead of silently producing a broken template.
-if [[ "$SSH_PASSWORD" == *$'\n'* ]]; then
-  echo "SSH_PASSWORD must not contain a newline" 1>&2
-  exit 1
-fi
-
-# escape_sed_replacement prints its argument escaped for use as the replacement
-# text of a "s|...|...|" expression.
-escape_sed_replacement() {
-  printf '%s' "$1" | sed -e 's/[|&\\]/\\&/g'
-}
-
-escaped_ssh_password=$(escape_sed_replacement "$SSH_PASSWORD")
-escaped_encrypted_ssh_password=$(escape_sed_replacement "$ENCRYPTED_SSH_PASSWORD")
-
-# The rendered files are written with a redirect rather than piped through tee:
-# they contain the plaintext password, the password hash and whatever other
-# credentials a template carries, and tee would copy all of it into the build
-# log. Only the path of each rendered file is printed.
-find "$PACKER_DIR" -type f -name "*.tmpl" -print0 | while IFS= read -r -d '' file; do
+for file in $(find $PACKER_DIR -type f -name "*.tmpl"); do
   rendered=${file%.*}
-  if [ -f "$rendered" ]; then
-    # HACK: There seems to be a case where this can actually
-    # fail with the file not being found, leading to test failures.
-    # If we fail to remove the file we just continue and assume
-    # that the file was already removed.
-    rm "$rendered" || true
+  temporary=$(mktemp "${rendered}.tmp.XXXXXX")
+  if ! sed -e "s|\$SSH_PASSWORD|$SSH_PASSWORD|g" -e "s|\$ENCRYPTED_SSH_PASSWORD|$ENCRYPTED_SSH_PASSWORD|g" "$file" > "$temporary"; then
+    rm -f "$temporary"
+    exit 1
   fi
-  sed -e "s|\$SSH_PASSWORD|$escaped_ssh_password|g" \
-      -e "s|\$ENCRYPTED_SSH_PASSWORD|$escaped_encrypted_ssh_password|g" \
-      "$file" > "$rendered"
-  echo "rendered $rendered"
+  mv "$temporary" "$rendered"
 done
-
-# HCL2 templates can't pick up $SSH_PASSWORD/$ENCRYPTED_SSH_PASSWORD via the
-# .tmpl sed substitution above (that's plain text replacement, not something
-# Packer's HCL2 engine does), and the env vars exported above don't survive
-# into the separate shell that runs the actual `packer build`/`validate`
-# recipe line. Write them to a var-file instead, which does survive (Make
-# prerequisites and recipes only share the filesystem, not environment).
-jq -n --arg ssh_password "$SSH_PASSWORD" --arg encrypted_ssh_password "$ENCRYPTED_SSH_PASSWORD" \
-  '{ssh_password: $ssh_password, encrypted_ssh_password: $encrypted_ssh_password}' \
-  > "$PACKER_DIR/ssh-password.auto.pkrvars.json"
