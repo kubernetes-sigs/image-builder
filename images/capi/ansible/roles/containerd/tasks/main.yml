@@ -282,19 +282,76 @@
   when: containerd_wasm_shims_runtimes | length > 0
   loop: "{{ containerd_wasm_shims_runtimes | split(',') }}"
 
+# Newer gvisor releases (>= 20260831) only publish gvisor.tar.bz2 and gvisor.tar.zstd, older ones
+# publish runsc and containerd-shim-runsc-v1 as standalone binaries.
+- name: Check whether the gvisor release ships a gvisor.tar.bz2 bundle
+  ansible.builtin.uri:
+    url: "{{ containerd_gvisor_url }}.sha512"
+    method: HEAD
+    status_code: [200, 404]
+  when: containerd_gvisor_runtime | bool
+  register: containerd_gvisor_bundle
+  until: containerd_gvisor_bundle is not failed
+  retries: 5
+  delay: 3
+
+- name: Ensure bzip2 is installed to unpack the gvisor bundle
+  ansible.builtin.package:
+    name: bzip2
+    state: present
+  when:
+    - containerd_gvisor_runtime | bool
+    - containerd_gvisor_bundle.status == 200
+    - ansible_facts['os_family'] != "Flatcar"
+
+- name: Download gvisor
+  ansible.builtin.get_url:
+    url: "{{ containerd_gvisor_url }}"
+    checksum: sha512:{{ containerd_gvisor_url }}.sha512
+    dest: /tmp/{{ containerd_gvisor_filename }}
+    mode: "0600"
+  register: containerd_gvisor_download
+  until: containerd_gvisor_download is not failed
+  retries: 5
+  delay: 3
+  when:
+    - containerd_gvisor_runtime | bool
+    - containerd_gvisor_bundle.status == 200
+
+- name: Unpack gvisor
+  ansible.builtin.unarchive:
+    remote_src: true
+    src: /tmp/{{ containerd_gvisor_filename }}
+    dest: "{{ sysusr_prefix }}/bin"
+    extra_opts:
+      - --no-overwrite-dir
+  when:
+    - containerd_gvisor_runtime | bool
+    - containerd_gvisor_bundle.status == 200
+
+- name: Delete gvisor bundle
+  ansible.builtin.file:
+    path: /tmp/{{ containerd_gvisor_filename }}
+    state: absent
+  when:
+    - containerd_gvisor_runtime | bool
+    - containerd_gvisor_bundle.status == 200
+
+# Download and install runsc for gvisor standalone binaries for versions < 20260831
 - name: Download runsc for gvisor
   ansible.builtin.get_url:
     dest: "{{ sysusr_prefix }}/bin/{{ item }}"
-    url: https://storage.googleapis.com/gvisor/releases/release/{{ containerd_gvisor_version }}/{{ ansible_facts['architecture'] }}/{{ item }}
+    url: "{{ containerd_gvisor_baseurl }}/{{ item }}"
     mode: "0755"
     owner: root
     group: root
-    checksum: >-
-      sha512:https://storage.googleapis.com/gvisor/releases/release/{{ containerd_gvisor_version }}/{{ ansible_facts['architecture'] }}/{{ item }}.sha512
+    checksum: sha512:{{ containerd_gvisor_baseurl }}/{{ item }}.sha512
   loop:
     - runsc
     - containerd-shim-runsc-v1
-  when: containerd_gvisor_runtime | bool
+  when:
+    - containerd_gvisor_runtime | bool
+    - containerd_gvisor_bundle.status != 200
   register: containerd_gvisor_download
   until: containerd_gvisor_download is not failed
   retries: 5
