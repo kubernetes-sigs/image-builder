@@ -46,6 +46,7 @@ Corresponding env variables
 | Variable              | Description                                                    | Default                             |
 |-----------------------|----------------------------------------------------------------|-------------------------------------|
 | `force_deregister`    | Allow output image override if already exists.                 | `false`                             |
+| `image_categories`    | List of Prism categories (`key`/`value` objects) to assign to the output image. Linux builds only. | `[]`                |
 | `image_delete`        | Delete image once entire build process is completed.           | `false`                             |
 | `image_export`        | Export raw image in the current folder.                        | `false`                             |
 | `image_name`          | Name of the output image.                                      | `BUILD_NAME-kube-KUBERNETES_SEMVER` |
@@ -55,6 +56,19 @@ Corresponding env variables
 
 :warning: If you are using a recent `OpenSSH_9` version, adding the `-O` value in `scp_extra_vars` may be necessary for servers that do not implement a recent SFTP protocol.
 
+
+For example, to assign categories to the output image, add the following to your variables file:
+
+```json
+{
+  "image_categories": [
+    {"key": "Environment", "value": "Dev"},
+    {"key": "Team", "value": "Platform"}
+  ]
+}
+```
+
+The categories must already exist in Prism Central. When `image_categories` is not set, no categories are assigned.
 
 ## Customizing the Build Process
 
