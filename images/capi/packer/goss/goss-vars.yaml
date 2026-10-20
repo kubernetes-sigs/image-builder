@@ -298,7 +298,7 @@ rockylinux:
     package:
       open-vm-tools:
       cloud-init:
-      cloud-utils:
+      cloud-utils-growpart:
     os_version:
     - distro_version: "9"
       package:
