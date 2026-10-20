@@ -639,6 +639,10 @@ $(QEMU_VALIDATE_TARGETS): deps-qemu set-ssh-password
 test-qemu-immutable: ## Runs immutable QEMU helper unit tests
 	python3 -m unittest discover -s packer/qemu/scripts -p '*_test.py'
 
+.PHONY: test-sysext
+test-sysext: ## Runs the systemd-sysext layer helper smoke test
+	sysext/test-build-sysext-layer.sh
+
 validate-qemu-ubuntu-2404-immutable: test-qemu-immutable
 
 .PHONY: $(QEMU_KUBEVIRT_BUILD_TARGETS)
@@ -1016,7 +1020,8 @@ validate-vultr-all: $(VULTR_VALIDATE_TARGETS) ## Validates all Vultr Snapshot Pa
 
 validate-scaleway-all: $(SCALEWAY_VALIDATE_TARGETS) ## Validates all Scaleway Cloud Packer config
 
-validate-all: validate-ami-all \
+validate-all: test-sysext \
+	validate-ami-all \
 	validate-azure-all \
 	validate-do-all \
 	validate-gce-all \
