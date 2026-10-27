@@ -185,27 +185,7 @@ the Make target to fail fast before attempting an unsupported SSH check.
 
 ## Node conformance
 
-`hack/qemu-node-conformance.sh` runs the Kubernetes `e2e_node.test` conformance
-subset against an already built image. Like the boot smoke test it boots a
-throwaway copy-on-write overlay with a temporary NoCloud seed ISO, so the built
-artifact is only ever read from and cannot end up carrying conformance state:
-
-```bash
-make test-qemu-node-conformance QEMU_NODE_CONFORMANCE_IMAGE=output/ubuntu-2404-kube-v1.33.0
-```
-
-The hook downloads the `e2e_node.test` binary matching the kubelet in the image.
-Results are copied back into a fresh timestamped subdirectory of
-`node-conformance-results/` before the exit status is evaluated; nothing under
-that directory is removed, so runs accumulate side by side.
-
-Flatcar targets are excluded because they use Ignition rather than cloud-init
-and remove the SSH user before shutdown. Set `QEMU_IMAGE_OS=flatcar` to fail
-fast.
-
-Node conformance is opt-in and is not wired into required CI. It is intended for
-release or periodic image validation jobs where the added runtime is acceptable,
-not for every local or presubmit image build.
-
-See [Kubernetes Node Conformance](../../../../docs/book/src/capi/node-conformance.md)
-for the full list of configuration variables.
+`make test-qemu-node-conformance QEMU_NODE_CONFORMANCE_IMAGE=output/<build>` runs
+the Kubernetes `e2e_node.test` conformance subset against a built image from a
+throwaway overlay, so the artifact itself is never modified. See
+[Kubernetes Node Conformance](../../../../docs/book/src/capi/node-conformance.md).

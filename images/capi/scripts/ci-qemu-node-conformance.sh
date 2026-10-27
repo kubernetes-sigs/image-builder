@@ -28,9 +28,7 @@ script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 capi_dir="$(cd -- "${script_dir}/.." && pwd)"
 
 target="${NODE_CONFORMANCE_TARGET:-build-qemu-ubuntu-2404-cloudimg}"
-cpus="${QEMU_CPUS:-4}"
-memory="${QEMU_MEMORY:-4096}"
-accelerator="${QEMU_ACCELERATOR:-kvm}"
+export QEMU_ACCELERATOR="${QEMU_ACCELERATOR:-kvm}"
 
 case "${target}" in
 *flatcar*)
@@ -39,7 +37,7 @@ case "${target}" in
   ;;
 esac
 
-if [[ "${accelerator}" == "kvm" && ! -e /dev/kvm ]]; then
+if [[ "${QEMU_ACCELERATOR}" == "kvm" && ! -e /dev/kvm ]]; then
   echo "QEMU_ACCELERATOR=kvm requires /dev/kvm in the CI container." >&2
   echo "Use a nested-virtualization capable runner, or set QEMU_ACCELERATOR=tcg for slow local debugging." >&2
   exit 1
@@ -60,7 +58,4 @@ if [[ "${#output_dirs[@]}" -ne 1 ]]; then
   exit 1
 fi
 
-QEMU_ACCELERATOR="${accelerator}" \
-  QEMU_CPUS="${cpus}" \
-  QEMU_MEMORY="${memory}" \
-  hack/qemu-node-conformance.sh "${output_dirs[0]}"
+hack/qemu-node-conformance.sh "${output_dirs[0]}"

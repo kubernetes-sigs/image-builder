@@ -37,44 +37,8 @@ with a NoCloud seed ISO, the conformance hook is copied in over SSH, results are
 copied back out, and the overlay is discarded. The built image is only ever read
 from, so a conformance run cannot leave test state in the shipped artifact.
 
-Flatcar (qemu-flatcar) images are not supported: Flatcar uses Ignition rather
-than cloud-init, and the build removes the SSH user before shutdown, so the
-guest cannot be reached over SSH.
-
-Environment:
-  QEMU_BINARY                      QEMU binary. Default: qemu-system-x86_64
-  QEMU_IMG                         qemu-img binary. Default: qemu-img
-  QEMU_IMAGE_FORMAT                Backing image format. Default: detected
-  QEMU_ACCELERATOR                 QEMU accelerator. Default: kvm on Linux with
-                                   /dev/kvm, hvf on macOS when the QEMU target
-                                   architecture matches the host, else tcg
-  QEMU_MACHINE                     QEMU machine type. Default: pc
-  QEMU_CPUS                        vCPU count. Default: 4
-  QEMU_MEMORY                      Guest memory in MiB. Default: 4096
-  QEMU_SSH_PORT                    Host port forwarded to guest 22. Default: 2222
-  QEMU_SSH_TIMEOUT                 Seconds to wait for SSH. Default: 900
-  QEMU_SSH_INTERVAL                Seconds between SSH checks. Default: 5
-  QEMU_SSH_USER                    SSH user. Default: capi
-  QEMU_SSH_PRIVATE_KEY             SSH private key. Default: cloudinit/id_rsa.capi
-  QEMU_SSH_PUBLIC_KEY              SSH public key. Default: cloudinit/id_rsa.capi.pub
-  QEMU_IMAGE_OS                    Set to flatcar to fail fast. Default: unset
-  NODE_CONFORMANCE_OUTPUT_DIR      Host directory for downloaded results.
-                                   Default: ${ARTIFACTS} when set, otherwise
-                                   ${capi_dir}/node-conformance-results
-  NODE_CONFORMANCE_RESULTS_DIR     Guest results directory.
-                                   Default: /tmp/kubernetes-node-conformance-results
-  KUBERNETES_VERSION               Version of the test tarball to download.
-                                   Default: detected from the guest kubelet
-  NODE_CONFORMANCE_FOCUS           Ginkgo focus. Default: \[Conformance\]
-  NODE_CONFORMANCE_SKIP            Ginkgo skip. Default: \[Flaky\]|\[Slow\]
-  NODE_CONFORMANCE_PARALLELISM     Ginkgo nodes. Default: 1
-  NODE_CONFORMANCE_FLAKE_ATTEMPTS  Ginkgo flake attempts. Default: 1
-  NODE_CONFORMANCE_TIMEOUT         Ginkgo timeout. Default: 2h
-  NODE_CONFORMANCE_STANDALONE_MODE Run kubelet without a test apiserver.
-                                   Default: false
-  NODE_CONFORMANCE_KUBELET_FLAGS   Extra kubelet flags. Default:
-                                   --fail-swap-on=false
-                                   --runtime-cgroups=/system.slice/containerd.service
+Flatcar images are not supported. Configuration is through environment
+variables, documented in docs/book/src/capi/node-conformance.md.
 EOF
 }
 

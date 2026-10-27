@@ -33,16 +33,6 @@ die() {
   exit 1
 }
 
-is_true() {
-  local value="${1:-false}"
-
-  value="$(printf '%s' "${value}" | tr '[:upper:]' '[:lower:]')"
-  case "${value}" in
-    true | 1 | yes) return 0 ;;
-    *) return 1 ;;
-  esac
-}
-
 require_cmd() {
   command -v "$1" >/dev/null 2>&1 || die "missing required command: $1"
 }
@@ -107,11 +97,10 @@ node_conformance_download() {
 download_kubernetes_tests() {
   local kubernetes_version="$1"
   local go_arch="$2"
-  local tarball_url="${NODE_CONFORMANCE_TARBALL_URL:-https://dl.k8s.io/v${kubernetes_version}/kubernetes-test-linux-${go_arch}.tar.gz}"
-  local download_timeout="${NODE_CONFORMANCE_DOWNLOAD_TIMEOUT:-1800}"
+  local tarball_url="https://dl.k8s.io/v${kubernetes_version}/kubernetes-test-linux-${go_arch}.tar.gz"
 
   log "downloading Kubernetes test tarball: ${tarball_url}"
-  node_conformance_download "${download_timeout}" \
+  node_conformance_download 1800 \
     "${work_dir}/kubernetes-test.tar.gz" "${tarball_url}"
   node_conformance_download 120 \
     "${work_dir}/kubernetes-test.tar.gz.sha256" "${tarball_url}.sha256"
@@ -128,45 +117,11 @@ download_kubernetes_tests() {
   chmod +x "${e2e_node_test}" "${ginkgo_bin}"
 }
 
-runtime_endpoint() {
-  local sock
-
-  for sock in \
-    /run/containerd/containerd.sock \
-    /var/run/containerd/containerd.sock \
-    /var/run/crio/crio.sock; do
-    if [[ -S "${sock}" ]]; then
-      printf 'unix://%s\n' "${sock}"
-      return
-    fi
-  done
-
-  die "no CRI runtime socket found"
-}
-
-runtime_process_name() {
-  local runtime_binary
-
-  case "$1" in
-    unix:///run/containerd/containerd.sock | unix:///var/run/containerd/containerd.sock)
-      runtime_binary="$(command -v containerd || true)"
-      printf '%s\n' "${runtime_binary:-/usr/local/bin/containerd}"
-      ;;
-    unix:///var/run/crio/crio.sock)
-      runtime_binary="$(command -v crio || true)"
-      printf '%s\n' "${runtime_binary:-/usr/bin/crio}"
-      ;;
-    *)
-      printf 'containerd\n'
-      ;;
-  esac
-}
-
-ensure_container_runtime() {
-  if command -v systemctl >/dev/null 2>&1; then
-    sudo systemctl start containerd >/dev/null 2>&1 || true
-    sudo systemctl start crio >/dev/null 2>&1 || true
-  fi
+# image-builder images ship containerd only.
+start_containerd() {
+  sudo systemctl start containerd
+  [[ -S /run/containerd/containerd.sock ]] ||
+    die "containerd socket /run/containerd/containerd.sock not found"
 }
 
 ensure_cni_config() {
@@ -227,10 +182,6 @@ stop_system_kubelet() {
 }
 
 run_e2e_node() {
-  local endpoint="$1"
-  local process_name="$2"
-  local node_name="${NODE_CONFORMANCE_NODE_NAME:-$(hostname)}"
-  local k8s_bin_dir="${NODE_CONFORMANCE_K8S_BIN_DIR:-/usr/bin}"
   local focus="${NODE_CONFORMANCE_FOCUS:-\\[Conformance\\]}"
   local skip="${NODE_CONFORMANCE_SKIP:-\\[Flaky\\]|\\[Slow\\]}"
   local timeout="${NODE_CONFORMANCE_TIMEOUT:-2h}"
@@ -252,17 +203,17 @@ run_e2e_node() {
   )
 
   test_args=(
-    "--node-name=${node_name}"
-    "--k8s-bin-dir=${k8s_bin_dir}"
-    "--container-runtime-endpoint=${endpoint}"
-    "--container-runtime-process-name=${process_name}"
+    "--node-name=$(hostname)"
+    "--k8s-bin-dir=/usr/bin"
+    "--container-runtime-endpoint=unix:///run/containerd/containerd.sock"
+    "--container-runtime-process-name=$(command -v containerd || echo /usr/local/bin/containerd)"
     "--container-runtime-pid-file="
     "--kubelet-flags=${kubelet_flags}"
     "--report-dir=${results_dir}"
     "--report-prefix=node-conformance"
   )
 
-  if is_true "${standalone_mode}"; then
+  if [[ "${standalone_mode}" == true ]]; then
     test_args+=("--standalone-mode=true")
   fi
 
@@ -286,8 +237,6 @@ run_e2e_node() {
 main() {
   local kubernetes_version
   local go_arch
-  local endpoint
-  local process_name
 
   results_dir="${NODE_CONFORMANCE_RESULTS_DIR:-/tmp/kubernetes-node-conformance-results}"
   mkdir -p "${results_dir}"
@@ -296,10 +245,10 @@ main() {
   require_cmd sudo
   require_cmd tar
 
-  work_dir="${NODE_CONFORMANCE_WORK_DIR:-$(mktemp -d /tmp/node-conformance.XXXXXX)}"
-  cni_conf_dir="${NODE_CONFORMANCE_CNI_CONF_DIR:-/etc/cni/net.d}"
-  cni_bin_dir="${NODE_CONFORMANCE_CNI_BIN_DIR:-/opt/cni/bin}"
-  cni_data_dir="${NODE_CONFORMANCE_CNI_DATA_DIR:-${work_dir}/cni/networks}"
+  work_dir="$(mktemp -d /tmp/node-conformance.XXXXXX)"
+  cni_conf_dir=/etc/cni/net.d
+  cni_bin_dir=/opt/cni/bin
+  cni_data_dir="${work_dir}/cni/networks"
 
   kubernetes_version="${KUBERNETES_VERSION:-}"
   if [[ -z "${kubernetes_version}" ]]; then
@@ -309,14 +258,12 @@ main() {
   go_arch="$(detect_go_arch)"
 
   download_kubernetes_tests "${kubernetes_version}" "${go_arch}"
-  ensure_container_runtime
-  endpoint="$(runtime_endpoint)"
-  process_name="$(runtime_process_name "${endpoint}")"
+  start_containerd
   ensure_cni_config
   stop_system_kubelet
 
-  log "Kubernetes v${kubernetes_version}; runtime endpoint ${endpoint}"
-  run_e2e_node "${endpoint}" "${process_name}"
+  log "Kubernetes v${kubernetes_version}"
+  run_e2e_node
 }
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then

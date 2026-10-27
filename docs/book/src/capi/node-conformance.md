@@ -28,13 +28,6 @@ make test-qemu-node-conformance QEMU_NODE_CONFORMANCE_IMAGE=output/ubuntu-2404-k
 exactly one disk image or a path to the image itself. Use
 `QEMU_NODE_CONFORMANCE_ARGS='-- ...'` to pass additional QEMU arguments.
 
-The helper script can also be called directly:
-
-```bash
-cd images/capi
-hack/qemu-node-conformance.sh output/ubuntu-2404-kube-v1.33.0
-```
-
 From the repository root, the CI entry point builds and validates in one step
 with defaults suitable for a nested-virtualization runner:
 
@@ -45,13 +38,12 @@ images/capi/scripts/ci-qemu-node-conformance.sh
 It builds `build-qemu-ubuntu-2404-cloudimg` by default, then runs conformance
 against the produced artifact with KVM acceleration, 4 CPUs, and 4 GiB of
 memory. Override `NODE_CONFORMANCE_TARGET`, `QEMU_CPUS`, `QEMU_MEMORY`, or
-`QEMU_ACCELERATOR` to tune a run. It
-requires `/dev/kvm` unless `QEMU_ACCELERATOR=tcg` is set explicitly
-for slower local debugging.
+`QEMU_ACCELERATOR` to tune a run. It requires `/dev/kvm` unless
+`QEMU_ACCELERATOR=tcg` is set explicitly for slower local debugging.
 
 Inside the guest, the hook downloads `kubernetes-test-linux-${ARCH}.tar.gz` for
-the Kubernetes version reported by the image's own kubelet, starts the local CRI
-runtime, stops the system kubelet, and runs `e2e_node.test` with a default focus
+the Kubernetes version reported by the image's own kubelet, starts containerd,
+stops the system kubelet, and runs `e2e_node.test` with a default focus
 of `[Conformance]`.
 
 Each run writes its results into a fresh timestamped subdirectory of
@@ -95,21 +87,11 @@ forwarded into the guest:
 | `NODE_CONFORMANCE_TIMEOUT` | `2h` | Ginkgo timeout for the e2e-node run. |
 | `NODE_CONFORMANCE_STANDALONE_MODE` | `false` | Passes `--standalone-mode=true` to `e2e_node.test`. |
 | `NODE_CONFORMANCE_KUBELET_FLAGS` | `--fail-swap-on=false --runtime-cgroups=/system.slice/containerd.service` | Extra kubelet flags passed to `e2e_node.test`. |
-| `NODE_CONFORMANCE_DOWNLOAD_TIMEOUT` | `1800` | Seconds any single large download may take before it fails. |
 | `NODE_CONFORMANCE_RESULTS_DIR` | `/tmp/kubernetes-node-conformance-results` | Guest result directory that is downloaded. |
 
 `NODE_CONFORMANCE_STANDALONE_MODE` defaults to `false` because standalone mode
 starts the kubelet without a `--kubeconfig`, so it never joins the test
 apiserver and conformance pods cannot be scheduled.
-
-Example with a custom focus and two parallel nodes:
-
-```bash
-cd images/capi
-NODE_CONFORMANCE_PARALLELISM=2 \
-  NODE_CONFORMANCE_FOCUS='\[Conformance\]' \
-  hack/qemu-node-conformance.sh output/ubuntu-2404-kube-v1.33.0
-```
 
 ## Scope
 
