@@ -10,9 +10,9 @@
   "distro_version": "9",
   "epel_rpm_gpg_key": "https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-9",
   "guest_os_type": "centos9-64",
-  "iso_checksum": "5e9abc51b4021029c988e5a7e8aecccdf4ad4558dd8d8f7d212437c6b0887b72",
+  "iso_checksum": "fedfc8575e3e1fdc0292cf2c2bf02b6327923d59460921553859ff92f95d04e0",
   "iso_checksum_type": "sha256",
-  "iso_url": "https://mirror.stream.centos.org/9-stream/BaseOS/x86_64/iso/CentOS-Stream-9-20261013.0-x86_64-dvd1.iso",
+  "iso_url": "https://mirror.stream.centos.org/9-stream/BaseOS/x86_64/iso/CentOS-Stream-9-20261023.1-x86_64-dvd1.iso",
   "os_display_name": "CentOS 9 Stream",
   "redhat_epel_rpm": "https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm",
   "shutdown_command": "/sbin/halt -h -p"
