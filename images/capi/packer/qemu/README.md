@@ -182,3 +182,10 @@ make test-qemu-boot-smoke QEMU_BOOT_SMOKE_IMAGE=/path/to/image.qcow2
 The smoke helper does not support `qemu-flatcar` images because they use
 Ignition instead of cloud-init. Set `QEMU_BOOT_SMOKE_OS=flatcar` when invoking
 the Make target to fail fast before attempting an unsupported SSH check.
+
+## Node conformance
+
+`make test-qemu-node-conformance QEMU_NODE_CONFORMANCE_IMAGE=output/<build>` runs
+the Kubernetes `e2e_node.test` conformance subset against a built image from a
+throwaway overlay, so the artifact itself is never modified. See
+[Kubernetes Node Conformance](../../../../docs/book/src/capi/node-conformance.md).
