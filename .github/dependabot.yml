@@ -23,15 +23,17 @@ updates:
     - "kind/cleanup"
     - "release-note-none"
 
-# Kubernetes version matrix release pins
+# Kubernetes version matrix tracking manifests.
+# One entry per directory: the ignore ranges below hold each pinned
+# repository to the pin policy of its directory, and those ranges differ
+# per directory, so a single globbed entry cannot express them. The ranges are
+# hand-maintained; verify reports the value to write after a pin changes:
+#   images/capi/hack/kubernetes-version-matrix.py verify
+
+# Kubernetes version matrix release pin 1.31
 - directories:
     - "/images/capi/packer/config/kubernetes-version-dependencies/release-1-31"
-    - "/images/capi/packer/config/kubernetes-version-dependencies/release-1-32"
-    - "/images/capi/packer/config/kubernetes-version-dependencies/release-1-33"
-    - "/images/capi/packer/config/kubernetes-version-dependencies/release-1-34"
-    - "/images/capi/packer/config/kubernetes-version-dependencies/release-1-35"
-    - "/images/capi/packer/config/kubernetes-version-dependencies/release-1-36"
-  package-ecosystem: "gomod"
+  package-ecosystem: "pre-commit"
   open-pull-requests-limit: 5
   schedule:
     interval: "weekly"
@@ -39,29 +41,185 @@ updates:
     # Use America/New_York Standard Time (UTC -05:00)
     timezone: "America/New_York"
   groups:
-    kubernetes-version-matrix-release-pins:
+    kubernetes-version-matrix-release-1-31:
       patterns: [ "*" ]
   ignore:
-    - dependency-name: "github.com/containerd/containerd/v2"
-      update-types:
-        - "version-update:semver-major"
-        - "version-update:semver-minor"
-    - dependency-name: "github.com/containernetworking/plugins"
-      update-types:
-        - "version-update:semver-major"
-        - "version-update:semver-minor"
-    - dependency-name: "github.com/opencontainers/runc"
-      update-types:
-        - "version-update:semver-major"
-        - "version-update:semver-minor"
-    - dependency-name: "k8s.io/client-go"
-      update-types:
-        - "version-update:semver-major"
-        - "version-update:semver-minor"
-    - dependency-name: "sigs.k8s.io/cri-tools"
-      update-types:
-        - "version-update:semver-major"
-        - "version-update:semver-minor"
+    # Release pins take patch updates only.
+    - dependency-name: "https://github.com/containerd/containerd"
+      versions: [ ">= 2.4.0" ]
+    - dependency-name: "https://github.com/containernetworking/plugins"
+      versions: [ ">= 1.6.0" ]
+    - dependency-name: "https://github.com/opencontainers/runc"
+      versions: [ ">= 1.5.0" ]
+    - dependency-name: "https://github.com/kubernetes/kubernetes"
+      versions: [ ">= 1.32.0" ]
+    - dependency-name: "https://github.com/kubernetes-sigs/cri-tools"
+      versions: [ ">= 1.32.0" ]
+  commit-message:
+    prefix: "dependabot"
+    include: scope
+  labels:
+    - "ok-to-test"
+    - "kind/cleanup"
+    - "release-note-none"
+
+# Kubernetes version matrix release pin 1.32
+- directories:
+    - "/images/capi/packer/config/kubernetes-version-dependencies/release-1-32"
+  package-ecosystem: "pre-commit"
+  open-pull-requests-limit: 5
+  schedule:
+    interval: "weekly"
+    time: "09:00"
+    # Use America/New_York Standard Time (UTC -05:00)
+    timezone: "America/New_York"
+  groups:
+    kubernetes-version-matrix-release-1-32:
+      patterns: [ "*" ]
+  ignore:
+    # Release pins take patch updates only.
+    - dependency-name: "https://github.com/containerd/containerd"
+      versions: [ ">= 2.4.0" ]
+    - dependency-name: "https://github.com/containernetworking/plugins"
+      versions: [ ">= 1.7.0" ]
+    - dependency-name: "https://github.com/opencontainers/runc"
+      versions: [ ">= 1.5.0" ]
+    - dependency-name: "https://github.com/kubernetes/kubernetes"
+      versions: [ ">= 1.33.0" ]
+    - dependency-name: "https://github.com/kubernetes-sigs/cri-tools"
+      versions: [ ">= 1.33.0" ]
+  commit-message:
+    prefix: "dependabot"
+    include: scope
+  labels:
+    - "ok-to-test"
+    - "kind/cleanup"
+    - "release-note-none"
+
+# Kubernetes version matrix release pin 1.33
+- directories:
+    - "/images/capi/packer/config/kubernetes-version-dependencies/release-1-33"
+  package-ecosystem: "pre-commit"
+  open-pull-requests-limit: 5
+  schedule:
+    interval: "weekly"
+    time: "09:00"
+    # Use America/New_York Standard Time (UTC -05:00)
+    timezone: "America/New_York"
+  groups:
+    kubernetes-version-matrix-release-1-33:
+      patterns: [ "*" ]
+  ignore:
+    # Release pins take patch updates only.
+    - dependency-name: "https://github.com/containerd/containerd"
+      versions: [ ">= 2.4.0" ]
+    - dependency-name: "https://github.com/containernetworking/plugins"
+      versions: [ ">= 1.7.0" ]
+    - dependency-name: "https://github.com/opencontainers/runc"
+      versions: [ ">= 1.5.0" ]
+    - dependency-name: "https://github.com/kubernetes/kubernetes"
+      versions: [ ">= 1.34.0" ]
+    - dependency-name: "https://github.com/kubernetes-sigs/cri-tools"
+      versions: [ ">= 1.34.0" ]
+  commit-message:
+    prefix: "dependabot"
+    include: scope
+  labels:
+    - "ok-to-test"
+    - "kind/cleanup"
+    - "release-note-none"
+
+# Kubernetes version matrix release pin 1.34
+- directories:
+    - "/images/capi/packer/config/kubernetes-version-dependencies/release-1-34"
+  package-ecosystem: "pre-commit"
+  open-pull-requests-limit: 5
+  schedule:
+    interval: "weekly"
+    time: "09:00"
+    # Use America/New_York Standard Time (UTC -05:00)
+    timezone: "America/New_York"
+  groups:
+    kubernetes-version-matrix-release-1-34:
+      patterns: [ "*" ]
+  ignore:
+    # Release pins take patch updates only.
+    - dependency-name: "https://github.com/containerd/containerd"
+      versions: [ ">= 2.4.0" ]
+    - dependency-name: "https://github.com/containernetworking/plugins"
+      versions: [ ">= 1.8.0" ]
+    - dependency-name: "https://github.com/opencontainers/runc"
+      versions: [ ">= 1.5.0" ]
+    - dependency-name: "https://github.com/kubernetes/kubernetes"
+      versions: [ ">= 1.35.0" ]
+    - dependency-name: "https://github.com/kubernetes-sigs/cri-tools"
+      versions: [ ">= 1.35.0" ]
+  commit-message:
+    prefix: "dependabot"
+    include: scope
+  labels:
+    - "ok-to-test"
+    - "kind/cleanup"
+    - "release-note-none"
+
+# Kubernetes version matrix release pin 1.35
+- directories:
+    - "/images/capi/packer/config/kubernetes-version-dependencies/release-1-35"
+  package-ecosystem: "pre-commit"
+  open-pull-requests-limit: 5
+  schedule:
+    interval: "weekly"
+    time: "09:00"
+    # Use America/New_York Standard Time (UTC -05:00)
+    timezone: "America/New_York"
+  groups:
+    kubernetes-version-matrix-release-1-35:
+      patterns: [ "*" ]
+  ignore:
+    # Release pins take patch updates only.
+    - dependency-name: "https://github.com/containerd/containerd"
+      versions: [ ">= 2.4.0" ]
+    - dependency-name: "https://github.com/containernetworking/plugins"
+      versions: [ ">= 1.9.0" ]
+    - dependency-name: "https://github.com/opencontainers/runc"
+      versions: [ ">= 1.5.0" ]
+    - dependency-name: "https://github.com/kubernetes/kubernetes"
+      versions: [ ">= 1.36.0" ]
+    - dependency-name: "https://github.com/kubernetes-sigs/cri-tools"
+      versions: [ ">= 1.36.0" ]
+  commit-message:
+    prefix: "dependabot"
+    include: scope
+  labels:
+    - "ok-to-test"
+    - "kind/cleanup"
+    - "release-note-none"
+
+# Kubernetes version matrix release pin 1.36
+- directories:
+    - "/images/capi/packer/config/kubernetes-version-dependencies/release-1-36"
+  package-ecosystem: "pre-commit"
+  open-pull-requests-limit: 5
+  schedule:
+    interval: "weekly"
+    time: "09:00"
+    # Use America/New_York Standard Time (UTC -05:00)
+    timezone: "America/New_York"
+  groups:
+    kubernetes-version-matrix-release-1-36:
+      patterns: [ "*" ]
+  ignore:
+    # Release pins take patch updates only.
+    - dependency-name: "https://github.com/containerd/containerd"
+      versions: [ ">= 2.4.0" ]
+    - dependency-name: "https://github.com/containernetworking/plugins"
+      versions: [ ">= 1.10.0" ]
+    - dependency-name: "https://github.com/opencontainers/runc"
+      versions: [ ">= 1.5.0" ]
+    - dependency-name: "https://github.com/kubernetes/kubernetes"
+      versions: [ ">= 1.37.0" ]
+    - dependency-name: "https://github.com/kubernetes-sigs/cri-tools"
+      versions: [ ">= 1.37.0" ]
   commit-message:
     prefix: "dependabot"
     include: scope
@@ -73,7 +231,7 @@ updates:
 # Kubernetes version matrix rolling latest
 - directories:
     - "/images/capi/packer/config/kubernetes-version-dependencies/latest"
-  package-ecosystem: "gomod"
+  package-ecosystem: "pre-commit"
   open-pull-requests-limit: 3
   schedule:
     interval: "weekly"
@@ -84,21 +242,17 @@ updates:
     kubernetes-version-matrix-latest:
       patterns: [ "*" ]
   ignore:
-    - dependency-name: "github.com/containerd/containerd/v2"
-      update-types:
-        - "version-update:semver-major"
-    - dependency-name: "github.com/containernetworking/plugins"
-      update-types:
-        - "version-update:semver-major"
-    - dependency-name: "github.com/opencontainers/runc"
-      update-types:
-        - "version-update:semver-major"
-    - dependency-name: "k8s.io/client-go"
-      update-types:
-        - "version-update:semver-major"
-    - dependency-name: "sigs.k8s.io/cri-tools"
-      update-types:
-        - "version-update:semver-major"
+    # The rolling entry may move to a newer minor, never to a new major.
+    - dependency-name: "https://github.com/containerd/containerd"
+      versions: [ ">= 3.0.0" ]
+    - dependency-name: "https://github.com/containernetworking/plugins"
+      versions: [ ">= 2.0.0" ]
+    - dependency-name: "https://github.com/opencontainers/runc"
+      versions: [ ">= 2.0.0" ]
+    - dependency-name: "https://github.com/kubernetes/kubernetes"
+      versions: [ ">= 2.0.0" ]
+    - dependency-name: "https://github.com/kubernetes-sigs/cri-tools"
+      versions: [ ">= 2.0.0" ]
   commit-message:
     prefix: "dependabot"
     include: scope
