@@ -2,7 +2,7 @@
 
 # Use config version 2 to enable new configuration fields.
 # Config file is parsed as version 1 by default.
-version = {% if containerd_version is version('2.0.0', '>=') %}3{% else %}2{% endif %}
+version = {% if containerd_version is version('2.3.0', '>=') %}4{% elif containerd_version is version('2.0.0', '>=') %}3{% else %}2{% endif %}
 
 {% if 'imports' not in containerd_additional_settings | b64decode %}
 imports = ["/etc/containerd/conf.d/*.toml"]
