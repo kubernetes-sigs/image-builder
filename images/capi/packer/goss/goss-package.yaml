@@ -1,3 +1,6 @@
+{{/* An empty kubernetes_cni_source_type means the CNI plugins follow kubernetes_source_type. */}}
+{{- $cni_source := .Vars.kubernetes_cni_source_type -}}
+{{- if eq $cni_source "" -}}{{- $cni_source = .Vars.kubernetes_source_type -}}{{- end -}}
 {{ if ne .Vars.OS "windows"}}
 kubernetes_version: &kubernetes_version
   versions:
@@ -35,7 +38,7 @@ package:
     installed: true
     <<: *kubernetes_version
 {{end}}
-{{if eq .Vars.kubernetes_cni_source_type "pkg"}}
+{{if eq $cni_source "pkg"}}
   kubernetes-cni:
     installed: true
     <<: *kubernetes_cni_version
