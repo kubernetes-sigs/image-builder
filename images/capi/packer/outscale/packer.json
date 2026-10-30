@@ -136,6 +136,6 @@
     "runc_version": null,
     "secret_key": "{{env `OSC_SECRET_KEY`}}",
     "ssh_source_cidr": "0.0.0.0/0",
-    "vm_type": "tinav6.c2r4p2"
+    "vm_type": "tinav7.c2r4p2"
   }
 }
