@@ -1,0 +1,31 @@
+name: Test Azure CI orchestration
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/test-azure-ci.yaml
+      - images/capi/scripts/ci-azure-e2e.sh
+      - images/capi/scripts/ci_azure_e2e_test.py
+      - images/capi/packer/azure/scripts/parse-prow-creds.sh
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/test-azure-ci.yaml
+      - images/capi/scripts/ci-azure-e2e.sh
+      - images/capi/scripts/ci_azure_e2e_test.py
+      - images/capi/packer/azure/scripts/parse-prow-creds.sh
+
+permissions:
+  contents: read
+
+jobs:
+  test-azure-ci:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Run Azure CI regression tests
+        run: python3 -m unittest discover -s images/capi/scripts -p 'ci_azure_e2e_test.py' -v

@@ -70,6 +70,20 @@ list, and greater explanation can be found in the
 
 If you are adding features to image builder than it is sometimes useful to work with the images directly. This section gives some tips.
 
+### Testing CI authentication
+
+From the repository root, run the Azure CI orchestration regression tests with
+Python 3.9 or later and Bash 4 or later on `PATH`:
+
+```bash
+python3 -m unittest discover -s images/capi/scripts -p 'ci_azure_e2e_test.py'
+```
+
+These tests run the CI script with fake Azure CLI and build commands to check
+authentication isolation and failure handling. They do not require Azure
+credentials or build images. The `Test Azure CI orchestration` workflow also
+runs them when the CI script, credential parser, or tests change.
+
 ### Debugging Packer scripts
 There are several ways to debug Packer scripts: https://developer.hashicorp.com/packer/docs/debugging
 
