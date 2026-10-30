@@ -1,0 +1,11 @@
+---
+file:
+  /etc/extensions:
+    exists: true
+    filetype: directory
+  /var/lib/extensions:
+    exists: true
+    filetype: directory
+  /opt/extensions:
+    exists: true
+    filetype: directory
