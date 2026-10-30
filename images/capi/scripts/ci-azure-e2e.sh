@@ -16,7 +16,7 @@
 
 ###############################################################################
 
-# This script is executed by presubmit `pull-cluster-api-provider-azure-e2e`
+# This script is executed by presubmit `pull-azure-sigs`
 # To run locally, set AZURE_CLIENT_ID, AZURE_CLIENT_SECRET, AZURE_SUBSCRIPTION_ID, AZURE_TENANT_ID
 
 set -o errexit
@@ -33,10 +33,12 @@ mkdir -p "${ARTIFACTS}/azure-sigs"
 
 # Dynamically gets all targets and filters out the following:
 # - Any RHEL targets (because of subscription requirements)
+# - Flatcar targets (Marketplace eligibility failure tracked in
+#   https://github.com/kubernetes-sigs/image-builder/issues/2166)
 SIG_CI_TARGETS=( $(make build-azure-sigs --recon -d | grep "Must remake" | \
   grep -v build-azure-sigs | grep -v deps- | \
   grep -v cvm | \
-  grep -E -v 'rhel' | \
+  grep -E -v 'rhel|flatcar' | \
   grep -E -o 'build-azure-sig-[a-zA-Z0-9\-]+' | \
   sed -E 's/build-azure-sig-([0-9a-z\-]*)/\1/' ) )
 SIG_CVM_CI_TARGETS=( $(make build-azure-sigs --recon -d | grep "Must remake" | \
@@ -108,12 +110,7 @@ login() {
   fi
 }
 
-# Latest Flatcar version is often available on Azure with a delay, so resolve ourselves
-get_flatcar_version() {
-    az vm image show --urn kinvolk:flatcar-container-linux-free:stable:latest --query 'name' -o tsv
-}
 login
-export FLATCAR_VERSION="$(get_flatcar_version)"
 
 # Pre-pulling windows images takes 10-20 mins
 # Disable them for CI runs so don't run into timeouts
