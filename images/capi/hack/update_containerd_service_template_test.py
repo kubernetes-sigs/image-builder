@@ -103,6 +103,45 @@ class UpdateContainerdServiceTemplateTests(unittest.TestCase):
 
         return template_path, defaults_path
 
+    def test_write_updates_version_marker_for_unchanged_service(self):
+        with tempfile.TemporaryDirectory(dir=SCRIPT.parent) as tmp:
+            root = pathlib.Path(tmp)
+            template_path, defaults_path = self.configure_fixture(
+                root=root,
+                generic_version="2.3.7",
+                ppc64le_version="2.3.7",
+                template_content="service unit\n",
+                template_versions=["2.3.2"],
+            )
+            defaults_path.write_text(
+                defaults_path.read_text(encoding="utf-8") + 'runc_version: "1.5.2"\n',
+                encoding="utf-8",
+            )
+
+            with mock.patch.object(
+                self.updater, "parse_args", return_value=SimpleNamespace(write=True)
+            ), mock.patch.object(
+                self.updater,
+                "fetch_containerd_service",
+                return_value=(
+                    "https://example.test/v2.3.7/containerd.service",
+                    "service unit\n",
+                ),
+            ) as fetch:
+                rc = self.updater.main()
+
+            self.assertEqual(0, rc)
+            fetch.assert_called_once_with("2.3.7")
+            self.assertEqual("service unit\n", template_path.read_text(encoding="utf-8"))
+            self.assertEqual(
+                '---\ncontainerd_service_template_versions:\n'
+                '  - "2.3.7"\nrunc_version: "1.5.2"\n',
+                defaults_path.read_text(encoding="utf-8"),
+            )
+            self.assertFalse(
+                self.updater.write_service_template_versions(defaults_path, ["2.3.7"])
+            )
+
     def test_write_updates_template_versions_for_equivalent_arch_pins(self):
         with tempfile.TemporaryDirectory(dir=SCRIPT.parent) as tmp:
             root = pathlib.Path(tmp)
