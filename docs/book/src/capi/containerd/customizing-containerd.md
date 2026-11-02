@@ -1,5 +1,26 @@
 # Customizing containerd
 
+## Legacy WebAssembly shims
+
+The legacy [deislabs/containerd-wasm-shims](https://github.com/deislabs/containerd-wasm-shims)
+are disabled by default on all providers, including Azure, as a first step toward
+deprecation. These old shims are not well supported. Default builds do not download,
+install, or register them with containerd.
+
+Explicit opt-in is still available through `containerd_wasm_shims_runtimes`, a
+comma-separated list of `lunatic`, `slight`, `spin`, and `wws`. For example, to install
+and register only the Spin shim, put this in a custom Packer variable file:
+
+```json
+{
+  "containerd_wasm_shims_runtimes": "spin"
+}
+```
+
+Pass the file via `PACKER_VAR_FILES`, or set
+`PACKER_FLAGS='--var containerd_wasm_shims_runtimes=spin'` when invoking `make`.
+The default value is an empty string (`""`), which leaves all legacy shims disabled.
+
 ## Running sandboxed containers using gVisor
 
 For additional security in a Kubernetes cluster it can be useful to run certain
