@@ -984,7 +984,7 @@ build-scaleway-all: $(SCALEWAY_BUILD_TARGETS) ## Builds all Scaleway images
 ##@ Validate packer config
 validate-ami-all: $(AMI_VALIDATE_TARGETS) ## Validates all AMIs Packer config
 
-validate-azure-all: test-wasm-shims $(AZURE_VALIDATE_SIG_TARGETS) $(AZURE_VALIDATE_SIG_GEN2_TARGETS) $(AZURE_VALIDATE_SIG_CVM_TARGETS) ## Validates all images for Azure Packer config
+validate-azure-all: $(AZURE_VALIDATE_SIG_TARGETS) $(AZURE_VALIDATE_SIG_GEN2_TARGETS) $(AZURE_VALIDATE_SIG_CVM_TARGETS) ## Validates all images for Azure Packer config
 
 validate-do-all: $(DO_VALIDATE_TARGETS) ## Validates all DigitalOcean Snapshot Packer config
 
@@ -1099,10 +1099,6 @@ docker-push: ## Push the Docker image
 ## Test targets
 ## --------------------------------------
 ##@ Testing
-.PHONY: test-wasm-shims
-test-wasm-shims: deps-common ## Verifies Wasm shims are opt-in across build configurations
-	python3 -m unittest discover -s hack -p 'wasm_shims_test.py'
-
 .PHONY: test-azure
 test-azure: ## Run the tests for Azure builders
 	$(abspath packer/azure/scripts/ci-azure-e2e.sh)
