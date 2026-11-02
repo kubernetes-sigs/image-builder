@@ -27,7 +27,7 @@ containerd_service_url: ""
 # containerd_version has been overridden without a matching
 # containerd_service_url.
 containerd_service_template_versions:
-  - "2.3.2"
+  - "2.3.7"
 containerd_runc_url: "https://github.com/opencontainers/runc/releases/download/v{{ runc_version }}/runc.{{ arch }}"
-runc_version: "1.4.3"
+runc_version: "1.5.2"
 containerd_runc_checksum_url: "https://github.com/opencontainers/runc/releases/download/v{{ runc_version }}/runc.sha256sum"
