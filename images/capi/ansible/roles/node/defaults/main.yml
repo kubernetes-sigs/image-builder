@@ -45,6 +45,12 @@ azurelinux_rpms:
   - yum-utils
   - lsof
 
+# Used for Azure Linux 4+ distributions
+azurelinux4_rpms:
+  - curl
+  - dnf-utils
+  - lsof
+
 # Used for RedHat based distributions != 7 (ex. RockyLinux-9 etc.)
 rh8_rpms:
   - curl
@@ -123,7 +129,7 @@ common_raw_photon_rpms: []
 # photon and flatcar do not have backward compatibility for legacy distro behavior for sysctl.conf by default
 # as it uses systemd-sysctl. set this var so we can use for sysctl conf file value.
 sysctl_conf_file: >-
-  {{ '/etc/sysctl.d/99-sysctl.conf' if ansible_facts['os_family'] in ['Flatcar', 'Microsoft Azure Linux', 'VMware Photon OS']
+  {{ '/etc/sysctl.d/99-sysctl.conf' if ansible_facts['os_family'] in ['Azure Linux', 'Flatcar', 'Microsoft Azure Linux', 'VMware Photon OS']
     or (ansible_facts['distribution'] == 'Ubuntu' and (ansible_facts['distribution_major_version'] | int) >= 26)
     else '/etc/sysctl.conf' }}
 
