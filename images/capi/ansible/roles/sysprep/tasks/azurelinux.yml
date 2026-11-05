@@ -43,3 +43,19 @@
   ansible.builtin.file:
     state: absent
     path: /root/anaconda-ks.cfg
+
+- name: Collect temporary Azure Linux 3 core dump diagnostics
+  when: ansible_facts['distribution_major_version'] == "3"
+  block:
+    - name: Collect temporary core dump diagnostics before cleanup
+      ansible.builtin.script:
+        cmd: azurelinux-core-diagnostics.sh before-sysprep
+        executable: /bin/bash
+      register: sysprep_core_diagnostics
+      changed_when: false
+      # Diagnostic errors are printed below; keep the Goss guard authoritative.
+      failed_when: false
+
+    - name: Print temporary Azure Linux core dump diagnostics
+      ansible.builtin.debug:
+        var: sysprep_core_diagnostics

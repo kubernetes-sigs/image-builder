@@ -64,6 +64,14 @@
       "vm_size": "{{user `vm_size`}}"
     }
   ],
+  "error-cleanup-provisioner": {
+    "environment_vars": [
+      "AZURELINUX_CORE_DIAGNOSTICS={{if and (eq (user `distribution`) `azurelinux`) (eq (user `distribution_version`) `3`)}}true{{else}}false{{end}}"
+    ],
+    "execute_command": "sudo -n env {{.Vars}} /bin/bash '{{.Path}}' packer-error-cleanup",
+    "script": "ansible/roles/sysprep/files/azurelinux-core-diagnostics.sh",
+    "type": "shell"
+  },
   "post-processors": [
     {
       "custom_data": {
