@@ -757,17 +757,17 @@ $(SCALEWAY_VALIDATE_TARGETS): deps-scaleway
 NODE_OVA_LOCAL_CLEAN_TARGETS := $(subst build-,clean-,$(NODE_OVA_LOCAL_BUILD_TARGETS))
 .PHONY: $(NODE_OVA_LOCAL_CLEAN_TARGETS)
 $(NODE_OVA_LOCAL_CLEAN_TARGETS):
-	rm -fr output/$(subst clean-node-ova-local-,,$@)-kube*
+	rm -fr output/$(subst clean-node-ova-local-,,$@)-kube*$(if $(findstring flatcar,$@), output/flatcar-*-kube*)
 
 QEMU_CLEAN_TARGETS := $(subst build-,clean-,$(QEMU_BUILD_TARGETS))
 .PHONY: $(QEMU_CLEAN_TARGETS)
 $(QEMU_CLEAN_TARGETS):
-	rm -fr output/$(subst clean-qemu-,,$@)-kube*
+	rm -fr output/$(subst clean-qemu-,,$@)-kube*$(if $(findstring flatcar,$@), output/flatcar-*-kube*)
 
 RAW_CLEAN_TARGETS := $(subst build-,clean-,$(RAW_BUILD_TARGETS))
 .PHONY: $(RAW_CLEAN_TARGETS)
 $(RAW_CLEAN_TARGETS):
-	rm -fr output/$(subst clean-raw-,,$@)-kube*
+	rm -fr output/$(subst clean-raw-,,$@)-kube*$(if $(findstring flatcar,$@), output/flatcar-*-kube*)
 
 ## --------------------------------------
 ## Document dynamic build targets
