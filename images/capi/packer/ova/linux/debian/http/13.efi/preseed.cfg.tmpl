@@ -1,0 +1,60 @@
+d-i debian-installer/locale string en_US.UTF-8
+d-i keyboard-configuration/xkb-keymap select us
+d-i time/zone string Etc/UTC
+d-i clock-setup/utc boolean true
+d-i clock-setup/ntp boolean true
+
+d-i netcfg/choose_interface select auto
+d-i netcfg/get_hostname string debian-13
+d-i netcfg/get_domain string
+
+d-i mirror/country string manual
+d-i mirror/http/hostname string deb.debian.org
+d-i mirror/http/directory string /debian
+d-i mirror/http/proxy string
+d-i apt-setup/cdrom/set-first boolean false
+d-i apt-setup/disable-cdrom-entries boolean true
+d-i apt-setup/services-select multiselect security, updates
+
+d-i passwd/root-login boolean false
+d-i passwd/user-fullname string builder
+d-i passwd/username string builder
+d-i passwd/user-password-crypted password $ENCRYPTED_SSH_PASSWORD
+
+# No swap, root partition last so cloud-init can grow it on clones.
+d-i partman-auto/disk string /dev/sda
+d-i partman-auto/method string regular
+d-i partman-partitioning/default_label string gpt
+d-i partman-auto/expert_recipe string \
+  efi-root :: \
+    538 538 1075 free \
+      $iflabel{ gpt } $reusemethod{ } method{ efi } format{ } \
+    . \
+    4096 10000 -1 xfs \
+      method{ format } format{ } use_filesystem{ } filesystem{ xfs } \
+      mountpoint{ / } \
+    .
+d-i partman-auto/choose_recipe select efi-root
+d-i partman-basicfilesystems/no_swap boolean false
+d-i partman-partitioning/confirm_write_new_label boolean true
+d-i partman/choose_partition select finish
+d-i partman/confirm boolean true
+d-i partman/confirm_nooverwrite boolean true
+
+tasksel tasksel/first multiselect ssh-server
+d-i pkgsel/include string openssh-server open-vm-tools sudo python3 python3-debian systemd-resolved bash-completion
+d-i pkgsel/upgrade select full-upgrade
+popularity-contest popularity-contest/participate boolean false
+
+d-i grub-installer/only_debian boolean true
+d-i grub-installer/bootdev string /dev/sda
+d-i grub-installer/force-efi-extra-removable boolean true
+
+d-i finish-install/reboot_in_progress note
+
+d-i preseed/late_command string \
+  echo 'builder ALL=(ALL) NOPASSWD:ALL' > /target/etc/sudoers.d/builder; \
+  chmod 440 /target/etc/sudoers.d/builder; \
+  sed -i 's/^GRUB_CMDLINE_LINUX=.*/GRUB_CMDLINE_LINUX=""/' /target/etc/default/grub; \
+  in-target update-grub; \
+  in-target apt-get clean

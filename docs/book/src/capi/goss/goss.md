@@ -15,6 +15,7 @@ to test if the images have all requisite components to work with cluster API.
 | Amazon Linux            | aws                           |
 | Azure Linux             | azure                         |
 | CentOS                  | aws, nutanix, ova             |
+| Debian                  | ova                           |
 | Flatcar Container Linux | aws, azure, nutanix, ova      |
 | PhotonOS                | ova                           |
 | Ubuntu                  | aws, azure, gcp, nutanix, ova |

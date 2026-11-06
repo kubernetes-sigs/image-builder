@@ -115,6 +115,16 @@
     reload: true
   when: ansible_facts['distribution'] == "Ubuntu"
 
+- name: Ensure reverse packet filtering is set as strict on Debian
+  ansible.posix.sysctl:
+    name: net.ipv4.conf.all.rp_filter
+    value: "1"
+    state: present
+    sysctl_set: true
+    sysctl_file: "{{ sysctl_conf_file }}"
+    reload: true
+  when: ansible_facts['distribution'] == "Debian"
+
 - name: Set transparent huge pages to madvise
   ansible.builtin.lineinfile:
     path: /etc/default/grub
