@@ -77,6 +77,8 @@ In addition to the configuration found in `images/capi/packer/config`, the `ova`
 
 | File               | Description                                                  |
 |--------------------|--------------------------------------------------------------|
+| `debian-13.json`   | The settings for the Debian 13 image                         |
+| `debian-13-efi.json` | The settings for the Debian 13 EFI image                   |
 | `flatcar.json`     | The settings for the Flatcar image                           |
 | `photon-4.json`    | The settings for the Photon 4 image                          |
 | `rhel-9.json`      | The settings for the RHEL 9 image                            |
@@ -87,6 +89,19 @@ In addition to the configuration found in `images/capi/packer/config`, the `ova`
 | `ubuntu-2604.json` | The settings for the Ubuntu 26.04 image                      |
 | `ubuntu-2604-efi.json` | The settings for the Ubuntu 26.04 EFI image                      |
 | `vsphere.json`     | Additional settings needed when building on a remote vSphere |
+
+### Debian specific options
+
+#### Secure Boot
+
+The `debian-13-efi` image boots with plain EFI. Debian's shim and kernel are signed, so the image can also boot with Secure Boot. Set the `firmware` variable to `efi-secure` in a JSON file and pass it with `PACKER_VAR_FILES`:
+
+```shell
+echo '{"firmware": "efi-secure"}' > secure-boot.json
+PACKER_VAR_FILES=secure-boot.json make build-node-ova-vsphere-debian-13-efi
+```
+
+With Secure Boot, the kernel runs in lockdown `integrity` mode. It refuses unsigned kernel modules (for example DKMS builds), unsigned kexec, hibernation and direct access to `/dev/mem`. eBPF tracing, kprobes and perf still work.
 
 ### Photon specific options
 

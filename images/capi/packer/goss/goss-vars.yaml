@@ -206,6 +206,72 @@ almalinux:
     - distro_version: "9"
       package:
         <<: *rh9_rpms
+debian:
+  common-kernel-param:
+    net.ipv4.conf.all.rp_filter:
+      value: "1"
+  common-package:
+    <<: *common_debs
+  common-service:
+    apt-daily.timer:
+      enabled: false
+      running: false
+    apt-daily-upgrade.timer:
+      enabled: false
+      running: false
+    systemd-resolved:
+      enabled: true
+      running: true
+    serial-getty@ttyS0:
+      enabled: false
+      running: false
+  ova:
+    package:
+      cloud-guest-utils:
+      cloud-init:
+      dosfstools:
+      ifupdown:
+      open-vm-tools:
+      python3-debian:
+      systemd-resolved:
+      xfsprogs:
+    files:
+      '/etc/sysctl.d/99-sysctl.conf':
+        exists: true
+        filetype: file
+        contains:
+        - "net.ipv4.ip_forward=1"
+        - "net.bridge.bridge-nf-call-iptables=1"
+        - "net.ipv4.conf.all.rp_filter=1"
+      '/etc/resolv.conf':
+        exists: true
+        filetype: symlink
+        contains: []
+      '/run/systemd/resolve/resolv.conf':
+        exists: true
+        filetype: file
+        contains: []
+    command:
+      grep -rlE 'inet static|dns-nameservers' /etc/network/interfaces /etc/network/interfaces.d:
+        exit-status: 1
+        stdout: []
+        stderr: []
+        timeout: 0
+      grep -c iso9660 /proc/cmdline /etc/default/grub:
+        exit-status: 1
+        stdout: []
+        stderr: []
+        timeout: 0
+      grep -c /media/cdrom /etc/fstab:
+        exit-status: 1
+        stdout: []
+        stderr: []
+        timeout: 0
+      ls -A /media:
+        exit-status: 0
+        stdout: []
+        stderr: []
+        timeout: 0
 flatcar:
   common-service:
     systemd-timesyncd:

@@ -1,0 +1,20 @@
+{
+  "boot_command_prefix": "<wait5><down>e<wait1><down><down><down><end> auto=true priority=critical preseed/early_command=\"mount -t iso9660 /dev/sr1 /media\" preseed/file=/media/preseed.cfg<wait1><f10>",
+  "build_name": "debian-13-efi",
+  "cd_content_location": "./packer/ova/linux/{{user `distro_name`}}/http/13.efi/preseed.cfg",
+  "cd_label": "PRESEED",
+  "cdrom_type": "sata",
+  "distro_arch": "amd64",
+  "distro_name": "debian",
+  "distro_version": "13",
+  "firmware": "efi",
+  "floppy_dirs": "",
+  "guest_os_type": "debian12-64",
+  "iso_checksum": "a7ef94ac2fb9a7fec454552abd629b7cc9d5155c886165a45649f5ce6167e355",
+  "iso_checksum_type": "sha256",
+  "iso_url": "https://cdimage.debian.org/debian-cd/13.7.0/amd64/iso-cd/debian-13.7.0-amd64-netinst.iso,https://cdimage.debian.org/cdimage/archive/13.7.0/amd64/iso-cd/debian-13.7.0-amd64-netinst.iso",
+  "os_display_name": "Debian 13",
+  "shutdown_command": "shutdown -P now",
+  "vmx_version": "20",
+  "vsphere_guest_os_type": "debian12_64Guest"
+}

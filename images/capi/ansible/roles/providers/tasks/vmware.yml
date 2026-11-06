@@ -18,7 +18,11 @@
 
 - name: Include VMware Ubuntu tasks
   ansible.builtin.include_tasks: vmware-ubuntu.yml
-  when: ansible_facts['os_family'] == "Debian"
+  when: ansible_facts['distribution'] == "Ubuntu"
+
+- name: Include VMware Debian tasks
+  ansible.builtin.include_tasks: vmware-debian.yml
+  when: ansible_facts['distribution'] == "Debian"
 
 - name: Include VMware RedHat tasks
   ansible.builtin.include_tasks: vmware-redhat.yml

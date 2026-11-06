@@ -58,6 +58,12 @@
     - { path: /etc/machine-id, state: touch, mode: "{{ machine_id_mode }}" }
   when: ansible_facts['os_family'] not in ["Flatcar"]
 
+- name: Remove the D-Bus copy of the machine ID on Debian
+  ansible.builtin.file:
+    path: /var/lib/dbus/machine-id
+    state: absent
+  when: ansible_facts['distribution'] == "Debian"
+
 - name: Truncate hostname file
   ansible.builtin.file:
     state: "{{ item.state }}"
@@ -157,6 +163,47 @@
     path: "{{ item.path }}"
   loop: "{{ netplan_files.files }}"
   when: netplan_files.files is defined and (netplan_files.files|length>0)
+
+- name: Create the ifupdown drop-in directory on Debian
+  ansible.builtin.file:
+    path: /etc/network/interfaces.d
+    state: directory
+    mode: "0755"
+  when: ansible_facts['distribution'] == "Debian"
+
+- name: Reset ifupdown config on Debian
+  ansible.builtin.copy:
+    dest: /etc/network/interfaces
+    content: |
+      source /etc/network/interfaces.d/*
+
+      auto lo
+      iface lo inet loopback
+    mode: "0644"
+  when: ansible_facts['distribution'] == "Debian"
+
+- name: Mask the serial getty on Debian, the VMs have no serial port
+  ansible.builtin.systemd:
+    name: serial-getty@ttyS0.service
+    masked: true
+  when: ansible_facts['distribution'] == "Debian"
+
+- name: Remove the installer's CD-ROM entries from fstab on Debian
+  ansible.builtin.lineinfile:
+    path: /etc/fstab
+    regexp: '^/dev/sr[0-9]+\s'
+    state: absent
+  when: ansible_facts['distribution'] == "Debian"
+
+- name: Remove the installer's CD-ROM mount points on Debian
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - /media/cdrom
+    - /media/cdrom0
+    - /media/cdrom1
+  when: ansible_facts['distribution'] == "Debian"
 
 - name: Create netplan for KubeVirt
   vars:

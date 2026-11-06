@@ -386,6 +386,7 @@ PHOTON_VERSIONS			:=	photon-4 photon-5
 RHEL_VERSIONS			:=	rhel-9
 ROCKYLINUX_VERSIONS		:=  rockylinux-9
 ALMALINUX_VERSIONS		:=	almalinux-9
+DEBIAN_VERSIONS			:=	debian-13 debian-13-efi
 UBUNTU_VERSIONS			:=	ubuntu-2204 ubuntu-2204-efi ubuntu-2404 ubuntu-2404-efi ubuntu-2604 ubuntu-2604-efi
 WINDOWS_VERSIONS		:=	windows-2019 windows-2019-efi windows-2022 windows-2022-efi
 
@@ -402,6 +403,7 @@ PLATFORMS_AND_VERSIONS	:=	$(PHOTON_VERSIONS) \
 							$(RHEL_VERSIONS) \
 							$(ROCKYLINUX_VERSIONS) \
 							$(ALMALINUX_VERSIONS) \
+							$(DEBIAN_VERSIONS) \
 							$(UBUNTU_VERSIONS) \
 							$(FLATCAR_VERSIONS) \
 							$(WINDOWS_VERSIONS)
@@ -833,6 +835,8 @@ build-node-ova-vsphere-photon-5: ## Builds Photon 5 Node OVA and template on vSp
 build-node-ova-vsphere-rhel-9: ## Builds RHEL 9 Node OVA and template on vSphere
 build-node-ova-vsphere-rockylinux-9: ## Builds RockyLinux 9 Node OVA and template on vSphere
 build-node-ova-vsphere-almalinux-9: ## Builds AlmaLinux 9 Node OVA and template on vSphere
+build-node-ova-vsphere-debian-13: ## Builds Debian 13 Node OVA and template on vSphere
+build-node-ova-vsphere-debian-13-efi: ## Builds Debian 13 Node OVA and template on vSphere that EFI boots
 build-node-ova-vsphere-ubuntu-2204: ## Builds Ubuntu 22.04 Node OVA and template on vSphere
 build-node-ova-vsphere-ubuntu-2204-efi: ## Builds Ubuntu 22.04 Node OVA and template on vSphere that EFI boots
 build-node-ova-vsphere-ubuntu-2404: ## Builds Ubuntu 24.04 Node OVA and template on vSphere
@@ -850,6 +854,8 @@ build-node-ova-vsphere-clone-photon-5: ## Builds Photon 5 Node OVA and template 
 build-node-ova-vsphere-clone-rhel-9: ## Builds RHEL 9 Node OVA and template on vSphere
 build-node-ova-vsphere-clone-rockylinux-9: ## Builds RockyLinux 9 Node OVA and template on vSphere
 build-node-ova-vsphere-clone-almalinux-9: ## Builds AlmaLinux 9 Node OVA and template on vSphere
+build-node-ova-vsphere-clone-debian-13: ## Builds Debian 13 Node OVA and template on vSphere
+build-node-ova-vsphere-clone-debian-13-efi: ## Builds Debian 13 Node OVA and template on vSphere that EFI boots
 build-node-ova-vsphere-clone-ubuntu-2204: ## Builds Ubuntu 22.04 Node OVA and template on vSphere
 build-node-ova-vsphere-clone-ubuntu-2204-efi: ## ## Builds Ubuntu 22.04 Node OVA and template on vSphere that EFI boots
 build-node-ova-vsphere-clone-ubuntu-2404: ## Builds Ubuntu 24.04 Node OVA and template on vSphere
@@ -863,6 +869,8 @@ build-node-ova-vsphere-base-photon-5: ## Builds base Photon 5 Node OVA and templ
 build-node-ova-vsphere-base-rhel-9: ## Builds base RHEL 9 Node OVA and template on vSphere
 build-node-ova-vsphere-base-rockylinux-9: ## Builds base RockyLinux 9 Node OVA and template on vSphere
 build-node-ova-vsphere-base-almalinux-9: ## Builds base AlmaLinux 9 Node OVA and template on vSphere
+build-node-ova-vsphere-base-debian-13: ## Builds base Debian 13 Node OVA and template on vSphere
+build-node-ova-vsphere-base-debian-13-efi: ## Builds base Debian 13 Node OVA and template on vSphere that EFI boots
 build-node-ova-vsphere-base-ubuntu-2204: ## Builds base Ubuntu 22.04 Node OVA and template on vSphere
 build-node-ova-vsphere-base-ubuntu-2204-efi: ## Builds Ubuntu 22.04 Node OVA and template on vSphere that EFI boots
 build-node-ova-vsphere-base-ubuntu-2404: ## Builds base Ubuntu 24.04 Node OVA and template on vSphere

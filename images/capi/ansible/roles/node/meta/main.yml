@@ -44,7 +44,9 @@ dependencies:
     vars:
       rpms: >-
         {{ ( common_rpms + rh8_rpms + lookup('vars', 'common_' + build_target + '_rpms') ) }}
-      debs: "{{ common_debs +  lookup('vars', 'common_' + build_target + '_debs') }}"
+      debs: >-
+        {{ common_debs + lookup('vars', 'common_' + build_target
+          + ('_debian' if ansible_facts['distribution'] == 'Debian' else '') + '_debs') }}
     when: >
       ansible_facts['distribution'] not in ["VMware Photon OS", "Amazon"]
         and ansible_facts['architecture'] != "aarch64"
