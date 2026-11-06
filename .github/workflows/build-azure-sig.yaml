@@ -26,6 +26,7 @@
 # - skip_test - skip the test stage
 # - skip_promote - skip the promote stage
 # - packer_debug - enable Packer debug logging (sets PACKER_LOG=1)
+# - run_node_conformance - run Kubernetes node conformance tests on the test VM (Linux only)
 
 name: Build Azure SIG Image
 
@@ -93,6 +94,11 @@ on:
         default: 'australiaeast canadacentral eastus eastus2 francecentral germanywestcentral northcentralus northeurope switzerlandnorth uksouth westeurope westus2'
       skip_test:
         description: 'Skip the test stage'
+        required: false
+        type: boolean
+        default: false
+      run_node_conformance:
+        description: 'Run Kubernetes node conformance tests on the test VM (Linux only, opt-in, non-blocking)'
         required: false
         type: boolean
         default: false
@@ -293,7 +299,7 @@ jobs:
     needs: build
     if: ${{ !inputs.skip_test }}
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: ${{ inputs.run_node_conformance && 150 || 15 }}
     env:
       KUBERNETES_VERSION: ${{ inputs.kubernetes_version }}
 
@@ -570,6 +576,76 @@ jobs:
             exit 1
           fi
           echo "All smoke tests passed"
+
+      # -- Node conformance tests (opt-in, Linux only, non-blocking) -----------
+      # Conformance test failures are tolerated (the suite is informational
+      # while we iterate). SSH/SCP transport failures are NOT tolerated — they
+      # indicate infra/auth/network problems that would otherwise be masked as
+      # ordinary conformance failures.
+      - name: Run node conformance tests
+        id: node_conformance
+        if: ${{ inputs.run_node_conformance && steps.vars.outputs.OS_TYPE != 'Windows' }}
+        env:
+          OS_TYPE: ${{ steps.vars.outputs.OS_TYPE }}
+        run: |
+          set -euo pipefail
+
+          SSH_OPTS="-o StrictHostKeyChecking=no -o ConnectTimeout=10 -i ${TMPDIR}/sshkey"
+          SCP_CMD="scp ${SSH_OPTS}"
+          SSH_CMD="ssh ${SSH_OPTS} capi@${PUBLIC_IP}"
+
+          echo "::group::Copy node-conformance helper to VM"
+          if ! ${SCP_CMD} images/capi/hack/node-conformance.sh "capi@${PUBLIC_IP}:/tmp/node-conformance.sh"; then
+            echo "::error::Failed to scp node-conformance.sh to VM (transport failure)"
+            exit 1
+          fi
+          if ! ${SSH_CMD} 'chmod +x /tmp/node-conformance.sh'; then
+            echo "::error::Failed to chmod helper script on VM (transport failure)"
+            exit 1
+          fi
+          echo "::endgroup::"
+
+          echo "::group::Run node conformance"
+          # ssh exits 255 only on its own transport/auth errors; the remote
+          # script translates klog.Fatalf's exit 255 to 254 so we can tell the
+          # two apart.
+          set +e
+          ${SSH_CMD} "KUBERNETES_VERSION='${KUBERNETES_VERSION}' /tmp/node-conformance.sh"
+          NC_EXIT=$?
+          set -e
+          echo "node-conformance remote exit code: ${NC_EXIT}"
+          echo "exit_code=${NC_EXIT}" >> "${GITHUB_OUTPUT}"
+          echo "::endgroup::"
+
+          # Always try to pull whatever results exist BEFORE deciding whether
+          # to fail the step — partial results are valuable for triage even on
+          # a hard failure (e.g. the framework dying early).
+          echo "::group::Collect node-conformance results"
+          ARTIFACTS="${GITHUB_WORKSPACE}/_artifacts/node-conformance"
+          mkdir -p "${ARTIFACTS}"
+          if ! ${SCP_CMD} -r "capi@${PUBLIC_IP}:/tmp/node-conformance-results/." "${ARTIFACTS}/"; then
+            echo "::warning::Failed to scp node-conformance results back from VM"
+          fi
+          ls -la "${ARTIFACTS}" || true
+          echo "::endgroup::"
+
+          if [[ "${NC_EXIT}" -eq 255 ]]; then
+            echo "::error::SSH transport failure while running node conformance (exit 255); no conformance result available"
+            exit 1
+          fi
+
+          if [[ "${NC_EXIT}" -ne 0 ]]; then
+            echo "::warning::node conformance tests reported failures (exit ${NC_EXIT}); not blocking the workflow"
+          fi
+
+      - name: Upload node conformance results
+        if: ${{ always() && steps.node_conformance.conclusion != 'skipped' }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: node-conformance-results
+          path: _artifacts/node-conformance/
+          retention-days: 7
+          if-no-files-found: warn
 
       # -- Collect diagnostics on failure --------------------------------------
       - name: Collect diagnostics
