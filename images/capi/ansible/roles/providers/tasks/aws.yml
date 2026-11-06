@@ -65,7 +65,9 @@
     owner: root
     group: root
     mode: "0644"
-  when: ansible_facts['distribution'] == "Ubuntu" and ansible_facts['distribution_version'] is version('22.04', '>=')
+  when: >-
+    (ansible_facts['distribution'] == "Ubuntu" and ansible_facts['distribution_version'] is version('22.04', '>='))
+    or (ansible_facts['distribution'] == "AlmaLinux" and ansible_facts['distribution_major_version'] == "9")
 
 - name: Create custom cloud-init data source
   ansible.builtin.copy:
@@ -75,3 +77,14 @@
     group: root
     mode: "0644"
   when: ansible_facts['distribution'] == "Ubuntu" and ansible_facts['distribution_version'] is version('22.04', '>=')
+
+# AlmaLinux 9 ships Python 3.9, whose cloud-init package lives under site-packages
+# rather than the Debian-style dist-packages tree used above.
+- name: Create custom cloud-init data source for AlmaLinux 9
+  ansible.builtin.copy:
+    src: usr/lib/python3/dist-packages/cloudinit/sources/DataSourceEc2Kubernetes.py
+    dest: /usr/lib/python3.9/site-packages/cloudinit/sources/DataSourceEc2Kubernetes.py
+    owner: root
+    group: root
+    mode: "0644"
+  when: ansible_facts['distribution'] == "AlmaLinux" and ansible_facts['distribution_major_version'] == "9"
