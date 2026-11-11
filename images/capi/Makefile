@@ -425,7 +425,7 @@ AZURE_BUILD_SIG_NAMES	   ?= $(addprefix azure-sig-,$(SIG_TARGETS))
 AZURE_BUILD_SIG_GEN2_NAMES ?= $(addsuffix -gen2,$(addprefix azure-sig-,$(SIG_GEN2_TARGETS)))
 AZURE_BUILD_SIG_CVM_NAMES ?= $(addsuffix -cvm,$(addprefix azure-sig-,$(SIG_CVM_TARGETS)))
 
-OCI_BUILD_NAMES				?= oci-ubuntu-2204 oci-oracle-linux-9 oci-windows-2019 oci-windows-2022
+OCI_BUILD_NAMES				?= oci-almalinux-9 oci-ubuntu-2204 oci-oracle-linux-9 oci-windows-2019 oci-windows-2022
 
 DO_BUILD_NAMES 				?=	do-ubuntu-2204 do-ubuntu-2404 do-ubuntu-2604
 
@@ -924,6 +924,7 @@ build-raw-rhel-9: ## Builds RHEL 9 RAW image
 build-raw-rhel-9-efi: ## Builds RHEL 9 RAW image that EFI boots
 build-raw-all: $(RAW_BUILD_TARGETS) ## Builds all RAW images
 
+build-oci-almalinux-9: ## Builds the OCI AlmaLinux 9 image
 build-oci-ubuntu-2204: ## Builds the OCI ubuntu-2204 image
 build-oci-oracle-linux-9: ## Builds the OCI Oracle Linux 9.x image
 build-oci-windows-2019: ## Builds the OCI Windows Server 2019 image
