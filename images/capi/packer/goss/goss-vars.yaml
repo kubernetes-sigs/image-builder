@@ -199,6 +199,11 @@ almalinux:
     - distro_version: "9"
       package:
         <<: *rh9_rpms
+  oci:
+    os_version:
+    - distro_version: "9"
+      package:
+        <<: *rh9_rpms
   ova:
     package:
       open-vm-tools:
