@@ -32,15 +32,26 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 BOOTSTRAP = {"cloud-init", "open-vm-tools", "openssh-server", "python3", "sudo"}
 
 
+def repo_config(repo_id, path, enabled):
+    return (
+        f"[{repo_id}]\nname=Photon fixture\nbaseurl={path.as_uri()}\n"
+        f"enabled={int(enabled)}\ngpgcheck=0\n"
+    )
+
+
 class PhotonPackageTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        for command in ("tdnf", "rpm", "rpmbuild", "createrepo_c"):
+        for command in ("tdnf", "rpm", "rpmbuild", "createrepo_c", "grep", "diff"):
             if not shutil.which(command):
                 raise RuntimeError(
                     f"{command} is required; run these tests in a Photon container "
                     "as documented in docs/book/src/capi/providers/vsphere.md"
                 )
+        subprocess.run(
+            ["grep", "--fixed-strings", "--version"],
+            check=True, stdout=subprocess.DEVNULL,
+        )
         cls.scratch = tempfile.TemporaryDirectory(prefix="image-builder-photon-")
         cls.addClassCleanup(cls.scratch.cleanup)
         cls.root = pathlib.Path(cls.scratch.name)
@@ -57,7 +68,7 @@ class PhotonPackageTests(unittest.TestCase):
             )["packages"]
             for version in ("4", "5")
         }
-        names = BOOTSTRAP | {"alternatives", "photon-repos", "toybox"}
+        names = BOOTSTRAP | {"alternatives", "photon-repos", "repo-probe", "toybox"}
         for version in ("4", "5"):
             names.update(cls.kickstarts[version])
             names.update(cls.defaults[f"photon_{version}_rpms"])
@@ -65,11 +76,30 @@ class PhotonPackageTests(unittest.TestCase):
         names.update(cls.defaults["common_virt_photon_rpms"])
         cls.legacy = cls.build_repo("legacy", names - {"hostname"}, False)
         cls.current = cls.build_repo("current", names, True)
+        # The default updates repo advertises an older repo RPM whose config
+        # disables itself when it replaces the newer public-base repo RPM.
+        cls.primary = cls.build_repo("primary", names, True, repo_version=3)
+        cls.updates = cls.build_repo("updates", names, True, repo_version=2)
 
     @classmethod
-    def build_repo(cls, name, names, current):
+    def split_repo_configs(cls, updates_enabled):
+        return {
+            "photon": repo_config(
+                "photon", cls.root / "primary/RPMS/noarch", False
+            ),
+            "photon-updates": repo_config(
+                "photon-updates", cls.root / "updates/RPMS/noarch", updates_enabled
+            ),
+        }
+
+    @classmethod
+    def build_repo(cls, name, names, current, repo_version=None):
         build = cls.root / name
         build.mkdir()
+        configs = (
+            cls.split_repo_configs(updates_enabled=repo_version == 3)
+            if repo_version is not None else {}
+        )
         spec = [
             "Name: image-builder-photon-fixture",
             "Version: 1",
@@ -78,16 +108,19 @@ class PhotonPackageTests(unittest.TestCase):
             "License: Apache-2.0",
             "BuildArch: noarch",
             "%description",
-            "Empty packages with the GA and updated network-tool dependencies.",
+            "GA dependencies, network-tool replacements and repository configuration.",
         ]
         for package in sorted(names):
             updated = current and package in {
                 "cloud-init", "open-vm-tools", "hostname", "toybox", "net-tools"
             }
+            version = 2 if updated else 1
+            if package == "photon-repos" and repo_version is not None:
+                version = repo_version
             spec.extend([
                 f"%package -n {package}",
                 f"Summary: {package} fixture",
-                f"Version: {2 if updated else 1}",
+                f"Version: {version}",
             ])
             if package in {"cloud-init", "open-vm-tools"}:
                 spec.append(f"Requires: {'hostname' if current else 'net-tools'}")
@@ -98,8 +131,23 @@ class PhotonPackageTests(unittest.TestCase):
             if updated and package == "net-tools":
                 spec.append("Conflicts: hostname")
             spec.extend([f"%description -n {package}", f"{package} fixture."])
+        if configs:
+            spec.append("%install")
+            for repo_id, content in configs.items():
+                source = build / f"{repo_id}.repo"
+                source.write_text(content)
+                spec.append(
+                    f"install -Dm0644 {shlex.quote(str(source))} "
+                    f"%{{buildroot}}/etc/yum.repos.d/{repo_id}.repo"
+                )
         spec.append("%files")
-        spec.extend(f"%files -n {package}" for package in sorted(names))
+        for package in sorted(names):
+            spec.append(f"%files -n {package}")
+            if package == "photon-repos":
+                spec.extend(
+                    f"%config(noreplace) /etc/yum.repos.d/{repo_id}.repo"
+                    for repo_id in configs
+                )
         spec_path = build / "fixtures.spec"
         spec_path.write_text("\n".join(spec) + "\n")
         subprocess.run(
@@ -121,10 +169,9 @@ class PhotonPackageTests(unittest.TestCase):
         self.repos.mkdir()
         self.use_repo(self.legacy)
 
-    def use_repo(self, path):
-        (self.repos / "photon.repo").write_text(
-            f"[photon]\nname=Photon fixture\nbaseurl={path.as_uri()}\n"
-            "enabled=1\ngpgcheck=0\n"
+    def use_repo(self, path, repo_id="photon"):
+        (self.repos / f"{repo_id}.repo").write_text(
+            repo_config(repo_id, path, True)
         )
 
     def tdnf(self, *args, check=True):
@@ -145,17 +192,23 @@ class PhotonPackageTests(unittest.TestCase):
             text=True,
         ).splitlines())
 
+    def installed_version(self, package):
+        return subprocess.check_output(
+            ["rpm", "--root", str(self.installroot), "-q", "--qf", "%{VERSION}", package],
+            text=True,
+        )
+
     def bootstrap(self, version):
         self.tdnf("install", "-y", *self.kickstarts[version], "toybox")
         self.assertLessEqual(BOOTSTRAP, self.installed())
 
-    def run_setup_packages(self, version):
+    def run_setup_packages(self, version, disable_public_repos=False):
         environment = jinja2.Environment(undefined=jinja2.StrictUndefined)
         environment.filters["bool"] = bool
         variables = {
             **self.defaults,
             "ansible_facts": {"distribution_major_version": version},
-            "disable_public_repos": False,
+            "disable_public_repos": disable_public_repos,
             "extra_rpms": "",
             "rpms": (
                 self.defaults["common_photon_rpms"]
@@ -203,6 +256,27 @@ class PhotonPackageTests(unittest.TestCase):
         self.run_setup_packages("4")
         self.assertIn("net-tools", self.installed())
         self.assertNotIn("hostname", self.installed())
+
+    def test_photon_5_keeps_refreshed_public_repositories_available(self):
+        self.bootstrap("5")
+        self.repos = self.installroot / "etc/yum.repos.d"
+        self.repos.mkdir(parents=True, exist_ok=True)
+        for repo_id, content in self.split_repo_configs(updates_enabled=True).items():
+            (self.repos / f"{repo_id}.repo").write_text(content)
+
+        self.run_setup_packages("5")
+        self.assertEqual("3", self.installed_version("photon-repos"))
+        self.tdnf("install", "-y", "repo-probe")
+
+    def test_private_photon_5_repository_package_still_synchronizes(self):
+        self.bootstrap("5")
+        self.repos = self.installroot / "etc/yum.repos.d"
+        self.repos.mkdir(parents=True, exist_ok=True)
+        self.use_repo(self.updates, repo_id="private-photon")
+
+        self.run_setup_packages("5", disable_public_repos=True)
+        self.assertEqual("2", self.installed_version("photon-repos"))
+        self.tdnf("install", "-y", "repo-probe")
 
     def test_old_and_new_network_packages_cannot_be_requested_together(self):
         self.bootstrap("5")

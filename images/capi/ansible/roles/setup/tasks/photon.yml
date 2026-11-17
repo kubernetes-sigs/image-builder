@@ -49,8 +49,15 @@
   register: install_alternatives
   changed_when: '"Nothing to do" not in install_alternatives.stderr'
 
+# Keep Photon 5's explicitly refreshed public repo package: the default repo
+# can offer an older build that disables the repositories on replacement.
 - name: Perform a tdnf distro-sync
-  ansible.builtin.command: tdnf distro-sync -y --refresh
+  ansible.builtin.command: >-
+    tdnf distro-sync -y --refresh
+    {{ '--exclude=photon-repos'
+       if ansible_facts['distribution_major_version'] == '5'
+         and not (disable_public_repos | default(false, true) | bool)
+       else '' }}
   register: distro
   changed_when: '"Nothing to do" not in distro.stderr'
 
