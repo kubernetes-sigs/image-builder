@@ -72,7 +72,6 @@ common_photon_rpms: &common_photon_rpms
   chrony:
   distrib-compat:
   ebtables:
-  net-tools:
   openssl-c_rehash:
   python3-pip:
   rng-tools:
@@ -83,10 +82,14 @@ common_photon_rpms: &common_photon_rpms
 photon_4_rpms: &photon_4_rpms
   jq:
   logrotate:
+  net-tools:
 
 photon_5_rpms: &photon_5_rpms
+  cloud-init:
+  hostname:
   jq:
   logrotate:
+  toybox:
 
 arch: "amd64"
 ARCH: "amd64"
