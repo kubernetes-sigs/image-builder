@@ -36,6 +36,16 @@ make build-azure-sig-ubuntu-2204
 make build-azure-sig-ubuntu-2204-gen2
 ```
 
+The `pull-azure-sigs` presubmit temporarily excludes Flatcar Generation 1 and
+Generation 2 builds because the CI subscription fails Azure Marketplace
+eligibility checks. See [kubernetes-sigs/image-builder#2166](https://github.com/kubernetes-sigs/image-builder/issues/2166).
+The build targets remain available for manual use:
+
+```bash
+make build-azure-sig-flatcar
+make build-azure-sig-flatcar-gen2
+```
+
 ### Confidential VM Images
 
 Confidential VMs require specific generation 2 OS images. The naming pattern of those images includes the suffix `-cvm`. For example:
@@ -72,4 +82,3 @@ If you are adding features to image builder than it is sometimes useful to work 
 
 ### Debugging Packer scripts
 There are several ways to debug Packer scripts: https://developer.hashicorp.com/packer/docs/debugging
-
