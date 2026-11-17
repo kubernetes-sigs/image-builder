@@ -587,7 +587,7 @@ $(AZURE_VALIDATE_SIG_TARGETS): deps-azure
 
 .PHONY: $(AZURE_VALIDATE_SIG_GEN2_TARGETS)
 $(AZURE_VALIDATE_SIG_GEN2_TARGETS): deps-azure
-	$(PACKER) validate $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="$(abspath packer/azure/azure-config.json)" -var-file="$(abspath packer/azure/azure-sig-gen2.json)" -var-file="$(abspath packer/azure/$(subst validate-azure-sig-,,$@).json)" -only="$(subst validate-azure-,,$@)" $(ABSOLUTE_PACKER_VAR_FILES) packer/azure/packer$(findstring windows,$@).json
+	$(PACKER) validate $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="$(abspath packer/azure/azure-config.json)" -var-file="$(abspath packer/azure/azure-sig-gen2.json)" -var-file="$(abspath packer/azure/$(subst validate-azure-sig-,,$@).json)" -only="$(subst validate-azure-,,$@)" $(ABSOLUTE_PACKER_VAR_FILES) packer/azure/packer$(findstring -windows,$@).json
 
 .PHONY: $(AZURE_VALIDATE_SIG_CVM_TARGETS)
 $(AZURE_VALIDATE_SIG_CVM_TARGETS): deps-azure
@@ -793,6 +793,7 @@ build-azure-sig-ubuntu-2604: ## Builds Ubuntu 26.04 Azure managed image in Share
 build-azure-sig-azurelinux-3: ## Builds Azure Linux 3 Azure managed image in Shared Image Gallery
 build-azure-sig-windows-2022-containerd: ## Builds Windows Server 2022 with containerd Azure managed image in Shared Image Gallery
 build-azure-sig-windows-2025-containerd: ## Builds Windows Server 2025 with containerd Azure managed image in Shared Image Gallery
+build-azure-sig-windows-2025-containerd-gen2: ## Builds Windows Server 2025 with containerd Gen2 managed image in Shared Image Gallery
 build-azure-sig-windows-2022-containerd-cvm: ## Builds Windows Server 2022 with containerd CVM Azure managed image in Shared Image Gallery
 build-azure-sig-azurelinux-3-gen2: ## Builds Azure Linux 3 Gen2 managed image in Shared Image Gallery
 build-azure-sig-flatcar: ## Builds Flatcar Azure managed image in Shared Image Gallery
