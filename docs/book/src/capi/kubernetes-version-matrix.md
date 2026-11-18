@@ -57,3 +57,27 @@ images/capi/hack/kubernetes-version-matrix.py verify
 Run `update --write` when refreshing directly from upstream release and package
 metadata. It updates the YAML files and regenerates the Dependabot tracking
 manifests.
+
+## Updating containerd and runc
+
+For runtime-only updates, change the containerd and runc versions in the tracking
+manifests, then run `sync-tracking --write` and `verify` as above. Keep Kubernetes,
+CNI, and cri-tools versions unchanged, and align runc with the version tested by
+the selected containerd release.
+
+Also update `images/capi/packer/config/containerd.json`, the runc default in
+`images/capi/ansible/roles/containerd/defaults/main.yml`, and the Nutanix HCL defaults
+in `images/capi/packer/nutanix/variables.pkr.hcl`. Update the PowerPC version and
+checksum in `images/capi/packer/config/ppc64le/containerd.json` using the official
+release's `.sha256sum` asset. Other downloads already resolve release checksum
+URLs.
+
+Refresh and verify the bundled systemd unit from the repository root:
+
+```sh
+make update-containerd-service-template
+make verify-containerd-service-template
+```
+
+The updater refreshes the supported-version marker even when the upstream unit
+itself has not changed.

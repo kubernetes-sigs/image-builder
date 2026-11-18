@@ -1,5 +1,5 @@
 {
   "containerd_image_pull_progress_timeout": null,
-  "containerd_sha256": "bf562d89874b2850b0aaa9934135f297b4a0b028312aa5f46d1871b3f907fb0c",
-  "containerd_version": "2.3.2"
+  "containerd_sha256": "6d48110176418f0af6181fddf9d5503ebdd7836fe14b3d2ad560f02addfbfdea",
+  "containerd_version": "2.3.7"
 }
