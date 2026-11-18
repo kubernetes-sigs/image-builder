@@ -54,7 +54,11 @@ the Dependabot branch.
 |----|----------|
 | Ubuntu | `22.04`, `24.04` |
 | AzureLinux | `3` |
-| Windows | `2022-containerd`, `2025-containerd` |
+| Windows | `2022-containerd`, `2025-containerd`, `2025-containerd-gen2` |
+
+For Windows Server 2025 Gen2, select `Windows` and enter
+`2025-containerd-gen2` as the OS version. Promotion reads the Hyper-V generation
+from the built Azure managed image rather than inferring it from the image name.
 
 ## Setup Requirements
 
