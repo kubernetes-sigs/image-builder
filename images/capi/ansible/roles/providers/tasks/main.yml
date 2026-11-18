@@ -172,7 +172,9 @@
     owner: root
     group: root
     mode: "0644"
-  when: ansible_facts['os_family'] == "RedHat" and ansible_facts['distribution'] == "RedHat" and ansible_facts['distribution_major_version'] == "9"
+  when: >-
+    ansible_facts['os_family'] == "RedHat" and ansible_facts['distribution'] in ["RedHat", "AlmaLinux"]
+    and ansible_facts['distribution_major_version'] == "9"
 
 # ...and `features.py` must be patched instead
 - name: Patch cloud-init feature flags for Debian-based OS
@@ -187,7 +189,9 @@
     path: /usr/lib/python3.9/site-packages/cloudinit/features.py
     marker: "# {mark} ANSIBLE MANAGED BLOCK (by image-builder)"
     block: "{{ lookup('file', 'cloud-init-features.patch') }}"
-  when: ansible_facts['os_family'] == "RedHat" and ansible_facts['distribution'] == "RedHat" and ansible_facts['distribution_major_version'] == "9"
+  when: >-
+    ansible_facts['os_family'] == "RedHat" and ansible_facts['distribution'] in ["RedHat", "AlmaLinux"]
+    and ansible_facts['distribution_major_version'] == "9"
 
 - name: Ensure chrony is running
   ansible.builtin.systemd:
