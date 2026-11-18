@@ -14,7 +14,10 @@
 ---
 containerd_config_file: etc/containerd/config.toml
 containerd_enable_limit_no_file: false
+containerd_gvisor_baseurl: https://storage.googleapis.com/gvisor/releases/release/{{ containerd_gvisor_version }}/{{ ansible_facts['architecture'] }}
+containerd_gvisor_filename: "gvisor.tar.bz2"
 containerd_gvisor_runtime: false
+containerd_gvisor_url: "{{ containerd_gvisor_baseurl }}/{{ containerd_gvisor_filename }}"
 containerd_gvisor_version: latest
 containerd_baseurl: https://github.com/containerd/containerd/releases/download/v{{ containerd_version }}
 containerd_filename: "containerd-{{ containerd_version }}-{{ system }}-{{ arch }}.tar.gz"
