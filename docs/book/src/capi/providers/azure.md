@@ -46,6 +46,20 @@ make build-azure-sig-flatcar
 make build-azure-sig-flatcar-gen2
 ```
 
+For Windows Server 2025 with containerd:
+
+```bash
+make validate-azure-sig-windows-2025-containerd-gen2
+make build-azure-sig-windows-2025-containerd-gen2
+```
+
+This uses the `MicrosoftWindowsServer:WindowsServer:2025-datacenter-core-smalldisk-g2`
+Marketplace image and creates the `capi-windows-2025-gen2-containerd` gallery image
+definition with Hyper-V generation `V2`. The existing Windows Server 2025 Gen1
+target remains unchanged. This is a standard Gen2 image, not a Confidential VM image.
+To use it with CAPZ, explicitly reference the published gallery image rather than
+relying on the default Windows image selection.
+
 ### Confidential VM Images
 
 Confidential VMs require specific generation 2 OS images. The naming pattern of those images includes the suffix `-cvm`. For example:
