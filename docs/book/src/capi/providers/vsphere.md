@@ -90,6 +90,33 @@ In addition to the configuration found in `images/capi/packer/config`, the `ova`
 
 ### Photon specific options
 
+#### Photon 5 network tools
+
+Photon 5 updates replace `net-tools` with `hostname` and the networking commands
+in `toybox`. Image-builder migrates the GA ISO's older packages before
+`tdnf distro-sync`, updating cloud-init and open-vm-tools in the same transaction
+so they remain installed. The Photon 5 kickstart does not request `hostname`
+because it is not available on the GA ISO; setup installs it from the configured
+repositories. Custom Photon 5 repositories must include the replacement packages.
+Photon 4 continues to use `net-tools`.
+
+For public Photon 5 builds, setup updates `photon-repos` separately and excludes
+it from `distro-sync`, which can otherwise downgrade it and disable the
+repositories. Private-repository builds still synchronize that package normally.
+
+The package regression tests use real `tdnf` transactions against local fixture
+RPM repositories, including the old bootstrap dependencies, new conflicts and
+repository-package configuration rewrites.
+Run them without a hypervisor from the repository root:
+
+```bash
+podman run --rm -v "$PWD:/workspace:ro" -w /workspace/images/capi \
+  -e IB_VERSION=photon-package-tests docker.io/library/photon:5.0-GA \
+  sh -c 'tdnf install -y --disablerepo="*" --enablerepo=photon-release \
+    rpm-build createrepo_c python3-PyYAML python3-jinja2 make openssh-clients grep diffutils \
+    && make test-photon-packages'
+```
+
 #### Enabling .local lookups via DNS
 
 Photon uses systemd-resolved defaults, which means that .local will be resolved using Multicast DNS. If you are deploying to

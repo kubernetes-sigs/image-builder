@@ -1100,6 +1100,10 @@ docker-push: ## Push the Docker image
 ## Test targets
 ## --------------------------------------
 ##@ Testing
+.PHONY: test-photon-packages
+test-photon-packages: ## Tests Photon package transitions with real tdnf and fixture RPMs
+	python3 hack/photon_packages_integration.py
+
 .PHONY: test-azure
 test-azure: ## Run the tests for Azure builders
 	$(abspath packer/azure/scripts/ci-azure-e2e.sh)

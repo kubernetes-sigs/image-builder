@@ -36,13 +36,28 @@
   changed_when: '"Nothing to do" not in distro.stderr'
   when: not (disable_public_repos | default(false, true) | bool)
 
+# Keep the GA ISO's cloud-init and open-vm-tools explicit in the transaction
+# so replacing their old net-tools dependency cannot erase them.
+- name: Replace Photon 5 net-tools while retaining VMware bootstrap packages
+  ansible.builtin.command: tdnf install -y --refresh --allowerasing hostname toybox cloud-init open-vm-tools
+  register: setup_network_tools
+  changed_when: '"Nothing to do" not in setup_network_tools.stderr'
+  when: ansible_facts['distribution_major_version'] == "5"
+
 - name: Replace chkconfig with alternatives to satisfy iptables dependency
   ansible.builtin.command: tdnf install -y alternatives --allowerasing
   register: install_alternatives
   changed_when: '"Nothing to do" not in install_alternatives.stderr'
 
+# Keep Photon 5's explicitly refreshed public repo package: the default repo
+# can offer an older build that disables the repositories on replacement.
 - name: Perform a tdnf distro-sync
-  ansible.builtin.command: tdnf distro-sync -y --refresh
+  ansible.builtin.command: >-
+    tdnf distro-sync -y --refresh
+    {{ '--exclude=photon-repos'
+       if ansible_facts['distribution_major_version'] == '5'
+         and not (disable_public_repos | default(false, true) | bool)
+       else '' }}
   register: distro
   changed_when: '"Nothing to do" not in distro.stderr'
 

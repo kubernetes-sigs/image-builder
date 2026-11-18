@@ -77,7 +77,6 @@ common_photon_rpms:
   - dbus-python3
   - distrib-compat
   - ebtables
-  - net-tools
   - openssl-c_rehash
   - python3-pygobject
   - python3-pip
@@ -87,17 +86,16 @@ common_photon_rpms:
   - unzip
   - curl
 
-# Creating photon_4_rpms for adding future packages if needed.
-# Since empty list errors out, jq is added.
 photon_4_rpms:
   - jq
   - logrotate
+  - net-tools
 
-# Creating photon_5_rpms for adding future packages if needed.
-# Since empty list errors out, jq is added.
 photon_5_rpms:
+  - hostname
   - jq
   - logrotate
+  - toybox
 
 common_virt_rpms:
   - open-vm-tools
