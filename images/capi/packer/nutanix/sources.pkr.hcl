@@ -21,6 +21,14 @@ source "nutanix" "node" {
   ssh_username           = var.ssh_username
   user_data              = var.user_data
 
+  dynamic "image_categories" {
+    for_each = var.image_categories
+    content {
+      key   = image_categories.value.key
+      value = image_categories.value.value
+    }
+  }
+
   vm_disks {
     disk_size_gb        = var.disk_size_gb
     image_type          = "DISK_IMAGE"

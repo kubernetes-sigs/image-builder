@@ -104,6 +104,14 @@ variable "force_deregister" {
   description = "Deregister (delete) any pre-existing image with the same name before building."
   default     = true
 }
+variable "image_categories" {
+  type = list(object({
+    key   = string
+    value = string
+  }))
+  description = "Prism categories (key/value pairs) to assign to the resulting image. No categories are set by default."
+  default     = []
+}
 variable "image_delete" {
   type        = bool
   description = "Delete the resulting Nutanix image if the build fails."
