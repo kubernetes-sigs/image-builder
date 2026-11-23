@@ -34,20 +34,21 @@ aliases:
   image-builder-windows-maintainers:
     - jsturtevant
     - perithompson
+  # Keep in sync with kubernetes-sigs/cluster-api/OWNERS_ALIASES.
   cluster-api-maintainers:
-    - CecileRobertMichon
-    - enxebre
+    - chrischdi
     - fabriziopandini
+    - JoelSpeed
     - sbueringer
-    - vincepri
   cluster-api-aws-maintainers:
     - richardcase
     - sedefsavas
+  # Based on kubernetes-sigs/cluster-api-provider-azure/OWNERS_ALIASES.
   cluster-api-azure-maintainers:
-    - CecileRobertMichon
-    - devigned
+    - bryan-cox
     - jackfrancis
     - mboersma
+    - nojnhuh
   cluster-api-gcp-maintainers:
     - cpanato
     - damdo
