@@ -59,11 +59,11 @@ aliases:
     - stephenfin
   # https://github.com/kubernetes-sigs/cluster-api-provider-cloudstack/blob/main/OWNERS
   cluster-api-cloudstack-maintainers:
-    - chrisdoherty4
+    # - chrisdoherty4  # Requires kubernetes-sigs membership.
     - davidjumani
     - dims
     - g-gaston
-    - jweite-amazon
+    # - jweite-amazon  # Requires kubernetes-sigs membership.
     - vishesh92
     - weizhouapache
     - yadvr
