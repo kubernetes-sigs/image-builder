@@ -10,73 +10,70 @@ aliases:
     - randomvariable
   image-builder-azure-reviewers:
     - mboersma
-  image-builder-openstack-reviewers:
-    - hidekazuna
-  image-builder-openstack-maintainers:
-    - yankcrime
+  image-builder-openstack-reviewers: []
+  image-builder-openstack-maintainers: []
   image-builder-cloudstack-reviewers:
-    - davidjumani
     - vishesh92
-    - weizhouapache
-    - yadvr
   image-builder-scaleway-reviewers:
     - Tomy2e
-    - pablo-ruth
-  image-builder-raw-maintainers:
-    - detiber
-    - thebsdbox
-  image-builder-raw-reviewers:
-    - detiber
-    - thebsdbox
-  image-builder-windows-maintainers:
-    - perithompson
-  # Keep in sync with kubernetes-sigs/cluster-api/OWNERS_ALIASES.
+  image-builder-raw-maintainers: []
+  image-builder-raw-reviewers: []
+  image-builder-windows-maintainers: []
+  # https://github.com/kubernetes-sigs/cluster-api/blob/main/OWNERS_ALIASES
   cluster-api-maintainers:
     - chrischdi
     - fabriziopandini
     - JoelSpeed
     - sbueringer
+  # https://github.com/kubernetes-sigs/cluster-api-provider-aws/blob/main/OWNERS_ALIASES
   cluster-api-aws-maintainers:
+    - AndiDog
+    - damdo
+    - dlipovetsky
+    - nrb
     - richardcase
-    - sedefsavas
-  # Based on kubernetes-sigs/cluster-api-provider-azure/OWNERS_ALIASES.
+  # https://github.com/kubernetes-sigs/cluster-api-provider-azure/blob/main/OWNERS_ALIASES
   cluster-api-azure-maintainers:
     - bryan-cox
     - jackfrancis
     - mboersma
     - nojnhuh
+  # https://github.com/kubernetes-sigs/cluster-api-provider-gcp/blob/main/OWNERS_ALIASES
   cluster-api-gcp-maintainers:
     - cpanato
     - damdo
     - dims
-    - richardcase
     - salasberryfin
+  # https://github.com/kubernetes-sigs/cluster-api-provider-digitalocean/blob/main/OWNERS_ALIASES
   cluster-api-digitalocean-maintainers:
     - cpanato
     - gottwald
     - prksu
+    - sreeram-venkitesh
     - timoreimann
+  # https://github.com/kubernetes-sigs/cluster-api-provider-openstack/blob/main/OWNERS_ALIASES
   cluster-api-openstack-maintainers:
-    - chrischdi
-    - hidekazuna
-    - jichenjc
-    - mdbooth
-    - seanschneeweiss
-    - tobiasgiese
+    - emilienm
+    - lentzi90
+    - mandre
+    - stephenfin
+  # https://github.com/kubernetes-sigs/cluster-api-provider-cloudstack/blob/main/OWNERS
   cluster-api-cloudstack-maintainers:
+    - chrisdoherty4
     - davidjumani
-    - Pearl1594
+    - dims
+    - g-gaston
+    - jweite-amazon
     - vishesh92
     - weizhouapache
     - yadvr
+  # https://github.com/kubernetes-sigs/cluster-api-provider-vsphere/blob/main/OWNERS_ALIASES
   cluster-api-vsphere-maintainers:
     - chrischdi
-    - gab-satchi
-    - killianmuldoon
+    - fabriziopandini
     - randomvariable
     - sbueringer
     - srm09
-    - yastij
   cluster-api-nutanix-maintainers:
     - tuxtof
   cluster-api-nutanix-reviewers:
