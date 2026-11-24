@@ -2,16 +2,13 @@
 
 aliases:
   image-builder-maintainers:
-    - AverageMarcus
-    - jsturtevant
-    - kkeshavamurthy
     - mboersma
     - drew-viles
   image-builder-reviewers:
     - AndiDog
+    - AverageMarcus
     - randomvariable
   image-builder-azure-reviewers:
-    - jsturtevant
     - mboersma
   image-builder-openstack-reviewers:
     - hidekazuna
@@ -32,7 +29,6 @@ aliases:
     - detiber
     - thebsdbox
   image-builder-windows-maintainers:
-    - jsturtevant
     - perithompson
   # Keep in sync with kubernetes-sigs/cluster-api/OWNERS_ALIASES.
   cluster-api-maintainers:
