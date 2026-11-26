@@ -8,7 +8,7 @@
       "size": "{{ user `size` }}",
       "snapshot_name": "Cluster API Kubernetes {{ user `kubernetes_semver` }} {{ user `snapshot_name_suffix` }}",
       "snapshot_regions": [
-        "nyc1"
+        "{{ user `region` }}"
       ],
       "ssh_username": "root",
       "tags": [
