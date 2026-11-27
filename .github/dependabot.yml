@@ -25,12 +25,7 @@ updates:
 
 # Kubernetes version matrix release pins
 - directories:
-    - "/images/capi/packer/config/kubernetes-version-dependencies/release-1-31"
-    - "/images/capi/packer/config/kubernetes-version-dependencies/release-1-32"
-    - "/images/capi/packer/config/kubernetes-version-dependencies/release-1-33"
-    - "/images/capi/packer/config/kubernetes-version-dependencies/release-1-34"
-    - "/images/capi/packer/config/kubernetes-version-dependencies/release-1-35"
-    - "/images/capi/packer/config/kubernetes-version-dependencies/release-1-36"
+    - "/images/capi/packer/config/kubernetes-version-dependencies/release-*/*"
   package-ecosystem: "gomod"
   open-pull-requests-limit: 5
   schedule:
@@ -41,6 +36,8 @@ updates:
   groups:
     kubernetes-version-matrix-release-pins:
       patterns: [ "*" ]
+  allow:
+    - dependency-type: "direct"
   ignore:
     - dependency-name: "github.com/containerd/containerd/v2"
       update-types:
@@ -72,7 +69,7 @@ updates:
 
 # Kubernetes version matrix rolling latest
 - directories:
-    - "/images/capi/packer/config/kubernetes-version-dependencies/latest"
+    - "/images/capi/packer/config/kubernetes-version-dependencies/latest/*"
   package-ecosystem: "gomod"
   open-pull-requests-limit: 3
   schedule:
@@ -83,6 +80,8 @@ updates:
   groups:
     kubernetes-version-matrix-latest:
       patterns: [ "*" ]
+  allow:
+    - dependency-type: "direct"
   ignore:
     - dependency-name: "github.com/containerd/containerd/v2"
       update-types:

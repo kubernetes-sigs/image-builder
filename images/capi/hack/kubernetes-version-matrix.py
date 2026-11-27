@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import argparse
 import difflib
+import fnmatch
 import gzip
 import importlib.util
 import json
@@ -31,7 +32,7 @@ import sys
 import urllib.request
 import xml.etree.ElementTree as ET
 from pathlib import Path
-from typing import Any
+from typing import Any, NamedTuple
 
 
 sys.dont_write_bytecode = True
@@ -45,6 +46,7 @@ TRACKING_MODULE_PREFIX = (
     "sigs.k8s.io/image-builder/images/capi/packer/config/kubernetes-version-dependencies"
 )
 TRACKING_GO_VERSION = "1.24"
+DEPENDABOT_FILE = REPO_ROOT / ".github/dependabot.yml"
 KUBERNETES_DEB_RESOLVER = (
     REPO_ROOT / ".github/actions/configure-k8s-version/resolve-kubernetes-deb-version.py"
 )
@@ -71,13 +73,70 @@ REQUIRED_KEYS = (
     "kubernetes_series",
     "runc_version",
 )
+LICENSE_HEADER = """// Copyright 2026 The Kubernetes Authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+"""
+
+
+class TrackedModule(NamedTuple):
+    """One synthetic Go module that tracks a single matrix dependency.
+
+    ``package`` is the lightest importable package in ``module``. It only has
+    to pull the module into the requirement graph, so the fewer transitive
+    imports it has, the fewer indirect requirements ``go mod tidy`` records.
+    """
+
+    name: str
+    module: str
+    entry_key: str
+    package: str
+
+
 TRACKED_GO_MODULES = (
-    ("github.com/containerd/containerd/v2", "containerd_version"),
-    ("github.com/containernetworking/plugins", "kubernetes_cni_semver"),
-    ("github.com/opencontainers/runc", "runc_version"),
-    ("k8s.io/client-go", "kubernetes_semver"),
-    ("sigs.k8s.io/cri-tools", "crictl_version"),
+    TrackedModule(
+        "containerd",
+        "github.com/containerd/containerd/v2",
+        "containerd_version",
+        "github.com/containerd/containerd/v2/version",
+    ),
+    TrackedModule(
+        "cni-plugins",
+        "github.com/containernetworking/plugins",
+        "kubernetes_cni_semver",
+        "github.com/containernetworking/plugins/pkg/utils/buildversion",
+    ),
+    TrackedModule(
+        "runc",
+        "github.com/opencontainers/runc",
+        "runc_version",
+        "github.com/opencontainers/runc/types/features",
+    ),
+    TrackedModule(
+        "kubernetes",
+        "k8s.io/client-go",
+        "kubernetes_semver",
+        "k8s.io/client-go/util/homedir",
+    ),
+    TrackedModule(
+        "cri-tools",
+        "sigs.k8s.io/cri-tools",
+        "crictl_version",
+        "sigs.k8s.io/cri-tools/pkg/version",
+    ),
 )
+TOOLS_IMPORT_RE = re.compile(r'^\s*_\s+"([^"]+)"', re.MULTILINE)
+GO_MOD_BLOCK_RE = re.compile(r"(require|exclude|replace|retract)\s*\(")
 
 
 def ensure_yq() -> str:
@@ -237,6 +296,15 @@ def resolve_crictl_version(minor: str) -> str:
 
 
 def refresh_entry(selector: str, current: dict[str, Any]) -> dict[str, Any]:
+    """Refresh the pins one selector resolves from upstream release metadata.
+
+    Only the Kubernetes version fields, the kubernetes-cni package versions and
+    crictl are refreshed here. ``containerd_version``, ``runc_version`` and
+    ``kubernetes_cni_semver`` are deliberately carried over from ``current``:
+    Dependabot tracks each of them in its own tracking module, and the CNI
+    plugins tarball in particular does not have to match the kubernetes-cni
+    package version.
+    """
     kubernetes_semver = stable_kubernetes_version(selector)
     kubernetes_version = kubernetes_semver.removeprefix("v")
     cni_rpm_version = resolve_cni_rpm_version(selector)
@@ -246,7 +314,6 @@ def refresh_entry(selector: str, current: dict[str, Any]) -> dict[str, Any]:
             "crictl_version": resolve_crictl_version(selector),
             "kubernetes_cni_deb_version": resolve_cni_deb_version(selector),
             "kubernetes_cni_rpm_version": cni_rpm_version,
-            "kubernetes_cni_semver": f"v{cni_rpm_version}",
             "kubernetes_deb_version": resolve_kubernetes_deb_version(kubernetes_version),
             "kubernetes_rpm_version": kubernetes_version,
             "kubernetes_semver": kubernetes_semver,
@@ -265,8 +332,11 @@ def refresh_matrix() -> tuple[dict[str, dict[str, Any]], dict[str, Any]]:
 
     latest_semver = stable_kubernetes_version()
     latest_selector = ".".join(latest_semver.removeprefix("v").split(".")[:2])
-    latest_base = refreshed_pins.get(latest_selector, latest)
-    refreshed_latest = refresh_entry(latest_selector, latest_base)
+    # Refresh the rolling entry from its own values, never from the release pin
+    # for the same minor. containerd, runc and the CNI plugins tarball are
+    # tracked separately for latest and may legitimately run ahead of the pin,
+    # so seeding from the pin would silently roll them back.
+    refreshed_latest = refresh_entry(latest_selector, latest)
     return refreshed_pins, refreshed_latest
 
 
@@ -336,8 +406,12 @@ def tracking_selector_name(selector: str) -> str:
     return f"release-{selector.replace('.', '-')}"
 
 
-def tracking_go_mod_path(selector: str) -> Path:
-    return TRACKING_DIR / tracking_selector_name(selector) / "go.mod"
+def tracking_module_dir(selector: str, tracked: TrackedModule) -> Path:
+    return TRACKING_DIR / tracking_selector_name(selector) / tracked.name
+
+
+def tracking_module_path(selector: str, tracked: TrackedModule) -> str:
+    return f"{TRACKING_MODULE_PREFIX}/{tracking_selector_name(selector)}/{tracked.name}"
 
 
 def kubernetes_module_version(kubernetes_semver: Any) -> str:
@@ -365,81 +439,330 @@ def go_module_version(module: str, value: Any) -> str:
     return f"v{version}"
 
 
-def render_tracking_go_mod(selector: str, entry: dict[str, Any]) -> str:
-    module_name = f"{TRACKING_MODULE_PREFIX}/{tracking_selector_name(selector)}"
-    lines = [
-        f"module {module_name}",
-        "",
-        f"go {TRACKING_GO_VERSION}",
-        "",
-        "require (",
-    ]
-    for module, entry_key in TRACKED_GO_MODULES:
-        lines.append(f"\t{module} {go_module_version(module, entry[entry_key])}")
-    lines.append(")")
-    return "\n".join(lines) + "\n"
+def render_tracking_go_mod(module_path: str, tracked: TrackedModule, version: str) -> str:
+    return (
+        f"module {module_path}\n"
+        "\n"
+        f"go {TRACKING_GO_VERSION}\n"
+        "\n"
+        f"require {tracked.module} {version}\n"
+    )
 
 
-def render_tracking_go_mods(
+def render_tracking_tools_go(tracked: TrackedModule) -> str:
+    return LICENSE_HEADER + (
+        "\n"
+        "//go:build tools\n"
+        "\n"
+        "// Package tools keeps the tracked module in go.mod. Dependabot always\n"
+        "// runs go mod tidy after an update, and tidy drops requirements that no\n"
+        "// package imports.\n"
+        "package tools\n"
+        "\n"
+        "import (\n"
+        f'\t_ "{tracked.package}"\n'
+        ")\n"
+    )
+
+
+def tracking_entries(
     release_pins: dict[str, dict[str, Any]], latest: dict[str, Any]
-) -> dict[Path, str]:
-    manifests = {
-        tracking_go_mod_path(selector): render_tracking_go_mod(selector, release_pins[selector])
+) -> list[tuple[str, dict[str, Any]]]:
+    entries = [
+        (selector, release_pins[selector])
         for selector in sorted(release_pins, key=version_sort_key)
-    }
-    manifests[tracking_go_mod_path("latest")] = render_tracking_go_mod("latest", latest)
-    return manifests
+    ]
+    entries.append(("latest", latest))
+    return entries
 
 
-def read_tracking_go_mod(selector: str) -> dict[str, str]:
-    path = tracking_go_mod_path(selector)
-    if not path.exists():
-        raise FileNotFoundError(f"{path} does not exist")
+def expected_tracking_modules(
+    release_pins: dict[str, dict[str, Any]], latest: dict[str, Any]
+) -> dict[Path, tuple[str, TrackedModule, str]]:
+    """Map every expected module directory to its module path, dependency and version."""
+    modules: dict[Path, tuple[str, TrackedModule, str]] = {}
+    for selector, entry in tracking_entries(release_pins, latest):
+        for tracked in TRACKED_GO_MODULES:
+            modules[tracking_module_dir(selector, tracked)] = (
+                tracking_module_path(selector, tracked),
+                tracked,
+                go_module_version(tracked.module, entry[tracked.entry_key]),
+            )
+    return modules
 
-    versions: dict[str, str] = {}
+
+def parse_go_mod(path: Path) -> tuple[str, dict[str, str]]:
+    """Return the module path and the direct requirements of a go.mod file."""
+    module_path = ""
+    requires: dict[str, str] = {}
     in_require_block = False
-    for line in path.read_text().splitlines():
-        stripped = line.strip()
-        if not stripped or stripped.startswith("//"):
+    for raw_line in path.read_text().splitlines():
+        code, _, comment = raw_line.partition("//")
+        line = code.strip()
+        if not line:
             continue
-        if stripped == "require (":
+        if line.startswith("module "):
+            module_path = line.removeprefix("module ").strip()
+            continue
+        if in_require_block:
+            if line == ")":
+                in_require_block = False
+                continue
+        elif line == "require (":
             in_require_block = True
             continue
-        if in_require_block and stripped == ")":
-            in_require_block = False
+        elif line.startswith("require "):
+            line = line.removeprefix("require ").strip()
+            if line == "(":
+                in_require_block = True
+                continue
+        else:
             continue
-        if stripped.startswith("require "):
-            stripped = stripped.removeprefix("require ").strip()
-        if not in_require_block and " " not in stripped:
+        if "indirect" in comment:
             continue
-        parts = stripped.split()
+        parts = line.split()
         if len(parts) >= 2:
-            versions[parts[0]] = parts[1]
+            requires[parts[0]] = parts[1]
+    return module_path, requires
+
+
+def go_sum_modules(path: Path) -> set[tuple[str, str]]:
+    """Return the (module, version) pairs a go.sum records an h1: checksum for.
+
+    ``version`` keeps the ``/go.mod`` suffix of the manifest-only lines, so a
+    caller can tell the two kinds of checksum apart.
+    """
+    recorded = set()
+    for line in path.read_text().splitlines():
+        parts = line.split()
+        if len(parts) == 3 and parts[2].startswith("h1:"):
+            recorded.add((parts[0], parts[1]))
+    return recorded
+
+
+def tracking_tools_packages(path: Path) -> list[str]:
+    return TOOLS_IMPORT_RE.findall(path.read_text())
+
+
+def set_go_mod_require(path: Path, module: str, version: str) -> bool:
+    """Rewrite the direct requirement on ``module`` in place.
+
+    Every other line is left alone, including requirements marked
+    ``// indirect`` and any mention of the module inside an exclude, replace or
+    retract block.
+    """
+    pattern = re.compile(rf"^(\s*(?:require\s+)?){re.escape(module)}\s+\S+(.*)$")
+    lines = path.read_text().splitlines(keepends=True)
+    block = ""
+    changed = False
+    for index, raw_line in enumerate(lines):
+        line = raw_line.rstrip("\n")
+        code, _, comment = line.partition("//")
+        stripped = code.strip()
+
+        if block:
+            if stripped == ")":
+                block = ""
+            in_require = block == "require"
+        elif opened := GO_MOD_BLOCK_RE.fullmatch(stripped):
+            block = opened.group(1)
+            continue
+        else:
+            in_require = stripped.startswith("require ")
+
+        if not in_require or "indirect" in comment:
+            continue
+        match = pattern.match(line)
+        if not match:
+            continue
+        replacement = f"{match.group(1)}{module} {version}{match.group(2)}"
+        if replacement != line:
+            lines[index] = replacement + "\n"
+            changed = True
+    if changed:
+        path.write_text("".join(lines))
+    return changed
+
+
+def missing_go_error() -> str | None:
+    """Return an error message when the go command is unavailable, else None."""
+    if shutil.which("go"):
+        return None
+    return (
+        "the go command is required to write tracking modules because each one is "
+        "regenerated with 'go mod tidy'; install Go and rerun"
+    )
+
+
+def go_mod_tidy(directory: Path) -> None:
+    go = shutil.which("go")
+    if not go:
+        raise RuntimeError(f"{missing_go_error()} (needed for {directory})")
+    subprocess.run([go, "mod", "tidy"], check=True, cwd=directory)
+
+
+def tracking_module_issues(
+    directory: Path, module_path: str, tracked: TrackedModule, version: str
+) -> list[str]:
+    """Report why a tracking module does not match the matrix; empty when it does."""
+    go_mod = directory / "go.mod"
+    if not go_mod.exists():
+        return [f"{go_mod}: missing Dependabot tracking module"]
+
+    issues = []
+    current_module, requires = parse_go_mod(go_mod)
+    if current_module != module_path:
+        issues.append(f"{go_mod}: module is {current_module!r}, expected {module_path!r}")
+    if tracked.module not in requires:
+        issues.append(f"{go_mod}: {tracked.module} is not a direct requirement")
+    elif requires[tracked.module] != version:
+        issues.append(
+            f"{go_mod}: {tracked.module} is {requires[tracked.module]}, expected {version}"
+        )
+    go_sum = directory / "go.sum"
+    if not go_sum.exists():
+        issues.append(f"{go_sum}: missing checksum file")
+    else:
+        recorded = go_sum_modules(go_sum)
+        issues.extend(
+            f"{go_sum}: no h1: checksum for {tracked.module} {version}{suffix}"
+            for suffix in ("", "/go.mod")
+            if (tracked.module, f"{version}{suffix}") not in recorded
+        )
+
+    tools_go = directory / "tools.go"
+    if not tools_go.exists():
+        issues.append(f"{tools_go}: missing tools file")
+    elif not any(
+        package == tracked.module or package.startswith(f"{tracked.module}/")
+        for package in tracking_tools_packages(tools_go)
+    ):
+        issues.append(f"{tools_go}: no blank import of a {tracked.module} package")
+    return issues
+
+
+def unexpected_tracking_files(expected_dirs: set[Path]) -> list[str]:
+    if not TRACKING_DIR.exists():
+        return []
+    return [
+        f"{path}: unexpected Dependabot tracking file"
+        for path in sorted(TRACKING_DIR.rglob("*"))
+        if path.is_file() and path.parent not in expected_dirs
+    ]
+
+
+def dependabot_gomod_directories() -> list[str]:
+    config = yq_json(DEPENDABOT_FILE, ".")
+    patterns = []
+    for update in config.get("updates") or []:
+        if update.get("package-ecosystem") != "gomod":
+            continue
+        if directory := update.get("directory"):
+            patterns.append(directory)
+        patterns.extend(update.get("directories") or [])
+    return patterns
+
+
+def dependabot_coverage_issues(expected_dirs: set[Path]) -> list[str]:
+    """Check that the gomod entries cover every tracking module and nothing else."""
+    tracking_prefix = f"/{TRACKING_DIR.relative_to(REPO_ROOT).as_posix()}/"
+    wanted = sorted(f"/{path.relative_to(REPO_ROOT).as_posix()}" for path in expected_dirs)
+    patterns = dependabot_gomod_directories()
+
+    issues = []
+    for directory in wanted:
+        if not any(fnmatch.fnmatch(directory, pattern) for pattern in patterns):
+            issues.append(f"{DEPENDABOT_FILE}: no gomod entry covers {directory}")
+    for pattern in patterns:
+        if not pattern.startswith(tracking_prefix):
+            issues.append(
+                f"{DEPENDABOT_FILE}: gomod entry {pattern!r} points outside {tracking_prefix}"
+            )
+        elif not any(fnmatch.fnmatch(directory, pattern) for directory in wanted):
+            issues.append(
+                f"{DEPENDABOT_FILE}: gomod entry {pattern!r} matches no tracking module"
+            )
+    return issues
+
+
+def write_tracking_module(
+    directory: Path, module_path: str, tracked: TrackedModule, version: str
+) -> None:
+    directory.mkdir(parents=True, exist_ok=True)
+    go_mod = directory / "go.mod"
+    current_module, requires = parse_go_mod(go_mod) if go_mod.exists() else ("", {})
+    if current_module == module_path and tracked.module in requires:
+        set_go_mod_require(go_mod, tracked.module, version)
+    else:
+        go_mod.write_text(render_tracking_go_mod(module_path, tracked, version))
+    (directory / "tools.go").write_text(render_tracking_tools_go(tracked))
+    go_mod_tidy(directory)
+
+
+def sync_tracking_modules(
+    release_pins: dict[str, dict[str, Any]], latest: dict[str, Any], write: bool
+) -> bool:
+    """Bring the tracking modules in line with the matrix. True when they changed."""
+    expected = expected_tracking_modules(release_pins, latest)
+    changed = False
+    for directory, (module_path, tracked, version) in sorted(expected.items()):
+        issues = tracking_module_issues(directory, module_path, tracked, version)
+        if not issues:
+            continue
+        changed = True
+        if write:
+            write_tracking_module(directory, module_path, tracked, version)
+            continue
+        for issue in issues:
+            print(issue, file=sys.stderr)
+
+    for stale in unexpected_tracking_files(set(expected)):
+        changed = True
+        print(stale, file=sys.stderr)
+    return changed
+
+
+def read_tracking_versions(selector: str) -> dict[str, str]:
+    versions: dict[str, str] = {}
+    missing = []
+    for tracked in TRACKED_GO_MODULES:
+        go_mod = tracking_module_dir(selector, tracked) / "go.mod"
+        if not go_mod.exists():
+            missing.append(str(go_mod))
+            continue
+        _, requires = parse_go_mod(go_mod)
+        if tracked.module not in requires:
+            missing.append(f"{go_mod} ({tracked.module})")
+            continue
+        versions[tracked.module] = requires[tracked.module]
+    if missing:
+        raise ValueError(
+            f"{selector}: tracking modules missing requirements: {', '.join(missing)}"
+        )
     return versions
 
 
 def entry_from_tracking(selector: str, current: dict[str, Any]) -> dict[str, Any]:
-    versions = read_tracking_go_mod(selector)
-    missing_modules = [
-        module for module, _ in TRACKED_GO_MODULES if module not in versions
-    ]
-    if missing_modules:
-        raise ValueError(
-            f"{selector}: tracking manifest missing modules: {', '.join(missing_modules)}"
-        )
+    """Fold the versions Dependabot maintains back into one matrix entry.
 
+    The kubernetes-cni package versions are not touched. They pin the distro
+    package, which is versioned separately from the CNI plugins tarball that
+    ``kubernetes_cni_semver`` selects.
+    """
+    versions = read_tracking_versions(selector)
     kubernetes_semver = kubernetes_semver_from_module(versions["k8s.io/client-go"])
     kubernetes_version = kubernetes_semver.removeprefix("v")
     kubernetes_minor = ".".join(kubernetes_version.split(".")[:2])
     if selector != "latest" and kubernetes_minor != selector:
         raise ValueError(
-            f"{selector}: tracking manifest points to Kubernetes {kubernetes_minor}, "
+            f"{selector}: tracking module points to Kubernetes {kubernetes_minor}, "
             f"expected {selector}"
         )
 
-    cni_semver = versions["github.com/containernetworking/plugins"]
-    cni_version = cni_semver.removeprefix("v")
-    cni_rpm_version = resolve_cni_rpm_version(kubernetes_minor, cni_version)
+    deb_version = current.get("kubernetes_deb_version")
+    if current.get("kubernetes_rpm_version") != kubernetes_version or not deb_version:
+        deb_version = resolve_kubernetes_deb_version(kubernetes_version)
+
     updated = dict(current)
     updated.update(
         {
@@ -447,12 +770,8 @@ def entry_from_tracking(selector: str, current: dict[str, Any]) -> dict[str, Any
                 "github.com/containerd/containerd/v2"
             ].removeprefix("v"),
             "crictl_version": versions["sigs.k8s.io/cri-tools"].removeprefix("v"),
-            "kubernetes_cni_deb_version": resolve_cni_deb_version(
-                kubernetes_minor, cni_version
-            ),
-            "kubernetes_cni_rpm_version": cni_rpm_version,
-            "kubernetes_cni_semver": f"v{cni_rpm_version}",
-            "kubernetes_deb_version": resolve_kubernetes_deb_version(kubernetes_version),
+            "kubernetes_cni_semver": versions["github.com/containernetworking/plugins"],
+            "kubernetes_deb_version": deb_version,
             "kubernetes_rpm_version": kubernetes_version,
             "kubernetes_semver": kubernetes_semver,
             "kubernetes_series": f"v{kubernetes_minor}",
@@ -468,7 +787,6 @@ def expected_files(
     return {
         MATRIX_FILE: render_release_matrix_yaml(release_pins),
         LATEST_FILE: render_latest_yaml(latest),
-        **render_tracking_go_mods(release_pins, latest),
     }
 
 
@@ -516,9 +834,13 @@ def validate_entry(selector: str, entry: dict[str, Any]) -> list[str]:
         errors.append(f"{selector}: kubernetes_rpm_version does not match kubernetes_semver")
     if not str(entry["kubernetes_deb_version"]).startswith(f"{kubernetes_version}-"):
         errors.append(f"{selector}: kubernetes_deb_version does not match kubernetes_semver")
+    # kubernetes_cni_semver pins the CNI plugins tarball and is tracked on its
+    # own, so it is only checked for shape, not against the package versions.
+    if not re.fullmatch(r"v\d+\.\d+\.\d+", str(entry["kubernetes_cni_semver"])):
+        errors.append(
+            f"{selector}: invalid kubernetes_cni_semver {entry['kubernetes_cni_semver']!r}"
+        )
     cni_rpm = entry["kubernetes_cni_rpm_version"]
-    if entry["kubernetes_cni_semver"] != f"v{cni_rpm}":
-        errors.append(f"{selector}: kubernetes_cni_semver does not match RPM CNI version")
     if not str(entry["kubernetes_cni_deb_version"]).startswith(f"{cni_rpm}-"):
         errors.append(f"{selector}: DEB and RPM CNI versions do not match")
     return errors
@@ -531,19 +853,11 @@ def verify() -> int:
         errors.extend(validate_entry(selector, entry))
     errors.extend(validate_entry("latest", latest))
 
-    expected_tracking = render_tracking_go_mods(release_pins, latest)
-    for path, expected in expected_tracking.items():
-        if not path.exists():
-            errors.append(f"{path}: missing generated Dependabot tracking manifest")
-            continue
-        current = path.read_text()
-        if current != expected:
-            errors.append(f"{path}: generated Dependabot tracking manifest is out of date")
-
-    expected_paths = set(expected_tracking)
-    for path in TRACKING_DIR.glob("*/go.mod"):
-        if path not in expected_paths:
-            errors.append(f"{path}: unexpected Dependabot tracking manifest")
+    expected = expected_tracking_modules(release_pins, latest)
+    for directory, (module_path, tracked, version) in sorted(expected.items()):
+        errors.extend(tracking_module_issues(directory, module_path, tracked, version))
+    errors.extend(unexpected_tracking_files(set(expected)))
+    errors.extend(dependabot_coverage_issues(set(expected)))
 
     if errors:
         for error in errors:
@@ -554,11 +868,31 @@ def verify() -> int:
 
 
 def update(write: bool) -> int:
+    if write and (error := missing_go_error()):
+        print(f"ERROR: {error}", file=sys.stderr)
+        return 1
+
     release_pins, latest = refresh_matrix()
     changed = apply_expected_files(expected_files(release_pins, latest), write)
+    changed = sync_tracking_modules(release_pins, latest, write) or changed
 
     if changed and not write:
         print("Kubernetes version matrix is out of date; rerun with --write", file=sys.stderr)
+        return 1
+    return verify()
+
+
+def render_tracking(write: bool) -> int:
+    if write and (error := missing_go_error()):
+        print(f"ERROR: {error}", file=sys.stderr)
+        return 1
+
+    release_pins, latest = load_matrix()
+    if sync_tracking_modules(release_pins, latest, write) and not write:
+        print(
+            "Dependabot tracking modules do not match the matrix; rerun with --write",
+            file=sys.stderr,
+        )
         return 1
     return verify()
 
@@ -574,8 +908,7 @@ def sync_tracking(write: bool) -> int:
 
     if changed and not write:
         print(
-            "Kubernetes version matrix does not match tracking manifests; "
-            "rerun with --write",
+            "Kubernetes version matrix does not match tracking modules; rerun with --write",
             file=sys.stderr,
         )
         return 1
@@ -589,13 +922,20 @@ def main() -> int:
     render_parser = subparsers.add_parser("render", help="render one matrix entry as JSON")
     render_parser.add_argument("selector", nargs="?", default="latest")
 
-    subparsers.add_parser("verify", help="verify matrix structure and tracking manifests")
+    subparsers.add_parser("verify", help="verify matrix structure and tracking modules")
 
     update_parser = subparsers.add_parser("update", help="refresh Kubernetes package pins")
-    update_parser.add_argument("--write", action="store_true", help="write refreshed YAML files")
+    update_parser.add_argument("--write", action="store_true", help="write refreshed files")
+
+    render_tracking_parser = subparsers.add_parser(
+        "render-tracking", help="create or repair Dependabot tracking modules from the matrix"
+    )
+    render_tracking_parser.add_argument(
+        "--write", action="store_true", help="write the tracking modules"
+    )
 
     sync_parser = subparsers.add_parser(
-        "sync-tracking", help="refresh matrix YAML from Dependabot tracking manifests"
+        "sync-tracking", help="refresh matrix YAML from Dependabot tracking modules"
     )
     sync_parser.add_argument("--write", action="store_true", help="write refreshed YAML files")
 
@@ -607,6 +947,8 @@ def main() -> int:
         return verify()
     if args.command == "update":
         return update(args.write)
+    if args.command == "render-tracking":
+        return render_tracking(args.write)
     if args.command == "sync-tracking":
         return sync_tracking(args.write)
     return 1
