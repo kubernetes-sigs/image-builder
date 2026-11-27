@@ -13,9 +13,7 @@
           "volume_type": "standard"
         }
       ],
-      "omi_account_ids": [
-        "{{ user `account_id` }}"
-      ],
+      "omi_account_ids": "{{ user `account_id` }}",
       "omi_boot_modes": [
         "legacy",
         "uefi"

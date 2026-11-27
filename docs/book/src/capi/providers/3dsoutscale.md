@@ -38,5 +38,5 @@ Please set the following environment variables before building image:
 OSC_SECRET_KEY: Outscale Secret Key
 OSC_REGION: Outscale Region
 OSC_ACCESS_KEY: Outscale Access Key Id
-OSC_ACCOUNT_ID: Outscale Account Id
+OSC_ACCOUNT_ID: Outscale Account Id (comma-separated list to share the OMI with several accounts)
 ```
