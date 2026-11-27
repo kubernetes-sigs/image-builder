@@ -5,14 +5,6 @@
       "force_delete_snapshot": "{{user `overwrite_existing`}}",
       "force_deregister": "{{user `overwrite_existing`}}",
       "global_permission": "{{ user `global_permission` }}",
-      "launch_block_device_mappings": [
-        {
-          "delete_on_vm_deletion": true,
-          "device_name": "/dev/xvdb",
-          "volume_size": 15,
-          "volume_type": "standard"
-        }
-      ],
       "omi_account_ids": [
         "{{ user `account_id` }}"
       ],
@@ -33,7 +25,7 @@
         ]
       },
       "ssh_interface": "public_ip",
-      "ssh_username": "outscale",
+      "ssh_username": "{{ user `ssh_username` }}",
       "tags": {
         "Base_OMI_Name": "{{ .SourceOMIName }}",
         "Extra": "{{ .SourceOMITags.TagName }}",
@@ -50,35 +42,9 @@
   ],
   "provisioners": [
     {
-      "environment_vars": [
-        "FLATCAR_CHANNEL={{user `flatcar_channel`}}",
-        "FLATCAR_VERSION={{user `flatcar_version`}}",
-        "DEBUG_SSH_PUBLIC_KEY={{user `debug_ssh_public_key`}}"
-      ],
-      "expect_disconnect": true,
-      "pause_after": "15s",
-      "script": "./packer/outscale/scripts/install-flatcar.sh",
-      "type": "shell"
-    },
-    {
       "execute_command": "BUILD_NAME={{user `build_name`}}; if [[ \"${BUILD_NAME}\" == *\"flatcar\"* ]]; then sudo {{.Vars}} -S -E bash '{{.Path}}'; fi",
       "script": "./packer/files/flatcar/scripts/bootstrap-flatcar.sh",
       "type": "shell"
-    },
-    {
-      "ansible_env_vars": [
-        "ANSIBLE_SSH_ARGS='{{user `existing_ansible_ssh_args`}} -o IdentitiesOnly=yes'"
-      ],
-      "extra_arguments": [
-        "--extra-vars",
-        "{{user `ansible_common_vars`}}",
-        "--extra-vars",
-        "{{user `ansible_extra_vars`}}",
-        "--extra-vars",
-        "{{user `ansible_user_vars`}}"
-      ],
-      "playbook_file": "./ansible/python.yml",
-      "type": "ansible"
     },
     {
       "ansible_env_vars": [
@@ -145,13 +111,10 @@
     "containerd_service_url": "",
     "containerd_version": null,
     "crictl_version": null,
-    "debug_ssh_public_key": "",
     "distribution": null,
     "distribution_release": null,
     "distribution_version": null,
     "existing_ansible_ssh_args": "{{env `ANSIBLE_SSH_ARGS`}}",
-    "flatcar_channel": "{{env `FLATCAR_CHANNEL`}}",
-    "flatcar_version": "{{env `FLATCAR_VERSION`}}",
     "global_permission": "true",
     "kubernetes_cni_deb_version": null,
     "kubernetes_cni_http_source": null,
@@ -173,7 +136,7 @@
     "kubernetes_source_type": null,
     "omi_name": "{{user `build_name`}}-kubernetes-{{user `kubernetes_semver`}}-{{isotime `2006-01-02`}}",
     "overwrite_existing": "false",
-    "owner": "Outscale",
+    "owner": "self",
     "region": "{{env `OSC_REGION`}}",
     "runc_version": null,
     "secret_key": "{{env `OSC_SECRET_KEY`}}",

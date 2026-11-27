@@ -40,3 +40,21 @@ OSC_REGION: Outscale Region
 OSC_ACCESS_KEY: Outscale Access Key Id
 OSC_ACCOUNT_ID: Outscale Account Id
 ```
+
+### Flatcar
+
+Flatcar has no public OMI on Outscale. Import the official Flatcar Outscale
+image into your account first, in each region you build in, following the
+[Flatcar documentation](https://www.flatcar.org/docs/latest/deploy/cloud/outscale/).
+
+The build looks up an OMI owned by your account and named
+`flatcar-${FLATCAR_CHANNEL}-${FLATCAR_VERSION}`, the name used in that
+documentation. `FLATCAR_VERSION=current` resolves to the latest release of
+the channel, so pin the version you imported:
+
+```bash
+FLATCAR_CHANNEL=alpha FLATCAR_VERSION=4890.0.0 make build-osc-flatcar
+```
+
+To use another name or owner, override `image_name` and `owner` in a file
+passed with `PACKER_VAR_FILES`.
