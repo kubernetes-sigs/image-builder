@@ -28,3 +28,12 @@ the different operating systems.
 | `ubuntu-2204.json` | The settings for the Ubuntu 22.04 image |
 | `ubuntu-2404.json` | The settings for the Ubuntu 24.04 image |
 | `ubuntu-2604.json` | The settings for the Ubuntu 26.04 image |
+
+#### Region
+
+Images are built in the `nyc1` region by default, and the snapshot is stored in the same region.
+To build in a different region, set the `region` variable, for example:
+
+```sh
+PACKER_FLAGS="--var region=sfo2" make build-do-ubuntu-2404
+```
