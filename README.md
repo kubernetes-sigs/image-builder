@@ -22,7 +22,7 @@ The table below shows the currently provided operating systems for each provider
 
 | OS                | ami | azure | digitalocean | gce | hcloud | huaweicloud | maas | nutanix | oci | openstack | outscale | ova | oxide | powervs | proxmox | qemu | raw | scaleway | vultr |
 |-------------------|----|----|----|----|----|----|----|----|----|----|---|----|----|----|----|----|----|----|----|
-| AlmaLinux 9       | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| AlmaLinux 9       | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | Amazon Linux 2    | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | Amazon Linux 2023 | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | Azure Linux 3     | ❌ | 💙 | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |

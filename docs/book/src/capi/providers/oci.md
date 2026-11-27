@@ -26,6 +26,7 @@ the different operating systems.
 
 | File | Description |
 |------|-------------|
+| `almalinux-9.json` | The settings for the AlmaLinux 9 image. Requires `base_image_ocid` (see below) |
 | `oracle-linux-9.json` | The settings for the Oracle Linux 9 image |
 | `ubuntu-2204.json` | The settings for the Ubuntu 22.04 image |
 | `windows-2019.json` | The settings for the Windows Server 2019 image |
@@ -63,6 +64,16 @@ Create a file with the following contents and name it as `oci.json`
 
 ```bash
 PACKER_VAR_FILES=oci.json make build-oci-oracle-linux-9
+```
+
+#### Build an AlmaLinux 9 image
+
+AlmaLinux is not offered as an OCI platform image, so the OCI builder cannot
+discover a base image by name. Set `base_image_ocid` in your `oci.json` to the
+OCID of an AlmaLinux 9 image (Marketplace or imported custom image), then run:
+
+```bash
+PACKER_VAR_FILES=oci.json make build-oci-almalinux-9
 ```
 
 #### Build an Arm based image

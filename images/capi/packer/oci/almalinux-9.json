@@ -1,0 +1,11 @@
+{
+  "build_name": "almalinux-9",
+  "distribution": "AlmaLinux",
+  "distribution_release": "AlmaLinux 9",
+  "distribution_version": "9",
+  "epel_rpm_gpg_key": "https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-9",
+  "operating_system": "AlmaLinux",
+  "operating_system_version": "9",
+  "redhat_epel_rpm": "https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm",
+  "ssh_username": "opc"
+}
