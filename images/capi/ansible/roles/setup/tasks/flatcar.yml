@@ -15,9 +15,9 @@
 - name: Include Flatcar bootstrap tasks
   ansible.builtin.include_tasks: bootstrap-flatcar.yml
 
-- name: Create system-environment-generators directory
+- name: Create systemd manager configuration directory
   ansible.builtin.file:
-    path: /etc/systemd/system-environment-generators
+    path: /etc/systemd/system.conf.d
     state: directory
     mode: "0755"
 
@@ -31,13 +31,13 @@
     state: directory
     mode: "0755"
 
-- name: Add env generator that includes system PATH on service path
+- name: Add system PATH to the service manager environment
   ansible.builtin.copy:
-    src: etc/systemd/system-environment-generators/10-flatcar-path
-    dest: /etc/systemd/system-environment-generators/10-flatcar-path
+    src: etc/systemd/system.conf.d/10-flatcar-path.conf
+    dest: /etc/systemd/system.conf.d/10-flatcar-path.conf
     owner: root
     group: root
-    mode: "0755"
+    mode: "0644"
 
 - name: Enable systemd-timesyncd unit
   ansible.builtin.systemd:
