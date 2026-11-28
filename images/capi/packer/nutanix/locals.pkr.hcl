@@ -30,9 +30,9 @@ locals {
     wws     = "e917f90692d798d80873aa0f37990c7d652f2846129d64fecbfd41ffa77799b8"
   })
 
-  # containerd.service is now rendered locally rather than fetched at build
-  # time, matching every other cloud's packer.json (#2102).
-  containerd_service_url = ""
+  # Render containerd.service locally by default, while allowing a custom
+  # upstream unit URL for containerd versions that use a different template.
+  containerd_service_url = var.containerd_service_url
 
   # packer/config/ansible-args.json: legacy value is the literal string
   # "{{env `ANSIBLE_SCP_EXTRA_ARGS`}}". Declaring this as a `variable` of the

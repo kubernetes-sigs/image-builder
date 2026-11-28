@@ -353,6 +353,11 @@ variable "containerd_version" {
   description = "containerd version to install."
   default     = "2.3.7"
 }
+variable "containerd_service_url" {
+  type        = string
+  description = "Optional URL for a containerd.service unit matching containerd_version. Leave empty to use the bundled template."
+  default     = ""
+}
 variable "runc_version" {
   type    = string
   default = "1.5.2"
